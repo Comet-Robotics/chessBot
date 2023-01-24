@@ -6,8 +6,8 @@ const int motorBPin1 = 11;
 const int motorBPin2 = 10;
 
 const int encoderAPin1 = 5;
-const int encoderAPin2 = 4;
-const int encoderBPin1 = 3;
+const int encoderAPin2 = 3;
+const int encoderBPin1 = 4;
 const int encoderBPin2 = 2;
 
 
@@ -17,12 +17,17 @@ int stop_duration = 1000;
 
 int rotate_duration = 1000;
 
-double inchesPerSec = 30.0;
-double msPerMeter = 1312.33;
+// double inchesPerSec = 30.0;
+// double msPerMeter = 1312.33;
 
- int counter = 0; 
+const int wheelDiaInches = 4.375;
+
+ int counterA = 0; 
+ int counterB = 0; 
  int aState;
  int aLastState;  
+ int bState;
+ int bLastState;  
 
 
 
@@ -34,9 +39,12 @@ void setup() {
   pinMode(motorBPin2, OUTPUT);
   pinMode(encoderAPin1, INPUT);
   pinMode(encoderAPin2, INPUT);
+  pinMode(encoderBPin1, INPUT);
+  pinMode(encoderBPin2, INPUT);
   Serial.begin(9600);
 
   aLastState= digitalRead(encoderAPin1);
+  bLastState= digitalRead(encoderBPin1);
 
 }
 
@@ -78,6 +86,7 @@ void Stop(int duration)
   delay(duration);
 }
 
+
 void encoderRead()
 {
    aState = digitalRead(encoderAPin1); // Reads the "current" state of the outputA
@@ -85,12 +94,31 @@ void encoderRead()
    if (aState != aLastState){     
      // If the outputB state is different to the outputA state, that means the encoder is rotating clockwise
      if (digitalRead(encoderAPin2) != aState) { 
-       counter ++;
+       counterA ++;
      } else {
-       counter --;
+       counterA --;
      }
     //  Serial.print("Position: ");
-     Serial.println(counter);
+    //  Serial.println(counter1);
    } 
    aLastState = aState; // Updates the previous state of the outputA with the current state
+
+   bState = digitalRead(encoderBPin1); // Reads the "current" state of the outputA
+   // If the previous and the current state of the outputA are different, that means a Pulse has occured
+   if (bState != bLastState){     
+     // If the outputB state is different to the outputA state, that means the encoder is rotating clockwise
+     if (digitalRead(encoderBPin2) != bState) { 
+       counterB ++;
+     } else {
+       counterB --;
+     }
+    //  Serial.print("Position: ");
+   } 
+   bLastState = bState; // Updates the previous state of the outputA with the current state
+
+    Serial.print("Counter_A:");
+    Serial.print(counterA);
+    Serial.print(",");
+    Serial.print("Counter_B:");
+    Serial.println(counterB);
 }
