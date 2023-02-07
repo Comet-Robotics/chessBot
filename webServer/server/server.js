@@ -14,12 +14,8 @@ chessStatus = game.exportJson();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get('/', (req, res) => {
-  res.send(chessStatus);
-})
-
 app.listen(port, () => {
-   console.log("Example app listening at http://%s:%s");
+   console.log("ChessBot server online!");
 })
 
 app.post('/move/:from/:to', (req,res) => {
@@ -40,7 +36,7 @@ app.post('/move/:from/:to', (req,res) => {
   chessStatus = game.exportJson()
 })
 
-app.post('/status', (req, res) => {
+app.get('/status', (req, res) => {
   console.log('hi');
   res.send(chessStatus);
 })
