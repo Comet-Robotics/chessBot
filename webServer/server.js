@@ -8,6 +8,7 @@ const app = express();
 const port = 3000;
 
 const jsChessEngine = require('js-chess-engine');
+const { move, status, moves, aiMove } = jsChessEngine
 game = new jsChessEngine.Game();
 
 chessStatus = game.exportJson();
@@ -25,8 +26,6 @@ app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, '../', 'index.html'));
 });
 
-
-
 app.post('/move/:from/:to', (req,res) => {
   const fromRequest = req.params.from
   const toRequest = req.params.to
@@ -34,8 +33,9 @@ app.post('/move/:from/:to', (req,res) => {
 
   try {
     const moveResponse = game.move(fromRequest, toRequest);
-    res.send({message: moveResponse});
-
+    chessStatus = game.exportJson()
+    console.log("move response: " + moveResponse);
+    res.send(chessStatus);
   }
   catch (error){
     console.log(error);
@@ -43,7 +43,6 @@ app.post('/move/:from/:to', (req,res) => {
   }
 
   game.printToConsole();
-  chessStatus = game.exportJson()
 })
 
 app.get('/status', (req, res) => {
@@ -56,24 +55,27 @@ app.post('/aimove/:level', (req, res) => {
   
   try {
     const aiMoveResponse = game.aiMove(levelRequest);
-    res.send({message: aiMoveResponse})
+    chessStatus = game.exportJson()
+    console.log("AI move response: " + aiMoveResponse);
+    res.send(chessStatus)
   }
   catch (error) {
     console.log(error);
     res.status(404).json({error: "ai move error"})
   }
   game.printToConsole();
-  chessStatus = game.exportJson()
-
 })
 
 app.post('/resetGame', (req, res) => {
   game = new jsChessEngine.Game();
   chessStatus = game.exportJson();
   game.printToConsole();
-
-  res.send("success!")
+  res.send(chessStatus)
 })
 
-
-
+app.get('/moves/:piece', (req, res) => {
+  const piece = req.params.piece;
+  console.log('Status Sent!');
+  console.log(piece)
+  res.send(game.moves(piece));
+})

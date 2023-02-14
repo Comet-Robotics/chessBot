@@ -8,6 +8,10 @@
     "js-chess-engine": "^1.0.2"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }
