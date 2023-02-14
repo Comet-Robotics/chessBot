@@ -1,42 +1,34 @@
 .App {
   text-align: center;
+    background-color: #141426;
+
+  background-image: 
+      radial-gradient(at 47% 33%, hsl(143.49, 32%, 23%) 0, transparent 59%), 
+      radial-gradient(at 82% 65%, hsl(222.86, 3%, 14.000000000000002%) 0, transparent 5)
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+body{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: white;
+  
 }
 
-.App-link {
-  color: #61dafb;
-}
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 .enarcImage {
-  width: 30px;
+  width: 50px;
+}
+
+.flex {
+  display:flex;
+}
+
+.flexChild {
+  flex: 1;
+}
+
+.chessSide {
+  padding: 30px;
+  flex: 1;
+  
 }

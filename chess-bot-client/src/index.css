@@ -6,10 +6,4 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.flex {
-  display:flex;
-}
 
-.flexChild {
-  flex: 1;
-}
