@@ -79,8 +79,6 @@ function App() {
               borderRadius: "4px",
               boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
             }}
-            customDarkSquareStyle={{ background: "rgba(17, 25, 40, 0.16)", backdropFilter: "blur(16px)" }}
-            customLightSquareStyle={{ background: "white", backdropFilter: "blur(5px)" }}
             customSquareStyles={{
               ...moveSquares,
             }}
