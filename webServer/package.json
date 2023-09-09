@@ -5,7 +5,9 @@
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "js-chess-engine": "^1.0.2"
+    "js-chess-engine": "^1.0.2",
+    "serialport": "^12.0.0",
+    "xbee-api": "^0.6.0"
   },
   "scripts": {
     "start": "node server.js",
