@@ -1,3 +1,4 @@
+#include <Arduino.h>
 
 const int motorAPin1 = 8;
 const int motorAPin2 = 9;
@@ -22,12 +23,14 @@ int rotate_duration = 1000;
 
 const int wheelDiaInches = 4.375;
 
- int counterA = 0; 
- int counterB = 0; 
- int aState;
- int aLastState;  
- int bState;
- int bLastState;  
+int counterA = 0; 
+int counterB = 0; 
+int aState;
+int aLastState;  
+int bState;
+int bLastState;  
+
+void encoderRead();
 
 
 
