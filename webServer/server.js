@@ -3,40 +3,14 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path'); 
 
-//setting up imports for the xbee serial connection
-var SerialPort = require('serialport').SerialPort;
-var xbee_api = require('xbee-api');
-var C = xbee_api.constants;
+const Xbee = require('./include/Xbee.js')
 
 //if true, you will be required to have an xbee plugged into your computer
 var usingXBee = false;
 
 if (usingXBee) {
-    //this creates a new xbeeAPI object
-    var xbeeAPI = new xbee_api.XBeeAPI(
-        {
-            api_mode: 1
-        }
-    );
-
-    //sets up the USB serial port and baud rate
-    var serialport = new SerialPort(
-        {
-            path: "COM4",
-            baudRate: 9600,
-        });
-
-    //creates the pipes between serial port and the xbeeAPI
-    serialport.pipe(xbeeAPI.parser);
-    xbeeAPI.builder.pipe(serialport);
-
-    //supposed to receive data, but i don't think it works 
-    xbeeAPI.parser.on("data", function (frame) {
-        console.log(">>", frame);
-    });
-
-    //open the serial port
-    serialport.on("open", function () { });
+  serverXbee = new Xbee();
+  serverXbee.configConnection("COM4");
 }
 
 const app = express();
@@ -118,15 +92,11 @@ app.get('/moves/:piece', (req, res) => {
 
 function moveTest()
 {
-  var frame_obj = { //the frame_obj is the data to be sent
-    type: C.FRAME_TYPE.AT_COMMAND,
-    command: "200,w;",
-    commandParameter: [],
-    };
+    msg = "200,w;"
     if (usingXBee) {
-        //send the data thru the xbee pipe
-        xbeeAPI.builder.write(frame_obj);
+      serverXbee.sendMessage(msg)
     } else {
-        console.log("Sent Command: ", frame_obj.command);
+      console.log("Sent Command: ", msg);
     }
 }
+
