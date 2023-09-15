@@ -2,7 +2,5 @@
 .DS_Store
 /.vs/*
 /chess-bot-client/.vs/*
-/chess-bot-client/.vs/VSWorkspaceState.json
-/.vs/chessBot/FileContentIndex/*
 /webServer/.vs/*
 *.wsuo
