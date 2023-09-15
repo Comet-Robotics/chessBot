@@ -25,8 +25,8 @@ class Xbee
             });
 
         //creates the pipes between serial port and the xbeeAPI
-        this.serialport.pipe(xbeeAPI.parser);
-        this.xbeeAPI.builder.pipe(serialport);
+        this.serialport.pipe(this.xbeeAPI.parser);
+        this.xbeeAPI.builder.pipe(this.serialport);
 
         //supposed to receive data, but i don't think it works 
         this.xbeeAPI.parser.on("data", function (frame) {

@@ -6,7 +6,7 @@ const path = require('path');
 const Xbee = require('./include/Xbee.js')
 
 //if true, you will be required to have an xbee plugged into your computer
-var usingXBee = false;
+var usingXBee = true;
 
 if (usingXBee) {
   serverXbee = new Xbee();
