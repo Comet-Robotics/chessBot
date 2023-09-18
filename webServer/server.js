@@ -10,7 +10,7 @@ var usingXBee = true;
 
 if (usingXBee) {
   serverXbee = new Xbee();
-  serverXbee.configConnection("COM4");
+  serverXbee.configConnection("/dev/tty.usbserial-D30DRP81");
 }
 
 const app = express();

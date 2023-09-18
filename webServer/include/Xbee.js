@@ -44,6 +44,7 @@ class Xbee
             command: msg,
             commandParameter: [],
         };
+        console.log(frame_obj);
         this.xbeeAPI.builder.write(frame_obj);
     }
 
