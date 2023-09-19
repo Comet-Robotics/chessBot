@@ -8,9 +8,15 @@ const Xbee = require('./include/Xbee.js')
 //if true, you will be required to have an xbee plugged into your computer
 var usingXBee = true;
 
+//Since commits will overwrite the port, this will allow you to easily swap to the right one
+//Make sure to use the same port on your computer every time if you add yours here
+//To find your port name on Windows, open cmd and type 'mode' while you have an XBee plugged in
+var masonPort = "/dev/tty.usbserial-D30DRP81";
+var dylanPort = "COM5";
+
 if (usingXBee) {
   serverXbee = new Xbee();
-  serverXbee.configConnection("/dev/tty.usbserial-D30DRP81");
+  serverXbee.configConnection(dylanPort);
 }
 
 const app = express();
