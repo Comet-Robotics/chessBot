@@ -30,7 +30,7 @@ class Motor {
 
 public:
     Motor(int motorChannelA_, int motorChannelB_, int encoderChannelA_, int encoderChannelB_) :
-        channelA(motorChannelA_), channelB(motorChannelB_), encoder(new Encoder(encoderChannelA_, encoderChannelB_)) {}
+        encoder(new Encoder(encoderChannelA_, encoderChannelB_)), channelA(motorChannelA_), channelB(motorChannelB_) {}
 
     Motor(int motorChannelA_, int motorChannelB_) :
         channelA(motorChannelA_), channelB(motorChannelB_) {}
