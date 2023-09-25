@@ -30,6 +30,8 @@ uint64_t hexToNum(char* hex, int bytes) {
     return val;
 }
 
+void numToHex(char* out, uint64_t num, int len);
+
 enum PacketType {
     NOTHING,
     PING_SEND,

@@ -1,3 +1,5 @@
+// Config generated at compile time and stored in flash
+
 #ifndef CHESSBOTARDUINO_CONFIG_H
 #define CHESSBOTARDUINO_CONFIG_H
 
@@ -22,6 +24,7 @@ namespace ChessBotArduino {
 
         constexpr static int WHEEL_DIAMETER = 4.375;
 
+        // Bind the pins needed for this robot design to work
         static void setupGpio() {
             pinMode(MOTOR_A_PIN1, OUTPUT);
             pinMode(MOTOR_A_PIN2, OUTPUT);

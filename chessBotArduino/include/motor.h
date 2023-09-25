@@ -5,13 +5,26 @@
 
 namespace ChessBotArduino {
 
+// Wrapper for an encoder of any type
 class Encoder {
     int channelA, channelB;
     ::Encoder encoder;
 
-public:
-    Encoder(int channelA_, int channelB_) : channelA(channelA_), channelB(channelB_), encoder(channelA, channelB) {
+    int lastPos = 0;
 
+public:
+    Encoder(int channelA_, int channelB_) : channelA(channelA_), channelB(channelB_), encoder(channelA, channelB) {}
+
+    // Get how far the encoder has moved since this function was last called, wrapping at the integer limit
+    int32_t getDelta() {
+        int64_t currentPos = read();
+        int64_t lastPos = lastPos;
+
+        int64_t dif = abs(currentPos - lastPos);
+
+        lastPos = currentPos;
+
+        return dif;
     }
 
     int32_t read() {

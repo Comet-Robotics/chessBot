@@ -6,6 +6,7 @@
 
 namespace ChessBotArduino {
 
+// The state of a chess bot
 class Robot {
     public:
     Motor left;
@@ -19,6 +20,7 @@ class Robot {
     }
 };
 
+// Singleton robot instance
 Robot* robotInst;
 
 };
