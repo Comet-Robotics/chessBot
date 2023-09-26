@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-//#include <String>
+// #include <String>
 
 #include "staticConfig.h"
 #include "dynamicConfig.h"
@@ -11,12 +11,17 @@
 
 using namespace ChessBotArduino;
 
-void setup() {
+void setup()
+{
+    delay(500);
+
     Serial.begin(9600);
 
     CONFIG::setupGpio();
 
     robotInst = new Robot();
+
+    delay(1000);
 
     initPathFollowing();
 
@@ -26,20 +31,47 @@ void setup() {
     //robotInst->right.setIntPower(250);
 }
 
-
 unsigned long lastLog = 0;
+unsigned long lastTick = 0;
 
-void loop() {
+void loop()
+{
     unsigned long ms = millis();
 
-    if (ms - lastLog > 1000) {
-        Serial.print(((Encoder_internal_state_t *)(&robotInst->left.encoder->encoder))->position);
+    if (ms - lastLog > 1000)
+    {
+        /*Serial.print(((Encoder_internal_state_t *)(&robotInst->left.encoder->encoder))->position);
         Serial.print(" ");
         Serial.print(((Encoder_internal_state_t *)(&robotInst->right.encoder->encoder))->position);
+        Serial.print(" ");*/
+
+        Serial.print(leftPulses);
+        Serial.print(" ");
+        Serial.print(rightPulses);
         Serial.print(" ");
 
+        Serial.print(premo->getX());
+        Serial.print(" ");
+        Serial.print(premo->getY());
+        Serial.print(" ");
+
+        /*float *i = premo->getLocationData();
+
+        for (int j = 0; j < 5; j++)
+        {
+            Serial.print(i[j], 6);
+            Serial.print(" ");
+        }*/
+
         Serial.println();
+
         lastLog = ms;
+    }
+
+    if (ms - lastTick > 25)
+    {
+        // tickPathFollowing();
+        lastTick = ms;
     }
 
     tickPathFollowing();
@@ -53,5 +85,5 @@ void loop() {
         handlePacket(cmd, len);
     }*/
 
-    //delay(1000);
+    // delay(1000);
 }

@@ -8,17 +8,18 @@ namespace ChessBotArduino {
 // Wrapper for an encoder of any type
 class Encoder {
 public:
+    static constexpr int64_t DIVIDER = 100;
+
     int channelA, channelB;
     ::Encoder encoder;
 
-    int lastPos = 0;
+    int64_t lastPos = 0;
 
     Encoder(int channelA_, int channelB_) : channelA(channelA_), channelB(channelB_), encoder(channelA, channelB) {}
 
     // Get how far the encoder has moved since this function was last called, wrapping at the integer limit
     int32_t getDelta() {
         int64_t currentPos = read();
-        int64_t lastPos = lastPos;
 
         int64_t dif = abs(currentPos - lastPos);
 
@@ -29,6 +30,18 @@ public:
 
     int32_t read() {
         return encoder.read();
+    }
+
+    int32_t readCoarse() {
+        lastPos = encoder.read();
+        return lastPos / DIVIDER;
+    }
+
+    int32_t delta() {
+        int32_t v = encoder.read();
+        encoder.write(0);
+
+        return v > 0 ? v : 0;
     }
 };
 

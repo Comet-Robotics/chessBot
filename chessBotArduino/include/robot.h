@@ -16,7 +16,10 @@ class Robot {
     double y = 0.0;
 
     Robot() : left(CONFIG::MOTOR_A_PIN1, CONFIG::MOTOR_A_PIN2, CONFIG::ENCODER_A_PIN1, CONFIG::ENCODER_A_PIN2),
-        right(CONFIG::MOTOR_B_PIN1, CONFIG::MOTOR_B_PIN2, CONFIG::ENCODER_B_PIN1, CONFIG::ENCODER_B_PIN2) {}
+        right(CONFIG::MOTOR_B_PIN1, CONFIG::MOTOR_B_PIN2, CONFIG::ENCODER_B_PIN1, CONFIG::ENCODER_B_PIN2) {
+            left.encoder->encoder.readAndReset();
+            right.encoder->encoder.readAndReset();
+        }
 
     void tick() {
 
