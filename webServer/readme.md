@@ -27,21 +27,16 @@ Follow the below steps.
 ### Configuring the serial port
 - The serialPort for the xbee must be configured using the name of the port on your machine
 - To do this on Windows, use `mode` in the terminal. This will list the serial connections on your computer. Note the name of the port with the Xbee.
-- In server.js, update serverXbee.configConnection() with your port's name:
+- In server.js, update serverXbee.configConnection() with your port's name
 - You can add your port as a string variable with format yournamePort
 - If you do add your port as a variable, you can use that variable in place of typing your port
-
-`//sets up the USB serial port`
-
-`var usingXBee = true;`
-
-`var yournamePort = "port"; // (EX: "COM5")`
-
-`if (usingXBee) {`
-
-`  serverXbee = new Xbee();`
-
-`  serverXbee.configConnection(yournamePort);`
-
-`}`
+```
+//sets up the USB serial port
+var usingXBee = true;
+var yournamePort = "port"; // (EX: "COM5")
+if (usingXBee) {
+  serverXbee = new Xbee();
+  serverXbee.configConnection(yournamePort);
+}
+```
 
