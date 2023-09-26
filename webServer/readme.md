@@ -31,14 +31,11 @@ Follow the below steps.
 - You can add your port as a string variable with format yournamePort
 - If you do add your port as a variable, you can use that variable in place of typing your port
 
-`
-//sets up the USB serial port
+`//sets up the USB serial port`
+`var usingXBee = true;`
+`var yournamePort = "port"; // (EX: "COM5")`
+`if (usingXBee) {`
+`  serverXbee = new Xbee();`
+`  serverXbee.configConnection(yournamePort);`
+`}`
 
-var usingXBee = true;
-var yournamePort = "port"; // (EX: "COM5")
-
-if (usingXBee) {
-  serverXbee = new Xbee();
-  serverXbee.configConnection(yournamePort);
-}
-`
