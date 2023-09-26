@@ -1,7 +1,7 @@
 // Config generated at compile time and stored in flash
 
-#ifndef CHESSBOTARDUINO_CONFIG_H
-#define CHESSBOTARDUINO_CONFIG_H
+#ifndef CHESSBOTARDUINO_STATIC_CONFIG_H
+#define CHESSBOTARDUINO_STATIC_CONFIG_H
 
 #include <Arduino.h>
 
@@ -41,4 +41,4 @@ namespace ChessBotArduino {
     using CONFIG = SeniorDesign;
 };
 
-#endif
+#endif // ifndef CHESSBOTARDUINO_STATIC_CONFIG_H

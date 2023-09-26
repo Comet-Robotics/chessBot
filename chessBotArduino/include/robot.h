@@ -1,7 +1,7 @@
 #ifndef CHESSBOTARDUINO_ROBOT_H
 #define CHESSBOTARDUINO_ROBOT_H
 
-#include "config.h"
+#include "staticConfig.h"
 #include "motor.h"
 
 namespace ChessBotArduino {
@@ -12,11 +12,19 @@ class Robot {
     Motor left;
     Motor right;
 
+    double x = 0.0;
+    double y = 0.0;
+
     Robot() : left(CONFIG::MOTOR_A_PIN1, CONFIG::MOTOR_A_PIN2, CONFIG::ENCODER_A_PIN1, CONFIG::ENCODER_A_PIN2),
         right(CONFIG::MOTOR_B_PIN1, CONFIG::MOTOR_B_PIN2, CONFIG::ENCODER_B_PIN1, CONFIG::ENCODER_B_PIN2) {}
 
     void tick() {
 
+    }
+
+    void stop() {
+        left.setIntPower(0);
+        right.setIntPower(0);
     }
 };
 

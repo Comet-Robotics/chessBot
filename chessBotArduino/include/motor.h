@@ -7,12 +7,12 @@ namespace ChessBotArduino {
 
 // Wrapper for an encoder of any type
 class Encoder {
+public:
     int channelA, channelB;
     ::Encoder encoder;
 
     int lastPos = 0;
 
-public:
     Encoder(int channelA_, int channelB_) : channelA(channelA_), channelB(channelB_), encoder(channelA, channelB) {}
 
     // Get how far the encoder has moved since this function was last called, wrapping at the integer limit
@@ -33,6 +33,7 @@ public:
 };
 
 class Motor {
+public:
     Encoder* encoder;
 
     int channelA;
@@ -41,7 +42,6 @@ class Motor {
     int currentDirection = 0;
     int currentPower = 0;
 
-public:
     Motor(int motorChannelA_, int motorChannelB_, int encoderChannelA_, int encoderChannelB_) :
         encoder(new Encoder(encoderChannelA_, encoderChannelB_)), channelA(motorChannelA_), channelB(motorChannelB_) {}
 
@@ -64,6 +64,19 @@ public:
         if (powerInt != currentPower) {
             analogWrite(channelA, powerInt);
             currentPower = powerInt;
+        }
+    }
+
+    void setIntPower(int power) {
+        bool newDirection = power < 0;
+        if (newDirection != currentDirection) {
+            digitalWrite(channelB, newDirection ? HIGH : LOW);
+            currentDirection = newDirection;
+        }
+
+        if (power != currentPower) {
+            analogWrite(channelA, power);
+            currentPower = power;
         }
     }
 };
