@@ -5,8 +5,10 @@
 
 #include <Arduino.h>
 
-namespace ChessBotArduino {
-    struct SeniorDesign {
+namespace ChessBotArduino
+{
+    struct LEGACY_2012_DESIGN
+    {
         constexpr static int MOTOR_A_PIN1 = 8;
         constexpr static int MOTOR_A_PIN2 = 9;
         constexpr static int ENCODER_A_PIN1 = 5;
@@ -25,7 +27,8 @@ namespace ChessBotArduino {
         constexpr static int WHEEL_DIAMETER = 4.375;
 
         // Bind the pins needed for this robot design to work
-        static void setupGpio() {
+        static void setupGpio()
+        {
             pinMode(MOTOR_A_PIN1, OUTPUT);
             pinMode(MOTOR_A_PIN2, OUTPUT);
             pinMode(ENCODER_A_PIN1, INPUT);
@@ -38,7 +41,7 @@ namespace ChessBotArduino {
         }
     };
 
-    using CONFIG = SeniorDesign;
-};
+    using CONFIG = LEGACY_2012_DESIGN;
+}; // namespace ChessBotArduino
 
 #endif // ifndef CHESSBOTARDUINO_STATIC_CONFIG_H

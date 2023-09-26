@@ -8,7 +8,7 @@
 
 namespace ChessBotArduino
 {
-    
+
 #pragma pack(push, 1)
     struct DynConfig
     {
@@ -27,7 +27,6 @@ namespace ChessBotArduino
 #pragma pack(pop)
 
     DynConfig dynConfig;
-
 
     namespace Eeprom
     {
@@ -81,8 +80,8 @@ namespace ChessBotArduino
                 // Write the default options
                 persist();
             }
-        }    
+        }
     }; // namespace Eeprom
-}; // namespace ChessBotArduino
+};     // namespace ChessBotArduino
 
 #endif // ifndef CHESSBOTARDUINO_DYNAMIC_CONFIG_H

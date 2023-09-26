@@ -3,97 +3,101 @@
 
 #include <Encoder.h>
 
-namespace ChessBotArduino {
+namespace ChessBotArduino
+{
 
-// Wrapper for an encoder of any type
-class Encoder {
-public:
-    static constexpr int64_t DIVIDER = 100;
+    // Wrapper for an encoder of any type
+    class Encoder
+    {
+    public:
+        // Threshold for resetting the encoder
+        constexpr static int32_t ENCODER_RESET_THRESHOLD = 2147483647 / 2;
 
-    int channelA, channelB;
-    ::Encoder encoder;
+        int channelA, channelB;
+        ::Encoder encoder;
 
-    int64_t lastPos = 0;
+        int64_t lastPos = 0;
 
-    Encoder(int channelA_, int channelB_) : channelA(channelA_), channelB(channelB_), encoder(channelA, channelB) {}
+        Encoder(int channelA_, int channelB_) : channelA(channelA_), channelB(channelB_), encoder(channelA, channelB) {}
 
-    // Get how far the encoder has moved since this function was last called, wrapping at the integer limit
-    int32_t getDelta() {
-        int64_t currentPos = read();
+        // Get how far the encoder has moved since this function was last called
+        int32_t getDelta()
+        {
+            int64_t currentPos = read();
 
-        int64_t dif = abs(currentPos - lastPos);
+            if (abs(currentPos) > ENCODER_RESET_THRESHOLD)
+            {
+                encoder.write(0);
+            }
 
-        lastPos = currentPos;
+            int64_t dif = currentPos - lastPos;
 
-        return dif;
-    }
+            lastPos = currentPos;
 
-    int32_t read() {
-        return encoder.read();
-    }
-
-    int32_t readCoarse() {
-        lastPos = encoder.read();
-        return lastPos / DIVIDER;
-    }
-
-    int32_t delta() {
-        int32_t v = encoder.read();
-        encoder.write(0);
-
-        return v > 0 ? v : 0;
-    }
-};
-
-class Motor {
-public:
-    Encoder* encoder;
-
-    int channelA;
-    int channelB;
-
-    int currentDirection = 0;
-    int currentPower = 0;
-
-    Motor(int motorChannelA_, int motorChannelB_, int encoderChannelA_, int encoderChannelB_) :
-        encoder(new Encoder(encoderChannelA_, encoderChannelB_)), channelA(motorChannelA_), channelB(motorChannelB_) {}
-
-    Motor(int motorChannelA_, int motorChannelB_) :
-        channelA(motorChannelA_), channelB(motorChannelB_) {}
-
-    int32_t pos() {
-        return encoder->read();
-    }
-
-    void setPower(float power) {
-        bool newDirection = power < 0;
-        if (newDirection != currentDirection) {
-            digitalWrite(channelB, newDirection ? HIGH : LOW);
-            currentDirection = newDirection;
+            return dif;
         }
 
-        int powerInt = power * 255.0;
-
-        if (powerInt != currentPower) {
-            analogWrite(channelA, powerInt);
-            currentPower = powerInt;
+        int32_t read()
+        {
+            return encoder.read();
         }
-    }
+    };
 
-    void setIntPower(int power) {
-        bool newDirection = power < 0;
-        if (newDirection != currentDirection) {
-            digitalWrite(channelB, newDirection ? HIGH : LOW);
-            currentDirection = newDirection;
+    class Motor
+    {
+    public:
+        Encoder *encoder;
+
+        int channelA;
+        int channelB;
+
+        int currentDirection = 0;
+        int currentPower = 0;
+
+        Motor(int motorChannelA_, int motorChannelB_, int encoderChannelA_, int encoderChannelB_) : encoder(new Encoder(encoderChannelA_, encoderChannelB_)), channelA(motorChannelA_), channelB(motorChannelB_) {}
+
+        Motor(int motorChannelA_, int motorChannelB_) : channelA(motorChannelA_), channelB(motorChannelB_) {}
+
+        int32_t pos()
+        {
+            return encoder->read();
         }
 
-        if (power != currentPower) {
-            analogWrite(channelA, power);
-            currentPower = power;
+        void setPower(float power)
+        {
+            bool newDirection = power < 0;
+            if (newDirection != currentDirection)
+            {
+                digitalWrite(channelB, newDirection ? HIGH : LOW);
+                currentDirection = newDirection;
+            }
+
+            int powerInt = power * 255.0;
+
+            if (powerInt != currentPower)
+            {
+                analogWrite(channelA, powerInt);
+                currentPower = powerInt;
+            }
         }
-    }
-};
 
-};
+        void setIntPower(int power)
+        {
+            bool newDirection = power < 0;
+            if (newDirection != currentDirection)
+            {
+                digitalWrite(channelB, newDirection ? HIGH : LOW);
+                currentDirection = newDirection;
+            }
 
-#endif
+            if (power != currentPower)
+            {
+                analogWrite(channelA, power);
+                currentPower = power;
+            }
+        }
+    };
+
+}; // namespace ChessBotArduino
+
+#endif // ifndef CHESSBOTARDUINO_MOTOR_H
