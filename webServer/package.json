@@ -11,9 +11,12 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "clean": "eslint --fix ."
   },
   "devDependencies": {
+    "eslint": "^8.50.0",
+    "eslint-config-google": "^0.14.0",
     "nodemon": "^2.0.20"
   }
 }
