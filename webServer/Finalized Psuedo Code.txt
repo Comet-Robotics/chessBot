@@ -42,7 +42,7 @@ Point convertStringToPoint(*String stringPoint*) {
 }
 
 // Calculates the number of horizontal and vertical tiles to get to destination and returns it
-int[] calculatePath(Point from, Point to) {
+Path calculatePath(Point from, Point to) {
 	Path move
 	simple math
 	return move
