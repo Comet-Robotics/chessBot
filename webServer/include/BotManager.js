@@ -33,10 +33,15 @@ class ChessPiece {
 
 // Class to handle all the bot oriented code for the server
 class BotManager {
+    botMoving = false;
     // Runs when a new instance of the BotManager class is created
     constructor() {
         this.initializeBoard();
     }
+    // This is a get status to determine if the bot is moving or not
+    getStatus() {
+        return this.botMoving;
+   }  
 
     // Sets up an empty board
     initializeBoard() {
