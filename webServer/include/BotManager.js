@@ -75,6 +75,19 @@ class BotManager {
         }
     }
 
+    // Will go down a path to find a new path for every bot until an empty space
+    // This is only half finished. I suck at recursion lol
+    recursiveCalculateCollision(from, piece, collection) {
+        Point next = use *from* to determine where bot needs to move to get out of way
+        Path nextPath = calculatePath(piece.location, next)
+        add nextPath to collection
+        ChessPiece[] collisions = calculateAllCollisions(nextPath)
+        // If there are no more collisions, this loop won't run, and recursion stops
+        loop through collisions -> currentCollision {
+            recursiveCalculateCollision(from, currentCollision, collection)
+        }
+    }
+
     // This runs whenever a valid move is made. This is where we come in.
     // We need to get the physical chess bot from point a to b
     // from/to is a string in the form of a3, b7, e4, etc...
