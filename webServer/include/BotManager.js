@@ -29,7 +29,8 @@ class Point {
     }
 }
 
-// A class for a path object that holds the chess piece and relative tile movements
+// A class for a path object that holds the chess piece and relative tile
+// movements
 class Path {
     constructor(piece, horizontal, vertical) {
         this.piece = piece;
@@ -58,7 +59,7 @@ class BotManager {
     // This is a get status to determine if the bot is moving or not
     getStatus() {
         return this.botMoving;
-   }  
+    }
 
     // Sets up an empty board
     initializeBoard() {
@@ -73,6 +74,17 @@ class BotManager {
         for (let i=0; i < boardSize; i++) {
             this.board[i] = Array(boardSize).fill(0);
         }
+    }
+
+    // Calculates the number of horizontal and vertical tiles to
+    // get to destination and returns it
+    // Expecting piece object and 2 point objects
+    // returns path object
+    calculatePath(piece, from, to) {
+        horizontal = to.x - from.x;
+        vertical = from.y - to.y;
+        botPath = new Path(piece, horizontal, vertical);
+        return botPath;
     }
 
     // This runs whenever a valid move is made. This is where we come in.
