@@ -52,6 +52,7 @@ class ChessPiece {
 // Class to handle all the bot oriented code for the server
 class BotManager {
     botMoving = false;
+    board;
     // Runs when a new instance of the BotManager class is created
     constructor() {
         this.initializeBoard();
@@ -78,11 +79,18 @@ class BotManager {
 
     // Calculates the number of horizontal and vertical tiles to
     // get to destination and returns it
-    // Expecting piece object and 2 point objects
+    // Expecting 2 point objects
+    // finds the difference between the points and the starting piece
     // returns path object
-    calculatePath(piece, from, to) {
+    calculatePath(from, to) {
+        // calc movement diffs
         horizontal = to.x - from.x;
         vertical = from.y - to.y;
+
+        // find piece in "from" spot
+        piece = this.board[from.x][from.y];
+
+        // create botPath
         botPath = new Path(piece, horizontal, vertical);
         return botPath;
     }
