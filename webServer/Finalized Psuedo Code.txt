@@ -175,7 +175,7 @@ Difficulty: (X means taken)
 X: getStatus
 1: updateMatrix
 X: convertStringToPoint
-3: calculatePath
+X: calculatePath
 4: unshiftCollisions
 5: calculateAllCollisions
 6: shiftCollisions
