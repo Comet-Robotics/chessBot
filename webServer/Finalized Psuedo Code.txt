@@ -171,11 +171,9 @@ void sendMove(String stringFrom, String stringTo) {
     botsMoving = false
 }
 
-Difficulty: (X means taken)
-X: getStatus
-1: updateMatrix
+Difficulty: (X means taken) (Gone means finished)
+X: updateMatrix
 X: convertStringToPoint
-X: calculatePath
 4: unshiftCollisions
 5: calculateAllCollisions
 6: shiftCollisions
