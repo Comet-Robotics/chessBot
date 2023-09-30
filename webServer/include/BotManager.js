@@ -94,6 +94,7 @@ class BotManager {
         botPath = new Path(piece, horizontal, vertical);
         return botPath;
         // git test
+        // i've done better
     }
 
     // This runs whenever a valid move is made. This is where we come in.
