@@ -21,13 +21,30 @@ if (usingXBee) {
     serverXbee.configConnection(dylanPort);
 }
 
+// A location in 2D space with an x and y coordinate
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+// A class for a path object that holds the chess piece and relative tile movements
+class Path {
+    constructor(piece, horizontal, vertical) {
+        this.piece = piece;
+        this.horizontal = horizontal;
+        this.vertical = vertical;
+    }
+}
+
 // This is our chess piece object that we can make instances (copies) of
-// Example: let pieceName = new ChessPiece(3, "Knight", "Black");
 class ChessPiece {
-    constructor(id, type, color) {
+    constructor(id, type, color, location) {
         this.id = id;
         this.type = type;
         this.color = color;
+        this.location = location;
     }
 }
 

@@ -170,3 +170,17 @@ void sendMove(String stringFrom, String stringTo) {
     updateMatrix(from, to)
     botsMoving = false
 }
+
+Difficulty: (X means taken)
+X: getStatus
+1: updateMatrix
+X: convertStringToPoint
+3: calculatePath
+4: unshiftCollisions
+5: calculateAllCollisions
+6: shiftCollisions
+8: createPhases
+X: recursiveCalculateCollision
+N/A:moveSingleBot
+N/A:moveMultipleBots
+N/A:sendLeaveSignal
