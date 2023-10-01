@@ -24,7 +24,10 @@ namespace ChessBotArduino
 
         constexpr static int ADVANCE_SPACE_TIME = 1000;
 
-        constexpr static int WHEEL_DIAMETER = 4.375;
+        constexpr static float WHEEL_DIAMETER_INCHES = 4.375;
+        constexpr static float WHEEL_CIRCUMFERENCE_INCHES = 15; //WHEEL_DIAMETER_INCHES * M_PI;
+
+        constexpr static int ENCODER_TICKS_PER_REVOLUTION = 12000; //14400?
 
         // Bind the pins needed for this robot design to work
         static void setupGpio()

@@ -65,6 +65,9 @@ namespace ChessBotArduino
 
         void setPower(float power)
         {
+            const float max = 0.5;
+            power /= 2;
+
             bool newDirection = power < 0;
             if (newDirection != currentDirection)
             {

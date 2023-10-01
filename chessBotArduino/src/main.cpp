@@ -20,6 +20,8 @@ void setup()
 
     robotInst = new Robot();
 
+    robotInst->kinematics.forward(12);
+
     delay(1000);
 }
 
@@ -30,9 +32,15 @@ void log(unsigned long ms)
 
     if (ms - lastLog > LOG_FREQ)
     {
-        // Serial.print(v);
-        // Serial.print(" ");
-        // Serial.println();
+        Serial.print(robotInst->kinematics.leftPidIn);
+        Serial.print(" ");        
+        Serial.print(robotInst->kinematics.leftPidOut);
+        Serial.print(" ");
+        Serial.print(robotInst->left.pos());
+        Serial.print(" ");
+        Serial.print(robotInst->kinematics.leftPidTarget);
+        Serial.print(" ");
+        Serial.println();
 
         lastLog = ms;
     }
@@ -43,6 +51,8 @@ void loop()
     unsigned long ms = millis();
 
     log(ms);
+
+    robotInst->kinematics.tick(ms);
 
     /*char cmd[256];
     while (Serial.available()) {

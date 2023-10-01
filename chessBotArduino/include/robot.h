@@ -3,6 +3,7 @@
 
 #include "staticConfig.h"
 #include "motor.h"
+#include "differentialKinematics.h"
 
 namespace ChessBotArduino
 {
@@ -14,14 +15,16 @@ namespace ChessBotArduino
         Motor left;
         Motor right;
 
-        double x = 0.0;
-        double y = 0.0;
+        DifferentialKinematics kinematics;
 
         Robot() : left(CONFIG::MOTOR_A_PIN1, CONFIG::MOTOR_A_PIN2, CONFIG::ENCODER_A_PIN1, CONFIG::ENCODER_A_PIN2),
-                  right(CONFIG::MOTOR_B_PIN1, CONFIG::MOTOR_B_PIN2, CONFIG::ENCODER_B_PIN1, CONFIG::ENCODER_B_PIN2)
+                  right(CONFIG::MOTOR_B_PIN1, CONFIG::MOTOR_B_PIN2, CONFIG::ENCODER_B_PIN1, CONFIG::ENCODER_B_PIN2),
+                  kinematics(left, right)
         {
             left.encoder->encoder.readAndReset();
             right.encoder->encoder.readAndReset();
+
+            kinematics.start();
         }
 
         void tick()
