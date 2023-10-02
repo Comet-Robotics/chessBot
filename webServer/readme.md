@@ -17,17 +17,17 @@ Follow the below steps.
 - Run `npm install` to install node packages.
 - Run `npm start`
 - webServer is now running.
-- You can now access the client via typing  in your internet search bar `localhost:3000`
+- You can now access the client via typing in your internet search bar `localhost:3000`
 - To make changes or finish, close the server with ctrl+C
 - Run `node server.js` to start it up again
 
-## Working with server.js
-- There are some stipulations when using server.js on your specific machine
+## Working with the server
+- There are some stipulations when running the server on your specific machine
 
 ### Configuring the serial port
 - The serialPort for the xbee must be configured using the name of the port on your machine
 - To do this on Windows, use `mode` in the terminal. This will list the serial connections on your computer. Note the name of the port with the Xbee.
-- In server.js, update serverXbee.configConnection() with your port's name
+- In BotManager.js, update serverXbee.configConnection() with your port's name
 - You can add your port as a string variable with format yournamePort
 - If you do add your port as a variable, you can use that variable in place of typing your port
 ```
