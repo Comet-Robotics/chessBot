@@ -93,8 +93,55 @@ class BotManager {
         // create botPath
         botPath = new Path(piece, horizontal, vertical);
         return botPath;
-        // git test
-        // i've done better
+    }
+
+    calculateAllCollisions(path) {
+        start = path.piece.location;
+        collisions;
+
+        // check both horizontal directions
+        // hoirzontal doesn't check the turning point,
+        // itll get checked by vertical
+        // doesn't check starting point
+        if (path.horizontal < 0) {
+            for (i = start.x-1; i > (start.x + path.horizontal); i--) {
+                if (this.board[i][start.y].type != 'empty') {
+                    collisionPiece = this.board[i][start.y];
+                    collisions.append(collisionPiece);
+                }
+            }
+        }
+        if (path.horizontal > 0) {
+            for (i = start.x+1; i < (start.x + path.horizontal); i++) {
+                if (this.board[i][start.y].type != 'empty') {
+                    collisionPiece = this.board[i][start.y];
+                    collisions.append(collisionPiece);
+                }
+            }
+        }
+
+        // mark bots new x coord.
+        newXCoord = start.x + (path.horizontal);
+
+        // check both vertical directions
+        // vertical does check the starting point
+        if (path.vertical < 0) {
+            for (i = start.y; i <= (start.y - path.vertical); i++) {
+                if (this.board[newXCoord][i].type != 'empty') {
+                    collisionPiece = this.board[newXCoord][i];
+                    collisions.append(collisionPiece);
+                }
+            }
+        }
+        if (path.vertical > 0) {
+            for (i = start.y; i >= (start.y - path.vertical); i--) {
+                if (this.board[newXCoord][i].type != 'empty') {
+                    collisionPiece = this.board[newXCoord][i];
+                    collisions.append(collisionPiece);
+                }
+            }
+        }
+        return collisions;
     }
 
     // This runs whenever a valid move is made. This is where we come in.
