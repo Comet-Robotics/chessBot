@@ -135,13 +135,7 @@ class BotManager {
         y = stringPoint[1];
         let point = new Point(x, y);
         
-
-
-        
-        stringPoint this.x = 
-        stringPoint this.y = 
-        return point
-        
+        return point  
     }
 
 
