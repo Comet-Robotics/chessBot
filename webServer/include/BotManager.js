@@ -123,10 +123,18 @@ class BotManager {
         // mark bots new x coord.
         const newXCoord = start.x + (path.horizontal);
 
+        // only check turning point if horizontal is not 0
+        if (path.horizontal != 0) {
+            if (this.board[start.y][newXCoord].type != 'empty') {
+                const collisionPiece = this.board[start.y][newXCoord];
+                collisions.push(collisionPiece);
+            }
+        }
+
         // check both vertical directions
         // vertical does check the starting point
         if (path.vertical < 0) {
-            for (let i = start.y; i <= (start.y - path.vertical); i++) {
+            for (let i = start.y+1; i <= (start.y - path.vertical); i++) {
                 if (this.board[i][newXCoord].type != 'empty') {
                     const collisionPiece = this.board[i][newXCoord];
                     collisions.push(collisionPiece);
@@ -134,7 +142,7 @@ class BotManager {
             }
         }
         if (path.vertical > 0) {
-            for (let i = start.y; i >= (start.y - path.vertical); i--) {
+            for (let i = start.y-1; i >= (start.y - path.vertical); i--) {
                 if (this.board[i][newXCoord].type != 'empty') {
                     const collisionPiece = this.board[i][newXCoord];
                     collisions.push(collisionPiece);

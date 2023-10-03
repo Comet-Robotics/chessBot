@@ -17,12 +17,44 @@ testBotManager.board[3][3] = new ChessPiece(0, 'E', true, new Point(3, 3));
 // output current status of chess board
 console.table(testBotManager.board);
 
+// TEST L PATTERN!
+console.log('L PATTERN:');
+
 testPath = testBotManager.calculatePath(new Point(3, 3), new Point(1, 1));
 
 console.log('Path:');
 console.log(testPath);
+console.log('\n');
 
 console.log('Collisions:');
 collisions = testBotManager.calculateAllCollisions(testPath);
-
 console.log(collisions);
+console.log('=========================================');
+
+console.log('VERTICAL:');
+
+testPath = testBotManager.calculatePath(new Point(1, 3), new Point(1, 1));
+
+console.log('Path:');
+console.log(testPath);
+console.log('\n');
+
+console.log('Collisions:');
+collisions = testBotManager.calculateAllCollisions(testPath);
+console.log(collisions);
+console.log('=========================================');
+
+console.log('HORIZONTAL:');
+
+testPath = testBotManager.calculatePath(new Point(3, 3), new Point(1, 3));
+
+console.log('Path:');
+console.log(testPath);
+console.log('\n');
+
+console.log('Collisions:');
+collisions = testBotManager.calculateAllCollisions(testPath);
+console.log(collisions);
+console.log('=========================================');
+
+
