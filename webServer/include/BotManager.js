@@ -84,17 +84,72 @@ class BotManager {
     // returns path object
     calculatePath(from, to) {
         // calc movement diffs
-        horizontal = to.x - from.x;
-        vertical = from.y - to.y;
+        const horizontal = to.x - from.x;
+        const vertical = from.y - to.y;
 
         // find piece in "from" spot
-        piece = this.board[from.x][from.y];
+        const piece = this.board[from.y][from.x];
 
         // create botPath
-        botPath = new Path(piece, horizontal, vertical);
+        const botPath = new Path(piece, horizontal, vertical);
         return botPath;
-        // git test
-        // i've done better
+    }
+
+    calculateAllCollisions(path) {
+        const start = path.piece.location;
+        const collisions = [];
+
+        // check both horizontal directions
+        // hoirzontal doesn't check the turning point,
+        // itll get checked by vertical
+        // doesn't check starting point
+        if (path.horizontal < 0) {
+            for (let i = start.x-1; i > (start.x + path.horizontal); i--) {
+                if (this.board[start.y][i].type != 'empty') {
+                    const collisionPiece = this.board[start.y][i];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        if (path.horizontal > 0) {
+            for (let i = start.x+1; i < (start.x + path.horizontal); i++) {
+                if (this.board[start.y][i].type != 'empty') {
+                    const collisionPiece = this.board[start.y][i];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+
+        // mark bots new x coord.
+        const newXCoord = start.x + (path.horizontal);
+
+        // only check turning point if horizontal is not 0
+        if (path.horizontal != 0) {
+            if (this.board[start.y][newXCoord].type != 'empty') {
+                const collisionPiece = this.board[start.y][newXCoord];
+                collisions.push(collisionPiece);
+            }
+        }
+
+        // check both vertical directions
+        // vertical does check the starting point
+        if (path.vertical < 0) {
+            for (let i = start.y+1; i <= (start.y - path.vertical); i++) {
+                if (this.board[i][newXCoord].type != 'empty') {
+                    const collisionPiece = this.board[i][newXCoord];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        if (path.vertical > 0) {
+            for (let i = start.y-1; i >= (start.y - path.vertical); i--) {
+                if (this.board[i][newXCoord].type != 'empty') {
+                    const collisionPiece = this.board[i][newXCoord];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        return collisions;
     }
 
     // This runs whenever a valid move is made. This is where we come in.
@@ -121,4 +176,4 @@ class BotManager {
     }
 }
 
-module.exports = BotManager;
+module.exports = {BotManager, Point, ChessPiece, Path};
