@@ -21,21 +21,45 @@ if (usingXBee) {
     serverXbee.configConnection(dylanPort);
 }
 
+// A location in 2D space with an x and y coordinate
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+// A class for a path object that holds the chess piece and relative tile
+// movements
+class Path {
+    constructor(piece, horizontal, vertical) {
+        this.piece = piece;
+        this.horizontal = horizontal;
+        this.vertical = vertical;
+    }
+}
+
 // This is our chess piece object that we can make instances (copies) of
-// Example: let pieceName = new ChessPiece(3, "Knight", "Black");
 class ChessPiece {
-    constructor(id, type, color) {
+    constructor(id, type, color, location) {
         this.id = id;
         this.type = type;
         this.color = color;
+        this.location = location;
     }
 }
 
 // Class to handle all the bot oriented code for the server
 class BotManager {
+    botMoving = false;
+    board;
     // Runs when a new instance of the BotManager class is created
     constructor() {
         this.initializeBoard();
+    }
+    // This is a get status to determine if the bot is moving or not
+    getStatus() {
+        return this.botMoving;
     }
 
     // Sets up an empty board
@@ -53,7 +77,25 @@ class BotManager {
         }
     }
 
+    // Calculates the number of horizontal and vertical tiles to
+    // get to destination and returns it
+    // Expecting 2 point objects
+    // finds the difference between the points and the starting piece
+    // returns path object
+    calculatePath(from, to) {
+        // calc movement diffs
+        horizontal = to.x - from.x;
+        vertical = from.y - to.y;
 
+        // find piece in "from" spot
+        piece = this.board[from.x][from.y];
+
+        // create botPath
+        botPath = new Path(piece, horizontal, vertical);
+        return botPath;
+        // git test
+        // i've done better
+    }
 
     convertStringToPoint(stringPoint) {
         let x;
@@ -101,6 +143,8 @@ class BotManager {
         return point
         
     }
+
+
 
     // This runs whenever a valid move is made. This is where we come in.
     // We need to get the physical chess bot from point a to b
