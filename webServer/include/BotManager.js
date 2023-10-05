@@ -77,7 +77,22 @@ class BotManager {
         }
     }
 
-    // Will go down a path to find a new path for every bot until an empty space
+    findShiftLocation(from, piece) {
+        let newX = piece.location.x;
+        let newY = piece.location.y;
+        if (piece.location.y >= from.y) {
+            newY += 1;
+        } else {
+            if (piece.location.x >= from.y) {
+                newX += 1;
+            } else {
+                newX -= 1;
+            }
+        }
+        return new Point(newX, newY);
+    }
+
+    // Takes in a piece and finds a new path for every bot until an empty space
     // Paths are not prevented from intersecting. Requires extensive testing
     recursiveCalculateCollision(from, piece, collection) {
         let next = findShiftLocation(from, piece);
@@ -89,7 +104,7 @@ class BotManager {
             recursiveCalculateCollision(from, currentCollision, collection);
         }
     }
-    
+
     // Calculates the number of horizontal and vertical tiles to
     // get to destination and returns it
     // Expecting 2 point objects
