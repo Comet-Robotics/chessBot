@@ -76,15 +76,15 @@ class BotManager {
     }
 
     // Will go down a path to find a new path for every bot until an empty space
-    // This is only half finished. I suck at recursion lol
+    // Paths are not prevented from intersecting. Requires extensive testing
     recursiveCalculateCollision(from, piece, collection) {
-        Point next = use *from* to determine where bot needs to move to get out of way
-        Path nextPath = calculatePath(piece.location, next)
-        add nextPath to collection
-        ChessPiece[] collisions = calculateAllCollisions(nextPath)
+        let next = findShiftLocation(from, piece);
+        let nextPath = calculatePath(piece.location, next);
+        collection.push(nextPath);
+        let collisions = calculateAllCollisions(nextPath);
         // If there are no more collisions, this loop won't run, and recursion stops
-        loop through collisions -> currentCollision {
-            recursiveCalculateCollision(from, currentCollision, collection)
+        for (let cI = 0; cI < collisions.length; cI++) {
+            recursiveCalculateCollision(from, currentCollision, collection);
         }
     }
 
