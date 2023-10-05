@@ -29,7 +29,8 @@ class Point {
     }
 }
 
-// A class for a path object that holds the chess piece and relative tile movements
+// A class for a path object that holds the chess piece and relative tile
+// movements
 class Path {
     constructor(piece, horizontal, vertical) {
         this.piece = piece;
@@ -51,6 +52,7 @@ class ChessPiece {
 // Class to handle all the bot oriented code for the server
 class BotManager {
     botMoving = false;
+    board;
     // Runs when a new instance of the BotManager class is created
     constructor() {
         this.initializeBoard();
@@ -58,7 +60,7 @@ class BotManager {
     // This is a get status to determine if the bot is moving or not
     getStatus() {
         return this.botMoving;
-   }  
+    }
 
     // Sets up an empty board
     initializeBoard() {
@@ -87,6 +89,81 @@ class BotManager {
             recursiveCalculateCollision(from, currentCollision, collection);
         }
     }
+    
+    // Calculates the number of horizontal and vertical tiles to
+    // get to destination and returns it
+    // Expecting 2 point objects
+    // finds the difference between the points and the starting piece
+    // returns path object
+    calculatePath(from, to) {
+        // calc movement diffs
+        const horizontal = to.x - from.x;
+        const vertical = from.y - to.y;
+
+        // find piece in "from" spot
+        const piece = this.board[from.y][from.x];
+
+        // create botPath
+        const botPath = new Path(piece, horizontal, vertical);
+        return botPath;
+    }
+
+    calculateAllCollisions(path) {
+        const start = path.piece.location;
+        const collisions = [];
+
+        // check both horizontal directions
+        // hoirzontal doesn't check the turning point,
+        // itll get checked by vertical
+        // doesn't check starting point
+        if (path.horizontal < 0) {
+            for (let i = start.x-1; i > (start.x + path.horizontal); i--) {
+                if (this.board[start.y][i].type != 'empty') {
+                    const collisionPiece = this.board[start.y][i];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        if (path.horizontal > 0) {
+            for (let i = start.x+1; i < (start.x + path.horizontal); i++) {
+                if (this.board[start.y][i].type != 'empty') {
+                    const collisionPiece = this.board[start.y][i];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+
+        // mark bots new x coord.
+        const newXCoord = start.x + (path.horizontal);
+
+        // only check turning point if horizontal is not 0
+        if (path.horizontal != 0) {
+            if (this.board[start.y][newXCoord].type != 'empty') {
+                const collisionPiece = this.board[start.y][newXCoord];
+                collisions.push(collisionPiece);
+            }
+        }
+
+        // check both vertical directions
+        // vertical does check the starting point
+        if (path.vertical < 0) {
+            for (let i = start.y+1; i <= (start.y - path.vertical); i++) {
+                if (this.board[i][newXCoord].type != 'empty') {
+                    const collisionPiece = this.board[i][newXCoord];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        if (path.vertical > 0) {
+            for (let i = start.y-1; i >= (start.y - path.vertical); i--) {
+                if (this.board[i][newXCoord].type != 'empty') {
+                    const collisionPiece = this.board[i][newXCoord];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        return collisions;
+    }
 
     // This runs whenever a valid move is made. This is where we come in.
     // We need to get the physical chess bot from point a to b
@@ -112,4 +189,4 @@ class BotManager {
     }
 }
 
-module.exports = BotManager;
+module.exports = {BotManager, Point, ChessPiece, Path};

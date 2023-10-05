@@ -4,34 +4,21 @@ Whenever client requests board status, ask bot manager if bots done moving,
 and unlock client if they are
 
 
-
--- In BotManager.js --
-// A location in 2D space with an x and y coordiante
-class Point {
-    int x
-    int y
-}
-
-// A class for a path object that holds the chess piece and relative tile movements
-class Path {
-    ChessPiece piece
-    int horizontal
-    int vertical
-}
-
-
-
--- In ChessPiece class --
-add a Point for location to properties
-
-
-
 -- In BotManager class --
-bool botsMoving
 
-// Just returns the value of botsMoving (server.js will call this)
-bool getStatus() {
-    return botsMoving
+// Will fill the board with the correct chess pieces for starting a new game
+// For our virtual board, black side will be on the bottom
+// Each ChessPiece will have a unique id (starting from the top left white rook with id 1)
+// Empty spaces will be filled with a ChessPiece with id 0
+// Mkae sure to keep in mind the 1 tile deadzone around the border
+void populateBoard() {
+    loop through board vertically -> y {
+        loop through board horizontally -> x{
+            code to determine what should be in this spot on the board
+            ChessPiece piece = whatever piece should be at this spot
+            board[x][y] = piece
+        }
+    }
 }
 
 // Takes a position in the form "a2", "d7", etc and converts it into a point object
@@ -39,13 +26,6 @@ Point convertStringToPoint(*String stringPoint*) {
     turn stringPoint into int x and int y
     Point point = new Point(x, y)
     return point
-}
-
-// Calculates the number of horizontal and vertical tiles to get to destination and returns it
-Path calculatePath(Point from, Point to) {
-	Path move
-	simple math
-	return move
 }
 
 // Takes in two points.
@@ -171,11 +151,10 @@ void sendMove(String stringFrom, String stringTo) {
     botsMoving = false
 }
 
-Difficulty: (X means taken)
-X: getStatus
-1: updateMatrix
+Difficulty: (X means taken) (Gone means finished)
+X: updateMatrix
 X: convertStringToPoint
-3: calculatePath
+3: populateBoard
 4: unshiftCollisions
 5: calculateAllCollisions
 6: shiftCollisions
