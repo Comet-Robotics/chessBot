@@ -77,6 +77,22 @@ class BotManager {
         }
     }
 
+    printBoard() {
+        for (let y = 0; y < 10; y++) {
+            let line = '';
+            for (let x = 0; x < 10; x++) {
+                if (typeof this.board[x][y].type == 'undefined') {
+                    line += '_';
+                } else {
+                    line += this.board[x][y].type;
+                }
+                line += ' ';
+            }
+            console.log(line);
+        }
+        console.log();
+    }
+
     // Calculates the number of horizontal and vertical tiles to
     // get to destination and returns it
     // Expecting 2 point objects
@@ -88,7 +104,7 @@ class BotManager {
         const vertical = from.y - to.y;
 
         // find piece in "from" spot
-        const piece = this.board[from.y][from.x];
+        const piece = this.board[from.x][from.y];
 
         // create botPath
         const botPath = new Path(piece, horizontal, vertical);
@@ -105,16 +121,16 @@ class BotManager {
         // doesn't check starting point
         if (path.horizontal < 0) {
             for (let i = start.x-1; i > (start.x + path.horizontal); i--) {
-                if (this.board[start.y][i].type != 'empty') {
-                    const collisionPiece = this.board[start.y][i];
+                if (this.board[i][start.y].id != 0) {
+                    const collisionPiece = this.board[i][start.y];
                     collisions.push(collisionPiece);
                 }
             }
         }
         if (path.horizontal > 0) {
             for (let i = start.x+1; i < (start.x + path.horizontal); i++) {
-                if (this.board[start.y][i].type != 'empty') {
-                    const collisionPiece = this.board[start.y][i];
+                if (this.board[i][start.y].id != 0) {
+                    const collisionPiece = this.board[i][start.y];
                     collisions.push(collisionPiece);
                 }
             }
@@ -125,8 +141,8 @@ class BotManager {
 
         // only check turning point if horizontal is not 0
         if (path.horizontal != 0) {
-            if (this.board[start.y][newXCoord].type != 'empty') {
-                const collisionPiece = this.board[start.y][newXCoord];
+            if (this.board[newXCoord][start.y].id != 0) {
+                const collisionPiece = this.board[newXCoord][start.y];
                 collisions.push(collisionPiece);
             }
         }
@@ -135,16 +151,16 @@ class BotManager {
         // vertical does check the starting point
         if (path.vertical < 0) {
             for (let i = start.y+1; i <= (start.y - path.vertical); i++) {
-                if (this.board[i][newXCoord].type != 'empty') {
-                    const collisionPiece = this.board[i][newXCoord];
+                if (this.board[newXCoord][y].id != 0) {
+                    const collisionPiece = this.board[newXCoord][y];
                     collisions.push(collisionPiece);
                 }
             }
         }
         if (path.vertical > 0) {
             for (let i = start.y-1; i >= (start.y - path.vertical); i--) {
-                if (this.board[i][newXCoord].type != 'empty') {
-                    const collisionPiece = this.board[i][newXCoord];
+                if (this.board[newXCoord][i].id != 0) {
+                    const collisionPiece = this.board[newXCoord][i];
                     collisions.push(collisionPiece);
                 }
             }
