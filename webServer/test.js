@@ -21,6 +21,7 @@ testBotManager.printBoard();
 
 const from = new Point(3, 3);
 testPath = testBotManager.calculatePath(from, new Point(1, 1));
+console.log(testPath);
 
 console.log('Collisions:');
 collisions = testBotManager.calculateAllCollisions(testPath);
