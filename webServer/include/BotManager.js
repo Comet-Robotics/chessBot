@@ -70,10 +70,27 @@ class BotManager {
 
         // Creates an empty 10 element long array
         this.board = new Array(boardSize);
+        const empty = new ChessPiece(0, 'empty', true, new Point(-1, -1));
         // Loops through each element and sets their value
         // to a new 10 element long array of zeros
         for (let i=0; i < boardSize; i++) {
-            this.board[i] = Array(boardSize).fill(0);
+            this.board[i] = Array(boardSize).fill(empty);
+        }
+    }
+
+    // Takes in a piece and finds a new path for every bot until an empty space
+    // Paths are not prevented from intersecting. Requires extensive testing
+    recursiveCalculateCollision(from, piece, collection) {
+        const next = this.findShiftLocation(from, piece);
+        console.log(next);
+        const nextPath = this.calculatePath(piece.location, next);
+        collection.push(nextPath);
+        const collisions = this.calculateAllCollisions(nextPath);
+        // If there are no more collisions,
+        // this loop won't run, and recursion stops
+        for (let cI = 0; cI < collisions.length; cI++) {
+            this.recursiveCalculateCollision(from,
+                currentCollision, collection);
         }
     }
 
@@ -90,19 +107,6 @@ class BotManager {
             }
         }
         return new Point(newX, newY);
-    }
-
-    // Takes in a piece and finds a new path for every bot until an empty space
-    // Paths are not prevented from intersecting. Requires extensive testing
-    recursiveCalculateCollision(from, piece, collection) {
-        let next = findShiftLocation(from, piece);
-        let nextPath = calculatePath(piece.location, next);
-        collection.push(nextPath);
-        let collisions = calculateAllCollisions(nextPath);
-        // If there are no more collisions, this loop won't run, and recursion stops
-        for (let cI = 0; cI < collisions.length; cI++) {
-            recursiveCalculateCollision(from, currentCollision, collection);
-        }
     }
 
     // Calculates the number of horizontal and vertical tiles to
