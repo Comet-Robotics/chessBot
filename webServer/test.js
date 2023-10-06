@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const {BotManager, Point, ChessPiece, Path} = require('./include/BotManager');
 
 // create copy of botManager
