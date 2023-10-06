@@ -1,4 +1,4 @@
-
+// eslint-disable-next-line no-unused-vars
 const {BotManager, Point, ChessPiece, Path} = require('./include/BotManager');
 
 // create copy of botManager
@@ -56,5 +56,3 @@ console.log('Collisions:');
 collisions = testBotManager.calculateAllCollisions(testPath);
 console.log(collisions);
 console.log('=========================================');
-
-

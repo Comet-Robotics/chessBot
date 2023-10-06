@@ -168,6 +168,29 @@ class BotManager {
         return collisions;
     }
 
+    // Takes in a piece and finds a new path for every bot until an empty space
+    // Paths are not prevented from intersecting. Requires extensive testing
+    recursiveCalculateCollision(from, piece, collection, depth) {
+        const newLocation = this.findShiftLocation(from, piece);
+        const newPath = this.calculatePath(piece.location, newLocation);
+        // If recursion depth is new high, expand collection length
+        if (depth >= collection.length) {
+            collection.push([]);
+        }
+        // Recursion depth is the same as phase. Add path to current depth
+        collection[depth].push(newPath);
+        // Most paths will only have one collision
+        const collisions = this.calculateAllCollisions(newPath);
+        // If there are no more collisions,
+        // this loop won't run, and recursion stops
+        for (let cI = 0; cI < collisions.length; cI++) {
+            const currentCollision = collisions[cI];
+            // The depth increases every time the function recurses
+            this.recursiveCalculateCollision(from,
+                currentCollision, collection, depth+1);
+        }
+    }
+
     // This runs whenever a valid move is made. This is where we come in.
     // We need to get the physical chess bot from point a to b
     // from/to is a string in the form of a3, b7, e4, etc...
