@@ -70,43 +70,34 @@ class BotManager {
 
         // Creates an empty 10 element long array
         this.board = new Array(boardSize);
-        const empty = new ChessPiece(0, 'empty', true, new Point(-1, -1));
         // Loops through each element and sets their value
         // to a new 10 element long array of zeros
         for (let i=0; i < boardSize; i++) {
-            this.board[i] = Array(boardSize).fill(empty);
+            this.board[i] = Array(boardSize).fill(0);
         }
     }
 
     // Takes in a piece and finds a new path for every bot until an empty space
     // Paths are not prevented from intersecting. Requires extensive testing
-    recursiveCalculateCollision(from, piece, collection) {
-        const next = this.findShiftLocation(from, piece);
-        console.log(next);
-        const nextPath = this.calculatePath(piece.location, next);
-        collection.push(nextPath);
-        const collisions = this.calculateAllCollisions(nextPath);
+    recursiveCalculateCollision(from, piece, collection, depth) {
+        const newLocation = this.findShiftLocation(from, piece);
+        const newPath = this.calculatePath(piece.location, newLocation);
+        // If recursion depth is new high, expand collection length
+        if (depth >= collection.length) {
+            collection.push([]);
+        }
+        // Recursion depth is the same as phase. Add path to current depth
+        collection[depth].push(newPath);
+        // Most paths will only have one collision
+        const collisions = this.calculateAllCollisions(newPath);
         // If there are no more collisions,
         // this loop won't run, and recursion stops
         for (let cI = 0; cI < collisions.length; cI++) {
+            const currentCollision = collisions[cI];
+            // The depth increases every time the function recurses
             this.recursiveCalculateCollision(from,
-                currentCollision, collection);
+                currentCollision, collection, depth+1);
         }
-    }
-
-    findShiftLocation(from, piece) {
-        let newX = piece.location.x;
-        let newY = piece.location.y;
-        if (piece.location.y >= from.y) {
-            newY += 1;
-        } else {
-            if (piece.location.x >= from.y) {
-                newX += 1;
-            } else {
-                newX -= 1;
-            }
-        }
-        return new Point(newX, newY);
     }
 
     printBoard() {
