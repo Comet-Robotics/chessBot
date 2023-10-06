@@ -151,8 +151,8 @@ class BotManager {
         // vertical does check the starting point
         if (path.vertical < 0) {
             for (let i = start.y+1; i <= (start.y - path.vertical); i++) {
-                if (this.board[newXCoord][y].id != 0) {
-                    const collisionPiece = this.board[newXCoord][y];
+                if (this.board[newXCoord][i].id != 0) {
+                    const collisionPiece = this.board[newXCoord][i];
                     collisions.push(collisionPiece);
                 }
             }
