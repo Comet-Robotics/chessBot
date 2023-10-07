@@ -223,7 +223,7 @@ class BotManager {
             for (let pathIndex = 0; pathIndex<phaseMoves.length; pathIndex++) {
                 const path = phaseMoves[pathIndex];
                 const invertedPath = new Path(
-                    path.piece, path.vertical, path.horizontal,
+                    path.piece, -path.horizontal, -path.vertical,
                 );
                 unshifts[phaseIndex].push(invertedPath);
             }
