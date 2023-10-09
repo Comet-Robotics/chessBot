@@ -213,6 +213,23 @@ class BotManager {
             }
         }
     }
+
+    shiftCollisions(phases) {
+        const unshifts = [];
+        for (let phaseIndex = 0; phaseIndex<phases.length; phaseIndex++) {
+            const phaseMoves = phases[phaseIndex];
+            unshifts.push([]);
+            this.moveMultipleBots(phaseMoves);
+            for (let pathIndex = 0; pathIndex<phaseMoves.length; pathIndex++) {
+                const path = phaseMoves[pathIndex];
+                const invertedPath = new Path(
+                    path.piece, -path.horizontal, -path.vertical,
+                );
+                unshifts[phaseIndex].push(invertedPath);
+            }
+        }
+        return unshifts;
+    }
 }
 
 module.exports = {BotManager, Point, ChessPiece, Path};
