@@ -11,13 +11,13 @@ namespace ChessBotArduino
     {
         constexpr static int MOTOR_A_PIN1 = 8;
         constexpr static int MOTOR_A_PIN2 = 9;
-        constexpr static int ENCODER_A_PIN1 = 5;
-        constexpr static int ENCODER_A_PIN2 = 3;
+        constexpr static int ENCODER_A_PIN1 = 4;
+        constexpr static int ENCODER_A_PIN2 = 2;
 
         constexpr static int MOTOR_B_PIN1 = 11;
         constexpr static int MOTOR_B_PIN2 = 10;
-        constexpr static int ENCODER_B_PIN1 = 4;
-        constexpr static int ENCODER_B_PIN2 = 2;
+        constexpr static int ENCODER_B_PIN1 = 5;
+        constexpr static int ENCODER_B_PIN2 = 3;
 
         constexpr static int DEFAULT_DRIVE_SPEED = 0;
         constexpr static int DEFAULT_TURN_SPEED = 200;
