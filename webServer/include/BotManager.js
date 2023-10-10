@@ -191,6 +191,49 @@ class BotManager {
         }
     }
 
+    convertStringToPoint(stringPoint) {
+        let x;
+        let y;
+
+        let serverinput = stringPoint[0];
+        
+        switch(serverinput){
+            case 'h':
+                x = 1;
+                break
+            case 'g':
+                x = 2;
+                break
+            case 'f':
+                x = 3;
+                break
+            case 'e':
+                x = 4;
+                break
+            case 'd':
+                x = 5;
+                break
+            case 'c':
+                x = 6;
+                break
+            case 'b':
+                x = 7;
+                break
+            case 'a':
+                x = 8;
+                break
+            default:
+                x = 0;
+                console.log("X value error");
+            }
+        y = parseInt(stringPoint[1]);
+        let point = new Point(x, y);
+        
+        return point  
+    }
+
+
+
     // This runs whenever a valid move is made. This is where we come in.
     // We need to get the physical chess bot from point a to b
     // from/to is a string in the form of a3, b7, e4, etc...
@@ -231,5 +274,6 @@ class BotManager {
         return unshifts;
     }
 }
+
 
 module.exports = {BotManager, Point, ChessPiece, Path};
