@@ -132,7 +132,7 @@ class BotManager {
                 x = 0;
                 console.log("X value error");
             }
-        y = stringPoint[1];
+        y = parseInt(stringPoint[1]);
         let point = new Point(x, y);
         
         return point  
@@ -164,4 +164,4 @@ class BotManager {
     }
 }
 
-module.exports = BotManager;
+module.exports = {BotManager};
