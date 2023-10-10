@@ -168,6 +168,10 @@ class BotManager {
         return collisions;
     }
 
+    findShiftLocation() {
+        return;
+    }
+
     // Takes in a piece and finds a new path for every bot until an empty space
     // Paths are not prevented from intersecting. Requires extensive testing
     recursiveCalculateCollision(from, piece, collection, depth) {
