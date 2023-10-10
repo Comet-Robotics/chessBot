@@ -77,6 +77,22 @@ class BotManager {
         }
     }
 
+    printBoard() {
+        for (let y = 0; y < 10; y++) {
+            let line = '';
+            for (let x = 0; x < 10; x++) {
+                if (typeof this.board[x][y].type == 'undefined') {
+                    line += '_';
+                } else {
+                    line += this.board[x][y].type;
+                }
+                line += ' ';
+            }
+            console.log(line);
+        }
+        console.log();
+    }
+
     // Calculates the number of horizontal and vertical tiles to
     // get to destination and returns it
     // Expecting 2 point objects
@@ -84,17 +100,95 @@ class BotManager {
     // returns path object
     calculatePath(from, to) {
         // calc movement diffs
-        horizontal = to.x - from.x;
-        vertical = from.y - to.y;
+        const horizontal = to.x - from.x;
+        const vertical = from.y - to.y;
 
         // find piece in "from" spot
-        piece = this.board[from.x][from.y];
+        const piece = this.board[from.x][from.y];
 
         // create botPath
-        botPath = new Path(piece, horizontal, vertical);
+        const botPath = new Path(piece, horizontal, vertical);
         return botPath;
-        // git test
-        // i've done better
+    }
+
+    calculateAllCollisions(path) {
+        const start = path.piece.location;
+        const collisions = [];
+
+        // check both horizontal directions
+        // hoirzontal doesn't check the turning point,
+        // itll get checked by vertical
+        // doesn't check starting point
+        if (path.horizontal < 0) {
+            for (let i = start.x-1; i > (start.x + path.horizontal); i--) {
+                if (this.board[i][start.y].id != 0) {
+                    const collisionPiece = this.board[i][start.y];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        if (path.horizontal > 0) {
+            for (let i = start.x+1; i < (start.x + path.horizontal); i++) {
+                if (this.board[i][start.y].id != 0) {
+                    const collisionPiece = this.board[i][start.y];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+
+        // mark bots new x coord.
+        const newXCoord = start.x + (path.horizontal);
+
+        // only check turning point if horizontal is not 0
+        if (path.horizontal != 0) {
+            if (this.board[newXCoord][start.y].id != 0) {
+                const collisionPiece = this.board[newXCoord][start.y];
+                collisions.push(collisionPiece);
+            }
+        }
+
+        // check both vertical directions
+        // vertical does check the starting point
+        if (path.vertical < 0) {
+            for (let i = start.y+1; i <= (start.y - path.vertical); i++) {
+                if (this.board[newXCoord][i].id != 0) {
+                    const collisionPiece = this.board[newXCoord][i];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        if (path.vertical > 0) {
+            for (let i = start.y-1; i >= (start.y - path.vertical); i--) {
+                if (this.board[newXCoord][i].id != 0) {
+                    const collisionPiece = this.board[newXCoord][i];
+                    collisions.push(collisionPiece);
+                }
+            }
+        }
+        return collisions;
+    }
+
+    // Takes in a piece and finds a new path for every bot until an empty space
+    // Paths are not prevented from intersecting. Requires extensive testing
+    recursiveCalculateCollision(from, piece, collection, depth) {
+        const newLocation = this.findShiftLocation(from, piece);
+        const newPath = this.calculatePath(piece.location, newLocation);
+        // If recursion depth is new high, expand collection length
+        if (depth >= collection.length) {
+            collection.push([]);
+        }
+        // Recursion depth is the same as phase. Add path to current depth
+        collection[depth].push(newPath);
+        // Most paths will only have one collision
+        const collisions = this.calculateAllCollisions(newPath);
+        // If there are no more collisions,
+        // this loop won't run, and recursion stops
+        for (let cI = 0; cI < collisions.length; cI++) {
+            const currentCollision = collisions[cI];
+            // The depth increases every time the function recurses
+            this.recursiveCalculateCollision(from,
+                currentCollision, collection, depth+1);
+        }
     }
 
     convertStringToPoint(stringPoint) {
@@ -162,6 +256,24 @@ class BotManager {
             }
         }
     }
+
+    shiftCollisions(phases) {
+        const unshifts = [];
+        for (let phaseIndex = 0; phaseIndex<phases.length; phaseIndex++) {
+            const phaseMoves = phases[phaseIndex];
+            unshifts.push([]);
+            this.moveMultipleBots(phaseMoves);
+            for (let pathIndex = 0; pathIndex<phaseMoves.length; pathIndex++) {
+                const path = phaseMoves[pathIndex];
+                const invertedPath = new Path(
+                    path.piece, -path.horizontal, -path.vertical,
+                );
+                unshifts[phaseIndex].push(invertedPath);
+            }
+        }
+        return unshifts;
+    }
 }
 
-module.exports = {BotManager};
+
+module.exports = {BotManager, Point, ChessPiece, Path};
