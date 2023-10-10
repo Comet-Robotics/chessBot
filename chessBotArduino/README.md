@@ -9,11 +9,12 @@ uint32: 8 hex digits
 General packet format:
 SrcID: uint8 character robot discriminator, ff for multicast and fe for server
 DestID: uint8 character robot discriminator, ff for multicast and fe for server
+SeqID: uint16 packet sequence ID, rolls over
 PacketType: uint8 character packet type identifier
 Contents: Whatever goes in the packet, up to 87 bytes
 Rotation: uint16 0-360, counterclockwise from x-axis
 
-SrcID,DestID,PacketType,CONTENTS
+:SrcID,DestID,SeqID,PacketType,CONTENTS;
 
 Packet types:
 00 Nothing
@@ -38,3 +39,14 @@ Packet types:
     uint32 x
     uint32 y
     Rotation rot
+09 CmdBegin
+0a CmdEnd
+    PacketNum first
+0b CmdDone
+    CmdStatus cmdStatus
+0c Freeze // Reject all packets before this one, freeze motors
+0d Reset
+0e Subscribe
+    String name
+    uint32 freq
+0f ClearSubscriptions
