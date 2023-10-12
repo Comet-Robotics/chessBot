@@ -96,13 +96,11 @@ class BotManager {
         // git test
         // i've done better
     }
-    void populateBoard() {
+    function populateBoard()
         // loop through board vertically -> y {
             // loop through board horizontally -> x{
                 // code to determine what should be in this spot on the board
-                ChessPiece piece = whatever piece should be at this spot
-                board[x][y] = piece
-
+    
                 for (let y = 0; y < 8; y++){
                     for (let x = 0; x < 8; x++){
                         let name, color;  
@@ -131,7 +129,7 @@ class BotManager {
                             name = "Pawn";
                         }
                         else if (y >=  3 || y <= 5){
-                           const piece = {name: "N/A", location:"N/A", color:"N/A"}
+                           const piece = {name: "N/A", location:[x,y], color:"N/A"}
                         }
                         switch(y){
                             case 0:
@@ -142,24 +140,15 @@ class BotManager {
                             case 7:
                                 color = "Black";
                         }
-                        piece = {name: name, color: color, location: [x,y]}
-                            
-                            
+                        let chesspiece = {name: name, color: color, location: [x,y]}      
                         }
                     }
-                             
+                }            
                             
-                        } 
-
-                        }
-                        
-
-                    }    
-                }
                 
-            }
-        }
-    }
+
+                        
+            
 
 
     // This runs whenever a valid move is made. This is where we come in.
