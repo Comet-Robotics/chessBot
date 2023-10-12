@@ -96,8 +96,8 @@ class BotManager {
         // git test
         // i've done better
     }
-    function populateBoard()
-        // loop through board vertically -> y {
+    populateBoard(){
+    // loop through board vertically -> y {
             // loop through board horizontally -> x{
                 // code to determine what should be in this spot on the board
     
@@ -143,7 +143,8 @@ class BotManager {
                         let chesspiece = {name: name, color: color, location: [x,y]}      
                         }
                     }
-                }            
+                }
+                           
                             
                 
 
