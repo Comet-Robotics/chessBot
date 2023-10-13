@@ -56,6 +56,7 @@ class BotManager {
     // Runs when a new instance of the BotManager class is created
     constructor() {
         this.initializeBoard();
+        this.populateBoard();
     }
     // This is a get status to determine if the bot is moving or not
     getStatus() {
@@ -77,51 +78,64 @@ class BotManager {
         }
     }
 
-    populateBoard(){
-        for (let y = 0; y < 8; y++){
-            for (let x = 0; x < 8; x++){
-                let name, color;  
-                if (y == 0 || y == 7){
-                    switch(x){
-                        case 0:
-                        case 7:
-                            name = "Rooke";
-                        break;
-                        case 1:
-                        case 6:
-                            name = "Knight";
-                        break;
-                        case (2):
-                        case (5):
-                            name = "Bishop";
-                        break;
-                        case (3):
-                            name = "King";
-                        break;
-                        case(4):
-                            name = "Queen";
-                    }
-                }
-                else if (y = 1 || y == 6){
-                    name = "Pawn";
-                }
-                else if (y >=  3 || y <= 5){
-                    const piece = {name: "N/A", location:[x,y], color:"N/A"}
-                }
-                switch(y){
-                    case 0:
+    populateBoard() {
+        for (let y = 1; y <= 8; y++) {
+            for (let x = 1; x <= 8; x++) {
+                let name;
+                let color;
+                let id = 0;
+                if (y == 1 || y == 8) {
+                    switch (x) {
                     case 1:
-                        color = "White";
-                    break;
-                    case 6:
+                    case 8:
+                        name = 'Rooke';
+                        break;
+                    case 2:
                     case 7:
-                        color = "Black";
+                        name = 'Knight';
+                        break;
+                    case 3:
+                    case 6:
+                        name = 'Bishop';
+                        break;
+                    case 4:
+                        name = 'Queen';
+                        break;
+                    case 5:
+                        name = 'King';
+                    }
+                } else if (y == 2 || y == 7) {
+                    name = 'Pawn';
+                } else if (y >= 3 || y <= 5) {
+                    name = 'N/A';
+                    color = 'N/A';
                 }
-                let chesspiece = {name: name, color: color, location: [x,y]}      
+
+                switch (y) {
+                case 7:
+                    id = x;
+                    color = 'White';
+                    break;
+                case 8:
+                    id = x + 8;
+                    color = 'White';
+                    break;
+                case 1:
+                    id = x + 16;
+                    color = 'Black';
+                    break;
+                case 2:
+                    id = x + 24;
+                    color = 'Black';
+                }
+
+                const point = new Point(x, y);
+                const piece = new ChessPiece(id, name, color, point);
+                this.board[x][y] = piece;
             }
         }
     }
-    
+
     printBoard() {
         for (let y = 0; y < 10; y++) {
             let line = '';
@@ -238,46 +252,43 @@ class BotManager {
 
     convertStringToPoint(stringPoint) {
         let x;
-        let y;
 
-        let serverinput = stringPoint[0];
-        
-        switch(serverinput){
-            case 'h':
-                x = 1;
-                break
-            case 'g':
-                x = 2;
-                break
-            case 'f':
-                x = 3;
-                break
-            case 'e':
-                x = 4;
-                break
-            case 'd':
-                x = 5;
-                break
-            case 'c':
-                x = 6;
-                break
-            case 'b':
-                x = 7;
-                break
-            case 'a':
-                x = 8;
-                break
-            default:
-                x = 0;
-                console.log("X value error");
-            }
-        y = parseInt(stringPoint[1]);
-        let point = new Point(x, y);
-        
-        return point  
+        const serverinput = stringPoint[0];
+
+        switch (serverinput) {
+        case 'h':
+            x = 1;
+            break;
+        case 'g':
+            x = 2;
+            break;
+        case 'f':
+            x = 3;
+            break;
+        case 'e':
+            x = 4;
+            break;
+        case 'd':
+            x = 5;
+            break;
+        case 'c':
+            x = 6;
+            break;
+        case 'b':
+            x = 7;
+            break;
+        case 'a':
+            x = 8;
+            break;
+        default:
+            x = 0;
+            console.log('X value error');
+        }
+        const y = parseInt(stringPoint[1]);
+        const point = new Point(x, y);
+
+        return point;
     }
-
-
 
     // This runs whenever a valid move is made. This is where we come in.
     // We need to get the physical chess bot from point a to b
