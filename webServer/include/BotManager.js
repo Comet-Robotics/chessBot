@@ -138,6 +138,15 @@ class BotManager {
         console.log();
     }
 
+    movePieceMatrix(from, to) {
+        // Move the piece
+        this.board[to.x][to.y] = board[from.x][from.y];
+        this.board[from.x][from.y].id = 0; // set the source to empty
+        this.board[from.x][from.y].color = 'N/A';
+        this.board[from.x][from.y].name = 'N/A';
+    }
+      
+
     // Calculates the number of horizontal and vertical tiles to
     // get to destination and returns it
     // Expecting 2 point objects
