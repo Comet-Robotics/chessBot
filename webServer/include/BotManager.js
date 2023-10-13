@@ -327,6 +327,12 @@ class BotManager {
         }
         return unshifts;
     }
+
+    unshiftCollisions(unshifts) {
+        for (const phaseMoves of unshifts.reverse()) {
+            this.moveMultipleBots(phaseMoves);
+        }
+    }
 }
 
 
