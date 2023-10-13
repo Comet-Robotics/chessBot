@@ -77,6 +77,51 @@ class BotManager {
         }
     }
 
+    populateBoard(){
+        for (let y = 0; y < 8; y++){
+            for (let x = 0; x < 8; x++){
+                let name, color;  
+                if (y == 0 || y == 7){
+                    switch(x){
+                        case 0:
+                        case 7:
+                            name = "Rooke";
+                        break;
+                        case 1:
+                        case 6:
+                            name = "Knight";
+                        break;
+                        case (2):
+                        case (5):
+                            name = "Bishop";
+                        break;
+                        case (3):
+                            name = "King";
+                        break;
+                        case(4):
+                            name = "Queen";
+                    }
+                }
+                else if (y = 1 || y == 6){
+                    name = "Pawn";
+                }
+                else if (y >=  3 || y <= 5){
+                    const piece = {name: "N/A", location:[x,y], color:"N/A"}
+                }
+                switch(y){
+                    case 0:
+                    case 1:
+                        color = "White";
+                    break;
+                    case 6:
+                    case 7:
+                        color = "Black";
+                }
+                let chesspiece = {name: name, color: color, location: [x,y]}      
+            }
+        }
+    }
+    
     printBoard() {
         for (let y = 0; y < 10; y++) {
             let line = '';
