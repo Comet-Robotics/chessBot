@@ -10,7 +10,7 @@ const path = require('path');
 const BotManager = require('./include/BotManager.js');
 
 // Creates our custom bot manager and runs it's constructor
-const botManager = new BotManager;
+const {botManager} = new BotManager;
 
 const app = express();
 // Different from usb port. This is a network port
