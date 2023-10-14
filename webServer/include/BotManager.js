@@ -79,6 +79,51 @@ class BotManager {
     }
 
     // Prints out the current state of the board to the console
+    populateBoard(){
+        for (let y = 0; y < 8; y++){
+            for (let x = 0; x < 8; x++){
+                let name, color;  
+                if (y == 0 || y == 7){
+                    switch(x){
+                        case 0:
+                        case 7:
+                            name = "Rooke";
+                        break;
+                        case 1:
+                        case 6:
+                            name = "Knight";
+                        break;
+                        case (2):
+                        case (5):
+                            name = "Bishop";
+                        break;
+                        case (3):
+                            name = "King";
+                        break;
+                        case(4):
+                            name = "Queen";
+                    }
+                }
+                else if (y = 1 || y == 6){
+                    name = "Pawn";
+                }
+                else if (y >=  3 || y <= 5){
+                    const piece = {name: "N/A", location:[x,y], color:"N/A"}
+                }
+                switch(y){
+                    case 0:
+                    case 1:
+                        color = "White";
+                    break;
+                    case 6:
+                    case 7:
+                        color = "Black";
+                }
+                let chesspiece = {name: name, color: color, location: [x,y]}      
+            }
+        }
+    }
+    
     printBoard() {
         for (let y = 0; y < 10; y++) {
             let line = '';
@@ -94,6 +139,15 @@ class BotManager {
         }
         console.log();
     }
+
+    movePieceMatrix(from, to) {
+        // Move the piece
+        this.board[to.x][to.y] = board[from.x][from.y];
+        this.board[from.x][from.y].id = 0; // set the source to empty
+        this.board[from.x][from.y].color = 'N/A';
+        this.board[from.x][from.y].name = 'N/A';
+    }
+      
 
     // Calculates the number of horizontal and vertical tiles to
     // get to destination and returns it
@@ -575,6 +629,49 @@ class BotManager {
         }
     }
 
+    convertStringToPoint(stringPoint) {
+        let x;
+        let y;
+
+        let serverinput = stringPoint[0];
+        
+        switch(serverinput){
+            case 'h':
+                x = 1;
+                break
+            case 'g':
+                x = 2;
+                break
+            case 'f':
+                x = 3;
+                break
+            case 'e':
+                x = 4;
+                break
+            case 'd':
+                x = 5;
+                break
+            case 'c':
+                x = 6;
+                break
+            case 'b':
+                x = 7;
+                break
+            case 'a':
+                x = 8;
+                break
+            default:
+                x = 0;
+                console.log("X value error");
+            }
+        y = parseInt(stringPoint[1]);
+        let point = new Point(x, y);
+        
+        return point  
+    }
+
+
+
     // This runs whenever a valid move is made. This is where we come in.
     // We need to get the physical chess bot from point a to b
     // from/to is a string in the form of a3, b7, e4, etc...
@@ -597,6 +694,30 @@ class BotManager {
             }
         }
     }
+
+    shiftCollisions(phases) {
+        const unshifts = [];
+        for (let phaseIndex = 0; phaseIndex<phases.length; phaseIndex++) {
+            const phaseMoves = phases[phaseIndex];
+            unshifts.push([]);
+            this.moveMultipleBots(phaseMoves);
+            for (let pathIndex = 0; pathIndex<phaseMoves.length; pathIndex++) {
+                const path = phaseMoves[pathIndex];
+                const invertedPath = new Path(
+                    path.piece, -path.horizontal, -path.vertical,
+                );
+                unshifts[phaseIndex].push(invertedPath);
+            }
+        }
+        return unshifts;
+    }
+
+    unshiftCollisions(unshifts) {
+        for (const phaseMoves of unshifts.reverse()) {
+            this.moveMultipleBots(phaseMoves);
+        }
+    }
 }
+
 
 module.exports = {BotManager, Point, ChessPiece, Path};
