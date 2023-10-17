@@ -64,7 +64,15 @@ namespace ChessBotArduino
 
             if (ms - lastLog > LOG_FREQ)
             {
+                Serial.println("--- PID Test ---");
                 pidTest();
+                Serial.println("--- Relay On ---");
+                digitalWrite(LEGACY_2012_DESIGN::RELAY_IR_LED, HIGH);
+                delay(1); 
+                lightMeasurementTest();
+                Serial.println("--- Relay Off ---");
+                digitalWrite(LEGACY_2012_DESIGN::RELAY_IR_LED, LOW);
+                delay(1); 
                 lightMeasurementTest();
                 Serial.println();
                 lastLog = ms;

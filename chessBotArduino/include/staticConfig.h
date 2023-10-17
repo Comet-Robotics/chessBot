@@ -48,6 +48,8 @@ namespace ChessBotArduino
             pinMode(MOTOR_B_PIN2, OUTPUT);
             pinMode(ENCODER_B_PIN1, INPUT);
             pinMode(ENCODER_B_PIN1, INPUT);
+
+            pinMode(RELAY_IR_LED, OUTPUT);
         }
     };
 
