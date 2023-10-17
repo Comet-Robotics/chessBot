@@ -1,2 +1,7 @@
 
 .DS_Store
+/.vs/*
+/chess-bot-client/.vs/*
+/webServer/.vs/*
+*.wsuo
+chessBotArduino/.vscode/*
