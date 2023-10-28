@@ -98,6 +98,13 @@ namespace ChessBotArduino
     };
 
     using CONFIG = LEGACY_2012_DESIGN;
+
+
+    const char* WIFI_SSID = "ChessBot";
+    const char* WIFI_PASSWORD = "6rpAee6r)()4jnjs";
+
+    const IPAddress SERVER_IP(192,168,59,248);
+    const uint16_t SERVER_PORT = 3000;
 }; // namespace ChessBotArduino
 
 #endif // ifndef CHESSBOTARDUINO_STATIC_CONFIG_H

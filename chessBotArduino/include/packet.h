@@ -60,6 +60,8 @@ namespace ChessBotArduino
     enum PacketType
     {
         NOTHING,
+        CLIENT_HELLO,
+        SERVER_HELLO,
         PING_SEND,
         PING_RESPONSE,
         QUERY_VAR,
@@ -67,7 +69,8 @@ namespace ChessBotArduino
         INFORM_VAR,
         SET_VAR,
         MOVE_TO_SPACE,
-        MOVE_TO_POS
+        MOVE_TO_POS,
+        DRIVE,
     };
 
 #pragma pack(push, 1)
@@ -132,14 +135,15 @@ namespace ChessBotArduino
 
     char packetConstructBuf[300];
 
-    char *start()
+    char *start(PacketType type)
     {
         char *w = packetConstructBuf;
         (*w++) = ':';
-        numToHex(w, ourName, 2);
+
+        numToHex(w, (int)type, 2);
         w += 2;
-        numToHex(w, currentTarget, 2);
-        w += 2;
+        (*w++) = ',';
+
         return w;
     }
 
@@ -153,18 +157,31 @@ namespace ChessBotArduino
     template <PacketType type>
     char *make();
 
-    template <>
-    char *make<PacketType::PING_RESPONSE>()
+    template<>
+    char* make<PacketType::CLIENT_HELLO>()
     {
-        char *w = start();
+        char* w = start(PacketType::CLIENT_HELLO);
 
-        numToHex(w, (int)PacketType::PING_RESPONSE, 2);
-        w += 2;
+        char mac[6];
+        WiFi.macAddress(mac);
+        for (int i = 0; i < 6; i++) {
+            numToHex(w, mac[i], 2);
+            w += 2;
+        }
 
         return finish(w);
     }
 
-    void send(char* packet) {
+    template <>
+    char *make<PacketType::PING_RESPONSE>()
+    {
+        char *w = start(PacketType::PING_RESPONSE);
+
+        return finish(w);
+    }
+
+    void send(char *packet)
+    {
         Serial.println(packet);
     }
 
@@ -172,12 +189,17 @@ namespace ChessBotArduino
     {
         PackedTextPacket *p = (PackedTextPacket *)buf;
 
-        switch (p->getType()) {
-            case NOTHING: break;
-            case PING_SEND: send(make<PacketType::PING_RESPONSE>()); break;
-            case MOVE_TO_SPACE: break;
-            case MOVE_TO_POS: break;
-
+        switch (p->getType())
+        {
+        case NOTHING:
+            break;
+        case PING_SEND:
+            send(make<PacketType::PING_RESPONSE>());
+            break;
+        case MOVE_TO_SPACE:
+            break;
+        case MOVE_TO_POS:
+            break;
         }
 
         if (p->getType() == PacketType::NOTHING)

@@ -14,7 +14,7 @@ PacketType: uint8 character packet type identifier
 Contents: Whatever goes in the packet, up to 87 bytes
 Rotation: uint16 0-360, counterclockwise from x-axis
 
-:SrcID,DestID,SeqID,PacketType,CONTENTS;
+:PacketType,CONTENTS;
 
 Packet types:
 00 Nothing

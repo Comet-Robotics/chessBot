@@ -8,11 +8,14 @@
 #include "motor.h"
 #include "packet.h"
 #include "testingSuite.h"
+#include "wifiConnection.h"
 
 using namespace ChessBotArduino;
 
 void setup()
 {
+    connectToWifi();
+
     delay(500);
 
     testing = new TestingSuite();
