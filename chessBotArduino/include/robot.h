@@ -21,8 +21,8 @@ namespace ChessBotArduino
                   right(CONFIG::MOTOR_B_PIN1, CONFIG::MOTOR_B_PIN2, CONFIG::ENCODER_B_PIN1, CONFIG::ENCODER_B_PIN2),
                   kinematics(left, right)
         {
-            left.encoder->encoder.readAndReset();
-            right.encoder->encoder.readAndReset();
+            //left.encoder->encoder.readAndReset();
+            //right.encoder->encoder.readAndReset();
 
             kinematics.start();
         }

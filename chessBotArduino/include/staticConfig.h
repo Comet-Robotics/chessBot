@@ -42,12 +42,12 @@ namespace ChessBotArduino
             pinMode(MOTOR_A_PIN1, OUTPUT);
             pinMode(MOTOR_A_PIN2, OUTPUT);
             pinMode(ENCODER_A_PIN1, INPUT);
-            pinMode(ENCODER_A_PIN1, INPUT);
+            pinMode(ENCODER_A_PIN2, INPUT);
 
             pinMode(MOTOR_B_PIN1, OUTPUT);
             pinMode(MOTOR_B_PIN2, OUTPUT);
             pinMode(ENCODER_B_PIN1, INPUT);
-            pinMode(ENCODER_B_PIN1, INPUT);
+            pinMode(ENCODER_B_PIN2, INPUT);
         }
     };
 
@@ -86,16 +86,16 @@ namespace ChessBotArduino
             pinMode(MOTOR_A_PIN1, OUTPUT);
             pinMode(MOTOR_A_PIN2, OUTPUT);
             pinMode(ENCODER_A_PIN1, INPUT);
-            pinMode(ENCODER_A_PIN1, INPUT);
+            pinMode(ENCODER_A_PIN2, INPUT);
 
             pinMode(MOTOR_B_PIN1, OUTPUT);
             pinMode(MOTOR_B_PIN2, OUTPUT);
             pinMode(ENCODER_B_PIN1, INPUT);
-            pinMode(ENCODER_B_PIN1, INPUT);
+            pinMode(ENCODER_B_PIN2, INPUT);
         }
     };
 
-    using CONFIG = LEGACY_2012_DESIGN;
+    using CONFIG = WEMOS_S2_DESIGN1;
 }; // namespace ChessBotArduino
 
 #endif // ifndef CHESSBOTARDUINO_STATIC_CONFIG_H
