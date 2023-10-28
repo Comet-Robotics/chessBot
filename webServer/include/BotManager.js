@@ -2,6 +2,7 @@
 // This lines allow THIS file to incorporate the code.
 // Basically a self made library
 const Xbee = require('./Xbee.js');
+const BotServer = require('./BotServer.js').BotServer;
 
 // If true, you will be required to have an xbee plugged into your computer
 const usingXBee = false;
@@ -56,6 +57,8 @@ class BotManager {
     // Runs when a new instance of the BotManager class is created
     constructor() {
         this.initializeBoard();
+
+        this.server = new BotServer();
     }
     // This is a get status to determine if the bot is moving or not
     getStatus() {
@@ -195,43 +198,42 @@ class BotManager {
         let x;
         let y;
 
-        let serverinput = stringPoint[0];
-        
-        switch(serverinput){
-            case 'h':
-                x = 1;
-                break
-            case 'g':
-                x = 2;
-                break
-            case 'f':
-                x = 3;
-                break
-            case 'e':
-                x = 4;
-                break
-            case 'd':
-                x = 5;
-                break
-            case 'c':
-                x = 6;
-                break
-            case 'b':
-                x = 7;
-                break
-            case 'a':
-                x = 8;
-                break
-            default:
-                x = 0;
-                console.log("X value error");
-            }
-        y = parseInt(stringPoint[1]);
-        let point = new Point(x, y);
-        
-        return point  
-    }
+        const serverinput = stringPoint[0];
 
+        switch (serverinput) {
+        case 'h':
+            x = 1;
+            break;
+        case 'g':
+            x = 2;
+            break;
+        case 'f':
+            x = 3;
+            break;
+        case 'e':
+            x = 4;
+            break;
+        case 'd':
+            x = 5;
+            break;
+        case 'c':
+            x = 6;
+            break;
+        case 'b':
+            x = 7;
+            break;
+        case 'a':
+            x = 8;
+            break;
+        default:
+            x = 0;
+            console.log('X value error');
+        }
+        y = parseInt(stringPoint[1]);
+        const point = new Point(x, y);
+
+        return point;
+    }
 
 
     // This runs whenever a valid move is made. This is where we come in.

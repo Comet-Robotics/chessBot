@@ -1,8 +1,6 @@
 #ifndef CHESSBOTARDUINO_MOTOR_H
 #define CHESSBOTARDUINO_MOTOR_H
 
-#define ARDUINO_ARCH_ESP32
-
 #include <Arduino.h>
 
 #ifdef ARDUINO_ARCH_ESP32

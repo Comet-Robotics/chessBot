@@ -55,6 +55,8 @@ namespace ChessBotArduino
 
     struct WEMOS_S2_DESIGN1
     {
+        constexpr static int BUTTON_0_PIN = 0;
+
         constexpr static int MOTOR_A_PIN1 = 16;
         constexpr static int MOTOR_A_PIN2 = 21;
         constexpr static int ENCODER_A_PIN1 = 34;
@@ -85,6 +87,8 @@ namespace ChessBotArduino
         // Bind the pins needed for this robot design to work
         static void setupGpio()
         {
+            pinMode(BUTTON_0_PIN, INPUT);
+
             pinMode(MOTOR_A_PIN1, OUTPUT);
             pinMode(MOTOR_A_PIN2, OUTPUT);
             pinMode(ENCODER_A_PIN1, INPUT);
@@ -97,14 +101,14 @@ namespace ChessBotArduino
         }
     };
 
-    using CONFIG = LEGACY_2012_DESIGN;
+    using CONFIG = WEMOS_S2_DESIGN1;
 
 
     const char* WIFI_SSID = "ChessBot";
     const char* WIFI_PASSWORD = "6rpAee6r)()4jnjs";
 
     const IPAddress SERVER_IP(192,168,59,248);
-    const uint16_t SERVER_PORT = 3000;
+    const uint16_t SERVER_PORT = 3001;
 }; // namespace ChessBotArduino
 
 #endif // ifndef CHESSBOTARDUINO_STATIC_CONFIG_H

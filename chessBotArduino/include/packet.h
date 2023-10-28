@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include <Arduino.h>
+#include <WiFi.h>
 
 namespace ChessBotArduino
 {
@@ -55,7 +56,16 @@ namespace ChessBotArduino
         return val;
     }
 
-    void numToHex(char *out, uint64_t num, int len);
+    void numToHex(char *out, uint64_t num, int len)
+    {
+        const char hex[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+        for (int i = len - 1; i >= 0; i--)
+        {
+            int d = (num >> (i * 4)) & 0xF;
+            out[len - i - 1] = hex[(num >> (i * 4)) & 0xF];
+        }
+    }
 
     enum PacketType
     {
@@ -157,14 +167,15 @@ namespace ChessBotArduino
     template <PacketType type>
     char *make();
 
-    template<>
-    char* make<PacketType::CLIENT_HELLO>()
+    template <>
+    char *make<PacketType::CLIENT_HELLO>()
     {
-        char* w = start(PacketType::CLIENT_HELLO);
+        char *w = start(PacketType::CLIENT_HELLO);
 
-        char mac[6];
+        uint8_t mac[6];
         WiFi.macAddress(mac);
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++)
+        {
             numToHex(w, mac[i], 2);
             w += 2;
         }

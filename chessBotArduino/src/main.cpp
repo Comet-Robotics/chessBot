@@ -14,20 +14,19 @@ using namespace ChessBotArduino;
 
 void setup()
 {
+    CONFIG::setupGpio();
+    delay(1000);
+
     connectToWifi();
 
-    delay(500);
-
+#if TESTING
     testing = new TestingSuite();
-
-    delay(1000);
+#endif
 }
 
 void loop()
 {
     unsigned long ms = millis();
-
-    testing->log(ms);
 
     /*char cmd[256];
     while (Serial.available()) {

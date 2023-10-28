@@ -12,9 +12,26 @@ namespace ChessBotArduino
 void connectToServer() {
     WiFiClient client;
 
-    client.connect(SERVER_IP, SERVER_PORT);
+    int loopCount = 0;
+    while (!client.connect(SERVER_IP, SERVER_PORT)) {
+        delay(1000);
+        Serial.println("*");
 
-    client.print(make<PacketType::HELLO>());
+        if (loopCount++ > 10) {
+            ESP.restart();
+        }
+    }
+    
+    Serial.println("Connected to server!");
+
+    client.print(make<PacketType::CLIENT_HELLO>());
+
+    while (client.connected()) {
+        if (client.available()) {
+            char c = client.read();
+            Serial.print(c);
+        }
+    }
 }
 
 void connectToWifi() {
@@ -37,7 +54,7 @@ void connectToWifi() {
     Serial.println(WiFi.localIP());
 
     Serial.print("Connecting to ChessBot Server ");
-
+    connectToServer();
 }
 
 };
