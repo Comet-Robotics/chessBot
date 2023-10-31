@@ -5,37 +5,13 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="UTD ChessBots"
-    />
+    <meta name="description" content="UTD ChessBots" />
     <title>UTD ChessBots Debug</title>
-
-    <style>
-      #joystickContainer {
-        width: 200px;
-        height: 200px;
-        border: 1px solid black;
-        position: relative;
-      }
-      
-      #joystickNub {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: red;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      }
-    </style>
-      
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    
+
     <h1>Debug Interface</h1>
 
     <h2 id="status"></h2>
@@ -46,163 +22,102 @@
       <option>Uninitialized</option>
     </select>
 
-    <div id="joystickContainer">
-      <div id="joystickNub"></div>
-    </div>
+    <script src="https://bobboteck.github.io/joy/joy.js"></script>
+    <div id="joystick" style="width:200px;height:200px;margin-bottom:20px;"></div>
+
+    <script>
+      const status = document.getElementById("status");
+      const robotSelectionList = document.getElementById("robotSelectionList");
+      const TIME_TO_WAIT_BETWEEN_MSGS = 50; // in ms
+      let lastMessageSendTimestamp = -1;
+
+      status.textContent = "Connecting";
+
+      const ws = new WebSocket("ws://192.168.55.248:3000/debug/ws");
+
+      function maintainConnection() {
+        console.log("sending bot query");
+        ws.send(JSON.stringify({ type: "queryBotList" }));
+      }
+
+      function handleData(e) {
+        console.log("Data from server:", e.data);
+
+        const packet = JSON.parse(e.data);
+
+        if (packet.type === "botList") {
+          robotSelectionList.innerHTML = "";
+          for (const [key, bot] of Object.entries(packet.bots)) {
+            robotSelectionList.innerHTML += `<option value="${key}">Robot ${key} (${
+              bot.connected ? "Connected" : "Disconnected"
+            })</option>`;
+          }
+        }
+      }
+
+      ws.onopen = maintainConnection;
+      ws.onmessage = handleData;
+
+      const joy = new JoyStick('joystick');
+      console.log({ joy });
+
+      setInterval(() => { 
+        const pos = {
+          x: joy.GetX()/100,
+          y: joy.GetY()/100,
+        }; 
+        //console.log(pos);
+        handleMotion(pos);
+      }, TIME_TO_WAIT_BETWEEN_MSGS);
+
+      
 
 
-<script>
-const status = document.getElementById("status");
-const robotSelectionList = document.getElementById("robotSelectionList");
-const TIME_TO_WAIT_BETWEEN_MSGS = 50; // in ms
-let lastMessageSendTimestamp = -1;
+      function handleMotion(pos) {
+        
 
-status.textContent = "Connecting";
+        // convert x/y positions of the joystick to left/right motor powers
+        let leftMotor = pos.x + pos.y;
+        let rightMotor = pos.y - pos.x;
 
-const ws = new WebSocket("ws://192.168.55.248:3000/debug/ws");
+        // clamp left/right motor powers to [-1, 1]
+        const max = Math.max(Math.abs(leftMotor), Math.abs(rightMotor));
+        if (max > 1.0) {
+          leftMotor /= max;
+          rightMotor /= max;
+        }
 
-function maintainConnection() {
-  console.log('sending bot query');
-  ws.send(JSON.stringify({type: "queryBotList"}));
-}
+        //console.log({leftMotor, rightMotor});
 
-function handleData(e) {
-  console.log("Data from server:", e.data);
+        leftMotor = leftMotor.toFixed(2);
+        rightMotor = rightMotor.toFixed(2);
 
-  const packet = JSON.parse(e.data);
+        // HTML select hypothetically supports multiple selected options, but we haven't enabled that so there should only be one option.
+        const selectedBotOption = robotSelectionList.selectedOptions[0];
+        const botId = selectedBotOption.value;
+      
+        sendMotorPowers(botId, leftMotor, rightMotor);
+      }
 
-  if (packet.type === 'botList') {
-    robotSelectionList.innerHTML = "";
-    for (const [key, bot] of Object.entries(packet.bots)) {
-      robotSelectionList.innerHTML += `<option value="${key}">Robot ${key} (${bot.connected ? "Connected" : "Disconnected"})</option>`;
-    }
-  }
-}
+      const sendMotorPowers = (robotId, leftPower, rightPower) => {
+        if (ws.readyState != ws.OPEN) {
+          console.log("Websocket not open yet");
+          return;
+        }
 
-ws.onopen = maintainConnection;
-ws.onmessage = handleData;
+        const payload = {
+          type: "rawPacket",
+          target: parseInt(robotId),
+          contents: `:0B,${leftPower / 2},${rightPower / 2};`,
+          isDragging,
+        };
+        ws.send(JSON.stringify(payload));
 
-const joystickNub = document.getElementById("joystickNub");
-const joystickContainer = document.getElementById("joystickContainer");
+        lastLeftPower = leftPower;
+        lastRightPower = rightPower;
+      };
 
-let isDragging = false;
-let lastLeftPower = 0;
-let lastRightPower = 0;
-
-function handleMouseDown(e) {
-  isDragging = true;
-}
-
-function handleMouseUp(e) {
-  isDragging = false;
-  joystickNub.style.left = "50%";
-  joystickNub.style.top = "50%";
-  const selectedBotOption = robotSelectionList.selectedOptions[0]
-  sendMotorPowers(selectedBotOption.value, 0, 0)
-}
-
-
-function handleMotion(e) {
-  let xMovement, yMovement;
-  if (isDragging) {
-    const rect = joystickContainer.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-  
-    const nubRect = joystickNub.getBoundingClientRect();
-    const nubX = nubRect.left - rect.left;
-    const nubY = nubRect.top - rect.top;
-  
-    const dx = x - nubX;
-    const dy = y - nubY;
-  
-    const newX = nubX + dx;
-    const newY = nubY + dy;
-
-    joystickNub.style.left = newX + "px";
-    joystickNub.style.top = newY + "px";
-  
-    xMovement = (newX - rect.width / 2) / (rect.width / 2);
-    yMovement = (newY - rect.height / 2) / (rect.height / 2) * -1;
-  } else {
-    xMovement = 0.0;
-    yMovement = 0.0;
-  }
-
-  // clamp x and y power to [-1, 1]
-  xMovement = Math.min(Math.max(xMovement, -1), 1);
-  yMovement = Math.min(Math.max(yMovement, -1), 1);
-  
-  // convert x/y positions of the joystick to left/right motor powers
-  let leftMotor = yMovement + xMovement;
-  let rightMotor = yMovement - xMovement;
-
-  // clamp left/right motor powers to [-1, 1]
-  const max = Math.max(Math.abs(leftMotor), Math.abs(rightMotor));
-  if (max > 1.0)
-  {
-      leftMotor /= max;
-      rightMotor /= max;
-  }
-
-  //console.log({xMovement, yMovement, leftMotor, rightMotor});
-
-  leftMotor = leftMotor.toFixed(2);
-  rightMotor = rightMotor.toFixed(2);
-
-  // HTML select hypothetically supports multiple selected options, but we haven't enabled that so there should only be one option.
-  const selectedBotOption = robotSelectionList.selectedOptions[0]
-  const botId = selectedBotOption.value
-  
-  const now = performance.now()
-  const timeSinceLastMsgExceedsMsgTimeout = now - lastMessageSendTimestamp >= TIME_TO_WAIT_BETWEEN_MSGS
-  if (
-      timeSinceLastMsgExceedsMsgTimeout && 
-      lastLeftPower != leftMotor &&
-      lastRightPower != rightMotor
-    
-  ) {
-    lastMessageSendTimestamp = now;
-    sendMotorPowers(botId, leftMotor, rightMotor);
-  }
-
-  
-}
-
-const sendMotorPowers = (robotId, leftPower, rightPower) => {
-  if (ws.readyState != ws.OPEN) {
-    console.log("Websocket not open yet");
-    return;
-  }
-  
-  const payload = {
-    type: "rawPacket",
-    target: parseInt(robotId),
-    contents: `:0B,${leftPower / 2},${rightPower / 2};`,
-    isDragging
-  }
-  ws.send(JSON.stringify(payload));
-  
-  lastLeftPower = leftPower;
-  lastRightPower = rightPower;
-}
-
-
-if (navigator.userAgent.match(/(iPhone|Android|BlackBerry|Windows Phone)/)) {
-  // The user is on a mobile device
-  document.addEventListener("touchstart", (e)=>{handleMouseDown(e)});
-  document.addEventListener("touchend", (e)=>{handleMouseUp(e)});
-  document.addEventListener("touchmove", (e)=>{handleMotion(e.touches[0])});
-} else {
-  // The user is not on a mobile device
-  document.addEventListener("pointerup", (e)=>{handleMouseUp(e)});
-  document.body.addEventListener("pointerleave", (e)=>{handleMouseUp(e)});
-  document.body.addEventListener("pointercancel", (e)=>{handleMouseUp(e)});
-  joystickNub.addEventListener("pointerdown", (e)=>{handleMouseDown(e)});
-  document.addEventListener("pointermove", (e)=>{handleMotion(e)});
-}
-
-
-</script>
+     
+    </script>
   </body>
 </html>
