@@ -1,27 +1,3 @@
-// Xbee code is in it's own file
-// This lines allow THIS file to incorporate the code.
-// Basically a self made library
-const Xbee = require('./Xbee.js');
-const BotServer = require('./BotServer.js').BotServer;
-
-// If true, you will be required to have an xbee plugged into your computer
-const usingXBee = false;
-
-// Since commits will overwrite the usb port, this will allow you to easily
-// swap to the right one
-// Make sure to use the same usb port on your computer every time
-// if you add yours here
-// To find your usb port name on Windows, open cmd and type 'mode'
-// while you have an XBee plugged in
-
-// const masonPort = '/dev/tty.usbserial-D30DRP81';
-const dylanPort = 'COM5';
-
-if (usingXBee) {
-    serverXbee = new Xbee();
-    serverXbee.configConnection(dylanPort);
-}
-
 // A location in 2D space with an x and y coordinate
 class Point {
     constructor(x, y) {
@@ -54,11 +30,14 @@ class ChessPiece {
 class BotManager {
     botMoving = false;
     board;
-    // Runs when a new instance of the BotManager class is created
-    constructor() {
-        this.initializeBoard();
 
-        this.server = new BotServer();
+    // Reference back to whole server
+    #server;
+
+    // Runs when a new instance of the BotManager class is created
+    constructor(server) {
+        this.#server = server;
+        this.initializeBoard();
     }
     // This is a get status to determine if the bot is moving or not
     getStatus() {

@@ -154,6 +154,18 @@ namespace ChessBotArduino
 
         void setPower(float power)
         {
+            Serial.print("POWER ");
+            Serial.print(channelA);
+            Serial.print(" ");
+            Serial.println(fabs(power));
+            
+
+            ledcWrite(channelA == 16 ? 0 : 1, fabs(power) * 255.0);
+
+            //analogWrite(channelA, power);
+            digitalWrite(channelB, power < 0.0);
+            return;
+
             const float max = 0.5;
             power /= 2;
 
@@ -164,7 +176,7 @@ namespace ChessBotArduino
                 currentDirection = newDirection;
             }
 
-            int powerInt = power * 255.0;
+            int powerInt = abs(power) * 255.0;
 
             if (powerInt != currentPower)
             {

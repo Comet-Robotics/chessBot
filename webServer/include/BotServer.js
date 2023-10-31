@@ -99,6 +99,8 @@ class BotConnection {
     id; // Bot ID from 1-32
     address; // MAC address of microcontroller
 
+    connected;
+
     constructor(conn) {
         this.#conn = conn;
         this.#parser = new PacketParser(this.handlePacket.bind(this));
@@ -111,10 +113,14 @@ class BotConnection {
     }
     onConnClose() {
         console.log('Lost connection to %s', this.#conn.remoteAddress);
+
+        this.connected = false;
     }
     onConnError(err) {
         console.log('Connection error on %s: %s',
             this.#conn.remoteAddress, err);
+
+        this.connected = false;
     }
 
     handlePacket(type, contents) {
@@ -122,6 +128,7 @@ class BotConnection {
         case PacketType.NOTHING: {break;}
         case PacketType.CLIENT_HELLO: {
             this.#onBindMac(contents);
+            this.connected = true;
         }
         }
     }
@@ -145,18 +152,32 @@ class BotConnection {
     isActive() {
         return (this.#conn != undefined) && (this.#conn.readyState === 'open');
     }
+
+    send(contents) {
+        if (this.isActive()) {
+            this.#conn.write(contents);
+        } else {
+            console.log('Connection to', this.identity(),
+                'is inactive, failed to write', contents);
+        }
+    }
 }
 
 class BotServer {
     connections = {}; // Map of ID to BotConnection
-    server;
+    #socket;
 
-    constructor() {
-        this.server = net.createServer();
-        this.server.on('connection', this.handleConnection.bind(this));
-        this.server.listen(3001, () => {
+    // Reference back to whole server
+    #server;
+
+    constructor(server) {
+        this.#server = server;
+
+        this.#socket = net.createServer();
+        this.#socket.on('connection', this.handleConnection.bind(this));
+        this.#socket.listen(3001, () => {
             console.log('TCP bot server listening to %j',
-                this.server.address());
+                this.#socket.address());
         });
     }
 
@@ -182,4 +203,4 @@ class BotServer {
     }
 }
 
-module.exports = {BotServer};
+module.exports = BotServer;

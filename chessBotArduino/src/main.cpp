@@ -14,8 +14,11 @@ using namespace ChessBotArduino;
 
 void setup()
 {
+    Serial.begin(9600);
+
     CONFIG::setupGpio();
-    delay(1000);
+
+    robotInst = new Robot();
 
     connectToWifi();
 

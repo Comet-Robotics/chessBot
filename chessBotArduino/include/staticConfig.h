@@ -87,17 +87,23 @@ namespace ChessBotArduino
         // Bind the pins needed for this robot design to work
         static void setupGpio()
         {
-            pinMode(BUTTON_0_PIN, INPUT);
+            //pinMode(BUTTON_0_PIN, INPUT);
 
-            pinMode(MOTOR_A_PIN1, OUTPUT);
+            //pinMode(MOTOR_A_PIN1, OUTPUT);
             pinMode(MOTOR_A_PIN2, OUTPUT);
-            pinMode(ENCODER_A_PIN1, INPUT);
-            pinMode(ENCODER_A_PIN2, INPUT);
+            //pinMode(ENCODER_A_PIN1, INPUT);
+            //pinMode(ENCODER_A_PIN2, INPUT);
 
-            pinMode(MOTOR_B_PIN1, OUTPUT);
+            //pinMode(MOTOR_B_PIN1, OUTPUT);
             pinMode(MOTOR_B_PIN2, OUTPUT);
-            pinMode(ENCODER_B_PIN1, INPUT);
-            pinMode(ENCODER_B_PIN2, INPUT);
+            //pinMode(ENCODER_B_PIN1, INPUT);
+            //pinMode(ENCODER_B_PIN2, INPUT);
+
+            ledcAttachPin(MOTOR_A_PIN1, 0);
+            ledcSetup(0, 1000, 8);
+
+            ledcAttachPin(MOTOR_B_PIN1, 1);
+            ledcSetup(1, 1000, 8);
         }
     };
 
@@ -107,7 +113,7 @@ namespace ChessBotArduino
     const char* WIFI_SSID = "ChessBot";
     const char* WIFI_PASSWORD = "6rpAee6r)()4jnjs";
 
-    const IPAddress SERVER_IP(192,168,59,248);
+    const IPAddress SERVER_IP(192,168,55,248);
     const uint16_t SERVER_PORT = 3001;
 }; // namespace ChessBotArduino
 

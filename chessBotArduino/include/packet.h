@@ -81,15 +81,14 @@ namespace ChessBotArduino
         MOVE_TO_SPACE,
         MOVE_TO_POS,
         DRIVE,
+        ESTOP,
     };
 
 #pragma pack(push, 1)
     struct PackedTextPacket
     {
-        char checksum[4];
-        char id[2];
         char type[2];
-        char contents[89];
+        char contents[100];
 
         PacketType getType()
         {
@@ -108,9 +107,7 @@ namespace ChessBotArduino
 
         void from(PackedTextPacket &base)
         {
-            checksum = hexToNum(base.checksum, 4);
-            id = hexToNum(base.id, 2);
-            type = (PacketType)hexToNum(base.checksum, 2);
+
             // std::copy(std::begin(base.contents), std::end(base.contents), contents);
         }
     };
@@ -220,6 +217,10 @@ namespace ChessBotArduino
         {
             // Send a ping back
             Serial.write(make<PacketType::PING_RESPONSE>());
+        }
+        else if (p->getType() == PacketType::ESTOP) 
+        {
+
         }
     }
 
