@@ -87,6 +87,10 @@ namespace ChessBotArduino
         // Bind the pins needed for this robot design to work
         static void setupGpio()
         {
+            analogWrite(MOTOR_A_PIN1, 0);
+            analogWrite(MOTOR_B_PIN1, 0);
+
+
             //pinMode(BUTTON_0_PIN, INPUT);
 
             //pinMode(MOTOR_A_PIN1, OUTPUT);
@@ -99,11 +103,11 @@ namespace ChessBotArduino
             //pinMode(ENCODER_B_PIN1, INPUT);
             //pinMode(ENCODER_B_PIN2, INPUT);
 
-            ledcAttachPin(MOTOR_A_PIN1, 0);
+            /*ledcAttachPin(MOTOR_A_PIN1, 0);
             ledcSetup(0, 1000, 8);
 
             ledcAttachPin(MOTOR_B_PIN1, 1);
-            ledcSetup(1, 1000, 8);
+            ledcSetup(1, 1000, 8);*/
         }
     };
 

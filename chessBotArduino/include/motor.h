@@ -157,48 +157,27 @@ namespace ChessBotArduino
             Serial.print("POWER ");
             Serial.print(channelA);
             Serial.print(" ");
-            Serial.println(fabs(power));
+            
             
 
-            ledcWrite(channelA == 16 ? 0 : 1, fabs(power) * 255.0);
+            int iPower = 0;
+
+            if (power < 0) {
+                iPower = 255 - -power * 255;
+            }
+            else {
+                iPower = power * 255;
+            }
+
+            analogWrite(channelA, iPower);
+
+            
+
+            Serial.println(iPower);
 
             //analogWrite(channelA, power);
             digitalWrite(channelB, power < 0.0);
             return;
-
-            const float max = 0.5;
-            power /= 2;
-
-            bool newDirection = power < 0;
-            if (newDirection != currentDirection)
-            {
-                digitalWrite(channelB, newDirection ? HIGH : LOW);
-                currentDirection = newDirection;
-            }
-
-            int powerInt = abs(power) * 255.0;
-
-            if (powerInt != currentPower)
-            {
-                analogWrite(channelA, powerInt);
-                currentPower = powerInt;
-            }
-        }
-
-        void setIntPower(int power)
-        {
-            bool newDirection = power < 0;
-            if (newDirection != currentDirection)
-            {
-                digitalWrite(channelB, newDirection ? HIGH : LOW);
-                currentDirection = newDirection;
-            }
-
-            if (power != currentPower)
-            {
-                analogWrite(channelA, power);
-                currentPower = power;
-            }
         }
     };
 }; // namespace ChessBotArduino

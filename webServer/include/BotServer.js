@@ -142,8 +142,8 @@ class BotConnection {
             return this.id;
         } else if (this.address !== undefined) {
             return this.address;
-        } else if (socket !== undefined) {
-            return socket.remoteAddress;
+        } else if (this.#conn !== undefined) {
+            return this.#conn.remoteAddress;
         } else {
             return 'Unnamed Robot';
         }

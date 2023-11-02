@@ -37,8 +37,8 @@ namespace ChessBotArduino
 
         void stop()
         {
-            left.setIntPower(0);
-            right.setIntPower(0);
+            left.setPower(0);
+            right.setPower(0);
         }
     };
 
