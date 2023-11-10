@@ -1,4 +1,5 @@
 
+// eslint-disable-next-line no-unused-vars
 const WebSocketError = {
     DUPLICATED_CONNECTION: 1,
 };
