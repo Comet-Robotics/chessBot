@@ -7,42 +7,29 @@
 #include "robot.h"
 #include "motor.h"
 #include "packet.h"
+#include "testingSuite.h"
+#include "wifiConnection.h"
 
 using namespace ChessBotArduino;
 
 void setup()
 {
-    delay(500);
-
     Serial.begin(9600);
 
     CONFIG::setupGpio();
 
     robotInst = new Robot();
 
-    delay(1000);
-}
+    connectToWifi();
 
-void log(unsigned long ms)
-{
-#define LOG_FREQ 1000 // ms
-    static unsigned long lastLog = 0;
-
-    if (ms - lastLog > LOG_FREQ)
-    {
-        // Serial.print(v);
-        // Serial.print(" ");
-        // Serial.println();
-
-        lastLog = ms;
-    }
+#if TESTING
+    testing = new TestingSuite();
+#endif
 }
 
 void loop()
 {
     unsigned long ms = millis();
-
-    log(ms);
 
     /*char cmd[256];
     while (Serial.available()) {

@@ -3,6 +3,8 @@
 
 #include "staticConfig.h"
 #include "motor.h"
+#include "differentialKinematics.h"
+#include "button.h"
 
 namespace ChessBotArduino
 {
@@ -11,17 +13,22 @@ namespace ChessBotArduino
     class Robot
     {
     public:
+        Button button0;
+
         Motor left;
         Motor right;
 
-        double x = 0.0;
-        double y = 0.0;
+        DifferentialKinematics kinematics;
 
-        Robot() : left(CONFIG::MOTOR_A_PIN1, CONFIG::MOTOR_A_PIN2, CONFIG::ENCODER_A_PIN1, CONFIG::ENCODER_A_PIN2),
-                  right(CONFIG::MOTOR_B_PIN1, CONFIG::MOTOR_B_PIN2, CONFIG::ENCODER_B_PIN1, CONFIG::ENCODER_B_PIN2)
+        Robot() : button0(CONFIG::BUTTON_0_PIN),
+            left(CONFIG::MOTOR_A_PIN1, CONFIG::MOTOR_A_PIN2, CONFIG::ENCODER_A_PIN1, CONFIG::ENCODER_A_PIN2),
+            right(CONFIG::MOTOR_B_PIN1, CONFIG::MOTOR_B_PIN2, CONFIG::ENCODER_B_PIN1, CONFIG::ENCODER_B_PIN2),
+            kinematics(left, right)
         {
-            left.encoder->encoder.readAndReset();
-            right.encoder->encoder.readAndReset();
+            //left.encoder->encoder.readAndReset();
+            //right.encoder->encoder.readAndReset();
+
+            kinematics.start();
         }
 
         void tick()
@@ -30,8 +37,8 @@ namespace ChessBotArduino
 
         void stop()
         {
-            left.setIntPower(0);
-            right.setIntPower(0);
+            left.setPower(0);
+            right.setPower(0);
         }
     };
 

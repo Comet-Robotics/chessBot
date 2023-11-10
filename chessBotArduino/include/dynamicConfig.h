@@ -55,8 +55,8 @@ namespace ChessBotArduino
 
             for (uint16_t index = start; index < end; ++index)
             {
-                crc = crc_table[(crc ^ EEPROM[index]) & 0x0f] ^ (crc >> 4);
-                crc = crc_table[(crc ^ (EEPROM[index] >> 4)) & 0x0f] ^ (crc >> 4);
+                //crc = crc_table[(crc ^ EEPROM[index]) & 0x0f] ^ (crc >> 4);
+                //crc = crc_table[(crc ^ (EEPROM[index] >> 4)) & 0x0f] ^ (crc >> 4);
                 crc = ~crc;
             }
 
