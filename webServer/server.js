@@ -1,124 +1,105 @@
+// Imports a bunch of libraries (Code other people wrote that we can freely use)
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const path = require('path'); 
+const path = require('path');
 
-//setting up imports for the xbee serial connection
-var SerialPort = require('serialport').SerialPort;
-var xbee_api = require('xbee-api');
-var C = xbee_api.constants;
+// BotManager code is in it's own file
+// This line allow THIS file to incorporate the code.
+// Basically a self made library
+const BotManager = require('./include/BotManager.js');
 
-//this creates a new xbeeAPI object
-var xbeeAPI = new xbee_api.XBeeAPI(
-  {
-    api_mode: 1
-  }
-);
-
-//sets up the USB serial port and baud rate
-var serialport = new SerialPort(
-{
-  path:"/dev/tty.usbserial-D30DNNZ0",
-  baudRate:9600,
-});
-
-//creates the pipes between serial port and the xbeeAPI
-serialport.pipe(xbeeAPI.parser);
-xbeeAPI.builder.pipe(serialport);
-
-//supposed to receive data, but i don't think it works 
-xbeeAPI.parser.on("data", function(frame) {
-  console.log(">>", frame);
-});
-
-//open the serial port
-serialport.on("open", function() {});
+// Creates our custom bot manager and runs it's constructor
+const {botManager} = new BotManager;
 
 const app = express();
+// Different from usb port. This is a network port
 const port = 3000;
 
+// Sets up the chess engine.
+//  This covers all the playing and valid move checking for the chess game
 const jsChessEngine = require('js-chess-engine');
-const { move, status, moves, aiMove } = jsChessEngine
 game = new jsChessEngine.Game();
 
+// Turns the board into a form that can easily be sent over a network
 chessStatus = game.exportJson();
 
+// Sets up some stuff you don't have to worry about. Things like security, etc
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static(path.join('../chess-bot-client/build')));
 
-
+// This basically just says that the server listens for data
+// on the network port set earlier
 app.listen(port, () => {
-   console.log("ChessBot server online!");
-})
-
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, '../', 'index.html'));
+    console.log('ChessBot server online!');
 });
 
-app.post('/move/:from/:to', (req,res) => {
-  const fromRequest = req.params.from
-  const toRequest = req.params.to
-  console.log(fromRequest, toRequest);
+// When a client connects, this sends them the website html
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname, '../', 'index.html'));
+});
 
-  try {
-    const moveResponse = game.move(fromRequest, toRequest);
-    chessStatus = game.exportJson()
-    console.log("move response: " + moveResponse);
-    res.send(chessStatus);
-  }
-  catch (error){
-    console.log(error);
-    res.status(404).json({error: "move error"})
-  }
+// This runs whenever a client tries to make a move
+app.post('/move/:from/:to', (req, res) => {
+    const fromRequest = req.params.from;
+    const toRequest = req.params.to;
+    console.log(fromRequest, toRequest);
 
-  game.printToConsole();
-  moveTest();
-})
+    // If the move is invalid, this will error
+    try {
+        const moveResponse = game.move(fromRequest, toRequest);
+        chessStatus = game.exportJson();
+        console.log('move response: ' + moveResponse);
+        res.send(chessStatus);
+    } catch (error) {
+        console.log(error);
+        res.status(404).json({error: 'move error'});
+    }
+    // Any code past the try catch can safely assume the move is valid
 
+    game.printToConsole();
+    botManager.sendMove(fromRequest, toRequest);
+});
+
+// This runs whenever the client requests the board status
 app.get('/status', (req, res) => {
-  console.log('Status Sent!');
-  res.send(chessStatus);
-})
+    console.log('Status Sent!');
+    res.send(chessStatus);
+});
 
+// This runs when the client makes an ai move
 app.post('/aimove/:level', (req, res) => {
-  const levelRequest = req.params.level;
-  
-  try {
-    const aiMoveResponse = game.aiMove(levelRequest);
-    chessStatus = game.exportJson()
-    console.log("AI move response: " + aiMoveResponse);
-    res.send(chessStatus)
-  }
-  catch (error) {
-    console.log(error);
-    res.status(404).json({error: "ai move error"})
-  }
-  game.printToConsole();
-})
+    const levelRequest = req.params.level;
 
+    // If the move is invalid, this will error
+    try {
+        const aiMoveResponse = game.aiMove(levelRequest);
+        chessStatus = game.exportJson();
+        console.log('AI move response: ' + aiMoveResponse);
+        res.send(chessStatus);
+    } catch (error) {
+        console.log(error);
+        res.status(404).json({error: 'ai move error'});
+    }
+    // Any code past the try catch can safely assume the move is valid
+
+    game.printToConsole();
+    botManager.sendMove(fromRequest, toRequest);
+});
+
+// This resets the board for the clients
 app.post('/resetGame', (req, res) => {
-  game = new jsChessEngine.Game();
-  chessStatus = game.exportJson();
-  game.printToConsole();
-  res.send(chessStatus)
-})
+    game = new jsChessEngine.Game();
+    chessStatus = game.exportJson();
+    game.printToConsole();
+    res.send(chessStatus);
+});
 
+// This runs when a client clicks on a piece, and requests the valid moves
 app.get('/moves/:piece', (req, res) => {
-  const piece = req.params.piece;
-  console.log('Status Sent!');
-  console.log(piece)
-  res.send(game.moves(piece));
-})
-
-function moveTest()
-{
-  var frame_obj = { //the frame_obj is the data to be sent
-    type: C.FRAME_TYPE.AT_COMMAND,
-    command: "200,w;",
-    commandParameter: [],
-  };
- 
-  //send the data thru the xbee pipe
-  xbeeAPI.builder.write(frame_obj);
-}
+    const piece = req.params.piece;
+    console.log('Status Sent!');
+    console.log(piece);
+    res.send(game.moves(piece));
+});
