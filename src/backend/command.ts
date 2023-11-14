@@ -1,3 +1,4 @@
+import { Robot } from "./robot";
 import { RobotManager } from "./robotmanager";
 
 /**
@@ -5,6 +6,12 @@ import { RobotManager } from "./robotmanager";
  */
 export interface Command {
   execute(manager: RobotManager): Promise<void>;
+
+  /**
+   * Implicitly wraps a Command into a Sequential Command.
+   * @param next: The command which is run next.
+   */
+  then(next: Command): Command;
 }
 
 /**
@@ -14,11 +21,8 @@ export interface Command {
 export abstract class CommandBase implements Command {
   public abstract execute(manager: RobotManager): Promise<void>;
 
-  /**
-   * Implicitly wraps a Command into a Sequential Command.
-   */
-  public then(onfulfilled: () => Command[]) {
-    return new SequentialCommandGroup([this, ...onfulfilled()]);
+  public then(next: Command): SequentialCommandGroup {
+    return new SequentialCommandGroup([this, next]);
   }
 
   /**
@@ -51,6 +55,22 @@ export interface ReversibleCommand extends Command {
  */
 export function reverseCommands(commands: ReversibleCommand[]) {
   return commands.map((command) => command.reverse());
+}
+
+/**
+ * A command which operates on an individual Robot.
+ */
+export abstract class IndividualCommand extends CommandBase {
+  constructor(public square: string) {
+    super();
+  }
+
+  public execute(manager: RobotManager): Promise<void> {
+    const robot = manager.getRobot(this.square);
+    return this.executeRobot(robot);
+  }
+
+  public abstract executeRobot(robot: Robot): Promise<void>;
 }
 
 /**
