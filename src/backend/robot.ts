@@ -9,30 +9,23 @@ export class Robot {
   public x: number = 0;
   public y: number = 0;
 
-  constructor(private socket: RobotSocket, private startHeading: number) {
+  constructor(private socket: RobotSocket, public startHeading: number) {
     this.heading = startHeading;
+  }
+
+  public async absoluteRotate(heading: number): Promise<void> {
+    // do some annoying logic
+    this.socket.drive(heading);
   }
 
   public async relativeRotate(heading: number): Promise<void> {
     this.socket.drive(heading);
   }
 
-  public async relativeMove(
-    x: number,
-    y: number,
-    reorient: boolean = false
-  ): Promise<void> {
-    // TODO: Implement
+  public async relativeMove(x: number, y: number): Promise<void> {
+    // TODO: Compute drive arguments
     const promise = this.socket.drive();
-    if (reorient) {
-      promise.then(() => this.socket.drive());
-    }
-
-    if (reorient) {
-      this.heading = this.startHeading;
-    } else {
-      this.heading = Math.atan2(y - this.y, x - this.x);
-    }
+    this.heading = Math.atan2(y - this.y, x - this.x);
     this.x += x;
     this.y += y;
     return promise;

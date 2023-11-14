@@ -3,19 +3,25 @@ import { Robots } from "./robots";
 /**
  * An command which operates on one or more robots.
  */
-export abstract class Command {
+export interface Command {
+  execute(robots: Robots): Promise<void>;
+}
+
+export abstract class CommandBase implements Command {
   public abstract execute(robots: Robots): Promise<void>;
 }
 
-export abstract class ReversibleCommand extends Command {
-  public abstract executeReverse(robots: Robots): Promise<void>;
+export interface ReversibleCommand extends Command {
+  reverse(): ReversibleCommand;
 }
 
-export abstract class CommandGroup extends Command {
-  public commands: Command[];
-  constructor(...commands: Command[]) {
+export function reverseCommands(commands: ReversibleCommand[]) {
+  return commands.map((command) => command.reverse());
+}
+
+export abstract class CommandGroup extends CommandBase {
+  constructor(public commands: Command[]) {
     super();
-    this.commands = commands;
   }
 }
 
@@ -39,73 +45,5 @@ export class SequentialCommandGroup extends CommandGroup {
       promise = promise.then(() => command.execute(robots));
     }
     return promise;
-  }
-}
-
-export abstract class Rotate extends ReversibleCommand {
-  constructor(public square: string, public heading: number) {
-    super();
-  }
-}
-
-/**
- * Rotates a robot a relative amount.
- */
-export class RelativeRotate extends Rotate {
-  public async execute(robots: Robots): Promise<void> {
-    const robot = robots.getRobot(this.square);
-    robot.relativeRotate(this.heading);
-  }
-
-  public async executeReverse(robots: Robots): Promise<void> {
-    const robot = robots.getRobot(this.square);
-    robot.relativeRotate(-this.heading);
-  }
-}
-
-/**
- * Rotates a robot an absolute amount.
- */
-export class AbsoluteRotate extends Rotate {
-  public async execute(robots: Robots): Promise<void> {
-    const robot = robots.getRobot(this.square);
-    // TODO: Handle 0 and stuff and rotate the shortest way
-    robot.relativeRotate(this.heading - robot.heading);
-  }
-
-  public async executeReverse(robots: Robots): Promise<void> {
-    const robot = robots.getRobot(this.square);
-    robot.relativeRotate(this.heading + robot.heading);
-  }
-}
-
-export abstract class Move extends Command {
-  constructor(
-    public square: string,
-    public x: number,
-    public y: number,
-    public reorient = false
-  ) {
-    super();
-  }
-}
-
-/**
- * Moves a robot a relative amount.
- */
-export class RelativeMove extends Move {
-  public async execute(robots: Robots): Promise<void> {
-    const robot = robots.getRobot(this.square);
-    robot.relativeMove(this.x, this.y, this.reorient);
-  }
-}
-
-/**
- * Moves a robot an absolute amount.
- */
-export class AbsoluteMove extends Move {
-  public async execute(robots: Robots): Promise<void> {
-    const robot = robots.getRobot(this.square);
-    robot.relativeMove(this.x - robot.x, this.y - robot.y, this.reorient);
   }
 }

@@ -2,23 +2,22 @@ import { Robots } from "./robots";
 import {
   Command,
   ParallelCommandGroup,
+  ReversibleCommand,
   SequentialCommandGroup,
+  reverseCommands,
 } from "./command";
 
+export class MovePiece implements Command {
+  constructor(
+    public setupMoves: ReversibleCommand[],
+    public mainMove: Command
+  ) {}
 
-/**
- * Encapsulates a grouping of moves.
- * The moves in each group are executed synchronously.
- */
-export class MovePiece extends Command {
-  constructor(public setupMoves: MoveCommand[] = [], public mainMove: Move) {
-    super();
-  }
-
-  public async execute(robots: Robots): Promise<any> {
-    return new SequentialCommandGroup(
-      new ParallelCommandGroup(...this.setupMoves),
-      this.mainMove
-    ).execute(robots);
+  public async execute(robots: Robots): Promise<void> {
+    return new SequentialCommandGroup([
+      new ParallelCommandGroup(this.setupMoves),
+      this.mainMove,
+      new ParallelCommandGroup(reverseCommands(this.setupMoves)),
+    ]).execute(robots);
   }
 }

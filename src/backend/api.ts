@@ -1,4 +1,5 @@
-import { AbsoluteMove, Command } from "./command";
+import { Command } from "./command";
+import { AbsoluteMove } from "./move";
 import { Robots } from "./robots";
 
 /**
