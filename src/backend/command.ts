@@ -5,6 +5,7 @@ import { RobotManager } from "./robotmanager";
  */
 export interface Command {
   execute(manager: RobotManager): Promise<void>;
+  then(nextCommand: Command): Command;
 }
 
 /**
@@ -13,6 +14,10 @@ export interface Command {
  */
 export abstract class CommandBase implements Command {
   public abstract execute(manager: RobotManager): Promise<void>;
+  
+  public then(nextCommand: Command): Command {
+      return new SequentialCommandGroup(this, nextCommand);
+  }
 }
 
 /**
@@ -33,8 +38,11 @@ export function reverseCommands(commands: ReversibleCommand[]) {
  * Represents a group of commands.
  */
 export abstract class CommandGroup extends CommandBase {
-  constructor(public commands: Command[]) {
+  public readonly commands: Command[];
+
+  constructor(...commands: Command[]) {
     super();
+    this.commands = commands;
   }
 }
 

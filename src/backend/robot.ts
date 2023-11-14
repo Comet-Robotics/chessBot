@@ -1,5 +1,6 @@
 import { PieceType, Side, getStartHeading } from "./types";
 import { RobotSocket } from "./robotsocket";
+import { xyToSquare } from "./square";
 
 /**
  * Represents a robot.
@@ -24,6 +25,10 @@ export class Robot {
 
   public get y(): number {
     return this._y;
+  }
+
+  public get square(): string {
+    return xyToSquare(this.x, this.y);
   }
 
   public get heading(): number {

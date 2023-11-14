@@ -1,6 +1,7 @@
 import { RobotManager } from "./robotmanager";
 import {
   Command,
+  CommandBase,
   ParallelCommandGroup,
   ReversibleCommand,
   SequentialCommandGroup,
@@ -11,17 +12,19 @@ import {
  * Executes a set of setupMoves in parallel, followed by a mainMove.
  * The setupMoves are automatically undone afterwards.
  */
-export class MovePiece implements Command {
+export class MovePiece extends CommandBase {
   constructor(
     public setupMoves: ReversibleCommand[],
     public mainMove: Command
-  ) {}
+  ) {
+    super();
+  }
 
   public async execute(manager: RobotManager): Promise<void> {
-    return new SequentialCommandGroup([
-      new ParallelCommandGroup(this.setupMoves),
+    return new SequentialCommandGroup(
+      new ParallelCommandGroup(...this.setupMoves),
       this.mainMove,
-      new ParallelCommandGroup(reverseCommands(this.setupMoves)),
-    ]).execute(manager);
+      new ParallelCommandGroup(...reverseCommands(this.setupMoves)),
+    ).execute(manager);
   }
 }

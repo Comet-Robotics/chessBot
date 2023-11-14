@@ -8,14 +8,14 @@ export class RobotManager {
   /**
    * @param robots A dict mapping squares to robots.
    */
-  constructor(public robots: Record<string, Robot>) {}
+  constructor(public robots: Robot[]) {}
 
   /**
    * Retrieves the robot on the given square.
    * Throws if the robot does not exist.
    */
   public getRobot(square: string): Robot {
-    const robot = this.robots[square];
+    const robot = this.robots.find((r) => square == r.square);
     if (!robot) {
       throw new Error("Expected robot on square " + square);
     }
