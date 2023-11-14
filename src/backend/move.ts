@@ -1,11 +1,11 @@
-import { CommandBase, IndividualCommand, ReversibleCommand } from "./command";
+import { CommandBase, RobotCommand, ReversibleCommand } from "./command";
 import { Robot } from "./robot";
 import { RobotManager } from "./robotmanager";
 
 /**
  * Represents a rotation.
  */
-export abstract class Rotate extends IndividualCommand {
+export abstract class Rotate extends RobotCommand {
   constructor(square: string, public heading: number) {
     super(square);
   }
@@ -36,7 +36,7 @@ export class AbsoluteRotate extends Rotate {
 /**
  * Resets a robot to its starting heading.
  */
-export class RotateToStart extends IndividualCommand {
+export class RotateToStart extends RobotCommand {
   public async executeRobot(robot: Robot): Promise<void> {
     robot.absoluteRotate(robot.startHeading);
   }
@@ -48,7 +48,7 @@ export class RotateToStart extends IndividualCommand {
  * Note this may involve the robot turning first.
  * The orientation after the move is unspecified.
  */
-export abstract class Move extends IndividualCommand {
+export abstract class Move extends RobotCommand {
   constructor(square: string, public x: number, public y: number) {
     super(square);
   }

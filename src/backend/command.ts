@@ -60,7 +60,7 @@ export function reverseCommands(commands: ReversibleCommand[]) {
 /**
  * A command which operates on an individual Robot.
  */
-export abstract class IndividualCommand extends CommandBase {
+export abstract class RobotCommand extends CommandBase {
   constructor(public square: string) {
     super();
   }

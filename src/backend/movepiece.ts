@@ -2,7 +2,7 @@ import { RobotManager } from "./robotmanager";
 import {
   Command,
   CommandBase,
-  IndividualCommand,
+  RobotCommand,
   ParallelCommandGroup,
   ReversibleCommand,
   SequentialCommandGroup,
@@ -16,7 +16,7 @@ import { Move, RelativeMove, RelativeRotate, RotateToStart } from "./move";
  */
 export class MovePiece extends CommandBase {
   constructor(
-    public setupMoves: (ReversibleCommand & IndividualCommand)[],
+    public setupMoves: (ReversibleCommand & RobotCommand)[],
     public mainMove: Command
   ) {
     super();
