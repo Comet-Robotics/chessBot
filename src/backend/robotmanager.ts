@@ -1,9 +1,10 @@
+import { Command } from "./command";
 import { Robot } from "./robot";
 
 /**
  * Represents the positions of one or more pieces on an 8x8 chess board.
  */
-export class Robots {
+export class RobotManager {
   /**
    * @param robots A dict mapping squares to robots.
    */
@@ -19,5 +20,9 @@ export class Robots {
       throw new Error("Expected robot on square " + square);
     }
     return robot;
+  }
+
+  public async executeCommand(command: Command): Promise<void> {
+    command.execute(this);
   }
 }

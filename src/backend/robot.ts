@@ -1,3 +1,4 @@
+import { PieceType, Side, getStartHeading } from "./types";
 import { RobotSocket } from "./robotsocket";
 
 /**
@@ -5,20 +6,26 @@ import { RobotSocket } from "./robotsocket";
  * Includes information about the current location as well as tooling for communication.
  */
 export class Robot {
+  public startHeading: number;
   public heading: number;
   public x: number = 0;
   public y: number = 0;
 
-  constructor(private socket: RobotSocket, public startHeading: number) {
-    this.heading = startHeading;
+  constructor(
+    side: Side,
+    public pieceType: PieceType,
+    private socket: RobotSocket
+  ) {
+    this.startHeading = this.heading = getStartHeading(side);
   }
 
   public async absoluteRotate(heading: number): Promise<void> {
-    // do some annoying logic
+    // TODO: do some annoying logic
     this.socket.drive(heading);
   }
 
   public async relativeRotate(heading: number): Promise<void> {
+    // TODO: some more annoying logic
     this.socket.drive(heading);
   }
 
