@@ -11,11 +11,11 @@ export class Robot {
   public _y: number = 0;
 
   constructor(
-    public _side: Side,
-    public _pieceType: PieceType,
+    public readonly side: Side,
+    public readonly pieceType: PieceType,
     private socket: RobotSocket
   ) {
-    this._heading = getStartHeading(_side);
+    this._heading = this.startHeading;
   }
 
   public get x(): number {
@@ -30,12 +30,8 @@ export class Robot {
     return this._heading;
   }
 
-  public get side(): Side {
-    return this._side;
-  }
-
-  public get pieceType(): PieceType {
-    return this._pieceType;
+  public get startHeading(): number {
+    return getStartHeading(this.side);
   }
 
   public async absoluteRotate(heading: number): Promise<void> {
