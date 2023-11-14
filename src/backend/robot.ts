@@ -6,17 +6,36 @@ import { RobotSocket } from "./robotsocket";
  * Includes information about the current location as well as tooling for communication.
  */
 export class Robot {
-  public startHeading: number;
-  public heading: number;
-  public x: number = 0;
-  public y: number = 0;
+  public _heading: number;
+  public _x: number = 0;
+  public _y: number = 0;
 
   constructor(
-    side: Side,
-    public pieceType: PieceType,
+    public _side: Side,
+    public _pieceType: PieceType,
     private socket: RobotSocket
   ) {
-    this.startHeading = this.heading = getStartHeading(side);
+    this._heading = getStartHeading(_side);
+  }
+
+  public get x(): number {
+    return this._x;
+  }
+
+  public get y(): number {
+    return this._y;
+  }
+
+  public get heading(): number {
+    return this._heading;
+  }
+
+  public get side(): Side {
+    return this._side;
+  }
+
+  public get pieceType(): PieceType {
+    return this._pieceType;
   }
 
   public async absoluteRotate(heading: number): Promise<void> {
@@ -32,9 +51,9 @@ export class Robot {
   public async relativeMove(x: number, y: number): Promise<void> {
     // TODO: Compute drive arguments
     const promise = this.socket.drive();
-    this.heading = Math.atan2(y - this.y, x - this.x);
-    this.x += x;
-    this.y += y;
+    this._heading = Math.atan2(y - this.y, x - this.x);
+    this._x += x;
+    this._y += y;
     return promise;
   }
 }

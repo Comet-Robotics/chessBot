@@ -1,5 +1,6 @@
 import { CommandBase, ReversibleCommand } from "./command";
 import { RobotManager } from "./robotmanager";
+import { getStartHeading } from "./types";
 
 /**
  * Represents a rotation.
@@ -35,7 +36,7 @@ export class AbsoluteRotate extends Rotate {
 }
 
 /**
- * Resets a robot to its starting header.
+ * Resets a robot to its starting heading.
  */
 export class RotateToStart extends CommandBase {
   constructor(public square: string) {
@@ -44,7 +45,7 @@ export class RotateToStart extends CommandBase {
 
   public async execute(manager: RobotManager): Promise<void> {
     const robot = manager.getRobot(this.square);
-    robot.absoluteRotate(robot.startHeading);
+    robot.absoluteRotate(getStartHeading(robot.side));
   }
 }
 
