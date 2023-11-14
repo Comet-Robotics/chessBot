@@ -7,6 +7,7 @@ import {
   SequentialCommandGroup,
   reverseCommands,
 } from "./command";
+import { RotateToStart } from "./move";
 
 /**
  * Executes a set of setupMoves in parallel, followed by a mainMove.
@@ -21,10 +22,10 @@ export class MovePiece extends CommandBase {
   }
 
   public async execute(manager: RobotManager): Promise<void> {
-    return new SequentialCommandGroup(
-      new ParallelCommandGroup(...this.setupMoves),
+    return new SequentialCommandGroup([
+      new ParallelCommandGroup(this.setupMoves),
       this.mainMove,
-      new ParallelCommandGroup(...reverseCommands(this.setupMoves)),
-    ).execute(manager);
+      new ParallelCommandGroup(reverseCommands(this.setupMoves)),
+    ]).execute(manager);
   }
 }

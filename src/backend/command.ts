@@ -5,7 +5,6 @@ import { RobotManager } from "./robotmanager";
  */
 export interface Command {
   execute(manager: RobotManager): Promise<void>;
-  then(nextCommand: Command): Command;
 }
 
 /**
@@ -14,10 +13,30 @@ export interface Command {
  */
 export abstract class CommandBase implements Command {
   public abstract execute(manager: RobotManager): Promise<void>;
-  
-  public then(nextCommand: Command): Command {
-      return new SequentialCommandGroup(this, nextCommand);
+
+  /**
+   * Implicitly wraps a Command into a Sequential Command.
+   */
+  public then(onfulfilled: () => Command[]) {
+    return new SequentialCommandGroup([this, ...onfulfilled()]);
   }
+
+  /**
+   * The use case for this is command.then().
+   * In this case, we want to attach the callbacks to the result of execute?
+   */
+  // public then<TResult1 = void, TResult2 = never>(
+  //   onfulfilled?:
+  //     | ((value: void) => TResult1 | PromiseLike<TResult1>)
+  //     | null
+  //     | undefined
+  // ): PromiseLike<TResult1 | TResult2> {
+  //   if (typeof onfulfilled == "function") {
+  //     return new SequentialCommandGroup();
+  //   }
+  //   return Promise.resolve(null) as unknown as PromiseLike<TResult1 | TResult2>;
+  //   // throw new Error("Commands must be thened with functions.");
+  // }
 }
 
 /**
@@ -38,11 +57,8 @@ export function reverseCommands(commands: ReversibleCommand[]) {
  * Represents a group of commands.
  */
 export abstract class CommandGroup extends CommandBase {
-  public readonly commands: Command[];
-
-  constructor(...commands: Command[]) {
+  constructor(public commands: Command[]) {
     super();
-    this.commands = commands;
   }
 }
 

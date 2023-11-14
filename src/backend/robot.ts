@@ -41,17 +41,17 @@ export class Robot {
 
   public async absoluteRotate(heading: number): Promise<void> {
     // TODO: do some annoying logic
-    this.socket.drive(heading);
+    this.socket.turn(heading);
   }
 
   public async relativeRotate(heading: number): Promise<void> {
     // TODO: some more annoying logic
-    this.socket.drive(heading);
+    this.socket.turn(heading);
   }
 
   public async relativeMove(x: number, y: number): Promise<void> {
     // TODO: Compute drive arguments
-    const promise = this.socket.drive();
+    const promise = this.socket.turnAndDrive();
     this._heading = Math.atan2(y - this.y, x - this.x);
     this._x += x;
     this._y += y;

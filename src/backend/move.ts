@@ -75,7 +75,7 @@ export class RelativeMove extends Move implements ReversibleCommand {
 }
 
 /**
- * Moves a robot to a specific location.
+ * Moves a robot to a global location.
  */
 export class AbsoluteMove extends Move {
   public async execute(manager: RobotManager): Promise<void> {
