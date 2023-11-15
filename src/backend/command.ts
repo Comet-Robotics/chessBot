@@ -11,8 +11,22 @@ export interface Command {
    * Implicitly wraps a Command into a Sequential Command.
    * @param next: The command which is run next.
    */
-  then(next: Command): Command;
+  then(next: Command): SequentialCommandGroup;
 }
+
+/**
+ * An interface for a command which can be reversed (undone).
+ */
+export interface ReversibleCommand extends Command {
+  reverse(): ReversibleCommand;
+}
+
+/**
+ * A helper which reverses elements in a set.
+ */
+// export function reverseCommands(commands: Reversible[]) {
+//   return commands.map((command) => command.reverse());
+// }
 
 /**
  * A command base class.
@@ -24,43 +38,12 @@ export abstract class CommandBase implements Command {
   public then(next: Command): SequentialCommandGroup {
     return new SequentialCommandGroup([this, next]);
   }
-
-  /**
-   * The use case for this is command.then().
-   * In this case, we want to attach the callbacks to the result of execute?
-   */
-  // public then<TResult1 = void, TResult2 = never>(
-  //   onfulfilled?:
-  //     | ((value: void) => TResult1 | PromiseLike<TResult1>)
-  //     | null
-  //     | undefined
-  // ): PromiseLike<TResult1 | TResult2> {
-  //   if (typeof onfulfilled == "function") {
-  //     return new SequentialCommandGroup();
-  //   }
-  //   return Promise.resolve(null) as unknown as PromiseLike<TResult1 | TResult2>;
-  //   // throw new Error("Commands must be thened with functions.");
-  // }
 }
-
-/**
- * A command which can be reversed (undone).
- */
-export interface ReversibleCommand extends Command {
-  reverse(): ReversibleCommand;
-}
-
-/**
- * A helper which reverses commands in a set.
- */
-export function reverseCommands(commands: ReversibleCommand[]) {
-  return commands.map((command) => command.reverse());
-}
-
 /**
  * A command which operates on an individual Robot.
+ * Note this class redirects the execute implementation to executeRobot.
  */
-export abstract class RobotCommand extends CommandBase {
+export abstract class RobotCommand extends CommandBase implements Command {
   constructor(public square: string) {
     super();
   }
@@ -74,9 +57,9 @@ export abstract class RobotCommand extends CommandBase {
 }
 
 /**
- * Represents a group of commands.
+ * A type of command which groups other commands and runs them together.
  */
-export abstract class CommandGroup extends CommandBase {
+export abstract class GroupCommand extends CommandBase {
   constructor(public commands: Command[]) {
     super();
   }
@@ -85,7 +68,7 @@ export abstract class CommandGroup extends CommandBase {
 /**
  * Executes one or more commands in parallel.
  */
-export class ParallelCommandGroup extends CommandGroup {
+export class ParallelCommandGroup extends GroupCommand {
   public async execute(manager: RobotManager): Promise<void> {
     const promises = this.commands.map((move) => move.execute(manager));
     return Promise.all(promises).then(null);
@@ -95,7 +78,7 @@ export class ParallelCommandGroup extends CommandGroup {
 /**
  * Executes one or more commands in sequence, one after another.
  */
-export class SequentialCommandGroup extends CommandGroup {
+export class SequentialCommandGroup extends GroupCommand {
   public async execute(manager: RobotManager): Promise<void> {
     let promise = Promise.resolve();
     for (const command of this.commands) {

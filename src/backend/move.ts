@@ -1,6 +1,5 @@
-import { CommandBase, RobotCommand, ReversibleCommand } from "./command";
+import { RobotCommand, ReversibleCommand } from "./command";
 import { Robot } from "./robot";
-import { RobotManager } from "./robotmanager";
 
 /**
  * Represents a rotation.
@@ -19,7 +18,7 @@ export class RelativeRotate extends Rotate implements ReversibleCommand {
     robot.relativeRotate(this.heading);
   }
 
-  public reverse(): ReversibleCommand {
+  public reverse(): RelativeRotate {
     return new RelativeRotate(this.square, -this.heading);
   }
 }
@@ -56,13 +55,14 @@ export abstract class Move extends RobotCommand {
 
 /**
  * Shifts a robot a relative amount.
+ * The heading of the robot after the move is arbitrary.
  */
 export class RelativeMove extends Move implements ReversibleCommand {
   public async executeRobot(robot: Robot): Promise<void> {
     robot.relativeMove(this.x, this.y);
   }
 
-  public reverse(): ReversibleCommand {
+  public reverse(): RelativeMove {
     return new RelativeMove(this.square, -this.x, -this.y);
   }
 }

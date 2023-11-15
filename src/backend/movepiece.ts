@@ -4,11 +4,10 @@ import {
   CommandBase,
   RobotCommand,
   ParallelCommandGroup,
-  ReversibleCommand,
   SequentialCommandGroup,
-  reverseCommands,
+  ReversibleCommand,
 } from "./command";
-import { Move, RelativeMove, RelativeRotate, RotateToStart } from "./move";
+import { RotateToStart } from "./move";
 
 /**
  * Executes a set of setupMoves in parallel, followed by a mainMove.
@@ -16,7 +15,7 @@ import { Move, RelativeMove, RelativeRotate, RotateToStart } from "./move";
  */
 export class MovePiece extends CommandBase {
   constructor(
-    public setupMoves: (ReversibleCommand & RobotCommand)[],
+    public setupMoves: (RobotCommand & ReversibleCommand)[],
     public mainMove: Command
   ) {
     super();
@@ -27,9 +26,9 @@ export class MovePiece extends CommandBase {
       new ParallelCommandGroup(this.setupMoves),
       this.mainMove,
       new ParallelCommandGroup(
-        this.setupMoves.map((command) =>
-          command.reverse().then(new RotateToStart(command.square))
-        )
+        this.setupMoves.map((command) => {
+          return command.reverse().then(new RotateToStart(command.square));
+        })
       ),
     ]).execute(manager);
   }
