@@ -1,4 +1,4 @@
-import { RobotCommand, ReversibleCommand } from "./command";
+import { RobotCommand, Reversible } from "./command";
 import { Robot } from "./robot";
 
 /**
@@ -13,7 +13,7 @@ export abstract class Rotate extends RobotCommand {
 /**
  * Rotates a robot a relative amount.
  */
-export class RelativeRotate extends Rotate implements ReversibleCommand {
+export class RelativeRotate extends Rotate implements Reversible<RelativeRotate> {
   public async executeRobot(robot: Robot): Promise<void> {
     robot.relativeRotate(this.heading);
   }
@@ -57,7 +57,7 @@ export abstract class Move extends RobotCommand {
  * Shifts a robot a relative amount.
  * The heading of the robot after the move is arbitrary.
  */
-export class RelativeMove extends Move implements ReversibleCommand {
+export class RelativeMove extends Move implements Reversible<RelativeMove> {
   public async executeRobot(robot: Robot): Promise<void> {
     robot.relativeMove(this.x, this.y);
   }

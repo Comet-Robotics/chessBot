@@ -17,8 +17,8 @@ export interface Command {
 /**
  * An interface for a command which can be reversed (undone).
  */
-export interface ReversibleCommand extends Command {
-  reverse(): ReversibleCommand;
+export interface Reversible<T extends Reversible<T>> {
+  reverse(): T;
 }
 
 /**
