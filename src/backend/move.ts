@@ -1,25 +1,29 @@
 import { RobotCommand, Reversible } from "./command";
+import { Position } from "./pair";
 import { Robot } from "./robot";
 
 /**
  * Represents a rotation.
  */
 export abstract class Rotate extends RobotCommand {
-  constructor(square: string, public heading: number) {
-    super(square);
+  constructor(robot: Robot, public heading: number) {
+    super(robot);
   }
 }
 
 /**
  * Rotates a robot a relative amount.
  */
-export class RelativeRotate extends Rotate implements Reversible<RelativeRotate> {
-  public async executeRobot(robot: Robot): Promise<void> {
-    robot.relativeRotate(this.heading);
+export class RelativeRotate
+  extends Rotate
+  implements Reversible<RelativeRotate>
+{
+  public async execute(): Promise<void> {
+    this.robot.relativeRotate(this.heading);
   }
 
   public reverse(): RelativeRotate {
-    return new RelativeRotate(this.square, -this.heading);
+    return new RelativeRotate(this.robot, -this.heading);
   }
 }
 
@@ -27,8 +31,8 @@ export class RelativeRotate extends Rotate implements Reversible<RelativeRotate>
  * Rotates a robot to a given heading.
  */
 export class AbsoluteRotate extends Rotate {
-  public async executeRobot(robot: Robot): Promise<void> {
-    robot.absoluteRotate(this.heading);
+  public async execute(): Promise<void> {
+    this.robot.absoluteRotate(this.heading);
   }
 }
 
@@ -36,8 +40,8 @@ export class AbsoluteRotate extends Rotate {
  * Resets a robot to its starting heading.
  */
 export class RotateToStart extends RobotCommand {
-  public async executeRobot(robot: Robot): Promise<void> {
-    robot.absoluteRotate(robot.startHeading);
+  public async execute(): Promise<void> {
+    this.robot.absoluteRotate(this.robot.startHeading);
   }
 }
 
@@ -48,8 +52,8 @@ export class RotateToStart extends RobotCommand {
  * The orientation after the move is unspecified.
  */
 export abstract class Move extends RobotCommand {
-  constructor(square: string, public x: number, public y: number) {
-    super(square);
+  constructor(robot: Robot, protected position: Position) {
+    super(robot);
   }
 }
 
@@ -58,12 +62,12 @@ export abstract class Move extends RobotCommand {
  * The heading of the robot after the move is arbitrary.
  */
 export class RelativeMove extends Move implements Reversible<RelativeMove> {
-  public async executeRobot(robot: Robot): Promise<void> {
-    robot.relativeMove(this.x, this.y);
+  public async execute(): Promise<void> {
+    this.robot.relativeMove(this.position);
   }
 
   public reverse(): RelativeMove {
-    return new RelativeMove(this.square, -this.x, -this.y);
+    return new RelativeMove(this.robot, this.position.neg());
   }
 }
 
@@ -71,7 +75,7 @@ export class RelativeMove extends Move implements Reversible<RelativeMove> {
  * Moves a robot to a global location.
  */
 export class AbsoluteMove extends Move {
-  public async executeRobot(robot: Robot): Promise<void> {
-    robot.relativeMove(this.x - robot.x, this.y - robot.y);
+  public async execute(): Promise<void> {
+    this.robot.relativeMove(this.position.sub(this.robot._position));
   }
 }

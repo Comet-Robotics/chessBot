@@ -1,4 +1,3 @@
-import { RobotManager } from "./robotmanager";
 import {
   Command,
   CommandBase,
@@ -23,15 +22,15 @@ export class MovePiece extends CommandBase {
     super();
   }
 
-  public async execute(manager: RobotManager): Promise<void> {
+  public async execute(): Promise<void> {
     return new SequentialCommandGroup([
       new ParallelCommandGroup(this.setupMoves),
       this.mainMove,
       new ParallelCommandGroup(
         this.setupMoves.map((command) =>
-          command.reverse().then(new RotateToStart(command.square))
+          command.reverse().then(new RotateToStart(command.robot))
         )
       ),
-    ]).execute(manager);
+    ]).execute();
   }
 }

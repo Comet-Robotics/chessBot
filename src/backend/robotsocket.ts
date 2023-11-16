@@ -19,7 +19,7 @@ export class RobotSocket {
   public async drive(distance: number): Promise<void> {}
 
   /**
-   * @param relativeHeading A relative heading to turn by. May be positive or negative.
+   * @param deltaHeading A relative heading to turn by. May be positive or negative.
    */
-  public async turn(relativeHeading: number): Promise<void> {}
+  public async turn(deltaHeading: number): Promise<void> {}
 }
