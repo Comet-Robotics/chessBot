@@ -6,10 +6,10 @@ export class RobotSocket {
   constructor() {}
 
   public async turnAndDrive(
-    relativeHeading: number = 0,
+    deltaHeading: number = 0,
     distance: number = 0
   ): Promise<void> {
-    return this.turn(relativeHeading).then(() => this.drive(distance));
+    return this.turn(deltaHeading).then(() => this.drive(distance));
   }
 
   /**

@@ -2,7 +2,7 @@ import { Robot } from "./robot";
 import { Square } from "./square";
 import { PieceType, Side } from "./types";
 
-class Piece {
+export class Piece {
   constructor(
     public readonly side: Side,
     public readonly pieceType: PieceType,

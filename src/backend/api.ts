@@ -1,6 +1,5 @@
 import { Command } from "./command";
-import { AbsoluteMove } from "./move";
-import { RobotManager } from "./robotmanager";
+import { PieceManager } from "./piecemanager";
 
 /**
  * TODO: Add express router and endpoints
@@ -10,7 +9,7 @@ import { RobotManager } from "./robotmanager";
  * The global manager.
  * In the future, this may need to move to a session token or main.
  */
-let manager: RobotManager | any;
+let manager: PieceManager;
 
 function reset() {
   // We'll eventually have a list of ips or something and a factory to init robots
@@ -22,9 +21,9 @@ function makeMove() {
   const start: string = "a1";
   const end: string = "a2";
   const command = processMove(start, end);
-  command.execute(manager);
+  command.execute();
 }
 
 function processMove(from: string, to: string): Command {
-  return new AbsoluteMove("a1", 0, 0);
+  throw new Error("Function not implemented");
 }
