@@ -22,9 +22,9 @@ export interface ReversibleCommand extends Command {
 }
 
 /**
- * A helper which reverses elements in a set.
+ * A helper which reverses each command in an array.
  */
-// export function reverseCommands(commands: Reversible[]) {
+// export function reverseCommands(commands: ReversibleCommand[]): ReversibleCommand[] {
 //   return commands.map((command) => command.reverse());
 // }
 

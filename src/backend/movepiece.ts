@@ -26,9 +26,9 @@ export class MovePiece extends CommandBase {
       new ParallelCommandGroup(this.setupMoves),
       this.mainMove,
       new ParallelCommandGroup(
-        this.setupMoves.map((command) => {
-          return command.reverse().then(new RotateToStart(command.square));
-        })
+        this.setupMoves.map((command) =>
+          command.reverse().then(new RotateToStart(command.square))
+        )
       ),
     ]).execute(manager);
   }
