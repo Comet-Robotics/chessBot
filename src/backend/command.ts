@@ -30,7 +30,8 @@ export interface ReversibleCommand extends Command {
 
 /**
  * A command base class.
- * Used to circumvent TypeScript abstract/interface weirdness.
+ * Used to circumvent TypeScript abstract/interface weirdness by providing a version of Command
+ * which can be extended with attributes and constructors.
  */
 export abstract class CommandBase implements Command {
   public abstract execute(manager: RobotManager): Promise<void>;
@@ -43,7 +44,7 @@ export abstract class CommandBase implements Command {
  * A command which operates on an individual Robot.
  * Note this class redirects the execute implementation to executeRobot.
  */
-export abstract class RobotCommand extends CommandBase implements Command {
+export abstract class RobotCommand extends CommandBase {
   constructor(public square: string) {
     super();
   }
@@ -59,7 +60,7 @@ export abstract class RobotCommand extends CommandBase implements Command {
 /**
  * A type of command which groups other commands and runs them together.
  */
-export abstract class GroupCommand extends CommandBase {
+export abstract class CommandGroup extends CommandBase {
   constructor(public commands: Command[]) {
     super();
   }
@@ -68,7 +69,7 @@ export abstract class GroupCommand extends CommandBase {
 /**
  * Executes one or more commands in parallel.
  */
-export class ParallelCommandGroup extends GroupCommand {
+export class ParallelCommandGroup extends CommandGroup {
   public async execute(manager: RobotManager): Promise<void> {
     const promises = this.commands.map((move) => move.execute(manager));
     return Promise.all(promises).then(null);
@@ -78,7 +79,7 @@ export class ParallelCommandGroup extends GroupCommand {
 /**
  * Executes one or more commands in sequence, one after another.
  */
-export class SequentialCommandGroup extends GroupCommand {
+export class SequentialCommandGroup extends CommandGroup {
   public async execute(manager: RobotManager): Promise<void> {
     let promise = Promise.resolve();
     for (const command of this.commands) {
