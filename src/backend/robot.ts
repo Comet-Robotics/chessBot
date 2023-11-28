@@ -30,7 +30,12 @@ export class Robot {
    */
   public async absoluteRotate(heading: number): Promise<void> {
     const delta1: number = heading - this._heading;
-    const delta2: number = heading - (this._heading + 360 * DEGREE);
+    var delta2: number;
+    if (this._heading < heading) {
+      delta2 = heading - (this._heading + 360 * DEGREE);
+    } else {
+      delta2 = (heading + 360 * DEGREE) - this._heading;
+    }
     if (Math.abs(delta1) < Math.abs(delta2)) {
       this.socket.turn(delta1);
     } else {
