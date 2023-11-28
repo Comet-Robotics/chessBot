@@ -29,8 +29,14 @@ export class Robot {
    * @param heading : An absolute heading to turn to.
    */
   public async absoluteRotate(heading: number): Promise<void> {
-    // TODO: do some annoying logic
-    this.socket.turn(heading);
+    const delta1: number = heading - this._heading;
+    const delta2: number = this._heading - heading;
+    if (Math.abs(delta1) < Math.abs(delta2)) {
+      this.socket.turn(delta1);
+    } else {
+      this.socket.turn(delta2);
+    }
+    this._heading = heading;
   }
 
   /**
