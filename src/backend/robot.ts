@@ -11,7 +11,9 @@ export class Robot {
 
   constructor(
     private socket: RobotSocket,
+    // public const
     public readonly startHeading: number = 0,
+    // public immutable
     public _position: Position = ZERO_POSITION
   ) {
     this._heading = startHeading;
@@ -34,8 +36,9 @@ export class Robot {
     if (this._heading < heading) {
       delta2 = heading - (this._heading + 360 * DEGREE);
     } else {
-      delta2 = (heading + 360 * DEGREE) - this._heading;
+      delta2 = heading + 360 * DEGREE - this._heading;
     }
+
     if (Math.abs(delta1) < Math.abs(delta2)) {
       this.socket.turn(delta1);
     } else {
