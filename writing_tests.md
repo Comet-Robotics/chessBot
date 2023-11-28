@@ -3,5 +3,5 @@
 1. Create a test in the relevant `__tests__` folder.  
    Tests should be named e.g. `mycutename.test.ts`.
 
-3. We use jest for our testing framework.  
+2. We use jest for our testing framework.  
    Refer to the [Jest Documentation](https://jestjs.io/docs/api) for information on API usage.
