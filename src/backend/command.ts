@@ -8,7 +8,7 @@ export interface Command {
    * The set of objects that this command requires to execute. Used to place mutexes on
    * common resources to ensure they don't receive multiple inputs at once.
    */
-  requirements: Set<any>;
+  requirements: Set<Object>;
 
   /**
    * Executes the command.
@@ -35,7 +35,7 @@ export interface Reversible<T extends Reversible<T>> {
  * which can be extended with attributes and constructors.
  */
 export abstract class CommandBase implements Command {
-  protected _requirements: Set<any> = new Set();
+  protected _requirements: Set<Object> = new Set();
 
   public abstract execute(): Promise<void>;
 
@@ -43,11 +43,14 @@ export abstract class CommandBase implements Command {
     return new SequentialCommandGroup([this, next]);
   }
 
-  public get requirements(): Set<any> {
+  public get requirements(): Set<Object> {
     return this._requirements;
   }
 
-  public addRequirements(reqs: any[]) {
+  /**
+   * A utility method for adding multiple requirements at once.
+   */
+  protected addRequirements(reqs: Object[]) {
     reqs.forEach((req) => this._requirements.add(req));
   }
 }
