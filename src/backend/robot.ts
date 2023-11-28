@@ -45,11 +45,9 @@ export class Robot {
       delta2 = heading + 360 * DEGREE - this.heading;
     }
 
-    if (Math.abs(delta1) < Math.abs(delta2)) {
-      this.socket.turn(delta1);
-    } else {
-      this.socket.turn(delta2);
-    }
+    const turnAmount = Math.abs(delta1) < Math.abs(delta2) ? delta1 : delta2;
+    this.socket.turn(turnAmount);
+
     this.heading = heading;
   }
 
