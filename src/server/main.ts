@@ -1,9 +1,11 @@
 import express from "express";
 import ViteExpress from "vite-express";
 
-import { router } from "../backend/api";
+import { router } from "./api";
 
 const app = express();
+
+app.use(express.json());
 
 app.use("/api", router);
 

@@ -1,6 +1,6 @@
 import { Position, ZERO_POSITION } from "./pair";
 import { RobotSocket } from "./robotsocket";
-import { DEGREE, clampHeading } from "./units";
+import { DEGREE, clampHeading } from "../utils/units";
 
 /**
  * Represents a robot.

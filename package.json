@@ -6,7 +6,7 @@
     "src/client"
   ],
   "scripts": {
-    "dev": "nodemon src/server/main.ts -w src/server",
+    "dev": "nodemon src/server/main.ts -w src/server src/server",
     "start": "NODE_ENV=production ts-node src/server/main.ts",
     "build": "vite build",
     "test": "jest"
