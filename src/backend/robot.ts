@@ -1,6 +1,6 @@
 import { Position, ZERO_POSITION } from "./pair";
 import { RobotSocket } from "./robotsocket";
-import { clampHeading } from "./units";
+import { DEGREE, clampHeading } from "./units";
 
 /**
  * Represents a robot.
@@ -30,7 +30,7 @@ export class Robot {
    */
   public async absoluteRotate(heading: number): Promise<void> {
     const delta1: number = heading - this._heading;
-    const delta2: number = this._heading - heading;
+    const delta2: number = heading - (this._heading + 360 * DEGREE);
     if (Math.abs(delta1) < Math.abs(delta2)) {
       this.socket.turn(delta1);
     } else {
