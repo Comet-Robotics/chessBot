@@ -1,5 +1,6 @@
 import { Command } from "./command";
 import { PieceManager } from "./piecemanager";
+import { CommandExecutor } from "./executor";
 
 import { Router } from "express";
 
@@ -15,7 +16,13 @@ export const router = Router();
  */
 let manager: PieceManager;
 
+<<<<<<< HEAD
 router.get("/reset", (req, res) => {
+=======
+const executor = new CommandExecutor();
+
+function reset() {
+>>>>>>> origin/main
   // We'll eventually have a list of ips or something and a factory to init robots
   //   manager = new RobotManager();
   //   manager.reset();
@@ -27,7 +34,7 @@ function makeMove() {
   const start: string = "a1";
   const end: string = "a2";
   const command = processMove(start, end);
-  command.execute();
+  executor.execute(command);
 }
 
 router.get("/process-move", (req, res) => {});
