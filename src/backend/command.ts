@@ -4,6 +4,15 @@ import { Robot } from "./robot";
  * An command which operates on one or more robots.
  */
 export interface Command {
+  /**
+   * The set of objects that this command requires to execute. Used to place mutexes on
+   * common resources to ensure they don't receive multiple inputs at once.
+   */
+  requirements: Set<Object>;
+
+  /**
+   * Executes the command.
+   */
   execute(): Promise<void>;
 
   /**
@@ -26,10 +35,23 @@ export interface Reversible<T extends Reversible<T>> {
  * which can be extended with attributes and constructors.
  */
 export abstract class CommandBase implements Command {
+  protected _requirements: Set<Object> = new Set();
+
   public abstract execute(): Promise<void>;
 
   public then(next: Command): SequentialCommandGroup {
     return new SequentialCommandGroup([this, next]);
+  }
+
+  public get requirements(): Set<Object> {
+    return this._requirements;
+  }
+
+  /**
+   * A utility method for adding multiple requirements at once.
+   */
+  protected addRequirements(reqs: Object[]) {
+    reqs.forEach((req) => this._requirements.add(req));
   }
 }
 
@@ -40,6 +62,7 @@ export abstract class CommandBase implements Command {
 export abstract class RobotCommand extends CommandBase {
   constructor(public readonly robot: Robot) {
     super();
+    this.addRequirements([robot]);
   }
 }
 
@@ -49,6 +72,7 @@ export abstract class RobotCommand extends CommandBase {
 export abstract class CommandGroup extends CommandBase {
   constructor(public readonly commands: Command[]) {
     super();
+    this.addRequirements(commands.map((c) => [...c.requirements]).flat());
   }
 }
 
