@@ -10,25 +10,20 @@ export const router = Router();
  * TODO: Add express router and endpoints
  */
 
-/**
- * The global manager.
- * In the future, this may need to move to a session token or main.
- */
-let manager: PieceManager;
-
-<<<<<<< HEAD
-router.get("/reset", (req, res) => {
-=======
+const manager = new PieceManager([]);
 const executor = new CommandExecutor();
 
-function reset() {
->>>>>>> origin/main
-  // We'll eventually have a list of ips or something and a factory to init robots
-  //   manager = new RobotManager();
-  //   manager.reset();
+router.post("/reset", (req, res) => {
+  console.log("Hello!");
+  reset();
 });
 
-router.get("/make-move", (req, res) => {});
+function reset() {
+  //   manager = new PieceManager([]);
+  //   manager.reset();
+}
+
+router.post("/make-move", (req, res) => {});
 
 function makeMove() {
   const start: string = "a1";
@@ -36,8 +31,6 @@ function makeMove() {
   const command = processMove(start, end);
   executor.execute(command);
 }
-
-router.get("/process-move", (req, res) => {});
 
 function processMove(from: string, to: string): Command {
   throw new Error("Function not implemented");

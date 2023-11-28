@@ -4,9 +4,8 @@ import { ChessboardWrapper } from "./ChessboardWrapper";
 
 export function App() {
   return (
-    <div className="App">
+    <div className="app">
       <ChessboardWrapper position={"ahh"} />
-      <h5>Hello</h5>
     </div>
   );
 }

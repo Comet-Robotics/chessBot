@@ -6,7 +6,7 @@ interface ChessboardWrapperProps {
 
 export function ChessboardWrapper(props: ChessboardWrapperProps) {
     return (<Chessboard
-        id="BasicBoard"
+        boardWidth={500}
     // position={props.position}
     />);
 }
