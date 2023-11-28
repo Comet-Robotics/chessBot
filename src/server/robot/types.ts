@@ -1,4 +1,4 @@
-import { DEGREE } from "./units";
+import { DEGREE } from "../utils/units";
 
 export enum PieceType {
   PAWN = "",

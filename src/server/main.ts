@@ -1,12 +1,13 @@
 import express from "express";
 import ViteExpress from "vite-express";
 
+import { router } from "./api";
+
 const app = express();
 
+app.use(express.json());
 
-app.get("/hello", (_, res) => {
-  res.send("Hello Vite + React + TypeScript!");
-});
+app.use("/api", router);
 
 // Use an express router to redirect /api to backend/api
 

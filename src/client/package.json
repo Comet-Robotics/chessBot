@@ -1,0 +1,7 @@
+{
+    "name": "client",
+    "version": "1.0.0",
+    "dependencies": {
+        "react-chessboard": "^4.3.2"
+    }
+}

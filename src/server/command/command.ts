@@ -1,4 +1,4 @@
-import { Robot } from "./robot";
+import { Robot } from "../robot/robot";
 
 /**
  * An command which operates on one or more robots.
