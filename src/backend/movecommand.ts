@@ -79,6 +79,6 @@ export class RelativeMoveCommand
  */
 export class AbsoluteMoveCommand extends MoveCommand {
   public async execute(): Promise<void> {
-    this.robot.relativeMove(this.position.sub(this.robot._position));
+    this.robot.relativeMove(this.position.sub(this.robot.position));
   }
 }

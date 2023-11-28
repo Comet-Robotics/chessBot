@@ -6,7 +6,7 @@ import {
   SequentialCommandGroup,
   Reversible,
 } from "./command";
-import { RotateToStart } from "./move";
+import { RotateToStartCommand } from "./movecommand";
 
 type ReversibleRobotCommand = RobotCommand & Reversible<ReversibleRobotCommand>;
 
@@ -28,7 +28,7 @@ export class MovePiece extends CommandBase {
       this.mainMove,
       new ParallelCommandGroup(
         this.setupMoves.map((command) =>
-          command.reverse().then(new RotateToStart(command.robot))
+          command.reverse().then(new RotateToStartCommand(command.robot))
         )
       ),
     ]).execute();

@@ -7,14 +7,12 @@ import { DEGREE, clampHeading } from "./units";
  * Includes information about the current location as well as tooling for communication.
  */
 export class Robot {
-  public _heading: number;
+  private _heading: number;
 
   constructor(
-    private socket: RobotSocket,
-    // public const
+    private readonly socket: RobotSocket,
     public readonly startHeading: number = 0,
-    // public immutable
-    public _position: Position = ZERO_POSITION
+    private _position: Position = ZERO_POSITION
   ) {
     this._heading = startHeading;
   }
@@ -23,20 +21,28 @@ export class Robot {
     return this._position;
   }
 
+  private set position(position: Position) {
+    this._position = position;
+  }
+
   public get heading(): number {
     return this._heading;
+  }
+
+  private set heading(heading: number) {
+    this._heading = heading;
   }
 
   /**
    * @param heading : An absolute heading to turn to.
    */
   public async absoluteRotate(heading: number): Promise<void> {
-    const delta1: number = heading - this._heading;
+    const delta1: number = heading - this.heading;
     var delta2: number;
-    if (this._heading < heading) {
-      delta2 = heading - (this._heading + 360 * DEGREE);
+    if (this.heading < heading) {
+      delta2 = heading - (this.heading + 360 * DEGREE);
     } else {
-      delta2 = heading + 360 * DEGREE - this._heading;
+      delta2 = heading + 360 * DEGREE - this.heading;
     }
 
     if (Math.abs(delta1) < Math.abs(delta2)) {
@@ -44,7 +50,7 @@ export class Robot {
     } else {
       this.socket.turn(delta2);
     }
-    this._heading = heading;
+    this.heading = heading;
   }
 
   /**
@@ -52,7 +58,7 @@ export class Robot {
    */
   public async relativeRotate(deltaHeading: number): Promise<void> {
     this.socket.turn(deltaHeading);
-    this._heading = clampHeading(this._heading + deltaHeading);
+    this.heading = clampHeading(this.heading + deltaHeading);
   }
 
   /**
@@ -62,8 +68,8 @@ export class Robot {
   public async relativeMove(deltaPosition: Position): Promise<void> {
     // TODO: Compute drive arguments
     const promise = this.socket.turnAndDrive();
-    this._heading = Math.atan2(deltaPosition.y, deltaPosition.x); // y, x for atan2
-    this._position = this._position.add(deltaPosition);
+    this.heading = Math.atan2(deltaPosition.y, deltaPosition.x); // y, x for atan2
+    this.position = this.position.add(deltaPosition);
     return promise;
   }
 }
