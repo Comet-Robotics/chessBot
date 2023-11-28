@@ -10,6 +10,22 @@ export const router = Router();
 const manager = new PieceManager([]);
 const executor = new CommandExecutor();
 
+router.get("/auth", (req, res) => {
+  //pulls clientID cookie from client
+  const clientIDCookie = req.cookies.clientID;
+
+  // if cookie exists on client, return the cookie
+  if (clientIDCookie) {
+    res.status(200).json({ clientID: clientIDCookie });
+  }
+  else {
+    const newID = "test";
+    //sets cookie to expire after 1 day from generation
+    res.cookie('clientID', newID, { maxAge: 86400000 })
+    res.status(200).json({ clientID: newID });
+  }
+})
+
 router.post("/reset", (req, res) => {
   reset();
   return res.json({ message: "Success" });
