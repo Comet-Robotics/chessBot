@@ -1,6 +1,10 @@
 import { Command } from "./command";
 import { PieceManager } from "./piecemanager";
 
+import { Router } from "express";
+
+export const router = Router();
+
 /**
  * TODO: Add express router and endpoints
  */
@@ -11,11 +15,13 @@ import { PieceManager } from "./piecemanager";
  */
 let manager: PieceManager;
 
-function reset() {
+router.get("/reset", (req, res) => {
   // We'll eventually have a list of ips or something and a factory to init robots
   //   manager = new RobotManager();
   //   manager.reset();
-}
+});
+
+router.get("/make-move", (req, res) => {});
 
 function makeMove() {
   const start: string = "a1";
@@ -23,6 +29,8 @@ function makeMove() {
   const command = processMove(start, end);
   command.execute();
 }
+
+router.get("/process-move", (req, res) => {});
 
 function processMove(from: string, to: string): Command {
   throw new Error("Function not implemented");
