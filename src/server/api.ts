@@ -5,6 +5,8 @@ import { CommandExecutor } from "./command/executor";
 import { Router } from "express";
 import { Square } from "./robot/square";
 
+import { v4 as uuidv4 } from 'uuid';
+
 export const router = Router();
 
 const manager = new PieceManager([]);
@@ -19,7 +21,7 @@ router.get("/auth", (req, res) => {
     res.status(200).json({ clientID: clientIDCookie });
   }
   else {
-    const newID = "test";
+    const newID = uuidv4();
     //sets cookie to expire after 1 day from generation
     res.cookie('clientID', newID, { maxAge: 86400000 })
     res.status(200).json({ clientID: newID });
