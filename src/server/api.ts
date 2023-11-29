@@ -5,7 +5,7 @@ import { CommandExecutor } from "./command/executor";
 import { Router } from "express";
 import { Square } from "./robot/square";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export const router = Router();
 
@@ -19,14 +19,13 @@ router.get("/auth", (req, res) => {
   // if cookie exists on client, return the cookie
   if (clientIDCookie) {
     res.status(200).json({ clientID: clientIDCookie });
-  }
-  else {
+  } else {
     const newID = uuidv4();
     //sets cookie to expire after 1 day from generation
-    res.cookie('clientID', newID, { maxAge: 86400000 })
+    res.cookie("clientID", newID, { maxAge: 86400000 });
     res.status(200).json({ clientID: newID });
   }
-})
+});
 
 router.post("/reset", (req, res) => {
   reset();
