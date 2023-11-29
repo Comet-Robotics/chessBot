@@ -11,7 +11,7 @@ export const DEGREE = Math.PI / 180;
  */
 export const RADIAN = 1;
 
-const FULL_ROTATION = 360 * DEGREE;
+export const FULL_ROTATION = 360 * DEGREE;
 
 export function clampHeading(heading: number) {
   // First mod knocks range to (-360, 360)

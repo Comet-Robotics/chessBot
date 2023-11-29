@@ -3,4 +3,7 @@
     "task.allowAutomaticTasks": "off",
     "task.autoDetect": "off",
     "jest.runMode": "on-demand",
+    "cSpell.words": [
+        "Premoves"
+    ],
 }

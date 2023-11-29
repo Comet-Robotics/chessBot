@@ -1,6 +1,6 @@
 import { Position, ZERO_POSITION } from "./pair";
 import { RobotSocket } from "./robotsocket";
-import { DEGREE, clampHeading } from "../utils/units";
+import { FULL_ROTATION, clampHeading } from "../utils/units";
 
 /**
  * Represents a robot.
@@ -40,9 +40,9 @@ export class Robot {
     const delta1: number = heading - this.heading;
     var delta2: number;
     if (this.heading < heading) {
-      delta2 = heading - (this.heading + 360 * DEGREE);
+      delta2 = heading - (this.heading + FULL_ROTATION);
     } else {
-      delta2 = heading + 360 * DEGREE - this.heading;
+      delta2 = heading + FULL_ROTATION - this.heading;
     }
     const turnAmount = Math.abs(delta1) < Math.abs(delta2) ? delta1 : delta2;
     this.heading = heading;
