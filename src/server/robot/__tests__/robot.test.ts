@@ -34,4 +34,27 @@ describe("absoluteRotate", () => {
   );
 });
 
-describe("absoluteDrive", () => {});
+describe("absoluteDrive", () => { });
+
+describe("relativeTurn", () => {
+  it.each(
+    [
+      [0, 30, 30],    //tests simple turn
+      [15, -90, 285], //tests crossing 0 from the left
+      [350, 20, 10],  //tests crossing 0 from the right
+      [0, 360, 0],    //tests making a 360
+      [90, 710, 80],  //tests going over 360
+      [90, -710, 100] //tests going over -360
+    ])(
+      "Turns from %p deg by %p deg",
+      async (start: number, delta: number, expected: number) => {
+        // Convert degrees to radians
+        const deltaRadians = delta * DEGREE;
+        const robot = new Robot(mockRobotSocket, start * DEGREE);
+        await robot.relativeRotate(deltaRadians);
+
+        expect(mockTurn.mock.calls[0][0]).toBeCloseTo(delta * DEGREE);
+        expect(robot.heading).toBeCloseTo(expected * DEGREE);
+      }
+    );
+});
