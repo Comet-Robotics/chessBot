@@ -1,0 +1,5 @@
+{
+    "npm.packageManager": "yarn",
+    "task.allowAutomaticTasks": "off",
+    "task.autoDetect": "off"
+}
