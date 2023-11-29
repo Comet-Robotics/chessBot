@@ -1,19 +1,22 @@
 import { DEGREE } from "../../utils/units";
 import { Robot } from "../robot";
 import { RobotSocket } from "../robotsocket";
+import WebSocket from "ws";
 
-// When RobotSocket eventually takes args, we'll need to mock those as well
-const mockRobotSocket = new RobotSocket();
+jest.mock("ws");
+
+const mockRobotSocket = new RobotSocket(jest.mocked(WebSocket.prototype));
+// Alternative, but breaks turnAndDrive
+// const mockRobotSocket = jest.mocked(RobotSocket.prototype);
 
 const mockTurn = jest.spyOn(RobotSocket.prototype, "turn");
 const mockDrive = jest.spyOn(RobotSocket.prototype, "drive");
+beforeEach(() => {
+  mockTurn.mockClear();
+  mockDrive.mockClear();
+});
 
 describe("absoluteRotate", () => {
-  beforeEach(() => {
-    mockDrive.mockClear();
-    mockTurn.mockClear();
-  });
-
   it("Turns left 30 degrees", async () => {
     const robot = new Robot(mockRobotSocket, 15 * DEGREE);
     await robot.absoluteRotate(345 * DEGREE);
@@ -32,3 +35,5 @@ describe("absoluteRotate", () => {
     expect(mockTurn.mock.calls[0][0]).toBeCloseTo(80 * DEGREE);
   });
 });
+
+describe("absoluteDrive", () => {});
