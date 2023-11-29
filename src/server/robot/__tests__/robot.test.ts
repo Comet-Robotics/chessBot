@@ -17,23 +17,21 @@ beforeEach(() => {
 });
 
 describe("absoluteRotate", () => {
-  it("Turns left 30 degrees", async () => {
-    const robot = new Robot(mockRobotSocket, 15 * DEGREE);
-    await robot.absoluteRotate(345 * DEGREE);
-    expect(mockTurn.mock.calls[0][0]).toBeCloseTo(-30 * DEGREE);
-  });
-
-  it("Turns right 30 degrees", async () => {
-    const robot = new Robot(mockRobotSocket, 345 * DEGREE);
-    await robot.absoluteRotate(15 * DEGREE);
-    expect(mockTurn.mock.calls[0][0]).toBeCloseTo(30 * DEGREE);
-  });
-
-  it("Turns left 80 degrees", async () => {
-    const robot = new Robot(mockRobotSocket, 90 * DEGREE);
-    await robot.absoluteRotate(170 * DEGREE);
-    expect(mockTurn.mock.calls[0][0]).toBeCloseTo(80 * DEGREE);
-  });
+  it.each([
+    [15, 345, -30],
+    [345, 15, 30],
+    [90, 170, 80],
+  ])(
+    "Turns from %p deg to %p deg",
+    async (start: number, end: number, expected: number) => {
+      // Convert degrees to radians
+      const endRadians = end * DEGREE;
+      const robot = new Robot(mockRobotSocket, start * DEGREE);
+      await robot.absoluteRotate(endRadians);
+      expect(mockTurn.mock.calls[0][0]).toBeCloseTo(expected * DEGREE);
+      expect(robot.heading).toBeCloseTo(endRadians);
+    }
+  );
 });
 
 describe("absoluteDrive", () => {});
