@@ -13,7 +13,6 @@ export class RobotSocket {
   }
 
   /**
-   *
    * @param distance The distance to drive forward or backwards by. 1 is defined as the length of a tile.
    */
   public async drive(distance: number): Promise<void> {}

@@ -1,5 +1,6 @@
 {
     "npm.packageManager": "yarn",
     "task.allowAutomaticTasks": "off",
-    "task.autoDetect": "off"
+    "task.autoDetect": "off",
+    "jest.runMode": "on-demand",
 }
