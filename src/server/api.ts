@@ -27,6 +27,8 @@ router.post("/move", (req, res) => {
     return res.status(400).json({ message: "'start' and 'end' are required" });
   }
 
+  console.log(req.cookies.clientId);
+
   console.log("Start: " + req.query.start);
   console.log("End: " + req.query.end);
 

@@ -1,0 +1,12 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "dependencies": {
+        "cookie-parser": "^1.4.6",
+        "uuid": "^9.0.1"
+    },
+    "devDependencies": {
+        "@types/cookie-parser": "^1.4.6",
+        "@types/uuid": "^9.0.7"
+    }
+}
