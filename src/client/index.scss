@@ -3,7 +3,7 @@
 @import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 // The entire screen. Scaled so no scrollbar appears.
-.app-container {
+#app-container {
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -11,16 +11,20 @@
 }
 
 // Everything except the navbar.
-.body-container {
+#body-container {
+  width: 100%;
+  height: 100%;
+}
+
+// A container for the chess board
+#chess-container {
+  position: relative;
   width: 100%;
   height: 100%;
   // border: 3px solid green;
 }
 
-// A mythical centered div for the chess board
-.chess-container {
-  margin: auto;
-  width: 50%;
-  height: 100%;
+#chessboard {
+  position: absolute;
   // border: 3px solid blue;
 }

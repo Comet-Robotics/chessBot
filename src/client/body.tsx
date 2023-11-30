@@ -59,7 +59,7 @@ export function Body(): JSX.Element {
             onRestartClick={handleGameRestart}
             onSettingsClick={() => { }}
         />
-        <div className="body-container">
+        <div id="body-container">
             <ChessboardWrapper
                 isWhite={true}
                 chess={chess}
