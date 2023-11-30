@@ -55,6 +55,8 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
 function makeMove(move: { from: string; to: string }) {
   chess.move(move);
+
+  // TODO: handle invalid moves, implement
   // const command = processMove(
   //   Square.fromString(move.from),
   //   Square.fromString(move.to)
