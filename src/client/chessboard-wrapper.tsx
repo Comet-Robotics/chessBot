@@ -10,13 +10,13 @@ interface Transform {
     left: number;
 }
 
-function computeChessboardTransform(canvasHeight: number, canvasWidth: number): Transform {
-    // We need exactly 7 less pixels to prevent scrollbars from appearing...
-    const width = Math.min(canvasHeight, canvasWidth) - 8;
+function computeChessboardTransform(canvasHeight: number, canvasWidth: number, scale: number): Transform {
+    // Alternative: subtract off at least 8 to prevent scrollbars
+    const width = Math.min(canvasHeight, canvasWidth) * scale;
     const height = width;
 
     const xShift = (canvasWidth - width) / 2;
-    const yShift = (canvasHeight - height) / 2; // + height;
+    const yShift = (canvasHeight - height) / 2;
     return { left: xShift, top: yShift, height, width };
 }
 
@@ -34,7 +34,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
 
     const handleResize = (entries: ResizeEntry[]) => {
         const { height, width } = entries[0].contentRect;
-        const transform = computeChessboardTransform(height, width);
+        const transform = computeChessboardTransform(height, width, 0.85);
         setTransform(transform);
     };
 
