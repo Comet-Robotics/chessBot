@@ -12,7 +12,7 @@ interface Transform {
 
 function computeChessboardTransform(canvasHeight: number, canvasWidth: number): Transform {
     // We need exactly 7 less pixels to prevent scrollbars from appearing...
-    const width = Math.min(canvasHeight, canvasWidth) - 7;
+    const width = Math.min(canvasHeight, canvasWidth) - 8;
     const height = width;
 
     const xShift = (canvasWidth - width) / 2;
