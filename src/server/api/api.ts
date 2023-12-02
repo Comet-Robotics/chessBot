@@ -5,7 +5,7 @@ import { Chess } from "chess.js";
 
 import { Square } from "../robot/square";
 import { WebsocketRequestHandler } from "express-ws";
-import { TCPServer } from "./tcp-interface";
+import { PacketType, TCPServer } from "./tcp-interface";
 
 const manager = new PieceManager([]);
 const executor = new CommandExecutor();
@@ -58,6 +58,55 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
           ids: tcpServer.getConnectedIDs()
         })
       );
+    } else if (message.type == "_drive_tank") {
+      // TODO: message argument/schema validation
+      if (!("id" in message && "left" in message && "right" in message)) {
+        ws.send(
+          JSON.stringify({
+            type: "argument_error",
+            message: "ID or Left or Right power values not in message!"
+          })
+        );
+      } else {
+        if (manualMove(parseInt(message.id), parseFloat(message.left), parseFloat(message.right))) {
+          ws.send(
+            // TODO: store MESSAGE_SUCCESS and MESSAGE_FAILURE in common messages file
+            JSON.stringify({
+              type: "success"
+            })
+          );
+        } else {
+          ws.send(
+            JSON.stringify({
+              type: "failure"
+            })
+          );
+        }
+      }
+    } else if (message.type == "_stop") {
+      if (!("id" in message)) {
+        ws.send(
+          JSON.stringify({
+            type: "argument_error",
+            message: "ID not in message!"
+          })
+        );
+      } else {
+        if (manualStop(parseInt(message.id))) {
+          ws.send(
+            // TODO: store MESSAGE_SUCCESS and MESSAGE_FAILURE in common messages file
+            JSON.stringify({
+              type: "success"
+            })
+          );
+        } else {
+          ws.send(
+            JSON.stringify({
+              type: "failure"
+            })
+          );
+        }
+      }
     }
   });
 };
@@ -75,4 +124,24 @@ function makeMove(move: { from: string; to: string }) {
 
 function processMove(from: Square, to: Square): Command {
   throw new Error("Function not implemented");
+}
+
+function manualMove(robotId: number, leftPower: number, rightPower: number): boolean {
+  if (!(robotId in tcpServer.getConnectedIDs())) {
+    console.log("attempted manual move for non-existent robot ID " + robotId.toString());
+    return false;
+  } else {
+    tcpServer.getTunnelFromID(robotId).send(PacketType.DRIVE_TANK, `${leftPower},${rightPower}`);
+    return true;
+  }
+}
+
+function manualStop(robotId: number): boolean {
+  if (!(robotId in tcpServer.getConnectedIDs())) {
+    console.log("attempted manual stop for non-existent robot ID " + robotId.toString());
+    return false;
+  } else {
+    tcpServer.getTunnelFromID(robotId).send(PacketType.ESTOP);
+    return true;
+  }
 }
