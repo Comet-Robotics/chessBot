@@ -24,7 +24,6 @@ class BotTunnel {
     id: number | undefined;
 
     constructor(private socket: net.Socket, private onHandshake: (packetContent: string) => void) {
-        
     }
 
     isActive() {
@@ -136,7 +135,7 @@ class TCPServer {
     constructor() {
         this.server = net.createServer();
         this.server.on('connection', this.handleConnection);
-        this.server.listen(3001, () => {
+        this.server.listen(config['tcpServerPort'], () => {
             console.log('TCP bot server listening to %j',
                 this.server.address());
         });
