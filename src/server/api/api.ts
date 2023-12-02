@@ -1,5 +1,5 @@
 import { Command } from "../command/command";
-import { PieceManager } from "../robot/piecemanager";
+import { PieceManager } from "../robot/piece-manager";
 import { CommandExecutor } from "../command/executor";
 import { Chess } from "chess.js";
 

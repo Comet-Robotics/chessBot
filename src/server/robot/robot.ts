@@ -1,5 +1,5 @@
 import { Position, ZERO_POSITION } from "./pair";
-import { RobotSocket } from "./robotsocket";
+import { RobotSocket } from "./robot-socket";
 import { FULL_ROTATION, clampHeading } from "../utils/units";
 
 /**
