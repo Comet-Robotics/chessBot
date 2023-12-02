@@ -142,8 +142,8 @@ export class BotTunnel {
 }
 
 export class TCPServer {
-    connections: { [address: string] : BotTunnel} = {}; // Map of ID to BotConnection
-    server: net.Server;
+    private connections: { [id: string]: BotTunnel } = {}; // Map of ID to BotConnection
+    private server: net.Server;
 
     constructor() {
         this.server = net.createServer();
@@ -154,7 +154,7 @@ export class TCPServer {
         });
     }
 
-    handleConnection(socket: net.Socket) {
+    private handleConnection(socket: net.Socket) {
         const remoteAddress = socket.remoteAddress + ':' + socket.remotePort;
         console.log('New client connection from %s', remoteAddress);
 
@@ -169,7 +169,11 @@ export class TCPServer {
         socket.on('error', tunnel.onError);
     };
 
-    getBotAddressFromID(id: number) {
+    public getTunnelFromID(id: number): BotTunnel {
         return this.connections[id.toString()];
+    }
+
+    public getConnectedIDs(): string[] {
+        return Object.keys(this.connections);
     }
 }
