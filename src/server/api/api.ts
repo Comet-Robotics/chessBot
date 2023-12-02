@@ -127,7 +127,7 @@ function processMove(from: Square, to: Square): Command {
 }
 
 function manualMove(robotId: number, leftPower: number, rightPower: number): boolean {
-  if (!(robotId in tcpServer.getConnectedIDs())) {
+  if (!(robotId.toString() in tcpServer.getConnectedIDs())) {
     console.log("attempted manual move for non-existent robot ID " + robotId.toString());
     return false;
   } else {
@@ -137,7 +137,7 @@ function manualMove(robotId: number, leftPower: number, rightPower: number): boo
 }
 
 function manualStop(robotId: number): boolean {
-  if (!(robotId in tcpServer.getConnectedIDs())) {
+  if (!(robotId.toString() in tcpServer.getConnectedIDs())) {
     console.log("attempted manual stop for non-existent robot ID " + robotId.toString());
     return false;
   } else {
