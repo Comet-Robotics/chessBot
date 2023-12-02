@@ -1,6 +1,6 @@
 import { DEGREE } from "../../utils/units";
 import { Robot } from "../robot";
-import { RobotSocket } from "../robotsocket";
+import { RobotSocket } from "../robot-socket";
 import WebSocket from "ws";
 
 jest.mock("ws");

@@ -6,7 +6,7 @@ import {
   SequentialCommandGroup,
   Reversible,
 } from "./command";
-import { RotateToStartCommand } from "./movecommand";
+import { RotateToStartCommand } from "./move-command";
 
 type ReversibleRobotCommand = RobotCommand & Reversible<ReversibleRobotCommand>;
 
