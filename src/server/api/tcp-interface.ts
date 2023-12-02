@@ -161,8 +161,16 @@ export class TCPServer {
         const connectionsReference = this.connections;
         const tunnel = new BotTunnel(socket, (mac: string) => {
             console.log('Adding robot with mac ', mac, ' to arr');
-            var id: number = parseInt(config['bots'][mac]);
+            var id: number;
+            if (!(mac in config['bots'])) {
+                id = Math.floor(Math.random() * 900) + 100;
+                console.log('Address not found in config! Assigning random ID: ' + id.toString());
+            } else {
+                id = parseInt(config['bots'][mac]);
+                console.log('Found address ID: ' + id.toString());
+            }
             tunnel.id = id;
+            tunnel.address = mac;
             connectionsReference[id.toString()] = tunnel;
         });
 
