@@ -53,8 +53,8 @@ export class Robot {
    * @param deltaHeading : A relative heading to turn by.
    */
   public async relativeRotate(deltaHeading: number): Promise<void> {
-    this.socket.turn(deltaHeading);
     this.heading = clampHeading(this.heading + deltaHeading);
+    return this.socket.turn(deltaHeading);
   }
 
   /**
