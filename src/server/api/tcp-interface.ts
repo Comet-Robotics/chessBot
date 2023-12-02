@@ -161,7 +161,9 @@ export class TCPServer {
         const connectionsReference = this.connections;
         const tunnel = new BotTunnel(socket, (mac: string) => {
             console.log('Adding robot with mac ', mac, ' to arr');
-            connectionsReference[config['bots'][mac]] = tunnel;
+            var id: number = parseInt(config['bots'][mac]);
+            tunnel.id = id;
+            connectionsReference[id.toString()] = tunnel;
         });
 
         socket.on('data', tunnel.onData);
