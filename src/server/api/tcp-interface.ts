@@ -124,7 +124,7 @@ export class BotTunnel {
 
     send(type: PacketType, contents?: string) {
         var msg = ':';
-        msg += type.toString(16);
+        msg += type.toString(16).padStart(2, '0');
         if (contents !== undefined) {
             msg += ',' + contents;
         }
