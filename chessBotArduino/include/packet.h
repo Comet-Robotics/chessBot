@@ -78,9 +78,11 @@ namespace ChessBotArduino
         QUERY_RESPONSE,
         INFORM_VAR,
         SET_VAR,
-        MOVE_TO_SPACE,
-        MOVE_TO_POS,
-        DRIVE,
+        TURN_BY_ANGLE,
+        DRIVE_TILES,
+        ACTION_SUCCESS,
+        ACTION_FAIL,
+        DRIVE_TANK,
         ESTOP,
     };
 
@@ -188,40 +190,17 @@ namespace ChessBotArduino
         return finish(w);
     }
 
+    template <>
+    char *make<PacketType::ACTION_SUCCESS>()
+    {
+        char *w = start(PacketType::ACTION_SUCCESS);
+
+        return finish(w);
+    }
+
     void send(char *packet)
     {
         Serial.println(packet);
-    }
-
-    void handlePacket(char *buf, size_t len)
-    {
-        PackedTextPacket *p = (PackedTextPacket *)buf;
-
-        switch (p->getType())
-        {
-        case NOTHING:
-            break;
-        case PING_SEND:
-            send(make<PacketType::PING_RESPONSE>());
-            break;
-        case MOVE_TO_SPACE:
-            break;
-        case MOVE_TO_POS:
-            break;
-        }
-
-        if (p->getType() == PacketType::NOTHING)
-        {
-        }
-        else if (p->getType() == PacketType::PING_SEND)
-        {
-            // Send a ping back
-            Serial.write(make<PacketType::PING_RESPONSE>());
-        }
-        else if (p->getType() == PacketType::ESTOP) 
-        {
-
-        }
     }
 
 }; // namespace ChessBotArduino

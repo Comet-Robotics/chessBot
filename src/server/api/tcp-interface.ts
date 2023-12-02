@@ -2,7 +2,7 @@ import * as net from "net";
 const config = require('./botServerConfig.json');
 
 // MUST be kept in sync with chessBotArduino/include/packet.h PacketType
-enum PacketType {
+export enum PacketType {
     NOTHING,
     CLIENT_HELLO,
     SERVER_HELLO,
@@ -12,12 +12,15 @@ enum PacketType {
     QUERY_RESPONSE,
     INFORM_VAR,
     SET_VAR,
-    MOVE_TO_SPACE,
-    MOVE_TO_POS,
-    DRIVE
+    TURN_BY_ANGLE,
+    DRIVE_TILES,
+    ACTION_SUCCESS,
+    ACTION_FAIL,
+    DRIVE_TANK,
+    ESTOP
 }
 
-class BotTunnel {
+export class BotTunnel {
     connected: boolean = false;
     dataBuffer: Buffer | undefined;
     address: string | undefined;
@@ -119,7 +122,17 @@ class BotTunnel {
         }
     }
 
-    send(contents: string) {
+    send(type: PacketType, contents?: string) {
+        var msg = ':';
+        msg += type.toString(16);
+        if (contents !== undefined) {
+            msg += ',' + contents;
+        }
+        msg += ';';
+        this.sendRaw(msg);
+    }
+
+    sendRaw(contents: string) {
         if (this.isActive()) {
             this.socket.write(contents);
         } else {
@@ -128,7 +141,7 @@ class BotTunnel {
     }
 }
 
-class TCPServer {
+export class TCPServer {
     connections: { [address: string] : BotTunnel} = {}; // Map of ID to BotConnection
     server: net.Server;
 
@@ -147,7 +160,7 @@ class TCPServer {
 
         const connectionsReference = this.connections;
         const tunnel = new BotTunnel(socket, (mac: string) => {
-            console.log('Adding robot with mac', mac, 'to arr');
+            console.log('Adding robot with mac ', mac, ' to arr');
             connectionsReference[config['bots'][mac]] = tunnel;
         });
 
