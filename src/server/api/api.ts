@@ -28,6 +28,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
   ws.on("message", (data) => {
     const message = JSON.parse(data.toString());
+    console.log({ message })
     if (message.type == "restart") {
       chess.reset();
       ws.send(
@@ -56,6 +57,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         JSON.stringify({
           type: "id_list",
           ids: tcpServer.getConnectedIDs()
+          // ids: ['11', '22']
         })
       );
     } else if (message.type == "_drive_tank") {
@@ -82,6 +84,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             })
           );
         }
+
       }
     } else if (message.type == "_stop") {
       if (!("id" in message)) {
@@ -127,17 +130,18 @@ function processMove(from: Square, to: Square): Command {
 }
 
 function manualMove(robotId: number, leftPower: number, rightPower: number): boolean {
-  if (!tcpServer.getConnectedIDs().includes(robotId.toString())) {
+  if (!(tcpServer.getConnectedIDs().includes(robotId.toString()))) {
     console.log("attempted manual move for non-existent robot ID " + robotId.toString());
     return false;
   } else {
-    tcpServer.getTunnelFromID(robotId).send(PacketType.DRIVE_TANK, `${leftPower},${rightPower}`);
+    const tunnel = tcpServer.getTunnelFromID(robotId)
+    tunnel.send(PacketType.DRIVE_TANK, `${leftPower},${rightPower}`);
     return true;
   }
 }
 
 function manualStop(robotId: number): boolean {
-  if (!tcpServer.getConnectedIDs().includes(robotId.toString())) {
+  if (!(tcpServer.getConnectedIDs().includes(robotId.toString()))) {
     console.log("attempted manual stop for non-existent robot ID " + robotId.toString());
     return false;
   } else {

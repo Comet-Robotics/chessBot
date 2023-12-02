@@ -114,11 +114,11 @@ export class BotTunnel {
 
     handlePacket(type: PacketType, contents: string) {
         switch (type) {
-        case PacketType.NOTHING: {break;}
-        case PacketType.CLIENT_HELLO: {
-            this.onHandshake(contents);
-            this.connected = true;
-        }
+            case PacketType.NOTHING: { break; }
+            case PacketType.CLIENT_HELLO: {
+                this.onHandshake(contents);
+                this.connected = true;
+            }
         }
     }
 
@@ -134,6 +134,7 @@ export class BotTunnel {
 
     sendRaw(contents: string) {
         if (this.isActive()) {
+            console.log({ contents })
             this.socket.write(contents);
         } else {
             console.log('Connection to ', this.getIdentifier(), ' is inactive, failed to write', contents);
@@ -142,10 +143,9 @@ export class BotTunnel {
 }
 
 export class TCPServer {
-    private connections: { [id: string]: BotTunnel } = {}; // Map of ID to BotConnection
     private server: net.Server;
 
-    constructor() {
+    constructor(private connections: { [id: string]: BotTunnel } = {}) {
         this.server = net.createServer();
         this.server.on('connection', this.handleConnection.bind(this));
         this.server.listen(config['tcpServerPort'], () => {

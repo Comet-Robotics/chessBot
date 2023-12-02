@@ -25,16 +25,15 @@ namespace ChessBotArduino
         constexpr static int PHOTODIODE_BACK_LEFT = A14;
         constexpr static int PHOTODIODE_BACK_RIGHT = A15;
 
-
         constexpr static int DEFAULT_DRIVE_SPEED = 0;
         constexpr static int DEFAULT_TURN_SPEED = 200;
 
         constexpr static int ADVANCE_SPACE_TIME = 1000;
 
         constexpr static float WHEEL_DIAMETER_INCHES = 4.375;
-        constexpr static float WHEEL_CIRCUMFERENCE_INCHES = 15; //WHEEL_DIAMETER_INCHES * M_PI;
+        constexpr static float WHEEL_CIRCUMFERENCE_INCHES = 15; // WHEEL_DIAMETER_INCHES * M_PI;
 
-        constexpr static int ENCODER_TICKS_PER_REVOLUTION = 12000; //14400?
+        constexpr static int ENCODER_TICKS_PER_REVOLUTION = 12000; // 14400?
 
         // Bind the pins needed for this robot design to work
         static void setupGpio()
@@ -73,16 +72,15 @@ namespace ChessBotArduino
         constexpr static int PHOTODIODE_BACK_LEFT = 7;
         constexpr static int PHOTODIODE_BACK_RIGHT = 8;
 
-
         constexpr static int DEFAULT_DRIVE_SPEED = 0;
         constexpr static int DEFAULT_TURN_SPEED = 200;
 
         constexpr static int ADVANCE_SPACE_TIME = 1000;
 
         constexpr static float WHEEL_DIAMETER_INCHES = 4.375;
-        constexpr static float WHEEL_CIRCUMFERENCE_INCHES = 15; //WHEEL_DIAMETER_INCHES * M_PI;
+        constexpr static float WHEEL_CIRCUMFERENCE_INCHES = 15; // WHEEL_DIAMETER_INCHES * M_PI;
 
-        constexpr static int ENCODER_TICKS_PER_REVOLUTION = 12000; //14400?
+        constexpr static int ENCODER_TICKS_PER_REVOLUTION = 12000; // 14400?
 
         // Bind the pins needed for this robot design to work
         static void setupGpio()
@@ -90,18 +88,17 @@ namespace ChessBotArduino
             analogWrite(MOTOR_A_PIN1, 0);
             analogWrite(MOTOR_B_PIN1, 0);
 
+            // pinMode(BUTTON_0_PIN, INPUT);
 
-            //pinMode(BUTTON_0_PIN, INPUT);
-
-            //pinMode(MOTOR_A_PIN1, OUTPUT);
+            // pinMode(MOTOR_A_PIN1, OUTPUT);
             pinMode(MOTOR_A_PIN2, OUTPUT);
-            //pinMode(ENCODER_A_PIN1, INPUT);
-            //pinMode(ENCODER_A_PIN2, INPUT);
+            // pinMode(ENCODER_A_PIN1, INPUT);
+            // pinMode(ENCODER_A_PIN2, INPUT);
 
-            //pinMode(MOTOR_B_PIN1, OUTPUT);
+            // pinMode(MOTOR_B_PIN1, OUTPUT);
             pinMode(MOTOR_B_PIN2, OUTPUT);
-            //pinMode(ENCODER_B_PIN1, INPUT);
-            //pinMode(ENCODER_B_PIN2, INPUT);
+            // pinMode(ENCODER_B_PIN1, INPUT);
+            // pinMode(ENCODER_B_PIN2, INPUT);
 
             /*ledcAttachPin(MOTOR_A_PIN1, 0);
             ledcSetup(0, 1000, 8);
@@ -113,11 +110,10 @@ namespace ChessBotArduino
 
     using CONFIG = WEMOS_S2_DESIGN1;
 
+    const char *WIFI_SSID = "ChessBot";
+    const char *WIFI_PASSWORD = "6rpAee6r)()4jnjs";
 
-    const char* WIFI_SSID = "ChessBot";
-    const char* WIFI_PASSWORD = "6rpAee6r)()4jnjs";
-
-    const IPAddress SERVER_IP(192,168,55,248);
+    const IPAddress SERVER_IP(172, 20, 10, 5);
     const uint16_t SERVER_PORT = 3001;
 }; // namespace ChessBotArduino
 
