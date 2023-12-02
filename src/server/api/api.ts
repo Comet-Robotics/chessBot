@@ -5,10 +5,12 @@ import { Chess } from "chess.js";
 
 import { Square } from "../robot/square";
 import { WebsocketRequestHandler } from "express-ws";
+import { TCPServer } from "./tcp-interface";
 
 const manager = new PieceManager([]);
 const executor = new CommandExecutor();
 const chess = new Chess();
+const tcpServer = new TCPServer();
 
 /**
  * An endpoint used to establish a websocket connection with the server.
@@ -49,6 +51,13 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
           })
         );
       }, 500);
+    } else if (message.type == "get_ids") {
+      ws.send(
+        JSON.stringify({
+          type: "id_list",
+          ids: tcpServer.getConnectedIDs()
+        })
+      );
     }
   });
 };
