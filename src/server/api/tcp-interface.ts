@@ -33,7 +33,7 @@ export class BotTunnel {
         return (this.socket.readyState === 'open');
     }
 
-    getIdentifier() {
+    getIdentifier(): string {
         if (this.id !== undefined) {
             return "ID: " + this.id;
         } else if (this.address !== undefined) {
@@ -51,12 +51,12 @@ export class BotTunnel {
     }
 
     onError(err: Error) {
-        console.log('Connection error from %s: %s', this.getIdentifier, err);
+        console.log('Connection error from %s: %s', this.getIdentifier(), err);
         this.connected = false;
     }
 
     onClose() {
-        console.log('Lost connection to %s', this.getIdentifier);
+        console.log('Lost connection to %s', this.getIdentifier());
         this.connected = false;
     }
 
@@ -136,7 +136,7 @@ export class BotTunnel {
         if (this.isActive()) {
             this.socket.write(contents);
         } else {
-            console.log('Connection to', this.getIdentifier(), 'is inactive, failed to write', contents);
+            console.log('Connection to ', this.getIdentifier(), ' is inactive, failed to write', contents);
         }
     }
 }
@@ -147,7 +147,7 @@ export class TCPServer {
 
     constructor() {
         this.server = net.createServer();
-        this.server.on('connection', this.handleConnection);
+        this.server.on('connection', this.handleConnection.bind(this));
         this.server.listen(config['tcpServerPort'], () => {
             console.log('TCP bot server listening to %j',
                 this.server.address());
@@ -158,8 +158,7 @@ export class TCPServer {
         const remoteAddress = socket.remoteAddress + ':' + socket.remotePort;
         console.log('New client connection from %s', remoteAddress);
 
-        const connectionsReference = this.connections;
-        const tunnel = new BotTunnel(socket, (mac: string) => {
+        const tunnel = new BotTunnel(socket, ((mac: string) => {
             console.log('Adding robot with mac ', mac, ' to arr');
             var id: number;
             if (!(mac in config['bots'])) {
@@ -171,12 +170,12 @@ export class TCPServer {
             }
             tunnel.id = id;
             tunnel.address = mac;
-            connectionsReference[id.toString()] = tunnel;
-        });
+            this.connections[id.toString()] = tunnel;
+        }).bind(this));
 
-        socket.on('data', tunnel.onData);
-        socket.once('close', tunnel.onClose);
-        socket.on('error', tunnel.onError);
+        socket.on('data', tunnel.onData.bind(tunnel));
+        socket.once('close', tunnel.onClose.bind(tunnel));
+        socket.on('error', tunnel.onError.bind(tunnel));
     };
 
     public getTunnelFromID(id: number): BotTunnel {
