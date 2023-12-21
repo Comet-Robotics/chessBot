@@ -10,18 +10,18 @@ labels: draft
 
 #### Task Description:
 <!--
-Briefly explain what this task will accomplish/why it's important
+Briefly explain what this task will accomplish/why it's important.
 -->
 
 #### Implementation Steps:
 <!--
-Explain the general overview of how to implement the task. What should be done and where
+Explain the general overview of how to implement the task. What should be done, and where?
 
 Example:
 1. Do x and y in z file.
 2. Do j and k in h file.
 - Make sure y includes p functionality.
-- Insure your unit tests account for g.
+- Ensure your unit tests account for g.
 -->
 
 #### Difficulties:
@@ -46,12 +46,12 @@ We have z person visiting in 4 days. We really want to show them this functional
 
 #### Extra Info:
 <!--
-Put any extra information here (or rename the category and/or add/delete fields)
+Put any extra information here (or rename the category and/or add/delete fields).
 -->
 
 #### Relevant Links:
 <!--
-Link the relevant resources that would be needed from the code base, resource library (not a thing yet), or internet
+Link the relevant resources that would be needed from the code base, resource library (not a thing yet), or internet.
 
 Example:
 [An example of x in the codebase](https://link1.com)
@@ -60,7 +60,7 @@ Example:
 
 #### Time Estimate: 
 <!--
-Put how long do you think it would take to sit down and complete this
+Put how long do you think it would take to sit down and complete this.
 Example: #### Time Estimate: 5 hours
 -->
 
