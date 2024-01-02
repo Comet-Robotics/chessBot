@@ -1,0 +1,18 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "root"
+    },
+    {
+      "path": "chessBotArduino",
+      "name": "chessBotArduino"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "chessBotArduino": true
+    },
+    "jest.disabledWorkspaceFolders": ["chessBotArduino"]
+  }
+}
