@@ -51,7 +51,8 @@ Put any extra information here (or rename the category and/or add/delete fields)
 
 #### Relevant Links:
 <!--
-Link the relevant resources that would be needed from the code base, resource library (not a thing yet), or internet.
+Link the relevant resources that would be needed from the code base or internet.
+You can use the resource library to help search for relevant links: https://github.com/Comet-Robotics/chessBot/wiki/Resource-Library
 
 Example:
 [An example of x in the codebase](https://link1.com)
