@@ -1,12 +1,27 @@
-export abstract class Message {
-  public toJson(): string {
-    return JSON.stringify({ type: this.type, ...this.toObj() });
+export function parseMessage(text: string): Message {
+  const obj = JSON.parse(text);
+  switch (obj.type) {
+    case MessageType.POSITION:
+      return new PositionMessage(obj.position);
+    case MessageType.MOVE:
+      return new MoveMessage(obj.from, obj.to);
+    case MessageType.PROMOTION:
+      return new PromotionMessage(obj.from, obj.to, obj.promotion);
+    case MessageType.RESET:
+      return new ResetMessage();
   }
+  throw new Error("Message failed");
+}
 
+export abstract class Message {
   public abstract get type(): MessageType;
 
+  public toJson(): string {
+    return JSON.stringify(this.toObj());
+  }
+
   protected toObj(): Object {
-    return {};
+    return { type: this.type };
   }
 }
 
@@ -20,7 +35,7 @@ export class PositionMessage extends Message {
   }
 
   protected toObj(): Object {
-    return { position: this.position };
+    return { ...super.toObj(), position: this.position };
   }
 }
 
@@ -34,7 +49,7 @@ export class MoveMessage extends Message {
   }
 
   protected toObj(): Object {
-    return { from: this.from, to: this.to };
+    return { ...super.toObj(), from: this.from, to: this.to };
   }
 }
 
@@ -47,7 +62,7 @@ export class PromotionMessage extends MoveMessage {
     return MessageType.PROMOTION;
   }
 
-  protected toObj(): Object {
+  public toObj(): Object {
     return { ...super.toObj(), promotion: this.promotion };
   }
 }
@@ -60,19 +75,23 @@ export class ResetMessage extends Message {
 
 export enum MessageType {
   /**
+   * Starts a game.
+   */
+  START_GAME = "start-game",
+  /**
    * A message defining the position of a game.
    */
-  POSITION,
+  POSITION = "position",
   /**
    * A message containing a single move.
    */
-  MOVE,
+  MOVE = "move",
   /**
    * A message containing a promotion.
    */
-  PROMOTION,
+  PROMOTION = "promotion",
   /**
    * A request to reset the game.
    */
-  RESET,
+  RESET = "reset",
 }

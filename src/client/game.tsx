@@ -3,18 +3,22 @@ import useWebSocket from "react-use-websocket";
 import { Chess, Square } from "chess.js";
 
 import { ChessboardWrapper } from "./chessboard-wrapper";
-import { NavbarMenu } from "./navbar-menu";
+import { MessageType, ResetMessage } from "../common/message";
 
 function getMessageHandler(chess: Chess, setChess: Dispatch<Chess>) {
     return (msg: MessageEvent<any>) => {
         const message = JSON.parse(msg.data.toString());
-        if (message.type == "move") {
-            const chessCopy = new Chess(chess.fen());
-            chessCopy.move(message.move);
-            setChess(chessCopy);
-        }
-        else if (message.type == "reset") {
-            setChess(new Chess());
+        switch (message.type) {
+            case MessageType.POSITION: {
+                setChess(new Chess(message.position));
+                return;
+            }
+            case MessageType.MOVE: {
+                const chessCopy = new Chess(chess.fen());
+                chessCopy.move(message.move);
+                setChess(chessCopy);
+                return;
+            }
         }
     };
 }
@@ -38,7 +42,7 @@ function getMoveHandler(
     };
 }
 
-export function Body(): JSX.Element {
+export function Game(): JSX.Element {
     const [chess, setChess] = useState(new Chess());
 
     const { sendMessage } = useWebSocket("ws://localhost:3000/ws", {
@@ -49,16 +53,10 @@ export function Body(): JSX.Element {
     });
 
     const handleGameRestart = () => {
-        sendMessage(JSON.stringify({
-            "type": "restart"
-        }));
+        sendMessage(new ResetMessage().toJson());
     };
 
     return (<>
-        <NavbarMenu
-            onRestartClick={handleGameRestart}
-            onSettingsClick={() => { }}
-        />
         <div id="body-container">
             <ChessboardWrapper
                 isWhite={true}

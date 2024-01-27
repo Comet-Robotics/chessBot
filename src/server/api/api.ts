@@ -1,10 +1,11 @@
+import { Chess } from "chess.js";
+import { WebsocketRequestHandler } from "express-ws";
+import { parseMessage, MessageType, MoveMessage } from "../../common/message";
+
 import { Command } from "../command/command";
 import { PieceManager } from "../robot/piece-manager";
 import { CommandExecutor } from "../command/executor";
-import { Chess } from "chess.js";
-
 import { Square } from "../robot/square";
-import { WebsocketRequestHandler } from "express-ws";
 
 const manager = new PieceManager([]);
 const executor = new CommandExecutor();
@@ -25,36 +26,41 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
   });
 
   ws.on("message", (data) => {
-    const message = JSON.parse(data.toString());
-    if (message.type == "restart") {
-      chess.reset();
-      ws.send(
-        JSON.stringify({
-          type: "reset",
-        })
-      );
-    } else if (message.type == "move") {
-      makeMove(message);
-
-      // Wait before sending next move
-      setTimeout(() => {
-        const moves = chess.moves();
-        const move = moves[Math.floor(Math.random() * moves.length)];
-        chess.move(move);
-
+    const message = parseMessage(data.toString());
+    switch (message.type) {
+      case MessageType.RESET: {
+        chess.reset();
         ws.send(
           JSON.stringify({
-            type: "move",
-            move,
+            type: "reset",
           })
         );
-      }, 500);
+        break;
+      }
+      case MessageType.MOVE: {
+        makeMove(message as MoveMessage);
+        break;
+      }
     }
+
+    // Wait before sending next move
+    // setTimeout(() => {
+    //   const moves = chess.moves();
+    //   const move = moves[Math.floor(Math.random() * moves.length)];
+    //   chess.move(move);
+
+    //   ws.send(
+    //     JSON.stringify({
+    //       type: "move",
+    //       move,
+    //     })
+    //   );
+    // }, 500);
   });
 };
 
-function makeMove(move: { from: string; to: string }) {
-  chess.move(move);
+function makeMove(message: MoveMessage) {
+  chess.move({ from: message.from, to: message.to });
 
   // TODO: handle invalid moves, implement
   // const command = processMove(

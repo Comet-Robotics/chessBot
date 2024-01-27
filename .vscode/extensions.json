@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "streetsidesoftware.code-spell-checker",
-        "Orta.vscode-jest"
+        "Orta.vscode-jest",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
     ]
 }
