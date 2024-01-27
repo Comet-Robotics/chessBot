@@ -103,7 +103,7 @@ esp_err_t getJsonFromHost(const char *host)
 {
     esp_http_client_config_t httpConfig = {};
     httpConfig.host = host;
-    httpConfig.path = "/update/lightkvm/info.json";
+    httpConfig.path = "/update/chessbot/info.json";
     httpConfig.transport_type = HTTP_TRANSPORT_OVER_TCP;
     httpConfig.event_handler = httpEventHandler;
 

@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Deploy OTA Update",
+      "type": "shell",
+      "command": "${config:idf.pythonBinPath} support.py ota",
+      "options": {
+        "env": {
+          "PATH": "${env:PATH}:${config:idf.customExtraPaths}"
+        }
+      },
+    },
+  ]
+}
