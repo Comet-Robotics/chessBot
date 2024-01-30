@@ -7,6 +7,7 @@
         "react": "^18.2.0",
         "react-chessboard": "^4.3.2",
         "react-dom": "^18.2.0",
+        "react-router-dom": "^6.20.1",
         "react-use-websocket": "^4.5.0",
         "scss": "^0.2.4"
     },

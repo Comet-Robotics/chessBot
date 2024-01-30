@@ -1,11 +1,11 @@
+import { BotTunnel } from "../../api/tcp-interface";
 import { DEGREE } from "../../utils/units";
 import { Robot } from "../robot";
 import { RobotSocket } from "../robot-socket";
-import WebSocket from "ws";
 
-jest.mock("ws");
+jest.mock("../../api/tcp-interface");
 
-const mockRobotSocket = new RobotSocket(jest.mocked(WebSocket.prototype));
+const mockRobotSocket = new RobotSocket(jest.mocked(BotTunnel.prototype));
 // Alternative, but breaks turnAndDrive
 // const mockRobotSocket = jest.mocked(RobotSocket.prototype);
 
