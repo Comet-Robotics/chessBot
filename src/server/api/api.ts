@@ -56,7 +56,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
       ws.send(
         JSON.stringify({
           type: "id_list",
-          ids: tcpServer.getConnectedIDs()
+          ids: tcpServer.getConnectedIds()
           // ids: ['11', '22']
         })
       );
@@ -130,22 +130,22 @@ function processMove(from: Square, to: Square): Command {
 }
 
 function manualMove(robotId: number, leftPower: number, rightPower: number): boolean {
-  if (!(tcpServer.getConnectedIDs().includes(robotId.toString()))) {
+  if (!(tcpServer.getConnectedIds().includes(robotId.toString()))) {
     console.log("attempted manual move for non-existent robot ID " + robotId.toString());
     return false;
   } else {
-    const tunnel = tcpServer.getTunnelFromID(robotId)
+    const tunnel = tcpServer.getTunnelFromId(robotId)
     tunnel.send(PacketType.DRIVE_TANK, `${leftPower},${rightPower}`);
     return true;
   }
 }
 
 function manualStop(robotId: number): boolean {
-  if (!(tcpServer.getConnectedIDs().includes(robotId.toString()))) {
+  if (!(tcpServer.getConnectedIds().includes(robotId.toString()))) {
     console.log("attempted manual stop for non-existent robot ID " + robotId.toString());
     return false;
   } else {
-    tcpServer.getTunnelFromID(robotId).send(PacketType.ESTOP);
+    tcpServer.getTunnelFromId(robotId).send(PacketType.ESTOP);
     return true;
   }
 }

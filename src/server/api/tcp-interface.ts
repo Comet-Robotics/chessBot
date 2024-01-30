@@ -178,11 +178,11 @@ export class TCPServer {
         socket.on('error', tunnel.onError.bind(tunnel));
     };
 
-    public getTunnelFromID(id: number): BotTunnel {
+    public getTunnelFromId(id: number): BotTunnel {
         return this.connections[id.toString()];
     }
 
-    public getConnectedIDs(): string[] {
+    public getConnectedIds(): string[] {
         return Object.keys(this.connections);
     }
 }
