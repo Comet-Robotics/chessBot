@@ -2,7 +2,9 @@
 
 ## Setup
 1. Open ./bot folder in Visual Studio Code
-2. Install Espressif IDF extension from the Marketplace
+2. Open the extensions tab on the left.
+3. Install Espressif IDF extension from the Marketplace
+4. 
 3. Plug in the target S2 Mini to your computer
 4. Press the RST button on the S2 Mini while holding the 0 button. This puts the ESP32 into bootloader mode and allows it to be flashed manually.
 5. Run the command "ESP-IDF: Select port to use" and 
