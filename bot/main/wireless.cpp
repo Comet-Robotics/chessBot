@@ -1,3 +1,5 @@
+#include <freertos/FreeRTOS.h> // Mandatory first include
+
 #include <string.h>
 
 #include <esp_wifi.h>

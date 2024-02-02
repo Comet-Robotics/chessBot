@@ -1,3 +1,5 @@
+#include <freertos/FreeRTOS.h> // Mandatory first include
+
 #include <memory>
 
 #include <esp_http_client.h>
