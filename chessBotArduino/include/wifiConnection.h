@@ -81,12 +81,16 @@ namespace ChessBotArduino
 
             #define EXPECT_CHAR(c) if (*(r++) != c) { return; }
 
-            if (type == PacketType::ESTOP) {
+            switch (type) {
+            case ESTOP:
+            {
                 Serial.println("ESTOP");
                 robotInst->stop();
                 ESP.restart();
+                break;
             }
-            else if (type == PacketType::DRIVE) {
+            case DRIVE_TANK:
+            {
                 Serial.println("s1");
 
                 // ,1.0,1.0
@@ -110,7 +114,23 @@ namespace ChessBotArduino
 
                 robotInst->right.setPower(rightPower);
                 Serial.println("s7");
-
+                break;
+            }
+            case PING_SEND:
+            {
+                client.print(make<PacketType::PING_RESPONSE>());
+                break;
+            }
+            case TURN_BY_ANGLE:
+            case DRIVE_TILES:
+            {
+                client.print(make<PacketType::ACTION_SUCCESS>());
+                break;
+            }
+            default:
+            {
+                Serial.print("received unimplemented type");
+            }
             }
         }
     };

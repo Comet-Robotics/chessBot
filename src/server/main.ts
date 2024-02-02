@@ -2,7 +2,7 @@ import express, { RequestHandler, Express } from "express";
 import ViteExpress from "vite-express";
 import cookieParser from "cookie-parser";
 import { v4 as uuid } from "uuid";
-import { websocketHandler } from "./api/api";
+import { apiRouter, websocketHandler } from "./api/api";
 import expressWebSocket from "express-ws";
 
 const app = expressWebSocket(express()).app;
@@ -32,6 +32,8 @@ const checkAuthentication: RequestHandler = (req, res, next) => {
 app.use(checkAuthentication);
 
 app.ws("/ws", websocketHandler);
+
+app.use(apiRouter);
 
 ViteExpress.listen(app as unknown as Express, 3000, () => {
   console.log("Server is listening on port 3000.");

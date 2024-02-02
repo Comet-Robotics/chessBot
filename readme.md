@@ -19,3 +19,7 @@ To run tests:
 2. Use the Testing pane in VS Code to trigger tests.
 
 Jest may also be run in watch mode, which will automatically re-run tests in response to file changes.
+
+## Documentation
+
+Documentation can be found in the `./docs` folder. To generate documentation, run `npx typedoc` in the root folder.
