@@ -86,7 +86,7 @@ export class MoveMessage extends Message {
     return MessageType.MOVE;
   }
 
-  public toObj(): Object {
+  protected toObj(): Object {
     return { ...super.toObj(), from: this.from, to: this.to };
   }
 }
@@ -100,7 +100,7 @@ export class PromotionMessage extends MoveMessage {
     return MessageType.PROMOTION;
   }
 
-  public toObj(): Object {
+  protected toObj(): Object {
     return { ...super.toObj(), promotion: this.promotion };
   }
 }
@@ -118,7 +118,7 @@ export class ManualMoveMessage extends Message {
     return MessageType.MANUAL_MOVE;
   }
 
-  public toObj(): Object {
+  protected toObj(): Object {
     return {
       ...super.toObj(),
       id: this.id,

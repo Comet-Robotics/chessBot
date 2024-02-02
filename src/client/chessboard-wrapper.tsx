@@ -46,7 +46,6 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 <div id="chessboard"
                     style={{ ...transform }}>
                     <Chessboard
-                        customNotationStyle={{}}
                         boardOrientation={isWhite ? "white" : "black"}
                         boardWidth={transform.width}
                         position={chess.fen()}

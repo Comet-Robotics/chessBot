@@ -22,6 +22,12 @@
             "type": "npm",
             "script": "install",
             "problemMatcher": []
+        },
+        {
+            "label": "Run tests",
+            "type": "npm",
+            "script": "test",
+            "problemMatcher": []
         }
     ]
 }
