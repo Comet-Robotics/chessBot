@@ -1,6 +1,6 @@
 import { Robot } from "./robot";
 import { Square } from "./square";
-import { PieceType, Side } from "./types";
+import { PieceType, Side } from "../../common/types";
 
 export class Piece {
   constructor(

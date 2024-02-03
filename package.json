@@ -20,8 +20,8 @@
     "vite-express": "^0.11.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.10",
-    "@vitejs/plugin-react": "^3.0.1",
+    "@types/jest": "^29.5.11",
+    "@vitejs/plugin-react": "^3.1.0",
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "typedoc": "^0.25.7",

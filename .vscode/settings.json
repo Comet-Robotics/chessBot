@@ -2,8 +2,12 @@
     "npm.packageManager": "yarn",
     "task.allowAutomaticTasks": "off",
     "task.autoDetect": "off",
-    "jest.runMode": "on-demand",
     "cSpell.words": [
         "Premoves"
     ],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "editor.formatOnSave": true
 }

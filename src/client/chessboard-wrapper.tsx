@@ -1,5 +1,5 @@
 import { Chessboard } from "react-chessboard";
-import { Chess, Square } from "chess.js";
+import { Chess, DEFAULT_POSITION, Square } from "chess.js";
 import { useState } from "react";
 import { ResizeEntry, ResizeSensor } from "@blueprintjs/core";
 
@@ -21,13 +21,15 @@ function computeChessboardTransform(canvasHeight: number, canvasWidth: number, s
 }
 
 interface ChessboardWrapperProps {
-    chess: Chess;
-    isWhite: boolean;
-    onMove: (from: Square, to: Square) => boolean;
+    chess?: Chess;
+    isWhite?: boolean;
+    onMove?: (from: Square, to: Square) => boolean;
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
-    const { chess, isWhite, onMove } = props;
+    const { onMove } = props;
+    const isWhite = props.isWhite ?? true;
+    const chess = props.chess ?? new Chess(DEFAULT_POSITION);
 
     // Chessboard does not like 0 default height and width for some reason
     const [transform, setTransform] = useState<Transform>({ height: 50, width: 50, top: 0, left: 0 });
