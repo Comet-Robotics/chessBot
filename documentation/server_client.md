@@ -6,5 +6,5 @@ Web sockets provide fast, two-way communication.
 
 The REST API provides a one way interface, where the client makes a request to the server and then receives a response. 
 
-We use the REST API for one-shot communication between the server and the client where the client expects a direct response to it's request from the server. For example, `getIds` is implemented as a REST API `get` request since we logically want the server to provide the requested ids immediately in response to the request. 
+We use the REST API for immediate communication between the server and the client, when the client expects a direct response to its request from the server. For example, `getIds` is implemented as a REST API `get` request since we want the server to provide the requested IDs immediately in response to the request.
 
