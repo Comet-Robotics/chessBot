@@ -1,4 +1,4 @@
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers")
 
-idf_component_register(SRCS "adc.cpp" "dac.cpp" "update.cpp" "wireless.cpp" "main.cpp"
+idf_component_register(SRC_DIRS "."
                     INCLUDE_DIRS "../include")

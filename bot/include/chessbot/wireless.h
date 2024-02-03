@@ -1,11 +1,18 @@
 #ifndef WIRELESS_H
 #define WIRELESS_H
 
-bool isWifiConnected();
+#include <freertos/FreeRTOS.h> // Mandatory first include
 
-void waitForWifiConnection();
+namespace chessbot
+{
 
-// Connect to wifi and start the service to automatically reconnect
-void startWifi();
+    bool isWifiConnected();
+
+    void waitForWifiConnection();
+
+    // Connect to wifi and start the service to automatically reconnect
+    void startWifi();
+
+};
 
 #endif // ifndef WIRELESS_H
