@@ -57,21 +57,21 @@ namespace ChessBotArduino
     {
         constexpr static int BUTTON_0_PIN = 0;
 
-        constexpr static int MOTOR_A_PIN1 = 16;
-        constexpr static int MOTOR_A_PIN2 = 21;
-        constexpr static int ENCODER_A_PIN1 = 34;
-        constexpr static int ENCODER_A_PIN2 = 35;
+        constexpr static int MOTOR_A_PIN1 = 38;
+        constexpr static int MOTOR_A_PIN2 = 33;
+        constexpr static int ENCODER_A_PIN1 = 21;
+        constexpr static int ENCODER_A_PIN2 = 18;
 
-        constexpr static int MOTOR_B_PIN1 = 33;
-        constexpr static int MOTOR_B_PIN2 = 40;
-        constexpr static int ENCODER_B_PIN1 = 36;
-        constexpr static int ENCODER_B_PIN2 = 39;
+        constexpr static int MOTOR_B_PIN1 = 32;
+        constexpr static int MOTOR_B_PIN2 = 31;
+        constexpr static int ENCODER_B_PIN1 = 17;
+        constexpr static int ENCODER_B_PIN2 = 34;
 
-        constexpr static int RELAY_IR_LED = 4;
-        constexpr static int PHOTODIODE_FRONT_LEFT = 5;
-        constexpr static int PHOTODIODE_FRONT_RIGHT = 6;
-        constexpr static int PHOTODIODE_BACK_LEFT = 7;
-        constexpr static int PHOTODIODE_BACK_RIGHT = 8;
+        constexpr static int RELAY_IR_LED = 8;
+        constexpr static int PHOTODIODE_FRONT_LEFT = 1;
+        constexpr static int PHOTODIODE_FRONT_RIGHT = 2;
+        constexpr static int PHOTODIODE_BACK_LEFT = 4;
+        constexpr static int PHOTODIODE_BACK_RIGHT = 6;
 
 
         constexpr static int DEFAULT_DRIVE_SPEED = 0;
