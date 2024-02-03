@@ -57,9 +57,14 @@ namespace chessbot
         this->freeLedcChannel(this->channel);
     }
 
+    bool within(float val, float range, float target)
+    {
+        return std::abs(target - val) <= range;
+    }
+
     void PwmPin::set(float val)
     {
-        int duty = ((2 << LEDC_DUTY_RES) - 1) * val;
+        int duty = ((2 << LEDC_DUTY_RES) - 1) - ((2 << LEDC_DUTY_RES) - 1) * val;
 
         CHECK(ledc_set_duty(LEDC_MODE, this->channel, duty));
         CHECK(ledc_update_duty(LEDC_MODE, this->channel));

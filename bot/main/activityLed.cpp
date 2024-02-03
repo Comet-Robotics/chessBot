@@ -22,6 +22,7 @@ namespace chessbot
         {
             gpio_set_level(ONBOARD_LED, status = !status);
             vTaskDelay(activityLedDelay);
+            printf("Run\n");
         }
     }
 

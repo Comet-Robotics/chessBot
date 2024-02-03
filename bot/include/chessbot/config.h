@@ -7,13 +7,14 @@
 #include <bit>
 
 #include <chessbot/log.h>
+#include <chessbot/util.h>
 
 namespace chessbot
 {
     // The config is a large array stored in flash that may be modified at will
     // Members can be added but never subtracted so that persisting earlier configs works
 
-    enum ConfigKey : uint32_t
+    enum class ConfigKey : uint32_t
     {
         MOTOR_A_PIN1 = 0,
         MOTOR_A_PIN2,
@@ -47,11 +48,11 @@ namespace chessbot
             38, // MOTOR_A_PIN1
             33,
             21, // MOTOR_B_PIN1
-            18,
+            17,
 
             32, // ENCODER_A_PIN1
             31,
-            17,
+            18,
             34,
 
             8, // RELAY_IR_LED
@@ -60,18 +61,18 @@ namespace chessbot
             4,
             6,
 
-            std::bit_cast<uint32_t>(4.375), // WHEEL_DIAMETER_INCHES
+            bitcast<uint32_t>(4.375f), // WHEEL_DIAMETER_INCHES
 
-            std::bit_cast<uint32_t>(-12000.0), // ENCODER_MULTIPLER
+            bitcast<uint32_t>(-12000.0f), // ENCODER_MULTIPLER
     };
 
     template <typename ValT = uint32_t>
     ValT getConfig(ConfigKey key)
     {
-        CHECK(key < CONFIG_SIZE);
+        CHECK((int)key < CONFIG_SIZE);
 
         int ikey = (int)key;
-        return configStore[ikey];
+        return bitcast<ValT>(configStore[ikey]);
     }
 
     template <typename ValT = uint32_t>
@@ -80,6 +81,10 @@ namespace chessbot
         // this is considerably less simple to implement
         FAIL();
     }
+
+    #define PINCONFIG(target) (getConfig<gpio_num_t>(ConfigKey::target))
+    #define FCONFIG(target) (getConfig<float>(ConfigKey::target))
+    #define ICONFIG(target) (getConfig<int>(ConfigKey::target))
 };
 
 #endif // ifndef CHESSBOT_CONFIG_H

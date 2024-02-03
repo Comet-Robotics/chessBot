@@ -1,5 +1,6 @@
 ## IDF Component Manager Manifest File
 dependencies:
+  espressif/pid_ctrl: "^0.2.0"
   espressif/esp_websocket_client: "^1.2.2"
   bblanchon/arduinojson: "^7.0.1"
   espressif/esp_tinyusb: "^1.4.2~2"
