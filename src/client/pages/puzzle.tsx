@@ -1,4 +1,3 @@
-
 export function Puzzle() {
-    return <></>;
+  return <></>;
 }

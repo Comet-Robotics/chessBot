@@ -1,9 +1,9 @@
 import { WebsocketRequestHandler } from "express-ws";
 
 import {
-  parseMessage,
-  MoveMessage,
-  ManualMoveMessage,
+    parseMessage,
+    MoveMessage,
+    ManualMoveMessage,
 } from "../../common/message";
 
 import { Command } from "../command/command";
@@ -24,34 +24,37 @@ const chess = new Chess();
 export const apiRouter = Router();
 
 apiRouter.get("/get-ids", (_, res) => {
-  res.send({ ids: tcpServer.getConnectedIds() });
+    res.send({
+        ids: ["10", "11"],
+        // ids: tcpServer.getConnectedIds(),
+    });
 });
 
 /**
  * Returns a list of available puzzles to play.
  */
 apiRouter.get("/get-puzzles", (_, res) => {
-  return {
-    puzzles: [
-      {
-        name: "Puzzle 1",
-        id: "puzzleId1",
-        rating: "1200",
-      },
-      {
-        name: "Puzzle 2",
-        id: "puzzleId2",
-        rating: "1400",
-      },
-    ],
-  };
+    return {
+        puzzles: [
+            {
+                name: "Puzzle 1",
+                id: "puzzleId1",
+                rating: "1200",
+            },
+            {
+                name: "Puzzle 2",
+                id: "puzzleId2",
+                rating: "1400",
+            },
+        ],
+    };
 });
 
 /**
  * An endpoint which can be used to start a game.
  */
 apiRouter.post("/start-game", (req, res) => {
-  res.send({ message: "Game started" });
+    res.send({ message: "Game started" });
 });
 
 /**
@@ -60,70 +63,68 @@ apiRouter.post("/start-game", (req, res) => {
  * The websocket is used to stream moves to and from the client.
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
-  ws.on("open", () => {
-    console.log("WS opened!");
-  });
+    ws.on("open", () => {
+        console.log("WS opened!");
+    });
 
-  ws.on("close", () => {
-    console.log("WS closed!");
-  });
+    ws.on("close", () => {
+        console.log("WS closed!");
+    });
 
-  ws.on("message", (data) => {
-    const message = parseMessage(data.toString());
-    console.log(message);
+    ws.on("message", (data) => {
+        const message = parseMessage(data.toString());
+        console.log(message);
 
-    if (message instanceof MoveMessage) {
-      doMove(message);
+        if (message instanceof MoveMessage) {
+            doMove(message);
 
-      // Wait before sending next move
-      setTimeout(() => {
-        const moveStrings = chess.moves();
-        const moveString =
-          moveStrings[Math.floor(Math.random() * moveStrings.length)];
-        const move = chess.move(moveString);
-        ws.send(new MoveMessage(move.from, move.to).toJson());
-      }, 500);
-    } else if (message instanceof ManualMoveMessage) {
-      doManualMove(message.id, message.leftPower, message.rightPower);
-    }
-  });
+            // Wait before sending next move
+            setTimeout(() => {
+                const moveStrings = chess.moves();
+                const moveString =
+                    moveStrings[Math.floor(Math.random() * moveStrings.length)];
+                const move = chess.move(moveString);
+                ws.send(new MoveMessage(move.from, move.to).toJson());
+            }, 500);
+        } else if (message instanceof ManualMoveMessage) {
+            doManualMove(message);
+        }
+    });
 };
 
 function doMove(message: MoveMessage) {
-  chess.move({ from: message.from, to: message.to });
+    chess.move({ from: message.from, to: message.to });
 
-  // TODO: handle invalid moves, implement
-  // const command = processMove(
-  //   Square.fromString(move.from),
-  //   Square.fromString(move.to)
-  // );
-  // executor.execute(command);
+    // TODO: handle invalid moves, implement
+    // const command = processMove(
+    //   Square.fromString(move.from),
+    //   Square.fromString(move.to)
+    // );
+    // executor.execute(command);
 }
 
 function processMove(from: Square, to: Square): Command {
-  throw new Error("Function not implemented");
+    throw new Error("Function not implemented");
 }
 
-function doManualMove(
-  robotId: string,
-  leftPower: number,
-  rightPower: number
-): boolean {
-  if (!tcpServer.getConnectedIds().includes(robotId)) {
-    console.log("attempted manual move for non-existent robot ID " + robotId);
-    return false;
-  } else {
-    const tunnel = tcpServer.getTunnelFromId(robotId);
-    // if (leftPower == 0 && rightPower == 0) {
-    //   tunnel.send(PacketType.ESTOP);
-    // } else {
-    tunnel.send(
-      PacketType.DRIVE_TANK,
-      leftPower.toString(),
-      rightPower.toString()
-    );
-  }
-  return true;
+function doManualMove(message: ManualMoveMessage): boolean {
+    if (!tcpServer.getConnectedIds().includes(message.id)) {
+        console.log(
+            "attempted manual move for non-existent robot ID " + message.id
+        );
+        return false;
+    } else {
+        const tunnel = tcpServer.getTunnelFromId(message.id);
+        // if (leftPower == 0 && rightPower == 0) {
+        //   tunnel.send(PacketType.ESTOP);
+        // } else {
+        tunnel.send(
+            PacketType.DRIVE_TANK,
+
+            message.rightPower.toString()
+        );
+    }
+    return true;
 }
 
 // function manualStop(robotId: number): boolean {

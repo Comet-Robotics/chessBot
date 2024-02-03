@@ -4,6 +4,7 @@
     "dependencies": {
         "@blueprintjs/core": "^5.8.2",
         "@blueprintjs/icons": "^5.7.0",
+        "@blueprintjs/select": "^5.1.1",
         "react": "^18.2.0",
         "react-chessboard": "^4.3.4",
         "react-dom": "^18.2.0",

@@ -1,13 +1,13 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
-import { Setup } from "./setup";
-import { Debug } from "./debug";
-import { Game } from "./game";
-import { Puzzle } from "./puzzle";
+import { Setup } from "./pages/setup";
+import { Debug } from "./debug/debug";
+import { Game } from "./pages/game";
+import { Puzzle } from "./pages/puzzle";
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <Navigate to="/setup" />
+        element: <Navigate to="/setup" />,
     },
     {
         path: "setup",
@@ -15,16 +15,16 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "debug",
-                element: <Debug />
-            }
-        ]
+                element: <Debug />,
+            },
+        ],
     },
     {
         path: "puzzle",
-        element: <Puzzle />
+        element: <Puzzle />,
     },
     {
         path: "game",
-        element: <Game />
-    }
+        element: <Game />,
+    },
 ]);
