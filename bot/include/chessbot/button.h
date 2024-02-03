@@ -8,14 +8,11 @@
 #include <driver/gpio.h>
 
 namespace chessbot {
-
 class Button {
-public:
     gpio_num_t port_;
     uint8_t history_ = 0;
-    bool status;
     bool justPressed_ = false;
-    
+
 public:
     Button(gpio_num_t port);
 
@@ -25,7 +22,6 @@ public:
 
     bool justPressed();
 };
-
-};
+}; // namespace chessbot
 
 #endif // ifndef CHESSBOT_BUTTON_H

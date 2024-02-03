@@ -1,96 +1,86 @@
+#include <chessbot/adc.h>
 #include <freertos/FreeRTOS.h> // Mandatory first include
 
-#include <chessbot/adc.h>
+#include <chessbot/log.h>
 
-namespace chessbot
+namespace chessbot {
+adc_oneshot_unit_handle_t adcHandle = nullptr;
+adc_cali_handle_t adc1_cali_chan0_handle = NULL;
+
+esp_err_t initAdc()
 {
+    adc_oneshot_unit_init_cfg_t adcConfig = {};
+    adcConfig.unit_id = ADC_UNIT_1;
 
-    adc_oneshot_unit_handle_t adcHandle = nullptr;
-    adc_cali_handle_t adc1_cali_chan0_handle = NULL;
+    CHECK_RET(adc_oneshot_new_unit(&adcConfig, &adcHandle));
 
-    esp_err_t initAdc()
-    {
-        adc_oneshot_unit_init_cfg_t adcConfig = {};
-        adcConfig.unit_id = ADC_UNIT_1;
+    return ESP_OK;
+}
 
-        CHECK_RET(adc_oneshot_new_unit(&adcConfig, &adcHandle));
+bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t* out_handle)
+{
+    adc_cali_handle_t handle = NULL;
+    esp_err_t ret = ESP_FAIL;
+    bool calibrated = false;
 
-        return ESP_OK;
+    if (!calibrated) {
+        printf("calibration scheme version is %s", "Line Fitting");
+        adc_cali_line_fitting_config_t cali_config = {};
+        cali_config.unit_id = unit;
+        cali_config.atten = atten;
+        cali_config.bitwidth = ADC_BITWIDTH_DEFAULT;
+        ret = adc_cali_create_scheme_line_fitting(&cali_config, &handle);
+        if (ret == ESP_OK) {
+            calibrated = true;
+        }
     }
 
-    bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle)
-    {
-        adc_cali_handle_t handle = NULL;
-        esp_err_t ret = ESP_FAIL;
-        bool calibrated = false;
-
-        if (!calibrated)
-        {
-            printf("calibration scheme version is %s", "Line Fitting");
-            adc_cali_line_fitting_config_t cali_config = {};
-            cali_config.unit_id = unit;
-            cali_config.atten = atten;
-            cali_config.bitwidth = ADC_BITWIDTH_DEFAULT;
-            ret = adc_cali_create_scheme_line_fitting(&cali_config, &handle);
-            if (ret == ESP_OK)
-            {
-                calibrated = true;
-            }
-        }
-
-        *out_handle = handle;
-        if (ret == ESP_OK)
-        {
-            printf("Calibration Success");
-        }
-        else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated)
-        {
-            printf("eFuse not burnt, skip software calibration");
-        }
-        else
-        {
-            printf("Invalid arg or no memory");
-        }
-
-        return calibrated;
+    *out_handle = handle;
+    if (ret == ESP_OK) {
+        printf("Calibration Success");
+    } else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated) {
+        printf("eFuse not burnt, skip software calibration");
+    } else {
+        printf("Invalid arg or no memory");
     }
 
-    void example_adc_calibration_deinit(adc_cali_handle_t handle)
-    {
-        printf("deregister %s calibration scheme", "Line Fitting");
-        CHECK(adc_cali_delete_scheme_line_fitting(handle));
+    return calibrated;
+}
+
+void example_adc_calibration_deinit(adc_cali_handle_t handle)
+{
+    printf("deregister %s calibration scheme", "Line Fitting");
+    CHECK(adc_cali_delete_scheme_line_fitting(handle));
+}
+
+// ADC_ATTEN_DB_0 0.1V to 1.1V
+// ADC_ATTEN_DB_2_5 0.1V to 1.5V
+// ADC_ATTEN_DB_6 0.1V to 2.2V
+// ADC_ATTEN_DB_11 0.1V to 3.9V
+
+void adcInitPin(adc_channel_t channel, adc_atten_t atten)
+{
+    if (!adcHandle) {
+        initAdc();
     }
 
-    // ADC_ATTEN_DB_0 0.1V to 1.1V
-    // ADC_ATTEN_DB_2_5 0.1V to 1.5V
-    // ADC_ATTEN_DB_6 0.1V to 2.2V
-    // ADC_ATTEN_DB_11 0.1V to 3.9V
+    adc_oneshot_chan_cfg_t config = {};
+    config.bitwidth = ADC_BITWIDTH_DEFAULT;
+    config.atten = atten;
+    CHECK(adc_oneshot_config_channel(adcHandle, channel, &config));
 
-    void adcInitPin(adc_channel_t channel, adc_atten_t atten)
-    {
-        if (!adcHandle)
-        {
-            initAdc();
-        }
+    adc1_cali_chan0_handle = NULL;
+    bool do_calibration1_chan0 = example_adc_calibration_init(ADC_UNIT_1, channel, atten, &adc1_cali_chan0_handle);
+}
 
-        adc_oneshot_chan_cfg_t config = {};
-        config.bitwidth = ADC_BITWIDTH_DEFAULT;
-        config.atten = atten;
-        CHECK(adc_oneshot_config_channel(adcHandle, channel, &config));
+int adcRead(adc_channel_t channel)
+{
+    int raw = -1;
+    int voltage = -1;
 
-        adc1_cali_chan0_handle = NULL;
-        bool do_calibration1_chan0 = example_adc_calibration_init(ADC_UNIT_1, channel, atten, &adc1_cali_chan0_handle);
-    }
+    CHECK(adc_oneshot_read(adcHandle, channel, &raw));
+    CHECK(adc_cali_raw_to_voltage(adc1_cali_chan0_handle, raw, &voltage));
 
-    int adcRead(adc_channel_t channel)
-    {
-        static int adc_raw[2][10];
-        static int voltage[2][10];
-
-        CHECK(adc_oneshot_read(adcHandle, channel, &adc_raw[0][0]));
-        CHECK(adc_cali_raw_to_voltage(adc1_cali_chan0_handle, adc_raw[0][0], &voltage[0][0]));
-
-        return voltage[0][0];
-    }
-
-};
+    return voltage;
+}
+}; // namespace chessbot

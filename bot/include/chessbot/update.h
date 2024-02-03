@@ -3,14 +3,16 @@
 
 #include <freertos/FreeRTOS.h> // Mandatory first include
 
-namespace chessbot
-{
+#include <cstdint>
 
-    uint64_t currentFirmwareVersion = 0;
+namespace chessbot {
+extern uint64_t currentFirmwareVersion;
 
-    // Create the low-priority task to occasionally check for OTA updates
-    void launchUpdater();
+// Create the low-priority task to occasionally check for OTA updates
+void launchUpdater();
 
-};
+// Skip the update delay
+void checkUpdateNow();
+}; // namespace chessbot
 
 #endif // ifndef CHESSBOT_UPDATE_H

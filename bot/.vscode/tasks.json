@@ -2,6 +2,11 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Autoformat Code",
+      "type": "shell",
+      "command": "clang-format -i include/chessbot/* main/*"
+    },
+    {
       "label": "Deploy OTA Update",
       "type": "shell",
       "command": "${config:idf.pythonBinPath} support.py ota",
