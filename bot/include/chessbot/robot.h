@@ -1,12 +1,15 @@
 #ifndef CHESSBOT_ROBOT_H
 #define CHESSBOT_ROBOT_H
 
+#include <array>
+
+#include <esp_sleep.h>
+
 #include <chessbot/button.h>
 #include <chessbot/config.h>
 #include <chessbot/differentialKinematics.h>
+#include <chessbot/lightSensor.h>
 #include <chessbot/motor.h>
-
-#include <esp_sleep.h>
 
 namespace chessbot {
 // The state of a chess bot
@@ -19,11 +22,17 @@ public:
 
     DifferentialKinematics kinematics;
 
+    LightSensor frontLeft, frontRight, backLeft, backRight;
+
     Robot()
         : button0(GPIO_NUM_0)
         , left(PINCONFIG(MOTOR_A_PIN1), PINCONFIG(MOTOR_A_PIN2), PINCONFIG(ENCODER_A_PIN1), PINCONFIG(ENCODER_A_PIN2), FCONFIG(MOTOR_A_DRIVE_MULTIPLIER))
         , right(PINCONFIG(MOTOR_B_PIN1), PINCONFIG(MOTOR_B_PIN2), PINCONFIG(ENCODER_B_PIN1), PINCONFIG(ENCODER_B_PIN2), FCONFIG(MOTOR_B_DRIVE_MULTIPLIER))
         , kinematics(left, right)
+        , frontLeft(PINCONFIG(PHOTODIODE_FRONT_LEFT))
+        , frontRight(PINCONFIG(PHOTODIODE_FRONT_RIGHT))
+        , backLeft(PINCONFIG(PHOTODIODE_BACK_LEFT))
+        , backRight(PINCONFIG(PHOTODIODE_BACK_RIGHT))
     {
     }
 
@@ -55,7 +64,10 @@ public:
         esp_deep_sleep_start();
     }
 
-
+    std::array<int, 4> lightLevels()
+    {
+        return { frontLeft.read(), frontRight.read(), backLeft.read(), backRight.read() };
+    }
 };
 }; // namespace chessbot
 

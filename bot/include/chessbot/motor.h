@@ -1,8 +1,11 @@
 #ifndef CHESSBOT_MOTOR_H
 #define CHESSBOT_MOTOR_H
 
-#include <chessbot/dac.h>
 #include <driver/gpio.h>
+
+#include <rotary_encoder.h>
+
+#include <chessbot/dac.h>
 
 namespace chessbot {
 // Wrapper for an encoder of any type
@@ -16,7 +19,10 @@ public:
 
     int64_t lastPos = 0;
 
+    rotary_encoder_info_t info;
+
     Encoder(gpio_num_t channelA_, gpio_num_t channelB_);
+    ~Encoder();
 
     // Get how far the encoder has moved since this function was last called
     int32_t getDelta();

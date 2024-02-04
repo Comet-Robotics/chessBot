@@ -1,5 +1,7 @@
 #include <freertos/FreeRTOS.h> // Mandatory first include
 
+#include <algorithm>
+
 #include <driver/gpio.h>
 #include <esp_log.h>
 #include <esp_ota_ops.h>
@@ -36,8 +38,6 @@ extern "C" void app_main_alt();
 
     Robot robot;
 
-    
-
     // adcInitPin(ADC_CHANNEL_0);
     // adcInitPin(ADC_CHANNEL_1);
     // adcInitPin(ADC_CHANNEL_3);
@@ -66,11 +66,17 @@ extern "C" void app_main_alt();
 
         // Light test
         gpio_set_level(PINCONFIG(RELAY_IR_LED), false);
-
-        int darkLevels;
+        vTaskDelay(10_ms);
+        std::array<int, 4> dark = robot.lightLevels();
 
         gpio_set_level(PINCONFIG(RELAY_IR_LED), true);
+        vTaskDelay(10_ms);
+        std::array<int, 4> light = robot.lightLevels();
 
-        int lightLevels;
+        for (int i = 0; i < 4; i++) {
+            CHECK(dark[i] > light[i]);
+        }
+
+        vTaskDelay(3_s);
     }
 }

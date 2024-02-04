@@ -1,5 +1,6 @@
 #include <freertos/FreeRTOS.h> // Mandatory first include
 
+#include <chessbot/log.h>
 #include <chessbot/motor.h>
 
 namespace chessbot {
@@ -8,6 +9,12 @@ Encoder::Encoder(gpio_num_t channelA_, gpio_num_t channelB_)
     : channelA(channelA_)
     , channelB(channelB_)
 {
+    CHECK(rotary_encoder_init(&info, channelA, channelB));
+    CHECK(rotary_encoder_enable_half_steps(&info, true));
+}
+Encoder::~Encoder()
+{
+    CHECK(rotary_encoder_uninit(&info));
 }
 
 // Get how far the encoder has moved since this function was last called
@@ -28,12 +35,15 @@ int32_t Encoder::getDelta()
 
 int32_t Encoder::read()
 {
-    return 0; // encoder.read();
+    rotary_encoder_state_t state = { 0 };
+    CHECK(rotary_encoder_get_state(&info, &state));
+
+    return state.position;
 }
 
 void Encoder::reset()
 {
-
+    rotary_encoder_reset(&info);
 }
 
 void Encoder::tick(uint64_t us) { }

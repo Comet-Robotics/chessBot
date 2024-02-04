@@ -1,5 +1,7 @@
 #include <freertos/FreeRTOS.h> // Mandatory first include
 
+#include <hal/adc_types.h>
+
 #include <chessbot/config.h>
 
 namespace chessbot {
@@ -11,14 +13,14 @@ uint32_t configStore[(size_t)ConfigKey::CONFIG_SIZE] = {
 
     32, // ENCODER_A_PIN1
     31,
-    18,
+    18, // ENCODER_B_PIN1
     34,
 
-    8, // RELAY_IR_LED
-    1, // PHOTODIODE_FRONT_LEFT
-    2,
-    4,
-    6,
+    15, // RELAY_IR_LED
+    ADC_CHANNEL_0, // PHOTODIODE_FRONT_LEFT (1)
+    ADC_CHANNEL_1, // PHOTODIODE_FRONT_RIGHT (2)
+    ADC_CHANNEL_3, // PHOTODIODE_BACK_LEFT (4)
+    ADC_CHANNEL_5, // PHOTODIODE_BACK_RIGHT (5)
 
     bitcast<uint32_t>(4.375f), // WHEEL_DIAMETER_INCHES
 
