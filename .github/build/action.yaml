@@ -1,0 +1,9 @@
+name: "Builds the repo"
+description: "Installs yarn dependencies"
+
+runs:
+    using: "composite"
+    steps:
+        - uses: actions/checkout@v4
+        - run: yarn install --frozen-lockfile
+          shell: bash
