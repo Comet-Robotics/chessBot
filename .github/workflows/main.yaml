@@ -1,0 +1,25 @@
+name: Validate Code
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install modules
+              run: yarn install --frozen-lockfile
+
+            - name: Check formatting
+              run: yarn format-check
+
+            # - name: Lint
+            #   run: yarn lint-check
+
+            - name: Run tests
+              run: yarn test

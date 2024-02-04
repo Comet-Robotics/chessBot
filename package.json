@@ -10,7 +10,9 @@
     "dev": "nodemon src/server/main.ts -w src/server src/server",
     "start": "NODE_ENV=production ts-node src/server/main.ts",
     "build": "vite build",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write ./**/*.{ts,tsx,json,md,yaml}",
+    "format-check": "prettier --check ./**/*.{ts,tsx,json,md,yaml}"
   },
   "dependencies": {
     "@types/node": "^18.11.18",
