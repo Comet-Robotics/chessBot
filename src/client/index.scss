@@ -4,27 +4,27 @@
 
 // The entire screen. Scaled so no scrollbar appears.
 #app-container {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-flow: column nowrap;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-flow: column nowrap;
 }
 
 // Everything except the navbar.
 #body-container {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 // A container for the chess board
 #chess-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  // border: 3px solid green;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    // border: 3px solid green;
 }
 
 #chessboard {
-  position: absolute;
-  // border: 3px solid blue;
+    position: absolute;
+    // border: 3px solid blue;
 }
