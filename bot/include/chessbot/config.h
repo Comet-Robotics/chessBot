@@ -32,6 +32,9 @@ enum class ConfigKey : uint32_t {
 
     WHEEL_DIAMETER_INCHES,
 
+    MOTOR_A_DRIVE_MULTIPLIER,
+    MOTOR_B_DRIVE_MULTIPLIER,
+
     // Accounts for both ticks per revolution and encoder direction
     // Example: -1 / 12000 for a 12kcpr encoder
     ENCODER_MULTIPLIER,
@@ -39,36 +42,14 @@ enum class ConfigKey : uint32_t {
     CONFIG_SIZE
 };
 
-constexpr int CONFIG_SIZE = 300;
-
-uint32_t configStore[CONFIG_SIZE] = {
-    38, // MOTOR_A_PIN1
-    33,
-    21, // MOTOR_B_PIN1
-    17,
-
-    32, // ENCODER_A_PIN1
-    31,
-    18,
-    34,
-
-    8, // RELAY_IR_LED
-    1, // PHOTODIODE_FRONT_LEFT
-    2,
-    4,
-    6,
-
-    bitcast<uint32_t>(4.375f), // WHEEL_DIAMETER_INCHES
-
-    bitcast<uint32_t>(-12000.0f), // ENCODER_MULTIPLER
-};
+extern uint32_t configStore[(size_t)ConfigKey::CONFIG_SIZE];
 
 template <typename ValT = uint32_t>
 ValT getConfig(ConfigKey key)
 {
-    CHECK((int)key < CONFIG_SIZE);
+    CHECK(key < ConfigKey::CONFIG_SIZE);
 
-    int ikey = (int)key;
+    int32_t ikey = (int32_t)key;
     return bitcast<ValT>(configStore[ikey]);
 }
 
@@ -81,7 +62,7 @@ void setConfig(ConfigKey key, ValT val)
 
 #define PINCONFIG(target) (getConfig<gpio_num_t>(ConfigKey::target))
 #define FCONFIG(target) (getConfig<float>(ConfigKey::target))
-#define ICONFIG(target) (getConfig<int>(ConfigKey::target))
+#define ICONFIG(target) (getConfig<int32_t>(ConfigKey::target))
 }; // namespace chessbot
 
 #endif // ifndef CHESSBOT_CONFIG_H

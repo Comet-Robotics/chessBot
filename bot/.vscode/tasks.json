@@ -4,7 +4,8 @@
     {
       "label": "Autoformat Code",
       "type": "shell",
-      "command": "clang-format -i include/chessbot/* main/*"
+      "command": "clang-format -i include/chessbot/* main/src/*",
+      "problemMatcher": []
     },
     {
       "label": "Deploy OTA Update",
@@ -14,7 +15,7 @@
         "env": {
           "PATH": "${env:PATH}:${config:idf.customExtraPaths}"
         }
-      },
-    },
+      }
+    }
   ]
 }

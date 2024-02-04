@@ -1,5 +1,6 @@
-#include <chessbot/wireless.h>
 #include <freertos/FreeRTOS.h> // Mandatory first include
+
+#include <chessbot/wireless.h>
 
 #include <string.h>
 

@@ -1,5 +1,6 @@
-#include <chessbot/adc.h>
 #include <freertos/FreeRTOS.h> // Mandatory first include
+
+#include <chessbot/adc.h>
 
 #include <chessbot/log.h>
 

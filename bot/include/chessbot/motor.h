@@ -11,40 +11,21 @@ public:
     // Threshold for resetting the encoder
     constexpr static int32_t ENCODER_RESET_THRESHOLD = 2147483647 / 2;
 
-    int channelA, channelB;
+    gpio_num_t channelA, channelB;
     //::Encoder encoder;
 
     int64_t lastPos = 0;
 
-    Encoder(int channelA_, int channelB_)
-        : channelA(channelA_)
-        , channelB(channelB_)
-    // encoder(channelA, channelB)
-    {
-    }
+    Encoder(gpio_num_t channelA_, gpio_num_t channelB_);
 
     // Get how far the encoder has moved since this function was last called
-    int32_t getDelta()
-    {
-        int64_t currentPos = read();
+    int32_t getDelta();
 
-        if (abs(currentPos) > ENCODER_RESET_THRESHOLD) {
-            // encoder.write(0);
-        }
+    int32_t read();
 
-        int64_t dif = currentPos - lastPos;
+    void reset();
 
-        lastPos = currentPos;
-
-        return dif;
-    }
-
-    int32_t read()
-    {
-        return 0; // encoder.read();
-    }
-
-    void tick(uint64_t us) { }
+    void tick(uint64_t us);
 };
 
 class Motor {
@@ -55,36 +36,24 @@ public:
     gpio_num_t channelA;
     gpio_num_t channelB;
 
+    float driveMultiplier;
+
     Motor(gpio_num_t motorChannelA_,
         gpio_num_t motorChannelB_,
-        int encoderChannelA_,
-        int encoderChannelB_)
-        : encoder(new Encoder(encoderChannelA_, encoderChannelB_))
-        , powerPin(motorChannelA_)
-        , channelA(motorChannelA_)
-        , channelB(motorChannelB_)
-    {
-    }
+        gpio_num_t encoderChannelA_,
+        gpio_num_t encoderChannelB_,
+        float driveMultiplier_ = 1.0);
 
-    Motor(gpio_num_t motorChannelA_, gpio_num_t motorChannelB_)
-        : powerPin(motorChannelA_)
-        , channelA(motorChannelA_)
-        , channelB(motorChannelB_)
-    {
-    }
+    Motor(gpio_num_t motorChannelA_, gpio_num_t motorChannelB_, float driveMultiplier_ = 1.0);
 
-    int32_t pos() { return encoder->read(); }
+    int32_t pos();
 
-    void tick(uint64_t us) { encoder->tick(us); }
+    void reset();
+
+    void tick(uint64_t us);
 
     // [-1.0, 1.0]
-    void set(float power)
-    {
-        powerPin.set(power);
-
-        gpio_set_level(channelB, power < 0.0);
-        return;
-    }
+    void set(float power);
 };
 }; // namespace chessbot
 

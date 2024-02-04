@@ -1,5 +1,6 @@
-#include <chessbot/button.h>
 #include <freertos/FreeRTOS.h> // Mandatory first include
+
+#include <chessbot/button.h>
 
 namespace chessbot {
 Button::Button(gpio_num_t port)

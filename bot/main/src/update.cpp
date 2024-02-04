@@ -1,5 +1,6 @@
-#include <chessbot/update.h>
 #include <freertos/FreeRTOS.h> // Mandatory first include
+
+#include <chessbot/update.h>
 
 #include <memory>
 
@@ -21,7 +22,7 @@
 
 namespace chessbot {
 // Max size of the document describing available updates
-constexpr int OTA_HTTP_RESP_SIZE = 2048;
+constexpr int32_t OTA_HTTP_RESP_SIZE = 2048;
 
 // Will be filled with the build timestamp at link time
 extern uint64_t currentFirmwareVersion;
@@ -33,7 +34,7 @@ char otaHttpResp[OTA_HTTP_RESP_SIZE + 1];
 // How often to poll the server for updates in seconds
 // Modified whenever a server returns an info.json with a different checkFreq
 // Defaults to 10 minutes
-int checkFreq = 10 * 60;
+int32_t checkFreq = 10 * 60;
 
 const char* updateServers[] = { "192.168.1.1" };
 
@@ -62,7 +63,7 @@ esp_err_t httpEventHandler(esp_http_client_event_t* evt)
         }
 
         // Copy response into buffer
-        const int respLen = esp_http_client_get_content_length(evt->client);
+        const int64_t respLen = esp_http_client_get_content_length(evt->client);
         memcpy(otaHttpResp, evt->data, MIN(respLen, OTA_HTTP_RESP_SIZE));
 
         break;
@@ -111,7 +112,7 @@ esp_err_t getJsonFromHost(const char* host)
     esp_err_t err = esp_http_client_perform(client);
 
     if (err == ESP_OK) {
-        printf("Successful HTTP request to %s, status %d, length %d\n", host, (int)esp_http_client_get_status_code(client), (int)esp_http_client_get_content_length(client));
+        printf("Successful HTTP request to %s, status %d, length %d\n", host, esp_http_client_get_status_code(client), (int)esp_http_client_get_content_length(client));
     } else {
         printf("Failed HTTP request to %s\n", host);
         return err;
@@ -138,14 +139,14 @@ void findUpdate()
             continue;
         }
 
-        int version = otaJson["version"];
+        int32_t version = otaJson["version"];
         const char* url = otaJson["url"];
-        int newCheckFreq = otaJson["checkFreq"];
+        int32_t newCheckFreq = otaJson["checkFreq"];
 
-        printf("Ver %d, url %s, check %d", version, url, newCheckFreq);
+        printf("Ver %d, url %s, check %d", (int)version, url, (int)newCheckFreq);
 
         if (checkFreq != newCheckFreq) {
-            printf("Updating checkFreq from %d to %d\n", checkFreq, newCheckFreq);
+            printf("Updating checkFreq from %d to %d\n", (int)checkFreq, (int)newCheckFreq);
             checkFreq = newCheckFreq;
         }
 
@@ -153,7 +154,7 @@ void findUpdate()
             continue;
         }
 
-        ESP_LOGI("", "Updating to version %d", version);
+        ESP_LOGI("", "Updating to version %d", (int)version);
 
         esp_http_client_config_t config = {};
         config.url = url;

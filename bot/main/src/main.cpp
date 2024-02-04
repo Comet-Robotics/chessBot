@@ -17,13 +17,25 @@
 #include <chessbot/dac.h>
 #include <chessbot/robot.h>
 #include <chessbot/unit.h>
+#include <chessbot/update.h>
+
+#define TEST
+
+#ifdef TEST
+#include <chessbot/test.h>
+#endif
 
 using namespace chessbot;
 
+#ifndef TEST
 extern "C" void app_main()
+#else
+extern "C" void app_main_alt()
+#endif
 {
-    printf("Start\n");
+    printf("Start ChessBot v%d https://chessbots.cometrobotics.org\n", (int)currentFirmwareVersion);
     startActivityLed();
+    CHECK(gpio_install_isr_service(0));
 
     Robot robot;
 

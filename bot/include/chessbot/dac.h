@@ -6,25 +6,14 @@
 #include <driver/ledc.h>
 
 namespace chessbot {
-// Only works on pins 17 and 18 on the ESP32-S2
-struct DacPin {
-    DacPin(int pin);
-
-    // 0-255
-    void set(int level);
-
-    // 0-1.0
-    void set(float level);
-};
-
 // Works on any GPIO pin through LEDC
 class PwmPin {
     ledc_channel_t channel;
     float level;
-    int pin;
+    gpio_num_t pin;
 
 public:
-    PwmPin(int pin);
+    PwmPin(gpio_num_t pin);
     ~PwmPin();
 
     // 0-1.0

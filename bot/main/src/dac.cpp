@@ -1,5 +1,6 @@
-#include <chessbot/dac.h>
 #include <freertos/FreeRTOS.h> // Mandatory first include
+
+#include <chessbot/dac.h>
 
 #include <bitset>
 
@@ -18,7 +19,7 @@ namespace chessbot {
 #define LEDC_DUTY (4095) // Set duty to 50%. ((2 ** 13) - 1) * 50% = 4095
 #define LEDC_FREQUENCY (5000) // Frequency in Hertz. Set frequency at 5 kHz
 
-PwmPin::PwmPin(int pin)
+PwmPin::PwmPin(gpio_num_t pin)
 {
     this->channel = getFreeLedcChannel();
     this->pin = pin;
@@ -50,17 +51,13 @@ PwmPin::PwmPin(int pin)
 
 PwmPin::~PwmPin()
 {
+    CHECK(ledc_stop(LEDC_MODE, this->channel, 0));
     this->freeLedcChannel(this->channel);
-}
-
-bool within(float val, float range, float target)
-{
-    return std::abs(target - val) <= range;
 }
 
 void PwmPin::set(float val)
 {
-    int duty = ((2 << LEDC_DUTY_RES) - 1) - ((2 << LEDC_DUTY_RES) - 1) * val;
+    int32_t duty = ((2 << LEDC_DUTY_RES) - 1) - ((2 << LEDC_DUTY_RES) - 1) * val;
 
     CHECK(ledc_set_duty(LEDC_MODE, this->channel, duty));
     CHECK(ledc_update_duty(LEDC_MODE, this->channel));

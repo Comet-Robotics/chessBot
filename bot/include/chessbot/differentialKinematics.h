@@ -8,13 +8,18 @@
 #include <chessbot/motor.h>
 
 namespace chessbot {
-struct FPos2 {
+struct FVec2 {
     float x;
     float y;
 };
 
+struct IVec2 {
+    int32_t x;
+    int32_t y;
+};
+
 struct Pose2d {
-    FPos2 pos;
+    FVec2 pos;
     float angle; // Radians counterclockwise from X+
 };
 
@@ -41,9 +46,9 @@ public:
     void tick(uint32_t delta);
 
     // Map inches of driving to encoder ticks
-    static int distanceToTicks(float dist);
+    static int32_t distanceToTicks(float dist);
 
-    static float ticksToDistance(int ticks);
+    static float ticksToDistance(int32_t ticks);
 
     void forward(float dist);
 

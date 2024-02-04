@@ -1,10 +1,13 @@
-#include <chessbot/differentialKinematics.h>
 #include <freertos/FreeRTOS.h> // Mandatory first include
+
+#include <chessbot/differentialKinematics.h>
 
 #include <cmath>
 
 #include <pid_ctrl.h>
 
+#include <chessbot/config.h>
+#include <chessbot/log.h>
 #include <chessbot/motor.h>
 
 namespace chessbot {
@@ -46,12 +49,12 @@ void DifferentialKinematics::tick(uint32_t delta)
 }
 
 // Map inches of driving to encoder ticks
-int DifferentialKinematics::distanceToTicks(float dist)
+int32_t DifferentialKinematics::distanceToTicks(float dist)
 {
     return dist / FCONFIG(WHEEL_DIAMETER_INCHES) * FCONFIG(ENCODER_MULTIPLIER);
 }
 
-float DifferentialKinematics::ticksToDistance(int ticks)
+float DifferentialKinematics::ticksToDistance(int32_t ticks)
 {
     return (float)(ticks)*FCONFIG(WHEEL_DIAMETER_INCHES) / FCONFIG(ENCODER_MULTIPLIER);
 }
