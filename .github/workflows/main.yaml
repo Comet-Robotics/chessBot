@@ -1,4 +1,4 @@
-name: Validate Code
+name: validate
 on:
     push:
         branches:
