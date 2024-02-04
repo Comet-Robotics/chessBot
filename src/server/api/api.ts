@@ -110,7 +110,7 @@ function processMove(from: Square, to: Square): Command {
 function doManualMove(message: ManualMoveMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.log(
-            "attempted manual move for non-existent robot ID " + message.id
+            "attempted manual move for non-existent robot ID " + message.id,
         );
         return false;
     } else {
@@ -121,7 +121,7 @@ function doManualMove(message: ManualMoveMessage): boolean {
         tunnel.send(
             PacketType.DRIVE_TANK,
 
-            message.rightPower.toString()
+            message.rightPower.toString(),
         );
     }
     return true;

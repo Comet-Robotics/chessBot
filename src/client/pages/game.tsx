@@ -24,7 +24,7 @@ function getMessageHandler(chess: Chess, setChess: Dispatch<Chess>) {
 function getMoveHandler(
     chess: Chess,
     setChess: Dispatch<Chess>,
-    sendMessage: Dispatch<string>
+    sendMessage: Dispatch<string>,
 ) {
     return (from: Square, to: Square): boolean => {
         const chessCopy = new Chess(chess.fen());
@@ -39,7 +39,7 @@ function getMoveHandler(
                 type: "move",
                 from: from,
                 to: to,
-            })
+            }),
         );
         return true;
     };

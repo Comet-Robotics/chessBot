@@ -17,15 +17,15 @@ export function DriveRobot(props: DriveRobotProps) {
 
     const getManualMoveHandler = (
         leftPower: number,
-        rightPower: number
+        rightPower: number,
     ): (() => void) => {
         const handleManualMove = () => {
             props.sendMessage(
                 new ManualMoveMessage(
                     props.robotId,
                     leftPower,
-                    rightPower
-                ).toJson()
+                    rightPower,
+                ).toJson(),
             );
         };
         return handleManualMove;
