@@ -8,26 +8,32 @@ on:
             - main
 
 jobs:
-    # build:
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #         - uses: actions/checkout@v4
-
-    #         - name: Install modules
-    #           run: yarn install --frozen-lockfile
-
     check-formatting:
         runs-on: ubuntu-latest
-        # needs: build
         steps:
-            - uses: build@v1
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  cache: yarn
+
+            - name: Install modules
+              run: yarn install --frozen-lockfile
+
             - name: Check formatting
               run: yarn format-check
 
     test:
         runs-on: ubuntu-latest
-        # needs: build
         steps:
-            - uses: build@v1
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  cache: yarn
+
+            - name: Install modules
+              run: yarn install --frozen-lockfile
+
             - name: Run tests
               run: yarn test
