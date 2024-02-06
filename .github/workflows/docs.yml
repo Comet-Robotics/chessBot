@@ -1,0 +1,46 @@
+name: Build Documentation
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+jobs:
+  typedoc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+          cache: yarn
+    - name: Install modules
+      run: yarn --frozen-lockfile
+    - name: Run typedoc
+      run: yarn typedoc
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: docs
+    
+  # Deploy job
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Add a dependency to the build job
+    needs: typedoc
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
