@@ -3,7 +3,7 @@ import { ItemRenderer, Select } from "@blueprintjs/select";
 
 const renderRobotIds: ItemRenderer<string> = (
     robotId,
-    { modifiers, handleFocus, handleClick }
+    { modifiers, handleFocus, handleClick },
 ) => {
     return (
         <MenuItem
@@ -39,9 +39,9 @@ export function SelectRobot(props: SelectRobotProps) {
         >
             <Button
                 text={
-                    hasSelection
-                        ? "Robot " + props.selectedRobotId
-                        : "Select a robot..."
+                    hasSelection ?
+                        "Robot " + props.selectedRobotId
+                    :   "Select a robot..."
                 }
                 rightIcon="double-caret-vertical"
             />

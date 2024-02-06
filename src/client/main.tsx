@@ -10,9 +10,9 @@ import { router } from "./router";
 FocusStyleManager.onlyShowFocusOnTabs();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <div id="app-container">
-      <RouterProvider router={router} />
-    </div>
-  </React.StrictMode>
+    <React.StrictMode>
+        <div id="app-container">
+            <RouterProvider router={router} />
+        </div>
+    </React.StrictMode>,
 );
