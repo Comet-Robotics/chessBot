@@ -1,32 +1,35 @@
 {
-  "name": "utd-chess-bots",
-  "private": true,
-  "version": "0.0.0",
-  "workspaces": [
-    "src/client",
-    "src/server"
-  ],
-  "scripts": {
-    "dev": "nodemon src/server/main.ts -w src/server src/server",
-    "start": "NODE_ENV=production ts-node src/server/main.ts",
-    "build": "vite build",
-    "test": "jest"
-  },
-  "dependencies": {
-    "@types/node": "^18.11.18",
-    "chess.js": "^1.0.0-beta.6",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.3",
-    "vite-express": "^0.11.1"
-  },
-  "devDependencies": {
-    "@types/jest": "^29.5.11",
-    "@vitejs/plugin-react": "^3.1.0",
-    "jest": "^29.7.0",
-    "nodemon": "^3.0.1",
-    "typedoc": "^0.25.7",
-    "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.1",
-    "vite": "^4.0.4"
-  }
+    "name": "utd-chess-bots",
+    "private": true,
+    "version": "0.0.0",
+    "workspaces": [
+        "src/client",
+        "src/server"
+    ],
+    "scripts": {
+        "dev": "nodemon src/server/main.ts -w src/server src/server",
+        "start": "NODE_ENV=production ts-node src/server/main.ts",
+        "build": "vite build",
+        "test": "jest",
+        "format": "prettier --write *",
+        "format-check": "prettier --check *"
+    },
+    "dependencies": {
+        "@types/node": "^18.11.18",
+        "chess.js": "^1.0.0-beta.6",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.9.3",
+        "vite-express": "^0.11.1"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.11",
+        "@vitejs/plugin-react": "^3.1.0",
+        "jest": "^29.7.0",
+        "nodemon": "^3.0.1",
+        "prettier": "^3.2.4",
+        "ts-jest": "^29.1.1",
+        "ts-node": "^10.9.1",
+        "typedoc": "^0.25.7",
+        "vite": "^4.0.4"
+    }
 }

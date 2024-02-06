@@ -11,7 +11,7 @@ export const WEBSOCKET_URL = "ws://localhost:3000/ws";
 export async function post(
     apiPath: string,
     query: Record<string, string> = {},
-    body: object = {}
+    body: object = {},
 ): Promise<any> {
     try {
         let normalizedUrl = `/api${apiPath}`;
@@ -36,7 +36,7 @@ export async function post(
  */
 export async function get(
     apiPath: string,
-    query: Record<string, string> = {}
+    query: Record<string, string> = {},
 ): Promise<any> {
     try {
         let normalizedUrl = `/api${apiPath}`;
