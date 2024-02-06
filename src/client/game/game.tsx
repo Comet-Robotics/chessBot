@@ -2,24 +2,69 @@ import { Dispatch, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import { Chess, Square } from "chess.js";
 
-import { ChessboardWrapper } from "../chessboard-wrapper";
-import { MessageType } from "../../common/message";
-import { NavbarMenu } from "./navbar-menu";
+import {
+    MoveMessage,
+    PositionMessage,
+    GameOverMessage,
+} from "../../common/message";
+import { GameOverReason } from "../../common/game-over-reason";
 
-function getMessageHandler(chess: Chess, setChess: Dispatch<Chess>) {
+import { ChessboardWrapper } from "../chessboard-wrapper";
+import { NavbarMenu } from "./navbar-menu";
+import { WEBSOCKET_URL } from "../api";
+import { GameOverDialog } from "./game-over-dialog";
+import { useSearchParams } from "react-router-dom";
+
+function getMessageHandler(
+    chess: Chess,
+    setChess: Dispatch<Chess>,
+    setGameOver: Dispatch<GameOverReason>,
+) {
     return (msg: MessageEvent<any>) => {
         const message = JSON.parse(msg.data.toString());
-        switch (message.type) {
-            case MessageType.POSITION: {
-                setChess(new Chess(message.position));
-            }
-            case MessageType.MOVE: {
-                const chessCopy = new Chess(chess.fen());
-                chessCopy.move(message.move);
-                setChess(chessCopy);
-            }
+
+        if (message instanceof PositionMessage) {
+            setChess(new Chess(message.position));
+        } else if (message instanceof MoveMessage) {
+            const chessCopy = new Chess(chess.fen());
+            chessCopy.move(message.to);
+            setChess(chessCopy);
+        } else if (message instanceof GameOverMessage) {
+            setGameOver(message.reason);
         }
     };
+}
+
+export function Game(): JSX.Element {
+    const [params, _] = useSearchParams();
+    const isWhite = params.get("isWhite") == "true";
+
+    const [chess, setChess] = useState(new Chess());
+    const [gameOver, setGameOver] = useState<GameOverReason>();
+
+    const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
+        onOpen: () => {
+            console.log("Connection established");
+        },
+        onMessage: getMessageHandler(chess, setChess, setGameOver),
+    });
+
+    let gameOverDialog =
+        gameOver !== undefined ? <GameOverDialog reason={gameOver} /> : null;
+
+    return (
+        <>
+            <NavbarMenu />
+            <div id="body-container">
+                <ChessboardWrapper
+                    isWhite={isWhite}
+                    chess={chess}
+                    onMove={getMoveHandler(chess, setChess, sendMessage)}
+                />
+                {gameOverDialog}
+            </div>
+        </>
+    );
 }
 
 function getMoveHandler(
@@ -35,41 +80,7 @@ function getMoveHandler(
             return false;
         }
         setChess(chessCopy);
-        sendMessage(
-            JSON.stringify({
-                type: "move",
-                from: from,
-                to: to,
-            }),
-        );
+        sendMessage(new MoveMessage(from, to).toJson());
         return true;
     };
-}
-
-export function Game(): JSX.Element {
-    const [chess, setChess] = useState(new Chess());
-
-    const { sendMessage } = useWebSocket("ws://localhost:3000/ws", {
-        onOpen: () => {
-            console.log("Connection established");
-        },
-        onMessage: getMessageHandler(chess, setChess),
-    });
-
-    const handleGameRestart = () => {
-        // sendMessage(new ResetMessage().toJson());
-    };
-
-    return (
-        <>
-            <NavbarMenu />
-            <div id="body-container">
-                <ChessboardWrapper
-                    isWhite={true}
-                    chess={chess}
-                    onMove={getMoveHandler(chess, setChess, sendMessage)}
-                />
-            </div>
-        </>
-    );
 }

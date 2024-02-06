@@ -59,7 +59,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         position={chess.fen()}
                         onPieceDrop={onMove}
                         isDraggablePiece={({ sourceSquare }) =>
-                            chess.get(sourceSquare).color ==
+                            chess.get(sourceSquare).color ===
                             (isWhite ? "w" : "b")
                         }
                         arePremovesAllowed={true}

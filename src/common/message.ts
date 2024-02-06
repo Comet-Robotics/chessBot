@@ -1,3 +1,4 @@
+import { GameOverReason } from "./game-over-reason";
 import { PieceType } from "./types";
 
 /**
@@ -15,19 +16,17 @@ export enum MessageType {
     MOVE = "move",
     /**
      * A two-way message containing a promotion.
-     *
      * Like a move, but also indicates the piece being promoted to.
      */
     PROMOTION = "promotion",
     /**
-     * A server-client message indicating the game is over.
-     * Includes the reason why the game ended.
+     * A server-client message indicating the game was ended. Used to notify all clients of game end.
      */
     GAME_OVER = "game-over",
     /**
      * A client-server message containing instructions for manually driving a robot.
      */
-    MANUAL_MOVE = "manual-move",
+    DRIVE_ROBOT = "drive-robot",
 }
 
 export enum ClientServerMessage {}
@@ -41,8 +40,8 @@ export function parseMessage(text: string): Message {
             return new MoveMessage(obj.from, obj.to);
         case MessageType.PROMOTION:
             return new PromotionMessage(obj.from, obj.to, obj.promotion);
-        case MessageType.MANUAL_MOVE:
-            return new ManualMoveMessage(
+        case MessageType.DRIVE_ROBOT:
+            return new DriveRobotMessage(
                 obj.id,
                 parseFloat(obj.leftPower),
                 parseFloat(obj.rightPower),
@@ -112,7 +111,24 @@ export class PromotionMessage extends MoveMessage {
     }
 }
 
-export class ManualMoveMessage extends Message {
+export class GameOverMessage extends Message {
+    constructor(public readonly reason: GameOverReason) {
+        super();
+    }
+
+    protected get type(): MessageType {
+        return MessageType.GAME_OVER;
+    }
+
+    protected toObj(): Object {
+        return {
+            ...super.toObj(),
+            reason: this.reason,
+        };
+    }
+}
+
+export class DriveRobotMessage extends Message {
     constructor(
         public readonly id: string,
         public readonly leftPower: number,
@@ -122,7 +138,7 @@ export class ManualMoveMessage extends Message {
     }
 
     protected get type(): MessageType {
-        return MessageType.MANUAL_MOVE;
+        return MessageType.DRIVE_ROBOT;
     }
 
     protected toObj(): Object {
@@ -139,7 +155,7 @@ export class ManualMoveMessage extends Message {
  * An abstract message used to stop a robot.
  * This message looks to the server like a DriveRobotMessage with power set to 0.
  */
-export class StopMessage extends ManualMoveMessage {
+export class StopRobotMessage extends DriveRobotMessage {
     constructor(public readonly id: string) {
         super(id, 0, 0);
     }

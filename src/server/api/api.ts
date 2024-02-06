@@ -1,25 +1,68 @@
 import { WebsocketRequestHandler } from "express-ws";
+import { Game } from "js-chess-engine";
 
 import {
     parseMessage,
     MoveMessage,
-    ManualMoveMessage,
+    DriveRobotMessage,
+    GameOverMessage,
 } from "../../common/message";
 
-import { Command } from "../command/command";
 import { PieceManager } from "../robot/piece-manager";
 import { CommandExecutor } from "../command/executor";
-import { Square } from "../robot/square";
 import { PacketType, TCPServer } from "./tcp-interface";
-import { Router } from "express";
+import { Router, Request } from "express";
 import { Chess } from "chess.js";
+import { GameOverReason } from "../../common/game-over-reason";
 
 const manager = new PieceManager([]);
 const executor = new CommandExecutor();
-// const currentGame;
 const tcpServer = new TCPServer();
 
 const chess = new Chess();
+let engine = null;
+
+/**
+ * An endpoint used to establish a websocket connection with the server.
+ *
+ * The websocket is used to stream moves to and from the client.
+ */
+export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
+    ws.on("open", () => {
+        console.log("WS opened!");
+    });
+
+    ws.on("close", () => {
+        console.log("WS closed!");
+    });
+
+    ws.on("message", (data) => {
+        const message = parseMessage(data.toString());
+        console.log(message);
+
+        if (message instanceof MoveMessage) {
+            doMove(message);
+
+            if (chess.isGameOver()) {
+                ws.send(
+                    new GameOverMessage(GameOverReason.CHECKMATE_LOSE).toJson(),
+                );
+            }
+
+            // Wait before sending next move
+            // setTimeout(() => {
+            //     const moveStrings = chess.moves();
+
+            //     const moveString =
+            //         moveStrings[Math.floor(Math.random() * moveStrings.length)];
+            //     const move = chess.move(moveString);
+            //     ws.send(new MoveMessage(move.from, move.to).toJson());
+            // }, 500);
+        } else if (message instanceof DriveRobotMessage) {
+            doDriveRobot(message);
+        }
+    });
+};
 
 export const apiRouter = Router();
 
@@ -57,40 +100,41 @@ apiRouter.post("/start-game", (req, res) => {
     res.send({ message: "Game started" });
 });
 
+interface DifficultyQuery {
+    difficulty: string;
+}
+
+apiRouter.post(
+    "/start-computer-game",
+    (req: Request<{}, any, any, DifficultyQuery>, res) => {
+        const difficulty = parseInt(req.query.difficulty);
+        engine = new Game();
+        res.send({ message: "Game started" });
+    },
+);
+
 /**
- * An endpoint used to establish a websocket connection with the server.
- *
- * The websocket is used to stream moves to and from the client.
+ * Aborts the current game.
  */
-export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
-    ws.on("open", () => {
-        console.log("WS opened!");
-    });
+apiRouter.post("/abort-game", (_, res) => {
+    res.send({ message: "Game aborted" });
+});
 
-    ws.on("close", () => {
-        console.log("WS closed!");
-    });
-
-    ws.on("message", (data) => {
-        const message = parseMessage(data.toString());
-        console.log(message);
-
-        if (message instanceof MoveMessage) {
-            doMove(message);
-
-            // Wait before sending next move
-            setTimeout(() => {
-                const moveStrings = chess.moves();
-                const moveString =
-                    moveStrings[Math.floor(Math.random() * moveStrings.length)];
-                const move = chess.move(moveString);
-                ws.send(new MoveMessage(move.from, move.to).toJson());
-            }, 500);
-        } else if (message instanceof ManualMoveMessage) {
-            doManualMove(message);
-        }
-    });
-};
+// function getGameOverReason(chess: Chess, isWhite: boolean): GameOverReason {
+//     if (chess.isCheckmate()) {
+//         // If it's the opponent's turn and it's checkmate, you win
+//         isWhite && chess.turn() === "b" ?
+//             GameOverReason.CHECKMATE_WIN
+//         :   GameOverReason.CHECKMATE_LOSE;
+//     } else if (chess.isStalemate()) {
+//         return GameOverReason.STALEMATE;
+//     } else if (chess.isInsufficientMaterial()) {
+//         return GameOverReason.INSUFFICIENT_MATERIAL;
+//     } else if (chess.isThreefoldRepetition()) {
+//         return GameOverReason.THREEFOLD_REPETITION;
+//     }
+//     throw new Error("Failed to find game over reason.");
+// }
 
 function doMove(message: MoveMessage) {
     chess.move({ from: message.from, to: message.to });
@@ -103,11 +147,7 @@ function doMove(message: MoveMessage) {
     // executor.execute(command);
 }
 
-function processMove(from: Square, to: Square): Command {
-    throw new Error("Function not implemented");
-}
-
-function doManualMove(message: ManualMoveMessage): boolean {
+function doDriveRobot(message: DriveRobotMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.log(
             "attempted manual move for non-existent robot ID " + message.id,
@@ -126,15 +166,3 @@ function doManualMove(message: ManualMoveMessage): boolean {
     }
     return true;
 }
-
-// function manualStop(robotId: number): boolean {
-//   if (!tcpServer.getConnectedIds().includes(robotId.toString())) {
-//     console.log(
-//       "attempted manual stop for non-existent robot ID " + robotId.toString()
-//     );
-//     return false;
-//   } else {
-//     tcpServer.getTunnelFromId(robotId).send(PacketType.ESTOP);
-//     return true;
-//   }
-// }

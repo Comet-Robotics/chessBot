@@ -6,10 +6,9 @@ import {
     NavbarHeading,
 } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
+import { post } from "../api";
 
-interface NavbarMenuProps {}
-
-export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
+export function NavbarMenu(): JSX.Element {
     const navigate = useNavigate();
     return (
         <Navbar>
@@ -25,8 +24,11 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                 <Button
                     icon="reset"
                     minimal
-                    text="Restart game"
-                    onClick={() => {}}
+                    text="Abort game"
+                    onClick={async () => {
+                        await post("/abort-game");
+                        navigate("/setup");
+                    }}
                 />
             </NavbarGroup>
         </Navbar>
