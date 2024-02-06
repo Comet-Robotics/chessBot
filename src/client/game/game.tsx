@@ -4,6 +4,7 @@ import { Chess, Square } from "chess.js";
 
 import { ChessboardWrapper } from "../chessboard-wrapper";
 import { MessageType } from "../../common/message";
+import { NavbarMenu } from "./navbar-menu";
 
 function getMessageHandler(chess: Chess, setChess: Dispatch<Chess>) {
     return (msg: MessageEvent<any>) => {
@@ -61,6 +62,7 @@ export function Game(): JSX.Element {
 
     return (
         <>
+            <NavbarMenu />
             <div id="body-container">
                 <ChessboardWrapper
                     isWhite={true}

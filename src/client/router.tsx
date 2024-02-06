@@ -1,7 +1,7 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { Setup } from "./pages/setup";
 import { Debug } from "./debug/debug";
-import { Game } from "./pages/game";
+import { Game } from "./game/game";
 import { Puzzle } from "./pages/puzzle";
 
 export const router = createBrowserRouter([
@@ -26,5 +26,11 @@ export const router = createBrowserRouter([
     {
         path: "game",
         element: <Game />,
+        children: [
+            {
+                path: "debug",
+                element: <Debug />,
+            },
+        ],
     },
 ]);

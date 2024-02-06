@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogBody, H3 } from "@blueprintjs/core";
-import { Game } from "./game";
+import { Game } from "../game/game";
 import { ChessboardWrapper } from "../chessboard-wrapper";
 import { Chess } from "chess.js";
 import { Outlet, useNavigate } from "react-router-dom";
