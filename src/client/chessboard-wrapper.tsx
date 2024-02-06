@@ -2,6 +2,7 @@ import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
 import { useState } from "react";
 import { ResizeEntry, ResizeSensor } from "@blueprintjs/core";
+//import { Square } from "@blueprintjs/icons";
 
 interface Transform {
     height: number;
@@ -38,6 +39,13 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         setTransform(transform);
     };
 
+
+    //TODO: when red square is clicked moved the piece to the square
+    const [legalMoves, setLegalMoves] = useState<string[]>([]);
+    const squareStyle = { backgroundColor: "red" };
+    const [prevSquareString, setPrevSquareString] = useState<any>('a1');
+    const [prevSquare, setPrevSquare] = useState<any>('a1');
+
     return (
         <ResizeSensor onResize={handleResize}>
             <div id="chess-container">
@@ -48,11 +56,52 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         boardWidth={transform.width}
                         position={chess.fen()}
                         onPieceDrop={onMove}
+                        onSquareClick={(square) => {
+                            setLegalMoves(chess.moves({ square }))
+
+                            console.log(legalMoves)
+                            legalMoves.forEach(legalMove => {
+
+                                if (legalMove.length >= 3) {
+                                    legalMove = legalMove.slice(legalMove.length-2);
+
+                                }
+
+                                if (square == legalMove) {
+                                    onMove(prevSquare, legalMove)
+                                }
+                                else {
+                                    setLegalMoves(chess.moves({ square }))
+                                }
+                            })
+                            setPrevSquare(square)
+
+                        }
+                        }
                         isDraggablePiece={({ sourceSquare }) => chess.get(sourceSquare).color == (isWhite ? "w" : "b")}
                         arePremovesAllowed={true}
+                        customSquareStyles={getSquareStyles(legalMoves, squareStyle)}
                     />
                 </div>
             </div>
         </ResizeSensor>
     );
+}
+
+function getSquareStyles(legalMoves: string[], squareStyle: Object) {
+    let legalMoveReduced = "";
+    let flag = false;
+    const map = legalMoves.reduce<any>(
+
+        (result, legalMove) => {
+            if (legalMove.length === 3) {
+                legalMove = legalMove.substring(1, 3);
+                flag = true;
+
+            }
+            result[legalMove] = squareStyle;
+            return result;
+        }, {}
+    );
+    return map;
 }
