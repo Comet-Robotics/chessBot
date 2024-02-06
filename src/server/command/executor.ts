@@ -23,7 +23,9 @@ export class CommandExecutor {
         for (const req of command.requirements) {
             for (const runningCmd of this.runningCommands) {
                 if (runningCmd.requirements.has(req)) {
-                    throw new RequirementError(`Command already requires ${req}!`);
+                    throw new RequirementError(
+                        `Command already requires ${req}!`,
+                    );
                 }
             }
         }

@@ -14,8 +14,8 @@ export const RADIAN = 1;
 export const FULL_ROTATION = 360 * DEGREE;
 
 export function clampHeading(heading: number) {
-  // First mod knocks range to (-360, 360)
-  // Then add 360 -> range is (0, 720)
-  // Final mod results in [0, 360)
-  return ((heading % FULL_ROTATION) + FULL_ROTATION) % FULL_ROTATION;
+    // First mod knocks range to (-360, 360)
+    // Then add 360 -> range is (0, 720)
+    // Final mod results in [0, 360)
+    return ((heading % FULL_ROTATION) + FULL_ROTATION) % FULL_ROTATION;
 }
