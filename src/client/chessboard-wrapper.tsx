@@ -89,14 +89,14 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
 }
 
 function getSquareStyles(legalMoves: string[], squareStyle: Object) {
-    let legalMoveReduced = "";
-    let flag = false;
     const map = legalMoves.reduce<any>(
 
         (result, legalMove) => {
-            if (legalMove.length === 3) {
-                legalMove = legalMove.substring(1, 3);
-                flag = true;
+
+
+            if (legalMove.length >= 3) {
+                legalMove = legalMove.slice(legalMove.length-2);
+            
 
             }
             result[legalMove] = squareStyle;
