@@ -1,6 +1,7 @@
 import { Button } from "@blueprintjs/core";
 import { SendMessage } from "react-use-websocket";
-import { DriveRobotMessage, StopRobotMessage } from "../../common/message";
+import { StopRobotMessage } from "../../common/drive-robot-message";
+import { DriveRobotMessage } from "../../common/drive-robot-message";
 
 interface DriveRobotProps {
     robotId: string;

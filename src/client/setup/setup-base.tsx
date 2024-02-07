@@ -14,7 +14,6 @@ export function SetupBase(props: SetupBaseProps): JSX.Element {
             <ChessboardWrapper />
             <Dialog
                 isOpen
-                isCloseButtonShown={false}
                 canEscapeKeyClose={false}
                 canOutsideClickClose={false}
             >

@@ -1,26 +1,24 @@
 import { WebsocketRequestHandler } from "express-ws";
-import { Game } from "js-chess-engine";
+import { aiMove } from "js-chess-engine";
+import { Router } from "express";
+import { Chess } from "chess.js";
 
-import {
-    parseMessage,
-    MoveMessage,
-    DriveRobotMessage,
-    GameOverMessage,
-} from "../../common/message";
+import { parseMessage } from "../../common/parse-message";
+import { StartGameMessage, StopGameMessage } from "../../common/game-message";
+import { MoveMessage } from "../../common/game-message";
+import { DriveRobotMessage } from "../../common/drive-robot-message";
 
 import { PieceManager } from "../robot/piece-manager";
 import { CommandExecutor } from "../command/executor";
 import { PacketType, TCPServer } from "./tcp-interface";
-import { Router, Request } from "express";
-import { Chess } from "chess.js";
-import { GameOverReason } from "../../common/game-over-reason";
+import { GameType } from "../../common/game-type";
 
 const manager = new PieceManager([]);
 const executor = new CommandExecutor();
 const tcpServer = new TCPServer();
 
-const chess = new Chess();
-let engine = null;
+let chess: Chess | null = null;
+let difficulty = 0;
 
 /**
  * An endpoint used to establish a websocket connection with the server.
@@ -40,24 +38,35 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         const message = parseMessage(data.toString());
         console.log(message);
 
-        if (message instanceof MoveMessage) {
-            doMove(message);
-
-            if (chess.isGameOver()) {
-                ws.send(
-                    new GameOverMessage(GameOverReason.CHECKMATE_LOSE).toJson(),
-                );
+        if (message instanceof StartGameMessage) {
+            chess = new Chess();
+            // TODO: add message.isWhite so we can determine whether we need to make the first move
+            if (message.gameType === GameType.COMPUTER) {
+                difficulty = message.difficulty!;
+            }
+        } else if (message instanceof StopGameMessage) {
+            chess = null;
+            // Notify clients of game abort
+            ws.send(message.toJson());
+        } else if (message instanceof MoveMessage) {
+            if (chess == null) {
+                throw new Error("Game must be started first.");
             }
 
-            // Wait before sending next move
-            // setTimeout(() => {
-            //     const moveStrings = chess.moves();
+            chess.move({ from: message.from, to: message.to });
 
-            //     const moveString =
-            //         moveStrings[Math.floor(Math.random() * moveStrings.length)];
-            //     const move = chess.move(moveString);
-            //     ws.send(new MoveMessage(move.from, move.to).toJson());
-            // }, 500);
+            if (chess.isGameOver()) {
+                // Game is naturally finished; we're done
+                return;
+            }
+
+            // Absolutely unhinged api design
+            const val = Object.entries(aiMove(chess.fen(), difficulty))[0];
+            const from = val[0].toLowerCase();
+            const to = (val[1] as string).toLowerCase();
+            chess.move({ from, to });
+
+            ws.send(new MoveMessage(from, to).toJson());
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
         }
@@ -93,52 +102,8 @@ apiRouter.get("/get-puzzles", (_, res) => {
     };
 });
 
-/**
- * An endpoint which can be used to start a game.
- */
-apiRouter.post("/start-game", (req, res) => {
-    res.send({ message: "Game started" });
-});
-
-interface DifficultyQuery {
-    difficulty: string;
-}
-
-apiRouter.post(
-    "/start-computer-game",
-    (req: Request<{}, any, any, DifficultyQuery>, res) => {
-        const difficulty = parseInt(req.query.difficulty);
-        engine = new Game();
-        res.send({ message: "Game started" });
-    },
-);
-
-/**
- * Aborts the current game.
- */
-apiRouter.post("/abort-game", (_, res) => {
-    res.send({ message: "Game aborted" });
-});
-
-// function getGameOverReason(chess: Chess, isWhite: boolean): GameOverReason {
-//     if (chess.isCheckmate()) {
-//         // If it's the opponent's turn and it's checkmate, you win
-//         isWhite && chess.turn() === "b" ?
-//             GameOverReason.CHECKMATE_WIN
-//         :   GameOverReason.CHECKMATE_LOSE;
-//     } else if (chess.isStalemate()) {
-//         return GameOverReason.STALEMATE;
-//     } else if (chess.isInsufficientMaterial()) {
-//         return GameOverReason.INSUFFICIENT_MATERIAL;
-//     } else if (chess.isThreefoldRepetition()) {
-//         return GameOverReason.THREEFOLD_REPETITION;
-//     }
-//     throw new Error("Failed to find game over reason.");
-// }
-
 function doMove(message: MoveMessage) {
-    chess.move({ from: message.from, to: message.to });
-
+    // chess.move({ from: message.from, to: message.to });
     // TODO: handle invalid moves, implement
     // const command = processMove(
     //   Square.fromString(move.from),

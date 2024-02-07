@@ -1,11 +1,11 @@
-import { Button, H3, Slider } from "@blueprintjs/core";
+import { Button, H3, H6, Slider } from "@blueprintjs/core";
 import { SetupBase } from "../setup/setup-base";
-import { useRef, useState } from "react";
-import { post } from "../api";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { GameType } from "../../common/game-type";
 
 export function SetupComputerGame() {
-    const [difficulty, setDifficulty] = useState(2);
+    const [difficulty, setDifficulty] = useState(3);
     const navigate = useNavigate();
 
     return (
@@ -20,22 +20,40 @@ export function SetupComputerGame() {
                 }}
             >
                 <H3>Play Against the Computer</H3>
-                <Slider
-                    intent="primary"
-                    value={difficulty}
-                    onChange={setDifficulty}
-                    min={1}
-                    max={5}
-                />
+                <H6>Difficulty</H6>
+                <div style={{ width: "75%" }}>
+                    <Slider
+                        intent="primary"
+                        value={difficulty}
+                        onChange={setDifficulty}
+                        labelRenderer={(value) => {
+                            if (value == 1) {
+                                return "Baby";
+                            } else if (value == 2) {
+                                return "Beginner";
+                            } else if (value == 3) {
+                                return "Intermediate";
+                            } else {
+                                return "Advanced";
+                            }
+                        }}
+                        min={1}
+                        max={4}
+                    />
+                </div>
                 <Button
-                    title="Play"
+                    text="Play"
                     icon="arrow-right"
+                    intent="primary"
                     onClick={async () => {
-                        await post("/start-computer-game", {
-                            difficulty: difficulty.toString(),
-                        });
                         navigate("/game", {
-                            state: { isWhite: true },
+                            state: {
+                                gameType: GameType.COMPUTER,
+                                // TODO: Let user choose color
+                                isWhite: true,
+                                // Normalize to 0 - 3
+                                difficulty: difficulty - 1,
+                            },
                         });
                     }}
                 />

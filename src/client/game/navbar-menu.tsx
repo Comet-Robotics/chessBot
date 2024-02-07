@@ -5,10 +5,17 @@ import {
     NavbarGroup,
     NavbarHeading,
 } from "@blueprintjs/core";
-import { useNavigate } from "react-router-dom";
-import { post } from "../api";
+import { useNavigate, useNavigation } from "react-router-dom";
+import { SendMessage } from "react-use-websocket";
+import { StopGameMessage } from "../../common/game-message";
+import { GameStoppedReason } from "../../common/game-end";
 
-export function NavbarMenu(): JSX.Element {
+interface NavbarMenuProps {
+    sendMessage: SendMessage;
+}
+
+export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
+    // Store react router state for game
     const navigate = useNavigate();
     return (
         <Navbar>
@@ -16,20 +23,21 @@ export function NavbarMenu(): JSX.Element {
                 <NavbarHeading>ChessBot</NavbarHeading>
                 <NavbarDivider />
                 <Button
-                    icon="cog"
+                    icon="warning-sign"
                     minimal
-                    text="Settings"
-                    onClick={() => navigate("debug")}
-                />
-                <Button
-                    icon="reset"
-                    minimal
-                    text="Abort game"
+                    text="Abort Game"
+                    intent="warning"
                     onClick={async () => {
-                        await post("/abort-game");
-                        navigate("/setup");
+                        props.sendMessage(
+                            new StopGameMessage(
+                                GameStoppedReason.ABORTED,
+                            ).toJson(),
+                        );
                     }}
                 />
+            </NavbarGroup>
+            <NavbarGroup align="right">
+                <Button icon="cog" minimal onClick={() => navigate("debug")} />
             </NavbarGroup>
         </Navbar>
     );

@@ -37,11 +37,5 @@ export const router = createBrowserRouter([
     {
         path: "setup-computer-game",
         element: <SetupComputerGame />,
-        children: [
-            {
-                path: "debug",
-                element: <Debug />,
-            },
-        ],
     },
 ]);
