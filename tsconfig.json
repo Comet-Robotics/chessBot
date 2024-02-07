@@ -2,11 +2,7 @@
     "compilerOptions": {
         "target": "ESNext",
         "useDefineForClassFields": true,
-        "lib": [
-            "DOM",
-            "DOM.Iterable",
-            "ESNext"
-        ],
+        "lib": ["DOM", "DOM.Iterable", "ESNext"],
         "allowJs": false,
         "jsx": "react-jsx",
         "skipLibCheck": true,
@@ -20,16 +16,10 @@
         "isolatedModules": true,
         "noEmit": true,
     },
-    "include": [
-        "src",
-    ],
-    "files": [
-        "src/server/js-chess-engine.d.ts"
-    ],
+    "include": ["src"],
+    "files": ["src/server/js-chess-engine.d.ts"],
     "typedocOptions": {
-        "entryPoints": [
-            "src/"
-        ],
+        "entryPoints": ["src/"],
         "entryPointStrategy": "expand",
         "out": "docs",
     },
