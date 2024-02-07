@@ -10,10 +10,10 @@ import { DriveRobot } from "./drive-robot";
  * A debug menu which can be used to manually control individual robots.
  */
 export function Debug() {
-    const [robotIds, setRobotIds] = useState<string[] | undefined>(undefined);
-    const [selectedRobotId, setSelectedRobotId] = useState<string | undefined>(
-        undefined,
-    );
+    const [robotIds, setRobotIds] = useState<string[] | undefined>();
+    const [selectedRobotId, setSelectedRobotId] = useState<
+        string | undefined
+    >();
     const navigate = useNavigate();
 
     const { sendMessage } = useWebSocket(WEBSOCKET_URL);
