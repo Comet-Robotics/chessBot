@@ -48,7 +48,7 @@ export abstract class Message {
         return JSON.stringify(this.toObj());
     }
 
-    protected abstract get type(): MessageType;
+    protected abstract type: MessageType;
 
     /**
      * Sends this class to an object which can be serialized as json.

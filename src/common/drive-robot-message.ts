@@ -9,9 +9,7 @@ export class DriveRobotMessage extends Message {
         super();
     }
 
-    protected get type(): MessageType {
-        return MessageType.DRIVE_ROBOT;
-    }
+    protected type = MessageType.DRIVE_ROBOT;
 
     protected toObj(): Object {
         return {

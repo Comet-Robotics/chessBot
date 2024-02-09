@@ -8,9 +8,7 @@ export class PositionMessage extends Message {
         super();
     }
 
-    protected get type(): MessageType {
-        return MessageType.POSITION;
-    }
+    protected type = MessageType.POSITION;
 
     protected toObj(): Object {
         return { ...super.toObj(), position: this.position };
@@ -25,9 +23,7 @@ export class MoveMessage extends Message {
         super();
     }
 
-    protected get type(): MessageType {
-        return MessageType.MOVE;
-    }
+    protected type = MessageType.MOVE;
 
     protected toObj(): Object {
         return { ...super.toObj(), from: this.from, to: this.to };
@@ -43,9 +39,7 @@ export class PromotionMessage extends MoveMessage {
         super(from, to);
     }
 
-    protected get type(): MessageType {
-        return MessageType.PROMOTION;
-    }
+    protected type = MessageType.PROMOTION;
 
     protected toObj(): Object {
         return { ...super.toObj(), promotion: this.promotion };
@@ -60,9 +54,7 @@ export class StartGameMessage extends Message {
         super();
     }
 
-    protected get type(): MessageType {
-        return MessageType.START_GAME;
-    }
+    protected type = MessageType.START_GAME;
 
     protected toObj(): Object {
         return {
@@ -78,9 +70,7 @@ export class StopGameMessage extends Message {
         super();
     }
 
-    protected get type(): MessageType {
-        return MessageType.STOP_GAME;
-    }
+    protected type = MessageType.STOP_GAME;
 
     protected toObj(): Object {
         return {
