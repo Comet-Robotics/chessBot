@@ -1,4 +1,11 @@
 /**
+ * Defines messages sent across web sockets between the server and the client (and/or the client and the server).
+ *
+ * To add a new message, first add a member to MessageType, then create a corresponding class which extends `Message` and implements the `type` method and the `toObj` method.
+ * Finally, add a corresponding case to `parseMessage` in `./parse-message`.
+ */
+
+/**
  * A collection of WebSocket message types.
  */
 export enum MessageType {
@@ -34,12 +41,19 @@ export enum MessageType {
 }
 
 export abstract class Message {
-    protected abstract get type(): MessageType;
-
+    /**
+     * Serializes the message as json.
+     */
     public toJson(): string {
         return JSON.stringify(this.toObj());
     }
 
+    protected abstract get type(): MessageType;
+
+    /**
+     * Sends this class to an object which can be serialized as json.
+     * The only usage of this method is by `toJson`.
+     */
     protected toObj(): Object {
         return { type: this.type };
     }

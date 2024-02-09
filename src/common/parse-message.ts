@@ -9,6 +9,12 @@ import {
     PromotionMessage,
 } from "./game-message";
 
+/**
+ * Parses sent messages into Message instances.
+ *
+ * @param text - A string received from the server or the client.
+ * @returns the parsed Message class.
+ */
 export function parseMessage(text: string): Message {
     const obj = JSON.parse(text);
     switch (obj.type) {
