@@ -16,5 +16,6 @@
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "files.eol": "\n",
     "editor.formatOnSave": true
 }
