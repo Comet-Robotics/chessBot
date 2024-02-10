@@ -10,6 +10,8 @@
         "dev": "nodemon src/server/main.ts",
         "start": "NODE_ENV=production ts-node ./src/server/main.ts",
         "build": "vite build",
+        "docs:build": "typedoc",
+        "docs:dev": "nodemon --exec 'yarn run docs:build' --watch src/**/*,documentation/**/*", 
         "test": "jest",
         "format": "prettier --write *",
         "format-check": "prettier --check *"
