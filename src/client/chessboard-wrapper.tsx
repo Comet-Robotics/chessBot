@@ -27,7 +27,7 @@ function computeChessboardTransform(
 interface ChessboardWrapperProps {
     chess: Chess;
     isWhite: boolean;
-    onMove: (from: Square, to: Square) => boolean;
+    onMove: (from: Square, to: Square) => void;
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
@@ -49,14 +49,32 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         setTransform(transform);
     };
 
-    const [clickedSquare, setClickedSquare] = useState<Square | undefined>();
+    const [lastClickedSquare, setLastClickedSquare] = useState<any>();
 
-    // Maps strings (squares) to objects
+    // Maps squares to style objects
     const customSquareStyles: { [square: string]: Object } = {};
-    if (clickedSquare !== undefined) {
-        const legalMoves = chess.moves({ square: clickedSquare });
-        addLegalMoveStyles(customSquareStyles, legalMoves, isWhite);
+    let legalSquares: string[] | undefined = undefined;
+    if (lastClickedSquare !== undefined) {
+        legalSquares = chess
+            .moves({ square: lastClickedSquare, verbose: true })
+            .map((move) => move.to);
+        addLegalMoveStyles(customSquareStyles, legalSquares);
     }
+
+    /**
+     * Returns true if a move is legal, and false otherwise.
+     */
+    const isLegalMove = (from: Square, to: Square): boolean => {
+        const legalSquares = chess
+            .moves({ square: from, verbose: true })
+            .map((move) => move.to);
+        return legalSquares.includes(to);
+    };
+
+    const doMove = (from: Square, to: Square): void => {
+        onMove(from, to);
+        setLastClickedSquare(undefined);
+    };
 
     return (
         <ResizeSensor onResize={handleResize}>
@@ -66,14 +84,23 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         boardOrientation={isWhite ? "white" : "black"}
                         boardWidth={transform.width}
                         position={chess.fen()}
-                        onPieceDrop={(from: Square, to: Square) => {
-                            const legalMove = onMove(from, to);
-                            if (legalMove) {
-                                setClickedSquare(undefined);
+                        onPieceDrop={(from: Square, to: Square): boolean => {
+                            if (isLegalMove(from, to)) {
+                                doMove(from, to);
+                                return true;
                             }
-                            return legalMove;
+                            return false;
                         }}
-                        onSquareClick={setClickedSquare}
+                        onSquareClick={(square: Square) => {
+                            if (
+                                legalSquares !== undefined &&
+                                legalSquares.includes(square)
+                            ) {
+                                doMove(lastClickedSquare, square);
+                            } else {
+                                setLastClickedSquare(square);
+                            }
+                        }}
                         isDraggablePiece={({ sourceSquare }) =>
                             chess.get(sourceSquare).color ==
                             (isWhite ? "w" : "b")
@@ -91,21 +118,9 @@ const CLICK_STYLE = { backgroundColor: "red" };
 
 function addLegalMoveStyles(
     customSquareStyles: { [square: string]: Object },
-    legalMoves: string[],
-    isWhite: boolean,
+    legalSquares: string[],
 ): void {
-    legalMoves.forEach((legalMove) => {
-        if (legalMove == "O-O") {
-            legalMove = "g" + (isWhite ? "1" : "8");
-        } else if (legalMove == "O-O-O") {
-            legalMove = "c" + (isWhite ? "1" : "8");
-        } else if (legalMove.slice(-1) == "+") {
-            legalMove = legalMove.slice(0, -1);
-            legalMove = legalMove.slice(-2);
-        } else {
-            legalMove = legalMove.slice(-2);
-        }
-
-        customSquareStyles[legalMove] = CLICK_STYLE;
-    }, {});
+    legalSquares.forEach((square) => {
+        customSquareStyles[square] = CLICK_STYLE;
+    });
 }
