@@ -24,6 +24,8 @@ function computeChessboardTransform(
     return { left: xShift, top: yShift, height, width };
 }
 
+const CLICK_STYLE = { backgroundColor: "red" };
+
 interface ChessboardWrapperProps {
     chess: Chess;
     isWhite: boolean;
@@ -31,9 +33,7 @@ interface ChessboardWrapperProps {
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
-    const { onMove } = props;
-    let isWhite = props.isWhite ?? true;
-    const chess = props.chess ?? new Chess(DEFAULT_POSITION);
+    const { chess, isWhite, onMove } = props;
 
     // Chessboard does not like 0 default height and width for some reason
     const [transform, setTransform] = useState<Transform>({
@@ -58,7 +58,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         legalSquares = chess
             .moves({ square: lastClickedSquare, verbose: true })
             .map((move) => move.to);
-        addLegalMoveStyles(customSquareStyles, legalSquares);
+
+        legalSquares.forEach((square) => {
+            customSquareStyles[square] = CLICK_STYLE;
+        });
     }
 
     /**
@@ -102,7 +105,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                             }
                         }}
                         isDraggablePiece={({ sourceSquare }) =>
-                            chess.get(sourceSquare).color ==
+                            chess.get(sourceSquare).color ===
                             (isWhite ? "w" : "b")
                         }
                         arePremovesAllowed={true}
@@ -112,15 +115,4 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
             </div>
         </ResizeSensor>
     );
-}
-
-const CLICK_STYLE = { backgroundColor: "red" };
-
-function addLegalMoveStyles(
-    customSquareStyles: { [square: string]: Object },
-    legalSquares: string[],
-): void {
-    legalSquares.forEach((square) => {
-        customSquareStyles[square] = CLICK_STYLE;
-    });
 }
