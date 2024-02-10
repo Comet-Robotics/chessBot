@@ -22,5 +22,33 @@
         "entryPoints": ["src/"],
         "entryPointStrategy": "expand",
         "out": "docs",
+        "cname": "chessbots.cometrobotics.org",
+        "searchInComments": true,
+        "navigationLinks": {
+            "GitHub Repository": "https://github.com/Comet-Robotics/chessBot",
+        },
+        "name": "Chess Bots",
+        "exclude": "**/node_modules/**/*",
+        "pluginPages": {
+            "source": "documentation",
+            "pages": [
+                {
+                    "name": "Chess Bots",
+                    "moduleRoot": true,
+                    "children": [
+                        {
+                            "name": "For Contributors",
+                            "children": [
+                                {
+                                    "name": "Architecture",
+                                    "source": "server_client.md",
+                                },
+                                { "name": "Writing Tests", "source": "writing_tests.md" },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
     },
 }
