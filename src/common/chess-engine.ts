@@ -28,7 +28,7 @@ export class ChessEngine {
         // Additional logging as needed
     }
 
-    getGameFinishedReason(): GameFinishedReason {
+    getGameFinishedReason(): GameFinishedReason | undefined {
         if (this.chess.isCheckmate()) {
             // If it's your turn, you lost
             return this.chess.turn() === "w" ?
@@ -43,9 +43,11 @@ export class ChessEngine {
                     GameFinishedReason.INSUFFICIENT_MATERIAL
                 :   GameFinishedReason.FIFTY_MOVES;
         }
-        throw new Error("Failed to find game over reason.");
+        return undefined;
     }
-
+    // This checks if getGameFinishedReason() is not undefined
+    isGameOver(): boolean {
+        return this.getGameFinishedReason() !== undefined;
+    }
     // Add other methods with logging as necessary
 }
-// pass them in a square, optional paramater in the square. Properties callmoves
