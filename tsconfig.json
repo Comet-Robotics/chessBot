@@ -43,7 +43,10 @@
                                     "name": "Architecture",
                                     "source": "server_client.md",
                                 },
-                                { "name": "Writing Tests", "source": "writing_tests.md" },
+                                {
+                                    "name": "Writing Tests",
+                                    "source": "writing_tests.md",
+                                },
                             ],
                         },
                     ],
