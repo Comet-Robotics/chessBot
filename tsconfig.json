@@ -40,6 +40,10 @@
                             "name": "For Contributors",
                             "children": [
                                 {
+                                    "name": "Overview",
+                                    "source": "Home.md",
+                                },
+                                {
                                     "name": "Architecture",
                                     "source": "server_client.md",
                                 },
@@ -47,6 +51,50 @@
                                     "name": "Writing Tests",
                                     "source": "writing_tests.md",
                                 },
+                                {
+                                    "name": "Resource Library",
+                                    "source": "Resource-Library.md",
+                                },
+                                {
+                                    "name": "ESP Development",
+                                    "childrenDir": "esp",
+                                    "children": [
+                                        {
+                                            "name": "Overview",
+                                            "source": "ESP-Development.md",
+                                        },
+                                        {
+                                            "name": "Setup",
+                                            "source": "ESP-Setup.md",
+                                        },
+                                        {
+                                            "name": "Structure",
+                                            "source": "ESP-Structure.md",
+                                        },
+                                        {
+                                            "name": "Packet Format",
+                                            "source": "Packet-Format.md",
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Server Development",
+                                    "childrenDir": "server",
+                                    "children": [
+                                        {
+                                            "name": "Development",
+                                            "source": "Server-Development.md",
+                                        },
+                                        {
+                                            "name": "Structure",
+                                            "source": "Server-Structure.md",
+                                        },
+                                        {
+                                            "name": "Setup",
+                                            "source": "Server-Setup.md",
+                                        }
+                                    ],
+                                }
                             ],
                         },
                     ],
