@@ -7,7 +7,7 @@
         "src/server"
     ],
     "scripts": {
-        "dev": "nodemon src/server/main.ts -w src/server src/server",
+        "dev": "nodemon src/server/main.ts --watch \"src/server src/common\"",
         "start": "NODE_ENV=production ts-node src/server/main.ts",
         "build": "vite build",
         "test": "jest",

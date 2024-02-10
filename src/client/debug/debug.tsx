@@ -12,7 +12,7 @@ import { DriveRobot } from "./drive-robot";
 export function Debug() {
     const [robotIds, setRobotIds] = useState<string[] | undefined>();
     const [selectedRobotId, setSelectedRobotId] = useState<
-        undefined | string
+        string | undefined
     >();
     const navigate = useNavigate();
 
