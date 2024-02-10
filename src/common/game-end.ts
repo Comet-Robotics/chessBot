@@ -17,24 +17,6 @@ export enum GameFinishedReason {
     // FIVEFOLD_REPETITION,
 }
 
-export function getGameFinishedReason(chess: Chess): GameFinishedReason {
-    if (chess.isCheckmate()) {
-        // If it's your turn, you lost
-        return chess.turn() === "w" ?
-                GameFinishedReason.WHITE_CHECKMATED
-            :   GameFinishedReason.BLACK_CHECKMATED;
-    } else if (chess.isStalemate()) {
-        return GameFinishedReason.STALEMATE;
-    } else if (chess.isThreefoldRepetition()) {
-        return GameFinishedReason.THREEFOLD_REPETITION;
-    } else if (chess.isDraw()) {
-        return chess.isInsufficientMaterial() ?
-                GameFinishedReason.INSUFFICIENT_MATERIAL
-            :   GameFinishedReason.FIFTY_MOVES;
-    }
-    throw new Error("Failed to find game over reason.");
-}
-
 /**
  * A reason for a game to be stopped outside the normal flow of moves.
  */

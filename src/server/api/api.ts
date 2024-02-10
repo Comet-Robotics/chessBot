@@ -1,7 +1,7 @@
 import { WebsocketRequestHandler } from "express-ws";
 import { aiMove } from "js-chess-engine";
 import { Router } from "express";
-import { Chess } from "chess.js";
+import { ChessEngine } from "../../common/chess-engine";
 
 import { parseMessage } from "../../common/parse-message";
 import { StartGameMessage, StopGameMessage } from "../../common/game-message";
@@ -17,7 +17,7 @@ const manager = new PieceManager([]);
 const executor = new CommandExecutor();
 const tcpServer = new TCPServer();
 
-let chess: Chess | null = null;
+let chess: ChessEngine | null = null;
 let difficulty = 0;
 
 /**
@@ -39,7 +39,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         console.log(message);
 
         if (message instanceof StartGameMessage) {
-            chess = new Chess();
+            chess = new ChessEngine();
             // TODO: add message.isWhite so we can determine whether we need to make the first move
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;
@@ -53,18 +53,18 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 throw new Error("Game must be started first.");
             }
 
-            chess.move({ from: message.from, to: message.to });
+            chess.makeMove(message.from, message.to);
 
-            if (chess.isGameOver()) {
+            if (chess.getGameFinishedReason() != undefined) {
                 // Game is naturally finished; we're done
                 return;
             }
 
             // Absolutely unhinged api design
-            const val = Object.entries(aiMove(chess.fen(), difficulty))[0];
+            const val = Object.entries(aiMove(chess.fen, difficulty))[0];
             const from = val[0].toLowerCase();
             const to = (val[1] as string).toLowerCase();
-            chess.move({ from, to });
+            chess.makeMove(from, to);
 
             ws.send(new MoveMessage(from, to).toJson());
         } else if (message instanceof DriveRobotMessage) {
