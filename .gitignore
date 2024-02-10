@@ -25,4 +25,3 @@ dist-ssr
 *.sw?
 .vs/*
 *.wsuo
-docs/

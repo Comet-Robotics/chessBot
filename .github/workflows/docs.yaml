@@ -16,11 +16,11 @@ jobs:
               run: yarn --frozen-lockfile
 
             - name: Run typedoc
-              run: yarn typedoc
+              run: yarn run docs:build
 
             - uses: actions/upload-pages-artifact@v3
               with:
-                  path: docs
+                  path: site
 
     # Deploy job
     deploy:
