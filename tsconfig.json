@@ -30,7 +30,7 @@
         "name": "Chess Bots",
         "exclude": "**/node_modules/**/*",
         "pluginPages": {
-            "source": "documentation",
+            "source": "docs",
             "pages": [
                 {
                     "name": "Chess Bots",
