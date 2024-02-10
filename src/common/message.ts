@@ -1,4 +1,9 @@
-import { PieceType } from "./types";
+/**
+ * Defines messages sent across web sockets between the server and the client (and/or the client and the server).
+ *
+ * To add a new message, first add a member to MessageType, then create a corresponding class which extends `Message` and implements the `type` method and the `toObj` method.
+ * Finally, add a corresponding case to `parseMessage` in `./parse-message`.
+ */
 
 /**
  * A collection of WebSocket message types.
@@ -15,132 +20,41 @@ export enum MessageType {
     MOVE = "move",
     /**
      * A two-way message containing a promotion.
-     *
      * Like a move, but also indicates the piece being promoted to.
      */
     PROMOTION = "promotion",
     /**
-     * A server-client message indicating the game is over.
-     * Includes the reason why the game ended.
+     * A client-server message used to indicate the start of a game.
      */
-    GAME_OVER = "game-over",
+    START_GAME = "start-game",
+    /**
+     * A server-client message indicating the stop of a game.
+     *
+     * Note this message is only used in cases where the game has stopped for a (possibly unexpected) reason.
+     * It is not sent in cases where the normal flow of moves naturally ends the game.
+     */
+    STOP_GAME = "stop-game",
     /**
      * A client-server message containing instructions for manually driving a robot.
      */
-    MANUAL_MOVE = "manual-move",
-}
-
-export enum ClientServerMessage {}
-
-export function parseMessage(text: string): Message {
-    const obj = JSON.parse(text);
-    switch (obj.type) {
-        case MessageType.POSITION:
-            return new PositionMessage(obj.position);
-        case MessageType.MOVE:
-            return new MoveMessage(obj.from, obj.to);
-        case MessageType.PROMOTION:
-            return new PromotionMessage(obj.from, obj.to, obj.promotion);
-        case MessageType.MANUAL_MOVE:
-            return new ManualMoveMessage(
-                obj.id,
-                parseFloat(obj.leftPower),
-                parseFloat(obj.rightPower),
-            );
-    }
-    throw new Error("Failed to parse message.");
+    DRIVE_ROBOT = "drive-robot",
 }
 
 export abstract class Message {
-    protected abstract get type(): MessageType;
-
+    /**
+     * Serializes the message as json.
+     */
     public toJson(): string {
         return JSON.stringify(this.toObj());
     }
 
+    protected abstract type: MessageType;
+
+    /**
+     * Sends this class to an object which can be serialized as json.
+     * The only usage of this method is by `toJson`.
+     */
     protected toObj(): Object {
         return { type: this.type };
-    }
-}
-
-export class PositionMessage extends Message {
-    constructor(public readonly position: string) {
-        super();
-    }
-
-    protected get type(): MessageType {
-        return MessageType.POSITION;
-    }
-
-    protected toObj(): Object {
-        return { ...super.toObj(), position: this.position };
-    }
-}
-
-export class MoveMessage extends Message {
-    constructor(
-        public readonly from: string,
-        public readonly to: string,
-    ) {
-        super();
-    }
-
-    protected get type(): MessageType {
-        return MessageType.MOVE;
-    }
-
-    protected toObj(): Object {
-        return { ...super.toObj(), from: this.from, to: this.to };
-    }
-}
-
-export class PromotionMessage extends MoveMessage {
-    constructor(
-        from: string,
-        to: string,
-        public readonly promotion: PieceType,
-    ) {
-        super(from, to);
-    }
-
-    protected get type(): MessageType {
-        return MessageType.PROMOTION;
-    }
-
-    protected toObj(): Object {
-        return { ...super.toObj(), promotion: this.promotion };
-    }
-}
-
-export class ManualMoveMessage extends Message {
-    constructor(
-        public readonly id: string,
-        public readonly leftPower: number,
-        public readonly rightPower: number,
-    ) {
-        super();
-    }
-
-    protected get type(): MessageType {
-        return MessageType.MANUAL_MOVE;
-    }
-
-    protected toObj(): Object {
-        return {
-            ...super.toObj(),
-            id: this.id,
-            leftPower: this.leftPower,
-            rightPower: this.rightPower,
-        };
-    }
-}
-
-/**
- * An abstract message used to stop a robot.
- * This message looks to the server like a DriveRobotMessage with power set to 0.
- */
-export class StopMessage extends ManualMoveMessage {
-    constructor(public readonly id: string) {
-        super(id, 0, 0);
     }
 }

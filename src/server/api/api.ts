@@ -1,4 +1,5 @@
 import { WebsocketRequestHandler } from "express-ws";
+<<<<<<< HEAD
 
 import {
     parseMessage,
@@ -12,16 +13,82 @@ import { ClientManager } from "../api/client-manager"
 import { CommandExecutor } from "../command/executor";
 import { Square } from "../robot/square";
 import { PacketType, TCPServer } from "./tcp-interface";
+=======
+import { aiMove } from "js-chess-engine";
+>>>>>>> origin/main
 import { Router } from "express";
 import { Chess } from "chess.js";
+
+import { parseMessage } from "../../common/parse-message";
+import { StartGameMessage, StopGameMessage } from "../../common/game-message";
+import { MoveMessage } from "../../common/game-message";
+import { DriveRobotMessage } from "../../common/drive-robot-message";
+
+import { PieceManager } from "../robot/piece-manager";
+import { CommandExecutor } from "../command/executor";
+import { PacketType, TCPServer } from "./tcp-interface";
+import { GameType } from "../../common/game-type";
 
 const manager = new PieceManager([]);
 const clientManager = new ClientManager();
 const executor = new CommandExecutor();
-// const currentGame;
 const tcpServer = new TCPServer();
 
-const chess = new Chess();
+let chess: Chess | null = null;
+let difficulty = 0;
+
+/**
+ * An endpoint used to establish a websocket connection with the server.
+ *
+ * The websocket is used to stream moves to and from the client.
+ */
+export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
+    ws.on("open", () => {
+        console.log("WS opened!");
+    });
+
+    ws.on("close", () => {
+        console.log("WS closed!");
+    });
+
+    ws.on("message", (data) => {
+        const message = parseMessage(data.toString());
+        console.log(message);
+
+        if (message instanceof StartGameMessage) {
+            chess = new Chess();
+            // TODO: add message.isWhite so we can determine whether we need to make the first move
+            if (message.gameType === GameType.COMPUTER) {
+                difficulty = message.difficulty!;
+            }
+        } else if (message instanceof StopGameMessage) {
+            chess = null;
+            // Notify clients of game abort
+            ws.send(message.toJson());
+        } else if (message instanceof MoveMessage) {
+            if (chess == null) {
+                throw new Error("Game must be started first.");
+            }
+
+            chess.move({ from: message.from, to: message.to });
+
+            if (chess.isGameOver()) {
+                // Game is naturally finished; we're done
+                return;
+            }
+
+            // Absolutely unhinged api design
+            const val = Object.entries(aiMove(chess.fen(), difficulty))[0];
+            const from = val[0].toLowerCase();
+            const to = (val[1] as string).toLowerCase();
+            chess.move({ from, to });
+
+            ws.send(new MoveMessage(from, to).toJson());
+        } else if (message instanceof DriveRobotMessage) {
+            doDriveRobot(message);
+        }
+    });
+};
 
 export const apiRouter = Router();
 
@@ -52,6 +119,7 @@ apiRouter.get("/get-puzzles", (_, res) => {
     };
 });
 
+<<<<<<< HEAD
 /**
  * An endpoint which can be used to start a game.
  */
@@ -95,9 +163,10 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     });
 };
 
+=======
+>>>>>>> origin/main
 function doMove(message: MoveMessage) {
-    chess.move({ from: message.from, to: message.to });
-
+    // chess.move({ from: message.from, to: message.to });
     // TODO: handle invalid moves, implement
     // const command = processMove(
     //   Square.fromString(move.from),
@@ -106,11 +175,7 @@ function doMove(message: MoveMessage) {
     // executor.execute(command);
 }
 
-function processMove(from: Square, to: Square): Command {
-    throw new Error("Function not implemented");
-}
-
-function doManualMove(message: ManualMoveMessage): boolean {
+function doDriveRobot(message: DriveRobotMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.log(
             "attempted manual move for non-existent robot ID " + message.id,
@@ -129,15 +194,3 @@ function doManualMove(message: ManualMoveMessage): boolean {
     }
     return true;
 }
-
-// function manualStop(robotId: number): boolean {
-//   if (!tcpServer.getConnectedIds().includes(robotId.toString())) {
-//     console.log(
-//       "attempted manual stop for non-existent robot ID " + robotId.toString()
-//     );
-//     return false;
-//   } else {
-//     tcpServer.getTunnelFromId(robotId).send(PacketType.ESTOP);
-//     return true;
-//   }
-// }

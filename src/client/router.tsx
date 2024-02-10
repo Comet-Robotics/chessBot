@@ -1,8 +1,9 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
-import { Setup } from "./pages/setup";
+import { Setup } from "./setup/setup";
 import { Debug } from "./debug/debug";
-import { Game } from "./pages/game";
-import { Puzzle } from "./pages/puzzle";
+import { Game } from "./game/game";
+import { Puzzle } from "./puzzle/puzzle";
+import { SetupComputerGame } from "./game/setup-computer-game";
 
 export const router = createBrowserRouter([
     {
@@ -26,5 +27,15 @@ export const router = createBrowserRouter([
     {
         path: "game",
         element: <Game />,
+        children: [
+            {
+                path: "debug",
+                element: <Debug />,
+            },
+        ],
+    },
+    {
+        path: "setup-computer-game",
+        element: <SetupComputerGame />,
     },
 ]);
