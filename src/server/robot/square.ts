@@ -20,7 +20,7 @@ export class Square {
 
     toString(): string {
         let letter = Square.FILE_LOOKUP[this.indices.i];
-        let number = this.indices.j;
+        let number = this.indices.j + 1;
         return letter + number;
     }
 
