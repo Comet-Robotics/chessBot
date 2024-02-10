@@ -1,5 +1,6 @@
 import { Button, Dialog, DialogBody, H3 } from "@blueprintjs/core";
 import { Game } from "./game";
+import { Lobby } from "./lobby"
 import { ChessboardWrapper } from "../chessboard-wrapper";
 import { Chess } from "chess.js";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -22,7 +23,7 @@ export function Setup(): JSX.Element {
                 text="Play"
                 rightIcon="arrow-right"
                 intent="primary"
-                onClick={() => navigate("/game")}
+                onClick={() => navigate("/lobby")}
             />
             <Button
                 large

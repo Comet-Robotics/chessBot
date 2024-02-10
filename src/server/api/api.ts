@@ -8,6 +8,7 @@ import {
 
 import { Command } from "../command/command";
 import { PieceManager } from "../robot/piece-manager";
+import { ClientManager } from "../api/client-manager"
 import { CommandExecutor } from "../command/executor";
 import { Square } from "../robot/square";
 import { PacketType, TCPServer } from "./tcp-interface";
@@ -15,6 +16,7 @@ import { Router } from "express";
 import { Chess } from "chess.js";
 
 const manager = new PieceManager([]);
+const clientManager = new ClientManager();
 const executor = new CommandExecutor();
 // const currentGame;
 const tcpServer = new TCPServer();
@@ -64,6 +66,7 @@ apiRouter.post("/start-game", (req, res) => {
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     ws.on("open", () => {
+        clientManager.registerClient(req.cookies.clientId, ws);
         console.log("WS opened!");
     });
 

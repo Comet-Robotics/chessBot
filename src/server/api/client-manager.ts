@@ -1,3 +1,5 @@
+import WebSocket from "ws";
+
 export class ClientManager {
     private clientSockets: Record<string, WebSocket>;
     constructor() {
