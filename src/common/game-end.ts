@@ -1,6 +1,6 @@
 import { Chess } from "chess.js";
 
-export enum GameFinishedReason {
+export enum FinishGameReason {
     /**
      * White is checkmated.
      */
@@ -17,20 +17,20 @@ export enum GameFinishedReason {
     // FIVEFOLD_REPETITION,
 }
 
-export function getGameFinishedReason(chess: Chess): GameFinishedReason {
+export function getFinishGameReason(chess: Chess): FinishGameReason {
     if (chess.isCheckmate()) {
         // If it's your turn, you lost
         return chess.turn() === "w" ?
-                GameFinishedReason.WHITE_CHECKMATED
-            :   GameFinishedReason.BLACK_CHECKMATED;
+                FinishGameReason.WHITE_CHECKMATED
+            :   FinishGameReason.BLACK_CHECKMATED;
     } else if (chess.isStalemate()) {
-        return GameFinishedReason.STALEMATE;
+        return FinishGameReason.STALEMATE;
     } else if (chess.isThreefoldRepetition()) {
-        return GameFinishedReason.THREEFOLD_REPETITION;
+        return FinishGameReason.THREEFOLD_REPETITION;
     } else if (chess.isDraw()) {
         return chess.isInsufficientMaterial() ?
-                GameFinishedReason.INSUFFICIENT_MATERIAL
-            :   GameFinishedReason.FIFTY_MOVES;
+                FinishGameReason.INSUFFICIENT_MATERIAL
+            :   FinishGameReason.FIFTY_MOVES;
     }
     throw new Error("Failed to find game over reason.");
 }
@@ -38,7 +38,7 @@ export function getGameFinishedReason(chess: Chess): GameFinishedReason {
 /**
  * A reason for a game to be stopped outside the normal flow of moves.
  */
-export enum GameStoppedReason {
+export enum StopGameReason {
     WHITE_RESIGNED = "white-resigned",
     BLACK_RESIGNED = "black-resigned",
     DRAW_ACCEPTED = "draw-accepted",

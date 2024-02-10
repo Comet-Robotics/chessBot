@@ -1,7 +1,7 @@
-import { GameStoppedReason } from "./game-end";
-import { GameType } from "./game-type";
+import { StopGameReason } from "../game-end";
+import { GameType } from "../game-type";
 import { Message, MessageType } from "./message";
-import { PieceType } from "./types";
+import { PieceType } from "../types";
 
 export class PositionMessage extends Message {
     constructor(public readonly position: string) {
@@ -66,7 +66,7 @@ export class StartGameMessage extends Message {
 }
 
 export class StopGameMessage extends Message {
-    constructor(public readonly reason: GameStoppedReason) {
+    constructor(public readonly reason: StopGameReason) {
         super();
     }
 
