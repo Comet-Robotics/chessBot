@@ -48,4 +48,3 @@ export class ChessEngine {
 
     // Add other methods with logging as necessary
 }
-// pass them in a square, optional paramater in the square. Properties callmoves
