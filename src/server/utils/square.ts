@@ -1,30 +1,16 @@
-import { Position, Indices } from "../robot/pair";
+import { Position } from "../robot/pair";
+import { Square } from "chess.js";
 
-export class Square {
-    static readonly FILE_LOOKUP = "abcdefgh";
-    constructor(public readonly indices: Indices) {}
+const FILE_LOOKUP = "abcdefgh";
 
-    static make(i: number, j: number): Square {
-        return new Square(new Indices(i, j));
-    }
+export function positionToSquare(position: Position): Square {
+    let letter = FILE_LOOKUP[Math.floor(position.x)];
+    let number = Math.floor(position.y) + 1;
+    return (letter + number) as Square;
+}
 
-    static fromString(square: string): Square {
-        const i = Square.FILE_LOOKUP.indexOf(square.charAt(0));
-        const j = parseInt(square.charAt(1)) - 1;
-        return Square.make(i, j);
-    }
-
-    static fromPosition(position: Position) {
-        return Square.make(Math.floor(position.x), Math.floor(position.y));
-    }
-
-    toString(): string {
-        let letter = Square.FILE_LOOKUP[this.indices.i];
-        let number = this.indices.j + 1;
-        return letter + number;
-    }
-
-    toPosition(): Position {
-        return new Position(this.indices.i + 0.5, this.indices.j + 0.5);
-    }
+export function squareToPosition(square: Square): Position {
+    let i = FILE_LOOKUP.indexOf(square.charAt(0));
+    let j = parseInt(square.charAt(1)) - 1;
+    return new Position(i + 0.5, j + 0.5);
 }
