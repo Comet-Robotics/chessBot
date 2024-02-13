@@ -1,8 +1,7 @@
 import { Chessboard } from "react-chessboard";
-import { Chess, DEFAULT_POSITION, Square } from "chess.js";
+import { Chess, Square } from "chess.js";
 import { useState } from "react";
 import { ResizeEntry, ResizeSensor } from "@blueprintjs/core";
-import { BoardSquare } from "./board-square";
 
 interface Transform {
     height: number;
@@ -26,11 +25,7 @@ function computeChessboardTransform(
 }
 
 const CLICK_STYLE = {
-    height: 24,
-    width: 24,
-    borderRadius: 24,
-    backgroundColor: "gray",
-    margin: 24,
+    backgroundColor: "green",
 };
 
 interface ChessboardWrapperProps {
@@ -118,12 +113,11 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                                 setLastClickedSquare(square);
                             }
                         }}
-                        customSquare={BoardSquare}
                         isDraggablePiece={({ sourceSquare }) =>
                             chess.get(sourceSquare).color ===
                             (isWhite ? "w" : "b")
                         }
-                        arePremovesAllowed={true}
+                        arePremovesAllowed={false}
                         customSquareStyles={customSquareStyles}
                     />
                 </div>
