@@ -57,18 +57,12 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const customSquareStyles: { [square: string]: Object } = {};
     let legalSquares: string[] | undefined = undefined;
     if (lastClickedSquare !== undefined) {
-        legalSquares = chess
+        chess
             .moves({ square: lastClickedSquare, verbose: true })
-            .map((move) => move.to);
-
-        let check = chess
-            .moves({ square: lastClickedSquare, verbose: true })
-            .map((move) => move.captured);
-
-        legalSquares.forEach((square, i) => {
-            customSquareStyles[square] =
-                check[i] !== undefined ? CLICK_STYLE : CLICK_STYLE;
-        });
+            .map((move) => move.to)
+            .forEach((square) => {
+                customSquareStyles[square] = CLICK_STYLE;
+            });
     }
 
     /**
