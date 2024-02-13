@@ -24,7 +24,13 @@ function computeChessboardTransform(
     return { left: xShift, top: yShift, height, width };
 }
 
-const CLICK_STYLE = { backgroundColor: "red" };
+const CLICK_STYLE = {
+    height: 24,
+    width: 24,
+    borderRadius: 24,
+    backgroundColor: "gray",
+    margin: 24,
+};
 
 interface ChessboardWrapperProps {
     chess: Chess;
@@ -59,8 +65,13 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
             .moves({ square: lastClickedSquare, verbose: true })
             .map((move) => move.to);
 
-        legalSquares.forEach((square) => {
-            customSquareStyles[square] = CLICK_STYLE;
+        let check = chess
+            .moves({ square: lastClickedSquare, verbose: true })
+            .map((move) => move.captured);
+
+        legalSquares.forEach((square, i) => {
+            customSquareStyles[square] =
+                check[i] !== undefined ? CLICK_STYLE : CLICK_STYLE;
         });
     }
 
@@ -100,6 +111,8 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                                 legalSquares.includes(square)
                             ) {
                                 doMove(lastClickedSquare, square);
+                            } else if (lastClickedSquare === square) {
+                                setLastClickedSquare(undefined);
                             } else {
                                 setLastClickedSquare(square);
                             }
