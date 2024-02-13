@@ -2,5 +2,11 @@
     "tabWidth": 4,
     "singleQuote": false,
     "experimentalTernaries": true,
-    "endOfLine": "lf"
+    "endOfLine": "lf",
+    "overrides": [
+        {
+            "files": ["*.json"],
+            "options": { "parser": "json" }
+        }
+    ]
 }

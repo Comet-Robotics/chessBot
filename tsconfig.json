@@ -14,7 +14,7 @@
         "moduleResolution": "Node",
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "noEmit": true,
+        "noEmit": true
     },
     "include": ["src"],
     "files": ["src/server/js-chess-engine.d.ts"],
@@ -25,7 +25,7 @@
         "cname": "chessbots.cometrobotics.org",
         "searchInComments": true,
         "navigationLinks": {
-            "GitHub Repository": "https://github.com/Comet-Robotics/chessBot",
+            "GitHub Repository": "https://github.com/Comet-Robotics/chessBot"
         },
         "name": "Chess Bots",
         "exclude": "**/node_modules/**/*",
@@ -41,19 +41,19 @@
                             "children": [
                                 {
                                     "name": "Overview",
-                                    "source": "Home.md",
+                                    "source": "Home.md"
                                 },
                                 {
                                     "name": "Architecture",
-                                    "source": "server_client.md",
+                                    "source": "server_client.md"
                                 },
                                 {
                                     "name": "Writing Tests",
-                                    "source": "writing_tests.md",
+                                    "source": "writing_tests.md"
                                 },
                                 {
                                     "name": "Resource Library",
-                                    "source": "Resource-Library.md",
+                                    "source": "Resource-Library.md"
                                 },
                                 {
                                     "name": "ESP Development",
@@ -61,21 +61,21 @@
                                     "children": [
                                         {
                                             "name": "Overview",
-                                            "source": "ESP-Development.md",
+                                            "source": "ESP-Development.md"
                                         },
                                         {
                                             "name": "Setup",
-                                            "source": "ESP-Setup.md",
+                                            "source": "ESP-Setup.md"
                                         },
                                         {
                                             "name": "Structure",
-                                            "source": "ESP-Structure.md",
+                                            "source": "ESP-Structure.md"
                                         },
                                         {
                                             "name": "Packet Format",
-                                            "source": "Packet-Format.md",
-                                        },
-                                    ],
+                                            "source": "Packet-Format.md"
+                                        }
+                                    ]
                                 },
                                 {
                                     "name": "Server Development",
@@ -83,23 +83,23 @@
                                     "children": [
                                         {
                                             "name": "Development",
-                                            "source": "Server-Development.md",
+                                            "source": "Server-Development.md"
                                         },
                                         {
                                             "name": "Structure",
-                                            "source": "Server-Structure.md",
+                                            "source": "Server-Structure.md"
                                         },
                                         {
                                             "name": "Setup",
-                                            "source": "Server-Setup.md",
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                    ],
-                },
-            ],
-        },
-    },
+                                            "source": "Server-Setup.md"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
 }
