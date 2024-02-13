@@ -2,6 +2,7 @@ import { Chessboard } from "react-chessboard";
 import { Chess, DEFAULT_POSITION, Square } from "chess.js";
 import { useState } from "react";
 import { ResizeEntry, ResizeSensor } from "@blueprintjs/core";
+import { BoardSquare } from "./board-square";
 
 interface Transform {
     height: number;
@@ -117,6 +118,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                                 setLastClickedSquare(square);
                             }
                         }}
+                        customSquare={BoardSquare}
                         isDraggablePiece={({ sourceSquare }) =>
                             chess.get(sourceSquare).color ===
                             (isWhite ? "w" : "b")

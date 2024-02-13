@@ -10,7 +10,7 @@ import {
     getGameFinishedReason,
 } from "../../common/game-end";
 
-import { ChessboardWrapper } from "../chessboard-wrapper";
+import { ChessboardWrapper } from "../wrapper/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
 import { WEBSOCKET_URL } from "../api";
 import { GameEndDialog } from "./game-end-dialog";
