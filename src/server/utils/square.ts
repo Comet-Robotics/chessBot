@@ -1,4 +1,4 @@
-import { Position, Indices } from "./pair";
+import { Position, Indices } from "../robot/pair";
 
 export class Square {
     static readonly FILE_LOOKUP = "abcdefgh";
