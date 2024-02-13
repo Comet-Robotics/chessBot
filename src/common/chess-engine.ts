@@ -5,25 +5,37 @@ import { GameFinishedReason } from "./game-end";
 
 export class ChessEngine {
     private chess: Chess;
+    private static DEFAULT_POSITION = "start";
 
-    constructor() {
-        this.chess = new Chess();
+    constructor(fen?: string) {
+        this.chess = new Chess(fen ?? ChessEngine.DEFAULT_POSITION);
     }
 
     reset() {
         this.chess.reset();
     }
 
-    getMoves(passedSquare?: Square) {
-        return this.chess.moves({ square: passedSquare, verbose: true });
+    getMoves(square?: Square) {
+        return this.chess.moves({
+            square,
+            verbose: true,
+        });
+    }
+
+    getSquares(square?: Square): Square[] {
+        const moves = this.getMoves(square);
+        return moves.map((move) => move.to);
     }
 
     get fen() {
         return this.chess.fen();
     }
 
-    makeMove(from: string, to: string) {
-        this.chess.move({ from, to });
+    makeMove(from: Square, to: Square) {
+        this.chess.move({
+            from: from,
+            to,
+        });
         console.log("Chess engine updated:", this.chess.fen());
         // Additional logging as needed
     }
@@ -45,9 +57,9 @@ export class ChessEngine {
         }
         return undefined;
     }
+
     // This checks if getGameFinishedReason() is not undefined
     isGameOver(): boolean {
         return this.getGameFinishedReason() !== undefined;
     }
-    // Add other methods with logging as necessary
 }
