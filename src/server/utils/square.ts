@@ -6,7 +6,7 @@ const FILE_LOOKUP = "abcdefgh";
 export function positionToSquare(position: Position): Square {
     let letter = FILE_LOOKUP[Math.floor(position.x)];
     let number = Math.floor(position.y) + 1;
-    return letter + number as Square;
+    return (letter + number) as Square;
 }
 
 export function squareToPosition(square: Square): Position {
