@@ -5,9 +5,11 @@ title: "[<Server|Client|Tooling|Documentation>]: <Task Name>"
 labels: draft
 ---
 
-#### Task Description:
+#### Task Description: <!-- Briefly explain what this task will accomplish and its importance -->
 
-#### Implementation Steps:
+#### Implementation Steps: <!-- Give specific steps outlining how to complete this issue -->
+
+<!-- Try to ensure each step has a specific deliverable so progress is clear and unambiguous -->
 
 1. <Step 1>
 1. <Step 2>
