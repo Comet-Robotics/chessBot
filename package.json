@@ -10,6 +10,8 @@
         "dev": "nodemon src/server/main.ts",
         "start": "NODE_ENV=production ts-node ./src/server/main.ts",
         "build": "vite build",
+        "docs:build": "typedoc",
+        "docs:dev": "nodemon --exec 'yarn run docs:build' --watch ./tsconfig.json,./src/**/*,./docs/**/*",
         "test": "vitest",
         "format": "prettier --write *",
         "format-check": "prettier --check *"
@@ -21,11 +23,12 @@
         "vite-express": "^0.11.1"
     },
     "devDependencies": {
+        "@knodes/typedoc-plugin-pages": "^0.23.4",
         "@vitejs/plugin-react": "^3.1.0",
         "nodemon": "^3.0.1",
         "prettier": "^3.2.4",
         "ts-node": "^10.9.1",
-        "typedoc": "^0.25.7",
+        "typedoc": "^0.23.0",
         "vite": "^4.0.4",
         "vitest": "^1.2.2"
     }

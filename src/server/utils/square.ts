@@ -1,4 +1,4 @@
-import { Position, Indices } from "./pair";
+import { Position, Indices } from "../robot/pair";
 
 export class Square {
     static readonly FILE_LOOKUP = "abcdefgh";
@@ -20,7 +20,7 @@ export class Square {
 
     toString(): string {
         let letter = Square.FILE_LOOKUP[this.indices.i];
-        let number = this.indices.j;
+        let number = this.indices.j + 1;
         return letter + number;
     }
 

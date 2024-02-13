@@ -1,3 +1,5 @@
 chessBotArduino
 yarn.lock
-docs
+.gitignore
+.prettierignore
+site
