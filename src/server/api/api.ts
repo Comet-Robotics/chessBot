@@ -1,7 +1,7 @@
 import { WebsocketRequestHandler } from "express-ws";
 import { aiMove } from "js-chess-engine";
 import { Router } from "express";
-import { Chess } from "chess.js";
+import { Chess, Square } from "chess.js";
 
 import { parseMessage } from "../../common/parse-message";
 import { StartGameMessage, StopGameMessage } from "../../common/game-message";
@@ -62,8 +62,8 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
             // Absolutely unhinged api design
             const val = Object.entries(aiMove(chess.fen(), difficulty))[0];
-            const from = val[0].toLowerCase();
-            const to = (val[1] as string).toLowerCase();
+            const from = val[0].toLowerCase() as Square;
+            const to = (val[1] as string).toLowerCase() as Square;
             chess.move({ from, to });
 
             ws.send(new MoveMessage(from, to).toJson());

@@ -10,12 +10,11 @@ import {
     getGameFinishedReason,
 } from "../../common/game-end";
 
-import { ChessboardWrapper } from "../chessboard-wrapper";
+import { ChessboardWrapper } from "../wrapper/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
 import { WEBSOCKET_URL } from "../api";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
-import { GameType } from "../../common/game-type";
 import { parseMessage } from "../../common/parse-message";
 
 function getMessageHandler(
@@ -94,15 +93,10 @@ function getMoveHandler(
     setChess: Dispatch<Chess>,
     sendMessage: Dispatch<string>,
 ) {
-    return (from: Square, to: Square): boolean => {
+    return (from: Square, to: Square): void => {
         const chessCopy = new Chess(chess.fen());
-        try {
-            chessCopy.move({ from, to });
-        } catch {
-            return false;
-        }
+        chessCopy.move({ from, to });
         setChess(chessCopy);
         sendMessage(new MoveMessage(from, to).toJson());
-        return true;
     };
 }
