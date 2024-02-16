@@ -10,7 +10,7 @@ import { MoveMessage } from "../../common/message/game-message";
 import { PositionMessage } from "../../common/message/game-message";
 import { StopGameReason, getFinishGameReason } from "../../common/game-end";
 
-import { ChessboardWrapper } from "../wrapper/chessboard-wrapper";
+import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
 import { WEBSOCKET_URL } from "../api";
 import { GameEndDialog } from "./game-end-dialog";
