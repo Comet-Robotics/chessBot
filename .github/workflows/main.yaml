@@ -1,8 +1,6 @@
 name: validate
 on:
     push:
-        branches:
-            - "*"
 
 jobs:
     check-formatting:
@@ -34,7 +32,7 @@ jobs:
 
             - name: Run tests
               run: yarn test
-              
+
     build:
         runs-on: ubuntu-latest
         steps:
@@ -48,5 +46,4 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Run build
-              run: yarn run build
-
+              run: yarn build
