@@ -2,7 +2,7 @@
 name: New Member Task Request
 about: Create a task for a newer member of the team.
 title: "[<Server|Client|Tooling|Documentation>]: <Task Name>"
-labels: draft
+labels: draft new-member
 ---
 
 #### Task Description: <!-- Briefly explain what this task will accomplish and its importance -->
