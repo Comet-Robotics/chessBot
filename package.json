@@ -17,12 +17,12 @@
         "format-check": "prettier --check *"
     },
     "dependencies": {
-        "@types/node": "^18.11.18",
         "chess.js": "^1.0.0-beta.6",
         "typescript": "^4.9.3",
         "vite-express": "^0.11.1"
     },
     "devDependencies": {
+        "@types/node": "^18.11.18",
         "@knodes/typedoc-plugin-pages": "^0.23.4",
         "@vitejs/plugin-react": "^3.1.0",
         "nodemon": "^3.0.1",
