@@ -44,18 +44,4 @@ export class Position extends Pair<Position> {
     }
 }
 
-export class Indices extends Pair<Indices> {
-    constructor(
-        public readonly i: number,
-        public readonly j: number,
-    ) {
-        super(i, j);
-    }
-
-    create(i: number, j: number): Indices {
-        return new Indices(i, j);
-    }
-}
-
 export const ZERO_POSITION = new Position(0, 0);
-export const ZERO_INDICES = new Indices(0, 0);
