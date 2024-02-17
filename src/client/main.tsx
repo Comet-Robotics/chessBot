@@ -12,10 +12,8 @@ FocusStyleManager.onlyShowFocusOnTabs();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
         <div id="app-container">
-        <BlueprintProvider>
-
-            <RouterProvider router={router} />
-
+            <BlueprintProvider>
+                <RouterProvider router={router} />
             </BlueprintProvider>
         </div>
     </React.StrictMode>,
