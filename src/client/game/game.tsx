@@ -18,6 +18,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { parseMessage } from "../../common/message/parse-message";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/types";
+import { GameType } from "../../common/game-type";
 
 function getMessageHandler(
     chess: ChessEngine,
@@ -41,7 +42,7 @@ function getMessageHandler(
 
 export function Game(): JSX.Element {
     const state = useLocation().state;
-    const side = state.side as Side;
+    const { gameType, side, difficulty } = state;
 
     const [chess, setChess] = useState(new ChessEngine());
     const [gameStopped, setGameStopped] = useState<StopGameReason>();
@@ -54,9 +55,7 @@ export function Game(): JSX.Element {
     });
 
     useEffect(() => {
-        sendMessage(
-            new StartGameMessage(state.gameType, state.difficulty).toJson(),
-        );
+        sendMessage(new StartGameMessage(gameType, side, difficulty).toJson());
     }, [sendMessage]);
 
     let gameEndDialog = null;

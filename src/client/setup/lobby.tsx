@@ -13,11 +13,12 @@ export function Lobby() {
         },
         onMessage: (msg: MessageEvent) => {
             const message = JSON.parse(msg.data.toString());
+            console.log(message);
             if (message instanceof StartGameMessage) {
                 navigate("/game", {
                     state: {
                         gameType: message.gameType,
-                        // side: message.side
+                        side: message.side,
                     },
                 });
             }

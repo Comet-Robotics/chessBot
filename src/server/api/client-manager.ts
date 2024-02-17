@@ -3,11 +3,12 @@ import WebSocket from "ws";
 export class ClientManager {
     constructor(
         private clientSockets: Record<string, WebSocket>,
-        private player1?: string,
-        private player2?: string,
+        private hostId?: string,
+        private clientId?: string,
     ) {}
 
     public registerSocket(clientId: string, socket: WebSocket) {
+        console.log("Register socket");
         this.clientSockets[clientId] = socket;
     }
 
@@ -19,19 +20,21 @@ export class ClientManager {
         return this.clientSockets[clientId];
     }
 
-    public player2Socket(): WebSocket | undefined {
-        if (this.player2) {
-            return this.getSocket(this.player2);
+    public getClientSocket(): WebSocket | undefined {
+        if (this.clientId) {
+            return this.getSocket(this.clientId);
         }
         return undefined;
     }
 
-    public registerPlayer(clientId: string): number {
-        if (this.player1 === undefined || this.player1 === clientId) {
-            this.player1 = clientId;
+    public registerPlayer(id: string): number {
+        if (this.hostId === undefined || this.hostId === id) {
+            console.log("Register host");
+            this.hostId = id;
             return 0;
-        } else if (this.player2 === undefined || this.player2 === clientId) {
-            this.player2 = clientId;
+        } else if (this.clientId === undefined || this.clientId === id) {
+            console.log("Register client");
+            this.clientId = id;
             return 1;
         }
         return 2;

@@ -34,8 +34,8 @@ export function SetupGame(props: SetupGameProps) {
             onClick={async () => {
                 navigate("/game", {
                     state: {
-                        gameType: GameType.COMPUTER,
-                        // TODO: Let user choose color
+                        gameType: props.gameType,
+                        // TODO: Let user choose side
                         side: Side.WHITE,
                         difficulty: difficulty,
                     },

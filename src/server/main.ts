@@ -15,8 +15,8 @@ app.use(cookieParser());
  * The cookie is automatically sent back to the client, stored in the browser, and included by the client in all future requests.
  */
 const checkAuthentication: RequestHandler = (req, res, next) => {
-    if (!req.cookies.clientId) {
-        res.cookie("clientId", uuid(), {
+    if (!req.cookies.id) {
+        res.cookie("id", uuid(), {
             // Expires after 1 day
             maxAge: 86400000,
             // Cookie isn't available to client
@@ -31,9 +31,16 @@ const checkAuthentication: RequestHandler = (req, res, next) => {
  */
 app.use(checkAuthentication);
 
+/**
+ * Registers all players with the client manager.
+ */
+app.use((req, _, next) => {
+    clientManager.registerPlayer(req.cookies.id);
+    return next();
+});
+
 app.get("/", (req, res) => {
-    const id = req.cookies.clientId;
-    const playerType = clientManager.registerPlayer(id);
+    const playerType = clientManager.registerPlayer(req.cookies.id);
     if (playerType == 0) {
         return res.redirect("/setup");
     } else {

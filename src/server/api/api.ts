@@ -13,6 +13,7 @@ import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { makeClientManager } from "../api/client-manager";
 import { PacketType, TCPServer } from "./tcp-interface";
 import { GameType } from "../../common/game-type";
+import { Side, oppositeSide } from "../../common/types";
 
 export const clientManager = makeClientManager();
 const tcpServer = new TCPServer();
@@ -26,14 +27,15 @@ let difficulty = 0;
  * The websocket is used to stream moves to and from the client.
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
-    ws.on("open", () => {
-        console.log("WS opened!");
-        clientManager.registerSocket(req.cookies.clientId, ws);
-    });
+    // Method doesn't exist
+    // ws.on("open", () => {
+    //     console.log("WS opened!");
+    //     clientManager.registerSocket(req.cookies.id, ws);
+    // });
 
     ws.on("close", () => {
         console.log("WS closed!");
-        clientManager.closeSocket(req.cookies.clientId);
+        clientManager.closeSocket(req.cookies.id);
     });
 
     ws.on("message", (data) => {
@@ -44,15 +46,23 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             chess = new ChessEngine();
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;
-                if (!message.side) {
+                // If the person starting the game is black, we're white and need to make the first move
+                if (message.side === Side.BLACK) {
                     const { from, to } = chess.makeAiMove(difficulty);
                     ws.send(new MoveMessage(from, to).toJson());
                 }
             } else {
-                const ws = clientManager.player2Socket();
+                const ws = clientManager.getClientSocket();
+                console.log("Player 2 ws: " + ws);
                 if (ws) {
                     // if it isn't defined, we'll need to start the game whenever player 2 connects
-                    ws.send(new StartGameMessage(GameType.HUMAN).toJson());
+                    console.log("Send message to player 2");
+                    ws.send(
+                        new StartGameMessage(
+                            GameType.HUMAN,
+                            oppositeSide(message.side),
+                        ).toJson(),
+                    );
                 }
             }
         } else if (message instanceof StopGameMessage) {

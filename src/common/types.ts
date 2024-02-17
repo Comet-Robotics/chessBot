@@ -14,6 +14,10 @@ export enum Side {
     BLACK = "b",
 }
 
+export function oppositeSide(side: Side) {
+    return side === Side.WHITE ? Side.BLACK : Side.WHITE;
+}
+
 export function getStartHeading(side: Side) {
     return side == Side.WHITE ? 90 * DEGREE : 270 * DEGREE;
 }
