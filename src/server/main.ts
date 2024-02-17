@@ -2,7 +2,7 @@ import express, { RequestHandler, Express } from "express";
 import ViteExpress from "vite-express";
 import cookieParser from "cookie-parser";
 import { v4 as uuid } from "uuid";
-import { apiRouter, websocketHandler } from "./api/api";
+import { apiRouter, clientManager, websocketHandler } from "./api/api";
 import expressWebSocket from "express-ws";
 
 const app = expressWebSocket(express()).app;
@@ -27,9 +27,22 @@ const checkAuthentication: RequestHandler = (req, res, next) => {
 };
 
 /**
+ * Returns the player type based off of their client id.
+ * 0 is the host (player1), 1 is the client (player2), 2 is spectators
+ */
+const addClientToManager: RequestHandler = (req, res) => {
+    res.json({playerType: clientManager.assignConnection(req.cookies.clientId)});
+}
+
+/**
  * Ensure all requests have a clientId cookie.
  */
 app.use(checkAuthentication);
+
+/**
+ * Call the middleware when the play against a human button is clicked.
+ */
+app.post("/human", addClientToManager);
 
 app.ws("/ws", websocketHandler);
 

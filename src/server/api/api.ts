@@ -1,21 +1,5 @@
 import { WebsocketRequestHandler } from "express-ws";
-<<<<<<< HEAD
-
-import {
-    parseMessage,
-    MoveMessage,
-    ManualMoveMessage,
-} from "../../common/message";
-
-import { Command } from "../command/command";
-import { PieceManager } from "../robot/piece-manager";
-import { ClientManager } from "../api/client-manager"
-import { CommandExecutor } from "../command/executor";
-import { Square } from "../robot/square";
-import { PacketType, TCPServer } from "./tcp-interface";
-=======
 import { aiMove } from "js-chess-engine";
->>>>>>> origin/main
 import { Router } from "express";
 import { Chess } from "chess.js";
 
@@ -25,12 +9,13 @@ import { MoveMessage } from "../../common/game-message";
 import { DriveRobotMessage } from "../../common/drive-robot-message";
 
 import { PieceManager } from "../robot/piece-manager";
+import { ClientManager } from "../api/client-manager"
 import { CommandExecutor } from "../command/executor";
 import { PacketType, TCPServer } from "./tcp-interface";
 import { GameType } from "../../common/game-type";
 
 const manager = new PieceManager([]);
-const clientManager = new ClientManager();
+export const clientManager = new ClientManager();
 const executor = new CommandExecutor();
 const tcpServer = new TCPServer();
 
@@ -45,6 +30,7 @@ let difficulty = 0;
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     ws.on("open", () => {
         console.log("WS opened!");
+        clientManager.registerClient(req.cookies.clientId, ws);
     });
 
     ws.on("close", () => {
@@ -119,52 +105,6 @@ apiRouter.get("/get-puzzles", (_, res) => {
     };
 });
 
-<<<<<<< HEAD
-/**
- * An endpoint which can be used to start a game.
- */
-apiRouter.post("/start-game", (req, res) => {
-    res.send({ message: "Game started" });
-});
-
-/**
- * An endpoint used to establish a websocket connection with the server.
- *
- * The websocket is used to stream moves to and from the client.
- */
-export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
-    ws.on("open", () => {
-        clientManager.registerClient(req.cookies.clientId, ws);
-        console.log("WS opened!");
-    });
-
-    ws.on("close", () => {
-        console.log("WS closed!");
-    });
-
-    ws.on("message", (data) => {
-        const message = parseMessage(data.toString());
-        console.log(message);
-
-        if (message instanceof MoveMessage) {
-            doMove(message);
-
-            // Wait before sending next move
-            setTimeout(() => {
-                const moveStrings = chess.moves();
-                const moveString =
-                    moveStrings[Math.floor(Math.random() * moveStrings.length)];
-                const move = chess.move(moveString);
-                ws.send(new MoveMessage(move.from, move.to).toJson());
-            }, 500);
-        } else if (message instanceof ManualMoveMessage) {
-            doManualMove(message);
-        }
-    });
-};
-
-=======
->>>>>>> origin/main
 function doMove(message: MoveMessage) {
     // chess.move({ from: message.from, to: message.to });
     // TODO: handle invalid moves, implement

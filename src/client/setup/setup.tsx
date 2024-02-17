@@ -28,7 +28,7 @@ export function Setup(): JSX.Element {
                 text="Play against a human"
                 rightIcon="arrow-right"
                 intent="primary"
-                onClick={() => navigate("/setup-game")}
+                onClick={() => navigate("/setup-human-game")}
             />
             <Button
                 large
