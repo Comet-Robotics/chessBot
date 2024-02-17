@@ -10,15 +10,11 @@ import {
 import { MoveMessage } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
-import { PieceManager } from "../robot/piece-manager";
 import { makeClientManager } from "../api/client-manager";
-import { CommandExecutor } from "../command/executor";
 import { PacketType, TCPServer } from "./tcp-interface";
 import { GameType } from "../../common/game-type";
 
-const manager = new PieceManager([]);
 export const clientManager = makeClientManager();
-const executor = new CommandExecutor();
 const tcpServer = new TCPServer();
 
 let chess: ChessEngine | null = null;
@@ -48,6 +44,10 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             chess = new ChessEngine();
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;
+                if (!message.side) {
+                    const { from, to } = chess.makeAiMove(difficulty);
+                    ws.send(new MoveMessage(from, to).toJson());
+                }
             } else {
                 const ws = clientManager.player2Socket();
                 if (ws) {
