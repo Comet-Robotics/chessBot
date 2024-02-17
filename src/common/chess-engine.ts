@@ -2,6 +2,15 @@
 
 import { Chess, Square } from "chess.js";
 import { GameFinishedReason } from "./game-end";
+import { aiMove } from "js-chess-engine";
+
+enum Difficulty {
+    EASY = "easy",
+    MEDIUM = "medium",
+    HARD = "hard",
+}
+
+type MoveEntry = [string, string];
 
 export class ChessEngine {
     private chess: Chess;
@@ -38,6 +47,15 @@ export class ChessEngine {
         });
         console.log("Chess engine updated:", this.chess.fen());
         // Additional logging as needed
+    }
+    makeAiMove(difficulty: Difficulty) {
+        const val = Object.entries(
+            aiMove(this.chess.fen(), difficulty),
+        )[0] as MoveEntry;
+        const from = val[0].toLowerCase();
+        const to = val[1].toLowerCase();
+
+        this.makeMove(from as Square, to as Square);
     }
 
     getGameFinishedReason(): GameFinishedReason | undefined {
