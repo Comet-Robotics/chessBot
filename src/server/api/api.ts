@@ -44,6 +44,10 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             chess = new ChessEngine();
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;
+                if (!message.isWhite) {
+                    const { from, to } = chess.makeAiMove(difficulty);
+                    ws.send(new MoveMessage(from, to).toJson());
+                }
             }
         } else if (message instanceof StopGameMessage) {
             chess = null;
