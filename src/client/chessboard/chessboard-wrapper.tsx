@@ -1,7 +1,8 @@
 import { Chessboard } from "react-chessboard";
-import { Chess, Square } from "chess.js";
+import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
+import { ChessEngine } from "../../common/chess-engine";
 
 const CLICK_STYLE = {
     backgroundColor: "green",
@@ -11,7 +12,7 @@ interface ChessboardWrapperProps {
     /**
      * The chess.js instance displayed by this class.
      */
-    chess: Chess;
+    chess: ChessEngine;
     /**
      * Whether the perspective is white or not.
      */
@@ -38,21 +39,16 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const customSquareStyles: { [square: string]: Object } = {};
     let legalSquares: string[] | undefined = undefined;
     if (lastClickedSquare !== undefined) {
-        chess
-            .moves({ square: lastClickedSquare, verbose: true })
-            .map((move) => move.to)
-            .forEach((square) => {
-                customSquareStyles[square] = CLICK_STYLE;
-            });
+        chess.getLegalSquares(lastClickedSquare).forEach((square) => {
+            customSquareStyles[square] = CLICK_STYLE;
+        });
     }
 
     /**
      * Returns true if a move is legal, and false otherwise.
      */
     const isLegalMove = (from: Square, to: Square): boolean => {
-        const legalSquares = chess
-            .moves({ square: from, verbose: true })
-            .map((move) => move.to);
+        const legalSquares = chess.getLegalSquares(from);
         return legalSquares.includes(to);
     };
 
@@ -66,7 +62,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
             <Chessboard
                 boardOrientation={isWhite ? "white" : "black"}
                 boardWidth={width}
-                position={chess.fen()}
+                position={chess.fen}
                 onPieceDrop={(from: Square, to: Square): boolean => {
                     if (isLegalMove(from, to)) {
                         doMove(from, to);

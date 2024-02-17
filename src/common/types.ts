@@ -9,11 +9,11 @@ export enum PieceType {
     KING = "K",
 }
 
-export enum Side {
+export enum Color {
     WHITE,
     BLACK,
 }
 
-export function getStartHeading(side: Side) {
-    return side == Side.WHITE ? 90 * DEGREE : 270 * DEGREE;
+export function getStartHeading(side: Color) {
+    return side == Color.WHITE ? 90 * DEGREE : 270 * DEGREE;
 }

@@ -1,14 +1,6 @@
-// engine.ts
-
 import { Chess, Square } from "chess.js";
-import { GameFinishedReason } from "./game-end";
 import { aiMove } from "js-chess-engine";
-
-enum Difficulty {
-    EASY = "easy",
-    MEDIUM = "medium",
-    HARD = "hard",
-}
+import { FinishGameReason } from "./game-end";
 
 type MoveEntry = [string, string];
 
@@ -24,16 +16,15 @@ export class ChessEngine {
         this.chess.reset();
     }
 
-    getMoves(square?: Square) {
+    getLegalMoves(square?: Square) {
         return this.chess.moves({
             square,
             verbose: true,
         });
     }
 
-    getSquares(square?: Square): Square[] {
-        const moves = this.getMoves(square);
-        return moves.map((move) => move.to);
+    getLegalSquares(square?: Square): Square[] {
+        return this.getLegalMoves(square).map((move) => move.to);
     }
 
     get fen() {
@@ -42,36 +33,41 @@ export class ChessEngine {
 
     makeMove(from: Square, to: Square) {
         this.chess.move({
-            from: from,
+            from,
             to,
         });
         console.log("Chess engine updated:", this.chess.fen());
         // Additional logging as needed
     }
-    makeAiMove(difficulty: Difficulty) {
+
+    makeAiMove(difficulty: number): { from: Square; to: Square } {
         const val = Object.entries(
             aiMove(this.chess.fen(), difficulty),
         )[0] as MoveEntry;
-        const from = val[0].toLowerCase();
-        const to = val[1].toLowerCase();
+        const from = val[0].toLowerCase() as Square;
+        const to = val[1].toLowerCase() as Square;
 
-        this.makeMove(from as Square, to as Square);
+        this.makeMove(from, to);
+        return {
+            from,
+            to,
+        };
     }
 
-    getGameFinishedReason(): GameFinishedReason | undefined {
+    getGameFinishedReason(): FinishGameReason | undefined {
         if (this.chess.isCheckmate()) {
             // If it's your turn, you lost
             return this.chess.turn() === "w" ?
-                    GameFinishedReason.WHITE_CHECKMATED
-                :   GameFinishedReason.BLACK_CHECKMATED;
+                    FinishGameReason.WHITE_CHECKMATED
+                :   FinishGameReason.BLACK_CHECKMATED;
         } else if (this.chess.isStalemate()) {
-            return GameFinishedReason.STALEMATE;
+            return FinishGameReason.STALEMATE;
         } else if (this.chess.isThreefoldRepetition()) {
-            return GameFinishedReason.THREEFOLD_REPETITION;
+            return FinishGameReason.THREEFOLD_REPETITION;
         } else if (this.chess.isDraw()) {
             return this.chess.isInsufficientMaterial() ?
-                    GameFinishedReason.INSUFFICIENT_MATERIAL
-                :   GameFinishedReason.FIFTY_MOVES;
+                    FinishGameReason.INSUFFICIENT_MATERIAL
+                :   FinishGameReason.FIFTY_MOVES;
         }
         return undefined;
     }

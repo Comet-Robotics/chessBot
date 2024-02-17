@@ -1,16 +1,6 @@
 import { WebsocketRequestHandler } from "express-ws";
-import { aiMove } from "js-chess-engine";
 import { Router } from "express";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { ChessEngine } from "../../common/chess-engine";
-=======
-import { Chess, Square } from "chess.js";
->>>>>>> origin/main
-=======
-import { ChessEngine } from "../../common/chess-engine";
-import { Square } from "chess.js";
->>>>>>> 02560a1e19c5c30792763ad407918e54f28db455
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
@@ -72,26 +62,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 return;
             }
 
-            // Absolutely unhinged api design
-<<<<<<< HEAD
-<<<<<<< HEAD
-            const val = Object.entries(aiMove(chess.fen, difficulty))[0];
-            const from = val[0].toLowerCase();
-            const to = (val[1] as string).toLowerCase();
-            chess.makeMove(from, to);
-=======
-            const val = Object.entries(aiMove(chess.fen(), difficulty))[0];
-            const from = val[0].toLowerCase() as Square;
-            const to = (val[1] as string).toLowerCase() as Square;
-            chess.move({ from, to });
->>>>>>> origin/main
-=======
-            const val = Object.entries(aiMove(chess.fen, difficulty))[0];
-            const from = val[0].toLowerCase() as Square;
-            const to = (val[1] as string).toLowerCase() as Square;
-            chess.makeMove(from, to);
->>>>>>> 02560a1e19c5c30792763ad407918e54f28db455
-
+            const { from, to } = chess.makeAiMove(difficulty);
             ws.send(new MoveMessage(from, to).toJson());
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
