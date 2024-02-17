@@ -50,6 +50,7 @@ export class PromotionMessage extends MoveMessage {
 export class StartGameMessage extends Message {
     constructor(
         public readonly gameType: GameType,
+        public readonly isWhite: boolean,
         public readonly difficulty?: number,
     ) {
         super();
@@ -62,6 +63,7 @@ export class StartGameMessage extends Message {
             ...super.toObj(),
             gameType: this.gameType,
             difficulty: this.difficulty,
+            isWhite: this.isWhite,
         };
     }
 }

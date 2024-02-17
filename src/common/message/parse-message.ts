@@ -1,5 +1,4 @@
 import { Message, MessageType } from "./message";
-
 import { DriveRobotMessage } from "./drive-robot-message";
 import {
     StartGameMessage,
@@ -17,10 +16,12 @@ import {
  */
 export function parseMessage(text: string): Message {
     const obj = JSON.parse(text);
+
     switch (obj.type) {
         case MessageType.START_GAME:
             return new StartGameMessage(
                 obj.gameType,
+                Boolean(obj.isWhite),
                 obj.difficulty !== undefined ?
                     parseInt(obj.difficulty)
                 :   undefined,
