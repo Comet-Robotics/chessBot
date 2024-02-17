@@ -1,13 +1,10 @@
 name: build-documentation
 on:
-    pull_request:
+    push:
         branches:
             - main
-        types:
-            - closed
 jobs:
     typedoc:
-        if: github.event.pull_request.merged
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -19,15 +16,14 @@ jobs:
               run: yarn --frozen-lockfile
 
             - name: Run typedoc
-              run: yarn typedoc
+              run: yarn run docs:build
 
             - uses: actions/upload-pages-artifact@v3
               with:
-                  path: docs
+                  path: site
 
     # Deploy job
     deploy:
-        if: github.event.pull_request.merged
         # Add a dependency to the build job
         needs: typedoc
 

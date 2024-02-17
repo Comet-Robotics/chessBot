@@ -1,3 +1,4 @@
+import { Square } from "chess.js";
 import { GameStoppedReason } from "./game-end";
 import { GameType } from "./game-type";
 import { Message, MessageType } from "./message";
@@ -17,8 +18,8 @@ export class PositionMessage extends Message {
 
 export class MoveMessage extends Message {
     constructor(
-        public readonly from: string,
-        public readonly to: string,
+        public readonly from: Square,
+        public readonly to: Square,
     ) {
         super();
     }
@@ -32,8 +33,8 @@ export class MoveMessage extends Message {
 
 export class PromotionMessage extends MoveMessage {
     constructor(
-        from: string,
-        to: string,
+        from: Square,
+        to: Square,
         public readonly promotion: PieceType,
     ) {
         super(from, to);
