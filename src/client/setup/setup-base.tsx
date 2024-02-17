@@ -3,6 +3,8 @@ import { Outlet } from "react-router-dom";
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { PropsWithChildren, ReactNode } from "react";
 import { Chess, DEFAULT_POSITION, Square } from "chess.js";
+import { ChessEngine } from "../../common/chess-engine";
+import { Side } from "../../common/types";
 
 interface SetupBaseProps extends PropsWithChildren {
     actions?: ReactNode;
@@ -13,8 +15,8 @@ export function SetupBase(props: SetupBaseProps): JSX.Element {
         <>
             <Outlet />
             <ChessboardWrapper
-                chess={new Chess(DEFAULT_POSITION)}
-                isWhite={true}
+                chess={new ChessEngine()}
+                side={Side.WHITE}
                 onMove={() => {}}
             />
             <Dialog

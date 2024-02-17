@@ -1,7 +1,6 @@
 import { WebsocketRequestHandler } from "express-ws";
-import { aiMove } from "js-chess-engine";
 import { Router } from "express";
-import { Chess, Square } from "chess.js";
+import { ChessEngine } from "../../common/chess-engine";
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
@@ -20,7 +19,7 @@ const manager = new PieceManager([]);
 const executor = new CommandExecutor();
 const tcpServer = new TCPServer();
 
-let chess: Chess | null = null;
+let chess: ChessEngine | null = null;
 let difficulty = 0;
 
 /**
@@ -42,8 +41,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         console.log(message);
 
         if (message instanceof StartGameMessage) {
-            chess = new Chess();
-            // TODO: add message.isWhite so we can determine whether we need to make the first move
+            chess = new ChessEngine();
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;
             }
@@ -56,19 +54,14 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 throw new Error("Game must be started first.");
             }
 
-            chess.move({ from: message.from, to: message.to });
+            chess.makeMove(message.from, message.to);
 
-            if (chess.isGameOver()) {
+            if (chess.getGameFinishedReason() != undefined) {
                 // Game is naturally finished; we're done
                 return;
             }
 
-            // Absolutely unhinged api design
-            const val = Object.entries(aiMove(chess.fen(), difficulty))[0];
-            const from = val[0].toLowerCase() as Square;
-            const to = (val[1] as string).toLowerCase() as Square;
-            chess.move({ from, to });
-
+            const { from, to } = chess.makeAiMove(difficulty);
             ws.send(new MoveMessage(from, to).toJson());
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
