@@ -12,14 +12,14 @@ export function SetupGame(props: SetupGameProps) {
     const navigate = useNavigate();
     const [difficulty, setDifficulty] = useState(1);
 
-    const options = (
-        <>
+    const difficultySlider =
+        props.gameType === GameType.COMPUTER ?
             <DifficultySlider
                 difficulty={difficulty}
                 onDifficultyChange={setDifficulty}
             />
-        </>
-    );
+        :   null;
+    const options = <>{difficultySlider}</>;
 
     const title =
         props.gameType === GameType.COMPUTER ?
