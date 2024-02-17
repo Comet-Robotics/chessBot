@@ -37,6 +37,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
     ws.on("close", () => {
         console.log("WS closed!");
+        clientManager.closeSocket(req.cookies.clientId);
     });
 
     ws.on("message", (data) => {
@@ -47,6 +48,12 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             chess = new ChessEngine();
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;
+            } else {
+                const ws = clientManager.player2Socket();
+                if (ws) {
+                    // if it isn't defined, we'll need to start the game whenever player 2 connects
+                    ws.send(new StartGameMessage(GameType.HUMAN).toJson());
+                }
             }
         } else if (message instanceof StopGameMessage) {
             chess = null;

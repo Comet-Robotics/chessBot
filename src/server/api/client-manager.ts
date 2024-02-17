@@ -11,12 +11,19 @@ export class ClientManager {
         this.clientSockets[clientId] = socket;
     }
 
-    public removeSocket(clientId: string) {
+    public closeSocket(clientId: string) {
         delete this.clientSockets[clientId];
     }
 
-    public getClient(clientId: string): WebSocket {
+    public getSocket(clientId: string): WebSocket {
         return this.clientSockets[clientId];
+    }
+
+    public player2Socket(): WebSocket | undefined {
+        if (this.player2) {
+            return this.getSocket(this.player2);
+        }
+        return undefined;
     }
 
     public registerPlayer(clientId: string): number {

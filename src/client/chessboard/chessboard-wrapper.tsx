@@ -40,7 +40,8 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const customSquareStyles: { [square: string]: Object } = {};
     let legalSquares: string[] | undefined = undefined;
     if (lastClickedSquare !== undefined) {
-        chess.getLegalSquares(lastClickedSquare).forEach((square) => {
+        legalSquares = chess.getLegalSquares(lastClickedSquare);
+        legalSquares.forEach((square) => {
             customSquareStyles[square] = CLICK_STYLE;
         });
     }
@@ -49,8 +50,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
      * Returns true if a move is legal, and false otherwise.
      */
     const isLegalMove = (from: Square, to: Square): boolean => {
-        const legalSquares = chess.getLegalSquares(from);
-        return legalSquares.includes(to);
+        return chess.getLegalSquares(from).includes(to);
     };
 
     const doMove = (from: Square, to: Square): void => {

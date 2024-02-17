@@ -1,6 +1,8 @@
+import { GameType } from "../../common/game-type";
+
 export enum SetupType {
     MAIN = "main",
-    COMPUTER = "computer-game",
-    HUMAN = "human-game",
+    COMPUTER = GameType.COMPUTER,
+    HUMAN = GameType.HUMAN,
     PUZZLE = "puzzle",
 }

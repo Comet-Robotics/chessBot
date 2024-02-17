@@ -1,23 +1,16 @@
 import { Button, H3, H6, Slider } from "@blueprintjs/core";
-import { SetupBase } from "./setup-base";
 import { Dispatch, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GameType } from "../../common/game-type";
 import { Side } from "../../common/types";
-import { SetupType } from "./setup-type";
-
-export enum SetupGameType {
-    COMPUTER = SetupType.COMPUTER,
-    HUMAN = SetupType.HUMAN,
-}
 
 interface SetupGameProps {
-    setupGameType: SetupGameType;
+    gameType: GameType;
 }
 
 export function SetupGame(props: SetupGameProps) {
     const navigate = useNavigate();
-    const [difficulty, setDifficulty] = useState(3);
+    const [difficulty, setDifficulty] = useState(1);
 
     const options = (
         <>
@@ -29,7 +22,7 @@ export function SetupGame(props: SetupGameProps) {
     );
 
     const title =
-        props.setupGameType === SetupGameType.COMPUTER ?
+        props.gameType === GameType.COMPUTER ?
             "Play against the computer"
         :   "Setup game";
 
@@ -44,8 +37,7 @@ export function SetupGame(props: SetupGameProps) {
                         gameType: GameType.COMPUTER,
                         // TODO: Let user choose color
                         side: Side.WHITE,
-                        // Normalize to 0 - 3
-                        difficulty: difficulty - 1,
+                        difficulty: difficulty,
                     },
                 });
             }}
@@ -84,18 +76,18 @@ function DifficultySlider(props: DifficultySliderProps) {
                     value={props.difficulty}
                     onChange={props.onDifficultyChange}
                     labelRenderer={(value) => {
-                        if (value == 1) {
+                        if (value == 0) {
                             return "Baby";
-                        } else if (value == 2) {
+                        } else if (value == 1) {
                             return "Beginner";
-                        } else if (value == 3) {
+                        } else if (value == 2) {
                             return "Intermediate";
                         } else {
                             return "Advanced";
                         }
                     }}
-                    min={1}
-                    max={4}
+                    min={0}
+                    max={3}
                 />
             </div>
         </>

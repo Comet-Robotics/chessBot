@@ -38,8 +38,6 @@ export class ChessEngine {
             from,
             to,
         });
-        console.log("Chess engine updated:", this.chess.fen());
-        // Additional logging as needed
     }
 
     makeAiMove(difficulty: number): { from: Square; to: Square } {
