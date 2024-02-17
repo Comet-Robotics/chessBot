@@ -3,10 +3,13 @@ import { aiMove } from "js-chess-engine";
 import { Router } from "express";
 import { Chess, Square } from "chess.js";
 
-import { parseMessage } from "../../common/parse-message";
-import { StartGameMessage, StopGameMessage } from "../../common/game-message";
-import { MoveMessage } from "../../common/game-message";
-import { DriveRobotMessage } from "../../common/drive-robot-message";
+import { parseMessage } from "../../common/message/parse-message";
+import {
+    StartGameMessage,
+    StopGameMessage,
+} from "../../common/message/game-message";
+import { MoveMessage } from "../../common/message/game-message";
+import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
 import { PieceManager } from "../robot/piece-manager";
 import { CommandExecutor } from "../command/executor";
