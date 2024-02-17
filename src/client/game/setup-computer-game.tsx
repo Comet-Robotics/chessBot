@@ -3,6 +3,7 @@ import { SetupBase } from "../setup/setup-base";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GameType } from "../../common/game-type";
+import { Side } from "../../common/types";
 
 export function SetupComputerGame() {
     const [difficulty, setDifficulty] = useState(3);
@@ -50,7 +51,7 @@ export function SetupComputerGame() {
                             state: {
                                 gameType: GameType.COMPUTER,
                                 // TODO: Let user choose color
-                                isWhite: true,
+                                side: Side.WHITE,
                                 // Normalize to 0 - 3
                                 difficulty: difficulty - 1,
                             },

@@ -1,7 +1,9 @@
 import { Chessboard } from "react-chessboard";
-import { Chess, Square } from "chess.js";
+import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
+import { ChessEngine } from "../../common/chess-engine";
+import { Side } from "../../common/types";
 
 const CLICK_STYLE = {
     backgroundColor: "green",
@@ -11,11 +13,12 @@ interface ChessboardWrapperProps {
     /**
      * The chess.js instance displayed by this class.
      */
-    chess: Chess;
+    chess: ChessEngine;
+
     /**
-     * Whether the perspective is white or not.
+     * The side of the current player.
      */
-    isWhite: boolean;
+    side: Side;
     /**
      * A callback function this component invokes whenever a move is made.
      */
@@ -23,7 +26,7 @@ interface ChessboardWrapperProps {
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
-    const { chess, isWhite, onMove } = props;
+    const { chess, side, onMove } = props;
 
     /**
      * The width of the chessboard in pixels.
@@ -38,21 +41,16 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const customSquareStyles: { [square: string]: Object } = {};
     let legalSquares: string[] | undefined = undefined;
     if (lastClickedSquare !== undefined) {
-        chess
-            .moves({ square: lastClickedSquare, verbose: true })
-            .map((move) => move.to)
-            .forEach((square) => {
-                customSquareStyles[square] = CLICK_STYLE;
-            });
+        chess.getLegalSquares(lastClickedSquare).forEach((square) => {
+            customSquareStyles[square] = CLICK_STYLE;
+        });
     }
 
     /**
      * Returns true if a move is legal, and false otherwise.
      */
     const isLegalMove = (from: Square, to: Square): boolean => {
-        const legalSquares = chess
-            .moves({ square: from, verbose: true })
-            .map((move) => move.to);
+        const legalSquares = chess.getLegalSquares(from);
         return legalSquares.includes(to);
     };
 
@@ -64,9 +62,9 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     return (
         <BoardContainer onWidthChange={setWidth}>
             <Chessboard
-                boardOrientation={isWhite ? "white" : "black"}
+                boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
-                position={chess.fen()}
+                position={chess.fen}
                 onPieceDrop={(from: Square, to: Square): boolean => {
                     if (isLegalMove(from, to)) {
                         doMove(from, to);
@@ -87,9 +85,9 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         setLastClickedSquare(square);
                     }
                 }}
-                isDraggablePiece={({ sourceSquare }) =>
-                    chess.get(sourceSquare).color === (isWhite ? "w" : "b")
-                }
+                isDraggablePiece={({ piece }) => {
+                    return piece[0] === side;
+                }}
                 arePremovesAllowed={false}
                 customSquareStyles={customSquareStyles}
             />

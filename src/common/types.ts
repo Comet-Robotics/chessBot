@@ -10,8 +10,8 @@ export enum PieceType {
 }
 
 export enum Side {
-    WHITE,
-    BLACK,
+    WHITE = "w",
+    BLACK = "b",
 }
 
 export function getStartHeading(side: Side) {
