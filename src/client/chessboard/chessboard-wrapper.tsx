@@ -3,6 +3,7 @@ import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
+import { Side } from "../../common/types";
 
 const CLICK_STYLE = {
     backgroundColor: "green",
@@ -13,10 +14,11 @@ interface ChessboardWrapperProps {
      * The chess.js instance displayed by this class.
      */
     chess: ChessEngine;
+
     /**
-     * Whether the perspective is white or not.
+     * The side of the current player.
      */
-    isWhite: boolean;
+    side: Side;
     /**
      * A callback function this component invokes whenever a move is made.
      */
@@ -24,7 +26,7 @@ interface ChessboardWrapperProps {
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
-    const { chess, isWhite, onMove } = props;
+    const { chess, side, onMove } = props;
 
     /**
      * The width of the chessboard in pixels.
@@ -60,7 +62,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     return (
         <BoardContainer onWidthChange={setWidth}>
             <Chessboard
-                boardOrientation={isWhite ? "white" : "black"}
+                boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
                 position={chess.fen}
                 onPieceDrop={(from: Square, to: Square): boolean => {
@@ -83,9 +85,9 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         setLastClickedSquare(square);
                     }
                 }}
-                isDraggablePiece={({ sourceSquare }) =>
-                    chess.get(sourceSquare).color === (isWhite ? "w" : "b")
-                }
+                isDraggablePiece={({ piece }) => {
+                    return piece[0] === side;
+                }}
                 arePremovesAllowed={false}
                 customSquareStyles={customSquareStyles}
             />

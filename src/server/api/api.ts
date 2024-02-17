@@ -42,7 +42,6 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
         if (message instanceof StartGameMessage) {
             chess = new ChessEngine();
-            // TODO: add message.isWhite so we can determine whether we need to make the first move
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;
             }

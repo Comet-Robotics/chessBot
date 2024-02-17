@@ -10,10 +10,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FinishGameReason, StopGameReason } from "../../common/game-end";
 import { useState } from "react";
+import { Side } from "../../common/types";
 
 interface GameEndDialogProps {
     reason: FinishGameReason | StopGameReason;
-    isWhite: boolean;
+    side: Side;
 }
 
 export function GameEndDialog(props: GameEndDialogProps) {
@@ -39,7 +40,7 @@ export function GameEndDialog(props: GameEndDialogProps) {
             <DialogBody>
                 <NonIdealState
                     title={gameOverMessage(props.reason)}
-                    icon={gameOverIcon(props.reason, props.isWhite)}
+                    icon={gameOverIcon(props.reason, props.side)}
                     iconMuted={false}
                 />
             </DialogBody>
@@ -48,10 +49,7 @@ export function GameEndDialog(props: GameEndDialogProps) {
     );
 }
 
-function gameOverIcon(
-    reason: FinishGameReason | StopGameReason,
-    isWhite: boolean,
-) {
+function gameOverIcon(reason: FinishGameReason | StopGameReason, side: Side) {
     const whiteWon =
         reason === FinishGameReason.BLACK_CHECKMATED ||
         reason === StopGameReason.BLACK_RESIGNED;
@@ -59,8 +57,8 @@ function gameOverIcon(
         reason === FinishGameReason.WHITE_CHECKMATED ||
         reason === StopGameReason.WHITE_RESIGNED;
 
-    const won = isWhite ? whiteWon : blackWon;
-    const lost = isWhite ? blackWon : whiteWon;
+    const won = side === Side.WHITE ? whiteWon : blackWon;
+    const lost = side === Side.WHITE ? blackWon : whiteWon;
     // const draw = !blackWon && !whiteWon;
     if (won) {
         return (

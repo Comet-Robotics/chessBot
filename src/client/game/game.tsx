@@ -17,6 +17,7 @@ import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
 import { parseMessage } from "../../common/message/parse-message";
 import { ChessEngine } from "../../common/chess-engine";
+import { Side } from "../../common/types";
 
 function getMessageHandler(
     chess: ChessEngine,
@@ -40,7 +41,7 @@ function getMessageHandler(
 
 export function Game(): JSX.Element {
     const state = useLocation().state;
-    const isWhite: boolean = state.isWhite;
+    const side = state.side as Side;
 
     const [chess, setChess] = useState(new ChessEngine());
     const [gameStopped, setGameStopped] = useState<StopGameReason>();
@@ -63,12 +64,12 @@ export function Game(): JSX.Element {
         gameEndDialog = (
             <GameEndDialog
                 reason={chess.getGameFinishedReason()!}
-                isWhite={isWhite}
+                side={side}
             />
         );
     } else if (gameStopped !== undefined) {
         gameEndDialog = (
-            <GameEndDialog reason={gameStopped} isWhite={isWhite} />
+            <GameEndDialog reason={gameStopped} side={side} />
         );
     }
 
@@ -77,7 +78,7 @@ export function Game(): JSX.Element {
             <NavbarMenu sendMessage={sendMessage} />
             <div id="body-container">
                 <ChessboardWrapper
-                    isWhite={isWhite}
+                    side={side}
                     chess={chess}
                     onMove={getMoveHandler(chess, setChess, sendMessage)}
                 />

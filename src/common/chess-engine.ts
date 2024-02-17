@@ -6,10 +6,12 @@ type MoveEntry = [string, string];
 
 export class ChessEngine {
     private chess: Chess;
-    private static DEFAULT_POSITION = "start";
 
+    /**
+     * @param fen - The fen to use. If undefined, a new game is created.
+     */
     constructor(fen?: string) {
-        this.chess = new Chess(fen ?? ChessEngine.DEFAULT_POSITION);
+        this.chess = new Chess(fen);
     }
 
     reset() {
