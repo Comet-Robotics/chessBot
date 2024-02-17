@@ -32,7 +32,7 @@ let difficulty = 0;
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     ws.on("open", () => {
         console.log("WS opened!");
-        clientManager.registerClient(req.cookies.clientId, ws);
+        clientManager.registerSocket(req.cookies.clientId, ws);
     });
 
     ws.on("close", () => {
@@ -98,16 +98,6 @@ apiRouter.get("/get-puzzles", (_, res) => {
                 rating: "1400",
             },
         ],
-    };
-});
-
-/**
- * Returns the player type based off of their client id.
- * 0 is the host (player1), 1 is the client (player2), 2 is spectators
- */
-apiRouter.post("/human", (req) => {
-    return {
-        playerType: clientManager.registerConnection(req.cookies.clientId),
     };
 });
 

@@ -1,22 +1,41 @@
 import { Button, H3 } from "@blueprintjs/core";
-import { useMatch, useNavigate } from "react-router-dom";
 import { SetupBase } from "./setup-base";
-import { useState } from "react";
-
-enum SetupPage {
-    MAIN,
-    LOBBY,
-    COMPUTER_GAME,
-    HUMAN_GAME,
-    PUZZLE,
-}
+import { Dispatch, useState } from "react";
+import { SetupGame, SetupGameType } from "./setup-game";
+import { SetupType } from "./setup-type";
+import { useNavigate } from "react-router-dom";
 
 export function Setup(): JSX.Element {
-    const isClient = useMatch("/client");
-    const [setupPage, setSetupPage] = useState(() =>
-        isClient ? SetupPage.LOBBY : SetupPage.MAIN,
+    const [setupType, setSetupType] = useState(SetupType.MAIN);
+
+    return (
+        <SetupBase>
+            {setupType === SetupType.MAIN ?
+                <SetupMain onPageChange={setSetupType} />
+            :   null}
+            {setupType === SetupType.COMPUTER || setupType === SetupType.HUMAN ?
+                <SetupGame
+                    setupGameType={setupType as unknown as SetupGameType}
+                />
+            :   null}
+        </SetupBase>
     );
+}
+
+interface SetupMainProps {
+    onPageChange: Dispatch<SetupType>;
+}
+
+function SetupMain(props: SetupMainProps) {
     const navigate = useNavigate();
+    const debugButton = (
+        <Button
+            minimal
+            style={{ float: "right" }}
+            icon="cog"
+            onClick={() => navigate("/debug")}
+        />
+    );
 
     const actions = (
         <>
@@ -25,27 +44,28 @@ export function Setup(): JSX.Element {
                 text="Play with the computer"
                 rightIcon="arrow-right"
                 intent="primary"
-                onClick={() => setSetupPage(SetupPage.COMPUTER_GAME)}
+                onClick={() => props.onPageChange(SetupType.COMPUTER)}
             />
             <Button
                 large
                 text="Play against a human"
                 rightIcon="arrow-right"
                 intent="primary"
-                onClick={() => navigate("/setup-human-game")}
+                onClick={() => props.onPageChange(SetupType.HUMAN)}
             />
             <Button
                 large
                 text="Puzzle"
                 rightIcon="arrow-right"
                 intent="primary"
-                onClick={() => navigate("/setup-puzzle")}
+                onClick={() => props.onPageChange(SetupType.PUZZLE)}
             />
         </>
     );
 
     return (
-        <SetupBase>
+        <>
+            {debugButton}
             <div
                 style={{
                     alignItems: "center",
@@ -58,6 +78,6 @@ export function Setup(): JSX.Element {
                 <H3>Welcome to Chess Bot!</H3>
                 {actions}
             </div>
-        </SetupBase>
+        </>
     );
 }

@@ -7,15 +7,19 @@ export class ClientManager {
         private player2?: string,
     ) {}
 
-    public registerClient(clientId: string, socket: WebSocket) {
+    public registerSocket(clientId: string, socket: WebSocket) {
         this.clientSockets[clientId] = socket;
+    }
+
+    public removeSocket(clientId: string) {
+        delete this.clientSockets[clientId];
     }
 
     public getClient(clientId: string): WebSocket {
         return this.clientSockets[clientId];
     }
 
-    public registerConnection(clientId: string): number {
+    public registerPlayer(clientId: string): number {
         if (this.player1 === undefined || this.player1 === clientId) {
             this.player1 = clientId;
             return 0;

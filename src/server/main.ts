@@ -2,7 +2,7 @@ import express, { RequestHandler, Express } from "express";
 import ViteExpress from "vite-express";
 import cookieParser from "cookie-parser";
 import { v4 as uuid } from "uuid";
-import { apiRouter, websocketHandler } from "./api/api";
+import { apiRouter, clientManager, websocketHandler } from "./api/api";
 import expressWebSocket from "express-ws";
 
 const app = expressWebSocket(express()).app;
@@ -30,6 +30,16 @@ const checkAuthentication: RequestHandler = (req, res, next) => {
  * Ensure all requests have a clientId cookie.
  */
 app.use(checkAuthentication);
+
+app.get("/", (req, res) => {
+    const id = req.cookies.clientId;
+    const playerType = clientManager.registerPlayer(id);
+    if (playerType == 0) {
+        return res.redirect("/setup");
+    } else {
+        return res.redirect("/lobby");
+    }
+});
 
 app.ws("/ws", websocketHandler);
 

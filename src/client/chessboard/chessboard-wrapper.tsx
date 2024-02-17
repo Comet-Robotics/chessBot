@@ -14,7 +14,6 @@ interface ChessboardWrapperProps {
      * The chess.js instance displayed by this class.
      */
     chess: ChessEngine;
-
     /**
      * The side of the current player.
      */
