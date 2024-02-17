@@ -68,9 +68,7 @@ export function Game(): JSX.Element {
             />
         );
     } else if (gameStopped !== undefined) {
-        gameEndDialog = (
-            <GameEndDialog reason={gameStopped} side={side} />
-        );
+        gameEndDialog = <GameEndDialog reason={gameStopped} side={side} />;
     }
 
     return (
