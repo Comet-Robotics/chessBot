@@ -41,21 +41,11 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         console.log(message);
 
         if (message instanceof StartGameMessage) {
-<<<<<<< HEAD
-            chess = new Chess();
-=======
             chess = new ChessEngine();
->>>>>>> origin/main
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;
                 if (!message.isWhite) {
-                    const val = Object.entries(
-                        aiMove(chess.fen(), difficulty),
-                    )[0];
-                    const from = val[0].toLowerCase();
-                    const to = (val[1] as string).toLowerCase();
-
-                    chess.move({ from, to });
+                    const { from, to } = chess.makeAiMove(difficulty);
                     ws.send(new MoveMessage(from, to).toJson());
                 }
             }
@@ -75,16 +65,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 return;
             }
 
-<<<<<<< HEAD
-            // Absolutely unhinged api design
-            const val = Object.entries(aiMove(chess.fen(), difficulty))[0];
-            const from = val[0].toLowerCase();
-            const to = (val[1] as string).toLowerCase();
-
-            chess.move({ from, to });
-=======
             const { from, to } = chess.makeAiMove(difficulty);
->>>>>>> origin/main
             ws.send(new MoveMessage(from, to).toJson());
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
