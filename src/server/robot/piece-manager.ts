@@ -1,4 +1,3 @@
-import { Command } from "../command/command";
 import { Piece } from "./piece";
 import { Square } from "chess.js";
 

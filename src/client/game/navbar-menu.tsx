@@ -7,8 +7,8 @@ import {
 } from "@blueprintjs/core";
 import { useNavigate, useNavigation } from "react-router-dom";
 import { SendMessage } from "react-use-websocket";
-import { StopGameMessage } from "../../common/game-message";
-import { GameStoppedReason } from "../../common/game-end";
+import { StopGameMessage } from "../../common/message/game-message";
+import { StopGameReason } from "../../common/game-end";
 
 interface NavbarMenuProps {
     sendMessage: SendMessage;
@@ -30,7 +30,7 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                     onClick={async () => {
                         props.sendMessage(
                             new StopGameMessage(
-                                GameStoppedReason.ABORTED,
+                                StopGameReason.ABORTED,
                             ).toJson(),
                         );
                     }}

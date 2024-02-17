@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogBody, H3 } from "@blueprintjs/core";
 import { Outlet, useNavigate } from "react-router-dom";
-import { ChessboardWrapper } from "../wrapper/chessboard-wrapper";
+import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { SetupBase } from "./setup-base";
 
 export function Setup(): JSX.Element {
