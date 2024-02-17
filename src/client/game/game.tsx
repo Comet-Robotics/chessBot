@@ -2,26 +2,25 @@ import { Dispatch, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import { Chess, Square } from "chess.js";
 
-import { StopGameMessage, StartGameMessage } from "../../common/game-message";
-import { MoveMessage } from "../../common/game-message";
-import { PositionMessage } from "../../common/game-message";
 import {
-    GameStoppedReason,
-    getGameFinishedReason,
-} from "../../common/game-end";
+    StopGameMessage,
+    StartGameMessage,
+} from "../../common/message/game-message";
+import { MoveMessage } from "../../common/message/game-message";
+import { PositionMessage } from "../../common/message/game-message";
+import { StopGameReason, getFinishGameReason } from "../../common/game-end";
 
-import { ChessboardWrapper } from "../chessboard-wrapper";
+import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
 import { WEBSOCKET_URL } from "../api";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
-import { GameType } from "../../common/game-type";
-import { parseMessage } from "../../common/parse-message";
+import { parseMessage } from "../../common/message/parse-message";
 
 function getMessageHandler(
     chess: Chess,
     setChess: Dispatch<Chess>,
-    setGameStopped: Dispatch<GameStoppedReason>,
+    setGameStopped: Dispatch<StopGameReason>,
 ) {
     return (msg: MessageEvent<any>) => {
         const message = parseMessage(msg.data.toString());
@@ -43,7 +42,7 @@ export function Game(): JSX.Element {
     const isWhite: boolean = state.isWhite;
 
     const [chess, setChess] = useState(new Chess());
-    const [gameStopped, setGameStopped] = useState<GameStoppedReason>();
+    const [gameStopped, setGameStopped] = useState<StopGameReason>();
 
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
         onOpen: () => {
@@ -63,7 +62,7 @@ export function Game(): JSX.Element {
     if (chess.isGameOver()) {
         gameEndDialog = (
             <GameEndDialog
-                reason={getGameFinishedReason(chess)}
+                reason={getFinishGameReason(chess)}
                 isWhite={isWhite}
             />
         );
@@ -94,15 +93,10 @@ function getMoveHandler(
     setChess: Dispatch<Chess>,
     sendMessage: Dispatch<string>,
 ) {
-    return (from: Square, to: Square): boolean => {
+    return (from: Square, to: Square): void => {
         const chessCopy = new Chess(chess.fen());
-        try {
-            chessCopy.move({ from, to });
-        } catch {
-            return false;
-        }
+        chessCopy.move({ from, to });
         setChess(chessCopy);
         sendMessage(new MoveMessage(from, to).toJson());
-        return true;
     };
 }

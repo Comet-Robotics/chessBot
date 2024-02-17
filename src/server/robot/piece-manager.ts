@@ -1,6 +1,5 @@
-import { Command } from "../command/command";
 import { Piece } from "./piece";
-import { Square } from "./square";
+import { Square } from "chess.js";
 
 /**
  * Stores the pieces used in the game of chess.

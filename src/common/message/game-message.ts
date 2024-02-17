@@ -1,7 +1,8 @@
-import { GameStoppedReason } from "./game-end";
-import { GameType } from "./game-type";
+import { Square } from "chess.js";
 import { Message, MessageType } from "./message";
-import { PieceType } from "./types";
+import { PieceType } from "../types";
+import { GameType } from "../game-type";
+import { StopGameReason } from "../game-end";
 
 export class PositionMessage extends Message {
     constructor(public readonly position: string) {
@@ -17,8 +18,8 @@ export class PositionMessage extends Message {
 
 export class MoveMessage extends Message {
     constructor(
-        public readonly from: string,
-        public readonly to: string,
+        public readonly from: Square,
+        public readonly to: Square,
     ) {
         super();
     }
@@ -32,8 +33,8 @@ export class MoveMessage extends Message {
 
 export class PromotionMessage extends MoveMessage {
     constructor(
-        from: string,
-        to: string,
+        from: Square,
+        to: Square,
         public readonly promotion: PieceType,
     ) {
         super(from, to);
@@ -66,7 +67,7 @@ export class StartGameMessage extends Message {
 }
 
 export class StopGameMessage extends Message {
-    constructor(public readonly reason: GameStoppedReason) {
+    constructor(public readonly reason: StopGameReason) {
         super();
     }
 
