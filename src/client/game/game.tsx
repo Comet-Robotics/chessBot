@@ -1,6 +1,6 @@
 import { Dispatch, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
-import { Chess, Square } from "chess.js";
+import { Square } from "chess.js";
 
 import {
     StopGameMessage,
@@ -8,7 +8,7 @@ import {
 } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
 import { PositionMessage } from "../../common/message/game-message";
-import { StopGameReason, getFinishGameReason } from "../../common/game-end";
+import { StopGameReason } from "../../common/game-end";
 
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
@@ -16,20 +16,22 @@ import { WEBSOCKET_URL } from "../api";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
 import { parseMessage } from "../../common/message/parse-message";
+import { ChessEngine } from "../../common/chess-engine";
+import { Side } from "../../common/types";
 
 function getMessageHandler(
-    chess: Chess,
-    setChess: Dispatch<Chess>,
+    chess: ChessEngine,
+    setChess: Dispatch<ChessEngine>,
     setGameStopped: Dispatch<StopGameReason>,
 ) {
     return (msg: MessageEvent<any>) => {
         const message = parseMessage(msg.data.toString());
 
         if (message instanceof PositionMessage) {
-            setChess(new Chess(message.position));
+            setChess(new ChessEngine(message.position));
         } else if (message instanceof MoveMessage) {
-            const chessCopy = new Chess(chess.fen());
-            chessCopy.move({ from: message.from, to: message.to });
+            const chessCopy = new ChessEngine(chess.fen);
+            chessCopy.makeMove(message.from, message.to);
             setChess(chessCopy);
         } else if (message instanceof StopGameMessage) {
             setGameStopped(message.reason);
@@ -39,9 +41,9 @@ function getMessageHandler(
 
 export function Game(): JSX.Element {
     const state = useLocation().state;
-    const isWhite: boolean = state.isWhite;
+    const side = state.side as Side;
 
-    const [chess, setChess] = useState(new Chess());
+    const [chess, setChess] = useState(new ChessEngine());
     const [gameStopped, setGameStopped] = useState<StopGameReason>();
 
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
@@ -52,7 +54,6 @@ export function Game(): JSX.Element {
     });
 
     useEffect(() => {
-        console.log("Difficulty: " + state.difficulty);
         sendMessage(
             new StartGameMessage(state.gameType, state.difficulty).toJson(),
         );
@@ -62,14 +63,12 @@ export function Game(): JSX.Element {
     if (chess.isGameOver()) {
         gameEndDialog = (
             <GameEndDialog
-                reason={getFinishGameReason(chess)}
-                isWhite={isWhite}
+                reason={chess.getGameFinishedReason()!}
+                side={side}
             />
         );
     } else if (gameStopped !== undefined) {
-        gameEndDialog = (
-            <GameEndDialog reason={gameStopped} isWhite={isWhite} />
-        );
+        gameEndDialog = <GameEndDialog reason={gameStopped} side={side} />;
     }
 
     return (
@@ -77,7 +76,7 @@ export function Game(): JSX.Element {
             <NavbarMenu sendMessage={sendMessage} />
             <div id="body-container">
                 <ChessboardWrapper
-                    isWhite={isWhite}
+                    side={side}
                     chess={chess}
                     onMove={getMoveHandler(chess, setChess, sendMessage)}
                 />
@@ -89,13 +88,13 @@ export function Game(): JSX.Element {
 }
 
 function getMoveHandler(
-    chess: Chess,
-    setChess: Dispatch<Chess>,
+    chess: ChessEngine,
+    setChess: Dispatch<ChessEngine>,
     sendMessage: Dispatch<string>,
 ) {
     return (from: Square, to: Square): void => {
-        const chessCopy = new Chess(chess.fen());
-        chessCopy.move({ from, to });
+        const chessCopy = new ChessEngine(chess.fen);
+        chessCopy.makeMove(from, to);
         setChess(chessCopy);
         sendMessage(new MoveMessage(from, to).toJson());
     };
