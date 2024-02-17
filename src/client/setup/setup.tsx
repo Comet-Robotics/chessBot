@@ -1,18 +1,22 @@
-import { Button, Dialog, DialogBody, H3 } from "@blueprintjs/core";
-import { Outlet, useNavigate } from "react-router-dom";
-import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
+import { Button, H3 } from "@blueprintjs/core";
+import { useMatch, useNavigate } from "react-router-dom";
 import { SetupBase } from "./setup-base";
+import { useState } from "react";
+
+enum SetupPage {
+    MAIN,
+    LOBBY,
+    COMPUTER_GAME,
+    HUMAN_GAME,
+    PUZZLE,
+}
 
 export function Setup(): JSX.Element {
-    const navigate = useNavigate();
-    const debugButton = (
-        <Button
-            minimal
-            style={{ float: "right" }}
-            icon="cog"
-            onClick={() => navigate("/setup/debug")}
-        />
+    const isClient = useMatch("/client");
+    const [setupPage, setSetupPage] = useState(() =>
+        isClient ? SetupPage.LOBBY : SetupPage.MAIN,
     );
+    const navigate = useNavigate();
 
     const actions = (
         <>
@@ -21,7 +25,7 @@ export function Setup(): JSX.Element {
                 text="Play with the computer"
                 rightIcon="arrow-right"
                 intent="primary"
-                onClick={() => navigate("/setup-computer-game")}
+                onClick={() => setSetupPage(SetupPage.COMPUTER_GAME)}
             />
             <Button
                 large
@@ -42,7 +46,6 @@ export function Setup(): JSX.Element {
 
     return (
         <SetupBase>
-            {debugButton}
             <div
                 style={{
                     alignItems: "center",

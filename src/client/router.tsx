@@ -10,47 +10,37 @@ import { SetupHostGame } from "./game/setup-host-game";
 
 export const router = createBrowserRouter([
     {
-        path: "/",
-        element: <Navigate to="/setup" />,
+        path: "/debug",
+        element: <Debug />,
     },
     {
-        path: "setup",
-        element: <Setup />,
+        path: "/host",
         children: [
             {
-                path: "debug",
-                element: <Debug />,
+                path: "setup",
+                element: <Setup />,
+            },
+            {
+                path: "puzzle",
+                element: <Puzzle />,
+            },
+            {
+                path: "game",
+                element: <Game />,
             },
         ],
     },
     {
-        path: "puzzle",
-        element: <Puzzle />,
-    },
-    {
-        path: "game",
-        element: <Game />,
+        path: "/client",
         children: [
             {
-                path: "debug",
-                element: <Debug />,
+                path: "setup",
+                // element: <Wait/>
+            },
+            {
+                path: "game",
+                element: <Game />,
             },
         ],
     },
-    {
-        path: "setup-computer-game",
-        element: <SetupComputerGame />,
-    },
-    {
-        path: "setup-human-game",
-        element: <SetupHumanGame />,
-    },
-    {
-        path: "setup-host-game",
-        element: <SetupHostGame />,
-    },
-    {
-        path: "setup-client-game",
-        element: <SetupClientGame />,
-    }
 ]);

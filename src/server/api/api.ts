@@ -12,13 +12,13 @@ import { MoveMessage } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
 import { PieceManager } from "../robot/piece-manager";
-import { ClientManager } from "../api/client-manager"
+import { makeClientManager } from "../api/client-manager";
 import { CommandExecutor } from "../command/executor";
 import { PacketType, TCPServer } from "./tcp-interface";
 import { GameType } from "../../common/game-type";
 
 const manager = new PieceManager([]);
-export const clientManager = new ClientManager();
+export const clientManager = makeClientManager();
 const executor = new CommandExecutor();
 const tcpServer = new TCPServer();
 
@@ -82,10 +82,10 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 export const apiRouter = Router();
 
 apiRouter.get("/get-ids", (_, res) => {
-    res.send({
+    return {
         ids: ["10", "11"],
         // ids: tcpServer.getConnectedIds(),
-    });
+    };
 });
 
 /**
@@ -105,6 +105,16 @@ apiRouter.get("/get-puzzles", (_, res) => {
                 rating: "1400",
             },
         ],
+    };
+});
+
+/**
+ * Returns the player type based off of their client id.
+ * 0 is the host (player1), 1 is the client (player2), 2 is spectators
+ */
+apiRouter.post("/human", (req) => {
+    return {
+        playerType: clientManager.registerConnection(req.cookies.clientId),
     };
 });
 
