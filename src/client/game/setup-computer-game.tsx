@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GameType } from "../../common/game-type";
 import { Side } from "../../common/types";
+import { Difficulty } from "../../common/chess-engine";
 
 export function SetupComputerGame() {
     const [difficulty, setDifficulty] = useState(3);
@@ -29,13 +30,13 @@ export function SetupComputerGame() {
                         onChange={setDifficulty}
                         labelRenderer={(value) => {
                             if (value == 1) {
-                                return "Baby";
+                                return Difficulty.BABY;
                             } else if (value == 2) {
-                                return "Beginner";
+                                return Difficulty.BEGINNER;
                             } else if (value == 3) {
-                                return "Intermediate";
+                                return Difficulty.INTERMEDIATE;
                             } else {
-                                return "Advanced";
+                                return Difficulty.ADVANCED;
                             }
                         }}
                         min={1}

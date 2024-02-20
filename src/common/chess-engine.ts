@@ -4,6 +4,16 @@ import { FinishGameReason } from "./game-end";
 
 type MoveEntry = [string, string];
 
+/*
+ * Difficulties available for AI
+ */
+export enum Difficulty {
+    BABY = "Baby",
+    BEGINNER = "Beginner",
+    INTERMEDIATE = "Intermediate",
+    ADVANCED = "Advanced",
+}
+
 export class ChessEngine {
     private chess: Chess;
 
