@@ -28,6 +28,7 @@ interface ChessboardWrapperProps {
     chess?: Chess;
     isWhite?: boolean;
     onMove?: (from: Square, to: Square) => boolean;
+    lastMove: { from: string; to: string };
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {

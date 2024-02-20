@@ -81,6 +81,7 @@ export function Game(): JSX.Element {
                     isWhite={isWhite}
                     chess={chess}
                     onMove={getMoveHandler(chess, setChess, sendMessage)}
+                    lastMove={{ from: "b2", to: "b3" }}
                 />
                 {gameEndDialog}
                 <Outlet />
