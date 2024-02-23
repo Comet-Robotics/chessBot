@@ -1,5 +1,4 @@
 import { Dispatch, useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
 import { Square } from "chess.js";
 
 import {
@@ -12,22 +11,18 @@ import { StopGameReason } from "../../common/game-end";
 
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
-import { WEBSOCKET_URL } from "../api";
+import { MessageHandler, SendMessage, useSocket } from "../api";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
-import { parseMessage } from "../../common/message/parse-message";
 import { ChessEngine } from "../../common/chess-engine";
-import { Side } from "../../common/types";
-import { GameType } from "../../common/game-type";
+import { Message } from "../../common/message/message";
 
 function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
     setGameStopped: Dispatch<StopGameReason>,
-) {
-    return (msg: MessageEvent<any>) => {
-        const message = parseMessage(msg.data.toString());
-
+): MessageHandler {
+    return (message: Message) => {
         if (message instanceof PositionMessage) {
             setChess(new ChessEngine(message.position));
         } else if (message instanceof MoveMessage) {
@@ -47,15 +42,12 @@ export function Game(): JSX.Element {
     const [chess, setChess] = useState(new ChessEngine());
     const [gameStopped, setGameStopped] = useState<StopGameReason>();
 
-    const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
-        onOpen: () => {
-            console.log("Connection established");
-        },
-        onMessage: getMessageHandler(chess, setChess, setGameStopped),
-    });
+    const sendMessage = useSocket(
+        getMessageHandler(chess, setChess, setGameStopped),
+    );
 
     useEffect(() => {
-        sendMessage(new StartGameMessage(gameType, side, difficulty).toJson());
+        sendMessage(new StartGameMessage(gameType, side, difficulty));
     }, [sendMessage]);
 
     let gameEndDialog = null;
@@ -89,12 +81,12 @@ export function Game(): JSX.Element {
 function getMoveHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
-    sendMessage: Dispatch<string>,
+    sendMessage: SendMessage,
 ) {
     return (from: Square, to: Square): void => {
         const chessCopy = new ChessEngine(chess.fen);
         chessCopy.makeMove(from, to);
         setChess(chessCopy);
-        sendMessage(new MoveMessage(from, to).toJson());
+        sendMessage(new MoveMessage(from, to));
     };
 }

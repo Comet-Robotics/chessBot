@@ -14,6 +14,7 @@ import { makeClientManager } from "../api/client-manager";
 import { PacketType, TCPServer } from "./tcp-interface";
 import { GameType } from "../../common/game-type";
 import { Side, oppositeSide } from "../../common/types";
+import { RegisterWebsocketMessage } from "../../common/message/message";
 
 export const clientManager = makeClientManager();
 const tcpServer = new TCPServer();
@@ -27,12 +28,6 @@ let difficulty = 0;
  * The websocket is used to stream moves to and from the client.
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
-    // Method doesn't exist
-    // ws.on("open", () => {
-    //     console.log("WS opened!");
-    //     clientManager.registerSocket(req.cookies.id, ws);
-    // });
-
     ws.on("close", () => {
         console.log("WS closed!");
         clientManager.closeSocket(req.cookies.id);
@@ -42,7 +37,9 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         const message = parseMessage(data.toString());
         console.log(message);
 
-        if (message instanceof StartGameMessage) {
+        if (message instanceof RegisterWebsocketMessage) {
+            clientManager.registerSocket(req.cookies.id, ws);
+        } else if (message instanceof StartGameMessage) {
             chess = new ChessEngine();
             if (message.gameType === GameType.COMPUTER) {
                 difficulty = message.difficulty!;

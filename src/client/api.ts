@@ -1,7 +1,35 @@
+import useWebSocket from "react-use-websocket";
+import { Message, RegisterWebsocketMessage } from "../common/message/message";
+
 /**
  * The URL to use for connecting to the websocket backend.
  */
-export const WEBSOCKET_URL = "ws://localhost:3000/ws";
+const WEBSOCKET_URL = "ws://localhost:3000/ws";
+
+export type SendMessage = (message: Message) => void;
+export type MessageHandler = (message: Message) => void;
+
+/**
+ * A custom hook which connects to the server.
+ * @param handleMessage - A function which gets invoked each time a message is received.
+ * @returns A function which can be used to send messages.
+ */
+export function useSocket(handleMessage: MessageHandler): SendMessage {
+    const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
+        onOpen: () => {
+            console.log("Connection established");
+            sendMessage(new RegisterWebsocketMessage().toJson());
+        },
+        onMessage: (msg: MessageEvent) => {
+            const message = JSON.parse(msg.data.toString());
+            handleMessage(message);
+        },
+    });
+
+    return (message: Message) => {
+        sendMessage(message.toJson());
+    };
+}
 
 /**
  * Makes a post request to the backend.

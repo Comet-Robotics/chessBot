@@ -10,6 +10,10 @@
  */
 export enum MessageType {
     /**
+     * A client-server message used to register a websocket with the server.
+     */
+    REGISTER_WEBSOCKET = "register-websocket",
+    /**
      * A server-client message defining the current position of a game.
      * Used to allow clients to reconnect.
      */
@@ -57,4 +61,8 @@ export abstract class Message {
     protected toObj(): Object {
         return { type: this.type };
     }
+}
+
+export class RegisterWebsocketMessage extends Message {
+    protected type = MessageType.REGISTER_WEBSOCKET;
 }
