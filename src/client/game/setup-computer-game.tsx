@@ -29,14 +29,14 @@ export function SetupComputerGame() {
                         value={difficulty}
                         onChange={setDifficulty}
                         labelRenderer={(value) => {
-                            if (value == Difficulty.BABY) {
-                                return "BABY";
-                            } else if (value == Difficulty.BEGINNER) {
-                                return "BEGINNER";
-                            } else if (value == Difficulty.INTERMEDIATE) {
-                                return "INTERMEDIATE";
+                            if (value === Difficulty.BABY) {
+                                return "Baby";
+                            } else if (value === Difficulty.BEGINNER) {
+                                return "Beginner";
+                            } else if (value === Difficulty.INTERMEDIATE) {
+                                return "Intermediate";
                             } else {
-                                return "ADVANCED";
+                                return "Advanced";
                             }
                         }}
                         min={0}
