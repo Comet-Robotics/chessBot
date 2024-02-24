@@ -4,6 +4,16 @@ import { FinishGameReason } from "./game-end";
 
 type MoveEntry = [string, string];
 
+/*
+ * Difficulties available for AI
+ */
+export enum Difficulty {
+    BABY = 0,
+    BEGINNER = 1,
+    INTERMEDIATE = 2,
+    ADVANCED = 3,
+}
+
 export class ChessEngine {
     private chess: Chess;
 
@@ -42,7 +52,7 @@ export class ChessEngine {
         // Additional logging as needed
     }
 
-    makeAiMove(difficulty: number): { from: Square; to: Square } {
+    makeAiMove(difficulty: Difficulty): { from: Square; to: Square } {
         const val = Object.entries(
             aiMove(this.chess.fen(), difficulty),
         )[0] as MoveEntry;
