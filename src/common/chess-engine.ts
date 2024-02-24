@@ -44,6 +44,9 @@ export class ChessEngine {
         ];
         const from = val[0].toLowerCase() as Square;
         const to = val[1].toLowerCase() as Square;
+        // TODO: Add custom logic to check if from, to move is promotion?
+        // We might want to move the isPromotion function to this file
+        // You can use chess.js to figure out if it's a pawn and the side
         this.makeMove({ from, to });
         return { from, to };
     }

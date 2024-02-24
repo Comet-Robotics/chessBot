@@ -53,10 +53,8 @@ export class HumanGameManager extends GameManager {
                 ).toJson(),
             );
         } else if (message instanceof MoveMessage) {
-            this.chess.makeMove(message.from, message.to);
-            opponentSocket?.send(
-                new MoveMessage(message.from, message.to).toJson(),
-            );
+            this.chess.makeMove(message.move);
+            opponentSocket?.send(new MoveMessage(message.move).toJson());
         } else if (message instanceof StopGameMessage) {
             this.socketManager.sendToSocket(id, message);
             opponentSocket?.send(message.toJson());
@@ -75,23 +73,23 @@ export class ComputerGameManager extends GameManager {
 
     public handleMessage(message: Message, id: string): void {
         if (message instanceof StartGameMessage) {
-            // If the person starting the game is black, we're white and need to make the first move
+            // If the person starting the game is black, computer is white and needs to make the first move
             if (message.side === Side.BLACK) {
-                const { from, to } = this.chess.makeAiMove(this.difficulty);
-                this.socketManager.sendToSocket(id, new MoveMessage(from, to));
+                const move = this.chess.makeAiMove(this.difficulty);
+                this.socketManager.sendToSocket(id, new MoveMessage(move));
             }
         } else if (message instanceof StopGameMessage) {
             this.socketManager.sendToSocket(id, message);
         } else if (message instanceof MoveMessage) {
-            this.chess.makeMove(message.from, message.to);
+            this.chess.makeMove(message.move);
 
-            if (this.chess.getGameFinishedReason() != undefined) {
+            if (this.chess.getGameFinishedReason() !== undefined) {
                 // Game is naturally finished; we're done
                 return;
             }
 
-            const { from, to } = this.chess.makeAiMove(this.difficulty);
-            this.socketManager.sendToSocket(id, new MoveMessage(from, to));
+            const move = this.chess.makeAiMove(this.difficulty);
+            this.socketManager.sendToSocket(id, new MoveMessage(move));
         }
     }
 }

@@ -33,9 +33,9 @@ export function parseMessage(text: string): Message {
             return new PositionMessage(obj.position);
         case MessageType.MOVE:
             return new MoveMessage({
-                from: obj.from,
-                to: obj.to,
-                promotion: obj.promotion,
+                from: obj.move.from,
+                to: obj.move.to,
+                promotion: obj.move.promotion,
             });
         case MessageType.DRIVE_ROBOT:
             return new DriveRobotMessage(
