@@ -1,5 +1,4 @@
 import { Dispatch, useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
 import { Square } from "chess.js";
 
 import {
@@ -8,28 +7,30 @@ import {
 } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
 import { PositionMessage } from "../../common/message/game-message";
-import { StopGameReason } from "../../common/game-end";
+import { StopGameReason } from "../../common/game-end-reason";
 
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
-import { WEBSOCKET_URL } from "../api";
+import { useSocket } from "../api";
+import { MessageHandler } from "../../common/message/message";
+import { SendMessage } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
-import { parseMessage } from "../../common/message/parse-message";
 import { ChessEngine } from "../../common/chess-engine";
-import { Side } from "../../common/types";
 
+/**
+ * Creates a MessageHandler function.
+ */
 function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
     setGameStopped: Dispatch<StopGameReason>,
-) {
-    return (msg: MessageEvent<any>) => {
-        const message = parseMessage(msg.data.toString());
-
+): MessageHandler {
+    return (message) => {
         if (message instanceof PositionMessage) {
             setChess(new ChessEngine(message.position));
         } else if (message instanceof MoveMessage) {
+            // Must be a new instance of ChessEngine to trigger UI redraw
             const chessCopy = new ChessEngine(chess.fen);
             chessCopy.makeMove(message.from, message.to);
             setChess(chessCopy);
@@ -41,22 +42,17 @@ function getMessageHandler(
 
 export function Game(): JSX.Element {
     const state = useLocation().state;
-    const side = state.side as Side;
+    const { gameType, side, difficulty } = state;
 
     const [chess, setChess] = useState(new ChessEngine());
     const [gameStopped, setGameStopped] = useState<StopGameReason>();
 
-    const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
-        onOpen: () => {
-            console.log("Connection established");
-        },
-        onMessage: getMessageHandler(chess, setChess, setGameStopped),
-    });
+    const sendMessage = useSocket(
+        getMessageHandler(chess, setChess, setGameStopped),
+    );
 
     useEffect(() => {
-        sendMessage(
-            new StartGameMessage(state.gameType, state.difficulty).toJson(),
-        );
+        sendMessage(new StartGameMessage(gameType, side, difficulty));
     }, [sendMessage]);
 
     let gameEndDialog = null;
@@ -71,6 +67,13 @@ export function Game(): JSX.Element {
         gameEndDialog = <GameEndDialog reason={gameStopped} side={side} />;
     }
 
+    const handleMove = (from: Square, to: Square): void => {
+        const chessCopy = new ChessEngine(chess.fen);
+        chessCopy.makeMove(from, to);
+        setChess(chessCopy);
+        sendMessage(new MoveMessage(from, to));
+    };
+
     return (
         <>
             <NavbarMenu sendMessage={sendMessage} />
@@ -78,24 +81,11 @@ export function Game(): JSX.Element {
                 <ChessboardWrapper
                     side={side}
                     chess={chess}
-                    onMove={getMoveHandler(chess, setChess, sendMessage)}
+                    onMove={handleMove}
                 />
                 {gameEndDialog}
                 <Outlet />
             </div>
         </>
     );
-}
-
-function getMoveHandler(
-    chess: ChessEngine,
-    setChess: Dispatch<ChessEngine>,
-    sendMessage: Dispatch<string>,
-) {
-    return (from: Square, to: Square): void => {
-        const chessCopy = new ChessEngine(chess.fen);
-        chessCopy.makeMove(from, to);
-        setChess(chessCopy);
-        sendMessage(new MoveMessage(from, to).toJson());
-    };
 }

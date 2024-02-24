@@ -20,11 +20,11 @@ export class DriveRobotMessage extends Message {
         };
     }
 }
+
 /**
  * An abstract message used to stop a robot.
  * This message looks to the server like a DriveRobotMessage with power set to 0.
  */
-
 export class StopRobotMessage extends DriveRobotMessage {
     constructor(public readonly id: string) {
         super(id, 0, 0);

@@ -3,8 +3,8 @@ import { SetupBase } from "../setup/setup-base";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GameType } from "../../common/game-type";
-import { Side } from "../../common/types";
-import { Difficulty } from "../../common/chess-engine";
+import { Side } from "../../common/game-types";
+import { Difficulty } from "../../common/client-types";
 
 export function SetupComputerGame() {
     const [difficulty, setDifficulty] = useState(Difficulty.BEGINNER);

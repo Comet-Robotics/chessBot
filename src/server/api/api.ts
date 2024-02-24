@@ -1,6 +1,5 @@
 import { WebsocketRequestHandler } from "express-ws";
 import { Router } from "express";
-import { ChessEngine } from "../../common/chess-engine";
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
@@ -10,17 +9,19 @@ import {
 import { MoveMessage } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
-import { PieceManager } from "../robot/piece-manager";
-import { CommandExecutor } from "../command/executor";
 import { PacketType, TCPServer } from "./tcp-interface";
-import { GameType } from "../../common/game-type";
+import { GameType } from "../../common/client-types";
+import { RegisterWebsocketMessage } from "../../common/message/message";
+import { clientManager, socketManager } from "./managers";
+import {
+    ComputerGameManager,
+    GameManager,
+    HumanGameManager,
+} from "./game-manager";
+import { ChessEngine } from "../../common/chess-engine";
 
-const manager = new PieceManager([]);
-const executor = new CommandExecutor();
 const tcpServer = new TCPServer();
-
-let chess: ChessEngine | null = null;
-let difficulty = 0;
+let gameManager: GameManager | null = null;
 
 /**
  * An endpoint used to establish a websocket connection with the server.
@@ -28,47 +29,38 @@ let difficulty = 0;
  * The websocket is used to stream moves to and from the client.
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
-    ws.on("open", () => {
-        console.log("WS opened!");
-    });
-
     ws.on("close", () => {
-        console.log("WS closed!");
+        socketManager.handleSocketClosed(req.cookies.id);
     });
 
     ws.on("message", (data) => {
         const message = parseMessage(data.toString());
-        console.log(message);
+        console.log("Received message: " + message.toJson());
 
-        if (message instanceof StartGameMessage) {
-            chess = new ChessEngine();
+        if (message instanceof RegisterWebsocketMessage) {
+            socketManager.registerSocket(req.cookies.id, ws);
+        } else if (message instanceof StartGameMessage) {
             if (message.gameType === GameType.COMPUTER) {
-                difficulty = message.difficulty!;
-                if (!message.isWhite) {
-                    const { from, to } = chess.makeAiMove(difficulty);
-                    ws.send(new MoveMessage(from, to).toJson());
-                }
+                gameManager = new ComputerGameManager(
+                    new ChessEngine(),
+                    socketManager,
+                    message.difficulty!,
+                );
+            } else {
+                gameManager = new HumanGameManager(
+                    new ChessEngine(),
+                    socketManager,
+                    clientManager,
+                );
             }
+            gameManager?.handleMessage(message, req.cookies.id);
         } else if (message instanceof StopGameMessage) {
-            chess = null;
-            // Notify clients of game abort
-            ws.send(message.toJson());
-        } else if (message instanceof MoveMessage) {
-            if (chess == null) {
-                throw new Error("Game must be started first.");
-            }
-
-            chess.makeMove(message.from, message.to);
-
-            if (chess.getGameFinishedReason() != undefined) {
-                // Game is naturally finished; we're done
-                return;
-            }
-
-            const { from, to } = chess.makeAiMove(difficulty);
-            ws.send(new MoveMessage(from, to).toJson());
+            gameManager?.handleMessage(message, req.cookies.id);
+            gameManager = null;
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
+        } else {
+            gameManager?.handleMessage(message, req.cookies.id);
         }
     });
 };
@@ -76,7 +68,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 export const apiRouter = Router();
 
 apiRouter.get("/get-ids", (_, res) => {
-    res.send({
+    return res.send({
         ids: ["10", "11"],
         // ids: tcpServer.getConnectedIds(),
     });
@@ -86,7 +78,7 @@ apiRouter.get("/get-ids", (_, res) => {
  * Returns a list of available puzzles to play.
  */
 apiRouter.get("/get-puzzles", (_, res) => {
-    return {
+    return res.send({
         puzzles: [
             {
                 name: "Puzzle 1",
@@ -99,7 +91,7 @@ apiRouter.get("/get-puzzles", (_, res) => {
                 rating: "1400",
             },
         ],
-    };
+    });
 });
 
 function doMove(message: MoveMessage) {
