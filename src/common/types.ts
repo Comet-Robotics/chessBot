@@ -1,12 +1,14 @@
+import { Square } from "chess.js";
+import { Robot } from "../server/robot/robot";
 import { DEGREE } from "../server/utils/units";
 
 export enum PieceType {
-    PAWN = "",
-    BISHOP = "B",
-    KNIGHT = "N",
-    ROOK = "R",
-    QUEEN = "Q",
-    KING = "K",
+    PAWN = "p",
+    BISHOP = "b",
+    KNIGHT = "n",
+    ROOK = "r",
+    QUEEN = "q",
+    KING = "k",
 }
 
 export enum Side {
@@ -16,4 +18,17 @@ export enum Side {
 
 export function getStartHeading(side: Side) {
     return side == Side.WHITE ? 90 * DEGREE : 270 * DEGREE;
+}
+export class Piece {
+    constructor(
+        public readonly side: Side,
+        public readonly pieceType: PieceType,
+        public readonly robot: Robot,
+        public square: Square,
+    ) {}
+}
+
+export enum GameType {
+    COMPUTER = "computer",
+    HUMAN = "human",
 }

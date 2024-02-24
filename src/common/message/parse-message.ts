@@ -5,7 +5,6 @@ import {
     StopGameMessage,
     PositionMessage,
     MoveMessage,
-    PromotionMessage,
 } from "./game-message";
 
 /**
@@ -31,9 +30,7 @@ export function parseMessage(text: string): Message {
         case MessageType.POSITION:
             return new PositionMessage(obj.position);
         case MessageType.MOVE:
-            return new MoveMessage(obj.from, obj.to);
-        case MessageType.PROMOTION:
-            return new PromotionMessage(obj.from, obj.to, obj.promotion);
+            return new MoveMessage(obj.from, obj.to, obj.promotionPiece);
         case MessageType.DRIVE_ROBOT:
             return new DriveRobotMessage(
                 obj.id,

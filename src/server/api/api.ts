@@ -13,7 +13,7 @@ import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { PieceManager } from "../robot/piece-manager";
 import { CommandExecutor } from "../command/executor";
 import { PacketType, TCPServer } from "./tcp-interface";
-import { GameType } from "../../common/game-type";
+import { GameType } from "../../common/types";
 
 const manager = new PieceManager([]);
 const executor = new CommandExecutor();
@@ -58,7 +58,8 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 throw new Error("Game must be started first.");
             }
 
-            chess.makeMove(message.from, message.to);
+
+            chess.makeMove(message.from, message.to, message.promotionPiece);
 
             if (chess.getGameFinishedReason() != undefined) {
                 // Game is naturally finished; we're done

@@ -18,11 +18,7 @@ export enum MessageType {
      * A two-way message containing a single move.
      */
     MOVE = "move",
-    /**
-     * A two-way message containing a promotion.
-     * Like a move, but also indicates the piece being promoted to.
-     */
-    PROMOTION = "promotion",
+    
     /**
      * A client-server message used to indicate the start of a game.
      */

@@ -1,4 +1,4 @@
-import { Piece } from "./piece";
+import { Piece } from "../../common/types";
 import { Square } from "chess.js";
 
 /**

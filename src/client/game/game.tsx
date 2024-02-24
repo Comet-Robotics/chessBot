@@ -17,7 +17,7 @@ import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
 import { parseMessage } from "../../common/message/parse-message";
 import { ChessEngine } from "../../common/chess-engine";
-import { Side } from "../../common/types";
+import { PieceType, Side } from "../../common/types";
 
 function getMessageHandler(
     chess: ChessEngine,
@@ -55,7 +55,11 @@ export function Game(): JSX.Element {
 
     useEffect(() => {
         sendMessage(
-            new StartGameMessage(state.gameType, state.difficulty).toJson(),
+            new StartGameMessage(
+                state.gameType,
+                state.side,
+                state.difficulty,
+            ).toJson(),
         );
     }, [sendMessage]);
 
@@ -92,10 +96,10 @@ function getMoveHandler(
     setChess: Dispatch<ChessEngine>,
     sendMessage: Dispatch<string>,
 ) {
-    return (from: Square, to: Square): void => {
+    return (from: Square, to: Square, promotionPiece?: PieceType): void => {
         const chessCopy = new ChessEngine(chess.fen);
         chessCopy.makeMove(from, to);
         setChess(chessCopy);
-        sendMessage(new MoveMessage(from, to).toJson());
+        sendMessage(new MoveMessage(from, to, promotionPiece).toJson());
     };
 }

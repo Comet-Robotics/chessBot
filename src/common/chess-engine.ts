@@ -1,6 +1,7 @@
 import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
 import { FinishGameReason } from "./game-end";
+import { PieceType } from "./types";
 
 type MoveEntry = [string, string];
 
@@ -33,16 +34,18 @@ export class ChessEngine {
         return this.chess.fen();
     }
 
-    makeMove(from: Square, to: Square) {
+    makeMove(from: Square, to: Square, promotionPiece?: PieceType) {
         this.chess.move({
             from,
             to,
+            promotion: promotionPiece
+
         });
         console.log("Chess engine updated:", this.chess.fen());
         // Additional logging as needed
     }
 
-    makeAiMove(difficulty: number): { from: Square; to: Square } {
+    makeAiMove(difficulty: number): { from: Square; to: Square; } {
         const val = Object.entries(
             aiMove(this.chess.fen(), difficulty),
         )[0] as MoveEntry;
@@ -53,6 +56,7 @@ export class ChessEngine {
         return {
             from,
             to,
+            
         };
     }
 

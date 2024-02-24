@@ -1,9 +1,9 @@
 import { Chessboard } from "react-chessboard";
-import { Square } from "chess.js";
+import { Piece, Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
-import { Side } from "../../common/types";
+import { PieceType, Side } from "../../common/types";
 
 const CLICK_STYLE = {
     backgroundColor: "green",
@@ -22,7 +22,7 @@ interface ChessboardWrapperProps {
     /**
      * A callback function this component invokes whenever a move is made.
      */
-    onMove: (from: Square, to: Square) => void;
+    onMove: (from: Square, to: Square, promotionPiece?: PieceType) => void;
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
@@ -36,6 +36,8 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const [lastClickedSquare, setLastClickedSquare] = useState<
         Square | undefined
     >();
+
+    const [isPromoting, setIsPromoting] = useState(false);
 
     // Maps squares to style objects
     const customSquareStyles: { [square: string]: Object } = {};
@@ -54,8 +56,21 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         return legalSquares.includes(to);
     };
 
-    const doMove = (from: Square, to: Square): void => {
-        onMove(from, to);
+    const isPromotion = (from: Square, to: Square, piece: PieceType) => {
+        if (piece !== PieceType.PAWN) {
+            return false;
+        } else if (side === Side.WHITE) {
+            return from[1] === "7" && to[1] === "8";
+        }
+        return from[1] === "2" && to[1] === "1";
+    };
+
+    const doMove = (
+        from: Square,
+        to: Square,
+        promotionPiece?: PieceType,
+    ): void => {
+        onMove(from, to, promotionPiece);
         setLastClickedSquare(undefined);
     };
 
@@ -65,14 +80,27 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
                 position={chess.fen}
-                onPieceDrop={(from: Square, to: Square): boolean => {
+                onPieceDrop={(
+                    from: Square,
+                    to: Square,
+                    pieceAndSide: string,
+                ): boolean => {
+                    const piece: PieceType = pieceAndSide[1] as PieceType;
                     if (isLegalMove(from, to)) {
-                        doMove(from, to);
+                        if (isPromotion(from, to, piece)) {
+                            setIsPromoting(true);
+                        } else {
+                            doMove(from, to, isPromoting ? piece : undefined);
+                            setIsPromoting(false);
+                        }
                         return true;
                     }
                     return false;
                 }}
                 onSquareClick={(square: Square) => {
+                    console.log(square);
+                    console.log(lastClickedSquare);
+                    console.log(legalSquares);
                     if (
                         legalSquares !== undefined &&
                         lastClickedSquare !== undefined &&

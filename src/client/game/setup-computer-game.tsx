@@ -2,7 +2,7 @@ import { Button, H3, H6, Slider } from "@blueprintjs/core";
 import { SetupBase } from "../setup/setup-base";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GameType } from "../../common/game-type";
+import { GameType } from "../../common/types";
 import { Side } from "../../common/types";
 
 export function SetupComputerGame() {

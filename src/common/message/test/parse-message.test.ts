@@ -1,11 +1,10 @@
 import { StopGameReason } from "../../game-end";
-import { GameType } from "../../game-type";
+import { GameType } from "../../types";
 import { PieceType } from "../../types";
 import { DriveRobotMessage, StopRobotMessage } from "../drive-robot-message";
 import {
     MoveMessage,
     PositionMessage,
-    PromotionMessage,
     StartGameMessage,
     StopGameMessage,
 } from "../game-message";
@@ -18,8 +17,9 @@ test.each([
     new StartGameMessage(GameType.HUMAN, false),
     new StopGameMessage(StopGameReason.ABORTED),
     new PositionMessage("aaaaaaaaa"),
-    new PromotionMessage("h7", "b3", PieceType.KNIGHT),
-    new MoveMessage("a1", "a4"),
+    new MoveMessage("a1", "a2"),
+    new MoveMessage("a1", "a3", PieceType.BISHOP),
+    new MoveMessage("a1", "a4", PieceType.PAWN),
     new DriveRobotMessage("robot1", 0.5, 0.5),
     new StopRobotMessage("robot2"),
 ])("Message should serialize correctly", (message: Message) => {
