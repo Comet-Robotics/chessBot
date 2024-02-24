@@ -3,6 +3,7 @@ import { Message, MessageType } from "./message";
 import { PieceType, Side } from "../types";
 import { GameType } from "../types";
 import { StopGameReason } from "../game-end-reason";
+import { Difficulty } from "../chess-engine";
 
 export class PositionMessage extends Message {
     constructor(public readonly position: string) {
@@ -51,7 +52,7 @@ export class StartGameMessage extends Message {
     constructor(
         public readonly gameType: GameType,
         public readonly side: Side,
-        public readonly difficulty?: number,
+        public readonly difficulty?: Difficulty,
     ) {
         super();
     }
