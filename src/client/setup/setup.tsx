@@ -2,9 +2,15 @@ import { Button, H3 } from "@blueprintjs/core";
 import { SetupBase } from "./setup-base";
 import { Dispatch, useState } from "react";
 import { SetupGame } from "./setup-game";
-import { SetupType } from "./setup-type";
 import { useNavigate } from "react-router-dom";
 import { GameType } from "../../common/client-types";
+
+enum SetupType {
+    MAIN = "main",
+    COMPUTER = "computer",
+    HUMAN = "human",
+    PUZZLE = "puzzle",
+}
 
 export function Setup(): JSX.Element {
     const [setupType, setSetupType] = useState(SetupType.MAIN);
@@ -15,7 +21,13 @@ export function Setup(): JSX.Element {
                 <SetupMain onPageChange={setSetupType} />
             :   null}
             {setupType === SetupType.COMPUTER || setupType === SetupType.HUMAN ?
-                <SetupGame gameType={setupType as unknown as GameType} />
+                <SetupGame
+                    gameType={
+                        setupType === SetupType.COMPUTER ?
+                            GameType.COMPUTER
+                        :   GameType.HUMAN
+                    }
+                />
             :   null}
         </SetupBase>
     );

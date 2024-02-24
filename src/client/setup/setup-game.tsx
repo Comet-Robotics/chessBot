@@ -1,7 +1,7 @@
 import { Button, H3, H6, Slider } from "@blueprintjs/core";
 import { Dispatch, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GameType } from "../../common/client-types";
+import { Difficulty, GameType } from "../../common/client-types";
 import { Side } from "../../common/game-types";
 
 interface SetupGameProps {
@@ -9,8 +9,9 @@ interface SetupGameProps {
 }
 
 export function SetupGame(props: SetupGameProps) {
+    const { gameType } = props;
     const navigate = useNavigate();
-    const [difficulty, setDifficulty] = useState(1);
+    const [difficulty, setDifficulty] = useState(Difficulty.BEGINNER);
 
     const difficultySlider =
         props.gameType === GameType.COMPUTER ?
@@ -19,12 +20,18 @@ export function SetupGame(props: SetupGameProps) {
                 onDifficultyChange={setDifficulty}
             />
         :   null;
-    const options = <>{difficultySlider}</>;
+
+    const options = (
+        <>
+            {difficultySlider}
+            {/* TODO: Add SelectSide component here */}
+        </>
+    );
 
     const title =
         props.gameType === GameType.COMPUTER ?
-            "Play against the computer"
-        :   "Setup game";
+            "Play Against the Computer"
+        :   "Setup Game";
 
     const submit = (
         <Button
@@ -34,10 +41,10 @@ export function SetupGame(props: SetupGameProps) {
             onClick={async () => {
                 navigate("/game", {
                     state: {
-                        gameType: props.gameType,
+                        gameType,
                         // TODO: Let user choose side
                         side: Side.WHITE,
-                        difficulty: difficulty,
+                        difficulty,
                     },
                 });
             }}
@@ -62,8 +69,8 @@ export function SetupGame(props: SetupGameProps) {
 }
 
 interface DifficultySliderProps {
-    difficulty: number;
-    onDifficultyChange: Dispatch<number>;
+    difficulty: Difficulty;
+    onDifficultyChange: Dispatch<Difficulty>;
 }
 
 function DifficultySlider(props: DifficultySliderProps) {
