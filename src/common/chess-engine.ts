@@ -38,14 +38,13 @@ export class ChessEngine {
         this.chess.move({
             from,
             to,
-            promotion: promotionPiece
-
+            promotion: promotionPiece,
         });
-        console.log("Chess engine updated:", this.chess.fen());
+        //console.log("Chess engine updated:", this.chess.fen());
         // Additional logging as needed
     }
 
-    makeAiMove(difficulty: number): { from: Square; to: Square; } {
+    makeAiMove(difficulty: number): { from: Square; to: Square } {
         const val = Object.entries(
             aiMove(this.chess.fen(), difficulty),
         )[0] as MoveEntry;
@@ -56,7 +55,6 @@ export class ChessEngine {
         return {
             from,
             to,
-            
         };
     }
 

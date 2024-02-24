@@ -57,7 +57,7 @@ export function Game(): JSX.Element {
         sendMessage(
             new StartGameMessage(
                 state.gameType,
-                state.side,
+                true,
                 state.difficulty,
             ).toJson(),
         );
@@ -98,7 +98,7 @@ function getMoveHandler(
 ) {
     return (from: Square, to: Square, promotionPiece?: PieceType): void => {
         const chessCopy = new ChessEngine(chess.fen);
-        chessCopy.makeMove(from, to);
+        chessCopy.makeMove(from, to, promotionPiece);
         setChess(chessCopy);
         sendMessage(new MoveMessage(from, to, promotionPiece).toJson());
     };

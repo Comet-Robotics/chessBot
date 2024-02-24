@@ -1,5 +1,5 @@
 import { Chessboard } from "react-chessboard";
-import { Piece, Square } from "chess.js";
+import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
@@ -80,27 +80,36 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
                 position={chess.fen}
+                onPromotionCheck={(
+                    from: Square,
+                    to: Square,
+                    pieceAndSide: string,
+                ) => {
+                    const piece = pieceAndSide[1].toLowerCase() as PieceType;
+                    const promoting = isPromotion(from, to, piece);
+                    setIsPromoting(promoting);
+                    return promoting;
+                }}
                 onPieceDrop={(
                     from: Square,
                     to: Square,
                     pieceAndSide: string,
                 ): boolean => {
-                    const piece: PieceType = pieceAndSide[1] as PieceType;
+                    const piece: PieceType =
+                        pieceAndSide[1].toLowerCase() as PieceType;
                     if (isLegalMove(from, to)) {
-                        if (isPromotion(from, to, piece)) {
-                            setIsPromoting(true);
-                        } else {
-                            doMove(from, to, isPromoting ? piece : undefined);
-                            setIsPromoting(false);
-                        }
+                        doMove(from, to, isPromoting ? piece : undefined);
+                        setIsPromoting(false);
                         return true;
                     }
                     return false;
                 }}
+                onPieceDragBegin={(_, square: Square) => {
+                    if (square !== lastClickedSquare) {
+                        setLastClickedSquare(undefined);
+                    }
+                }}
                 onSquareClick={(square: Square) => {
-                    console.log(square);
-                    console.log(lastClickedSquare);
-                    console.log(legalSquares);
                     if (
                         legalSquares !== undefined &&
                         lastClickedSquare !== undefined &&
