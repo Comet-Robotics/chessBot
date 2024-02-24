@@ -18,9 +18,7 @@ export function Debug() {
     const sendMessage = useSocket();
 
     useEffect(() => {
-        console.log("Fetch ids");
         const fetchIds = async () => {
-            console.log("Start fetch");
             const response = await get("/get-ids");
             setRobotIds(response.ids);
         };

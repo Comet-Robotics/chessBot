@@ -23,10 +23,9 @@ export function useSocket(handleMessage?: MessageHandler): SendMessage {
             sendMessage(new RegisterWebsocketMessage().toJson());
         },
         onMessage: (msg: MessageEvent) => {
-            console.log(msg.data.toString());
             const message = parseMessage(msg.data.toString());
-
             console.log("Handle message: " + message.toJson());
+
             if (handleMessage !== undefined) {
                 handleMessage(message);
             }

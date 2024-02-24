@@ -30,7 +30,6 @@ let gameManager: GameManager | null = null;
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     ws.on("close", () => {
-        console.log("WS closed!");
         socketManager.handleSocketClosed(req.cookies.id);
     });
 
