@@ -4,7 +4,7 @@ import { Dispatch, useState } from "react";
 import { SetupGame } from "./setup-game";
 import { SetupType } from "./setup-type";
 import { useNavigate } from "react-router-dom";
-import { GameType } from "../../common/game-type";
+import { GameType } from "../../common/types";
 
 export function Setup(): JSX.Element {
     const [setupType, setSetupType] = useState(SetupType.MAIN);

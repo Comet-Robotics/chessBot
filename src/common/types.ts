@@ -36,3 +36,8 @@ export enum ClientType {
     CLIENT = "client",
     SPECTATOR = "spectate",
 }
+
+export enum GameType {
+    COMPUTER = "computer",
+    HUMAN = "human",
+}

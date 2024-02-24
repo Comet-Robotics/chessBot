@@ -8,7 +8,7 @@ import {
     NonIdealStateIconSize,
 } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
-import { FinishGameReason, StopGameReason } from "../../common/game-end";
+import { FinishGameReason, StopGameReason } from "../../common/game-end-reason";
 import { useState } from "react";
 import { Side } from "../../common/types";
 

@@ -1,5 +1,5 @@
-import { StopGameReason } from "../../game-end";
-import { GameType } from "../../game-type";
+import { StopGameReason } from "../../game-end-reason";
+import { GameType } from "../../types";
 import { PieceType, Side } from "../../types";
 import { DriveRobotMessage, StopRobotMessage } from "../drive-robot-message";
 import {

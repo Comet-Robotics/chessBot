@@ -1,8 +1,8 @@
 import { Square } from "chess.js";
 import { Message, MessageType } from "./message";
 import { PieceType, Side } from "../types";
-import { GameType } from "../game-type";
-import { StopGameReason } from "../game-end";
+import { GameType } from "../types";
+import { StopGameReason } from "../game-end-reason";
 
 export class PositionMessage extends Message {
     constructor(public readonly position: string) {

@@ -1,6 +1,6 @@
 import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
-import { FinishGameReason } from "./game-end";
+import { FinishGameReason } from "./game-end-reason";
 
 type MoveEntry = [string, string];
 
