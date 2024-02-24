@@ -11,21 +11,26 @@ import { StopGameReason } from "../../common/game-end";
 
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
-import { MessageHandler, SendMessage, useSocket } from "../api";
+import { useSocket } from "../api";
+import { MessageHandler } from "../../common/message/message";
+import { SendMessage } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
-import { Message } from "../../common/message/message";
 
+/**
+ * Creates a MessageHandler function.
+ */
 function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
     setGameStopped: Dispatch<StopGameReason>,
 ): MessageHandler {
-    return (message: Message) => {
+    return (message) => {
         if (message instanceof PositionMessage) {
             setChess(new ChessEngine(message.position));
         } else if (message instanceof MoveMessage) {
+            // Must be a new instance of ChessEngine to trigger UI redraw
             const chessCopy = new ChessEngine(chess.fen);
             chessCopy.makeMove(message.from, message.to);
             setChess(chessCopy);
@@ -62,6 +67,13 @@ export function Game(): JSX.Element {
         gameEndDialog = <GameEndDialog reason={gameStopped} side={side} />;
     }
 
+    const handleMove = (from: Square, to: Square): void => {
+        const chessCopy = new ChessEngine(chess.fen);
+        chessCopy.makeMove(from, to);
+        setChess(chessCopy);
+        sendMessage(new MoveMessage(from, to));
+    };
+
     return (
         <>
             <NavbarMenu sendMessage={sendMessage} />
@@ -69,24 +81,11 @@ export function Game(): JSX.Element {
                 <ChessboardWrapper
                     side={side}
                     chess={chess}
-                    onMove={getMoveHandler(chess, setChess, sendMessage)}
+                    onMove={handleMove}
                 />
                 {gameEndDialog}
                 <Outlet />
             </div>
         </>
     );
-}
-
-function getMoveHandler(
-    chess: ChessEngine,
-    setChess: Dispatch<ChessEngine>,
-    sendMessage: SendMessage,
-) {
-    return (from: Square, to: Square): void => {
-        const chessCopy = new ChessEngine(chess.fen);
-        chessCopy.makeMove(from, to);
-        setChess(chessCopy);
-        sendMessage(new MoveMessage(from, to));
-    };
 }

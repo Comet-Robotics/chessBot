@@ -66,3 +66,13 @@ export abstract class Message {
 export class RegisterWebsocketMessage extends Message {
     protected type = MessageType.REGISTER_WEBSOCKET;
 }
+
+/**
+ * A function which can be used to send a message somewhere.
+ */
+export type SendMessage = (message: Message) => void;
+
+/**
+ * A function which receives messages and should do stuff with them.
+ */
+export type MessageHandler = (message: Message) => void;

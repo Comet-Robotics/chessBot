@@ -8,7 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { StopGameMessage } from "../../common/message/game-message";
 import { StopGameReason } from "../../common/game-end";
-import { SendMessage } from "../api";
+import { SendMessage } from "../../common/message/message";
 
 interface NavbarMenuProps {
     sendMessage: SendMessage;
@@ -35,7 +35,7 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                 />
             </NavbarGroup>
             <NavbarGroup align="right">
-                <Button icon="cog" minimal onClick={() => navigate("debug")} />
+                <Button icon="cog" minimal onClick={() => navigate("/debug")} />
             </NavbarGroup>
         </Navbar>
     );

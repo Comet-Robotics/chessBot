@@ -1,6 +1,5 @@
 import { NonIdealState, Spinner } from "@blueprintjs/core";
 import { SetupBase } from "./setup-base";
-import useWebSocket from "react-use-websocket";
 import { useNavigate } from "react-router-dom";
 import { StartGameMessage } from "../../common/message/game-message";
 import { useSocket } from "../api";

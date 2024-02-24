@@ -1,7 +1,7 @@
 import { Button } from "@blueprintjs/core";
-import { SendMessage } from "react-use-websocket";
 import { StopRobotMessage } from "../../common/message/drive-robot-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
+import { SendMessage } from "../../common/message/message";
 
 interface DriveRobotProps {
     robotId: string;
@@ -13,7 +13,7 @@ interface DriveRobotProps {
  */
 export function DriveRobot(props: DriveRobotProps) {
     const handleStopMove = () => {
-        props.sendMessage(new StopRobotMessage(props.robotId).toJson());
+        props.sendMessage(new StopRobotMessage(props.robotId));
     };
 
     const getManualMoveHandler = (
@@ -22,11 +22,7 @@ export function DriveRobot(props: DriveRobotProps) {
     ): (() => void) => {
         const handleManualMove = () => {
             props.sendMessage(
-                new DriveRobotMessage(
-                    props.robotId,
-                    leftPower,
-                    rightPower,
-                ).toJson(),
+                new DriveRobotMessage(props.robotId, leftPower, rightPower),
             );
         };
         return handleManualMove;

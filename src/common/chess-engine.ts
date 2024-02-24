@@ -33,11 +33,16 @@ export class ChessEngine {
         return this.chess.fen();
     }
 
-    makeMove(from: Square, to: Square) {
+    /**
+     * Makes a move on the chess engine.
+     * Returns the move that was made.
+     */
+    makeMove(from: Square, to: Square): { from: Square; to: Square } {
         this.chess.move({
             from,
             to,
         });
+        return { from, to };
     }
 
     makeAiMove(difficulty: number): { from: Square; to: Square } {
@@ -46,12 +51,7 @@ export class ChessEngine {
         )[0] as MoveEntry;
         const from = val[0].toLowerCase() as Square;
         const to = val[1].toLowerCase() as Square;
-
-        this.makeMove(from, to);
-        return {
-            from,
-            to,
-        };
+        return this.makeMove(from, to);
     }
 
     getGameFinishedReason(): FinishGameReason | undefined {

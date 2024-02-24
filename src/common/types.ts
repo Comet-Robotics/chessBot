@@ -1,5 +1,8 @@
 import { DEGREE } from "../server/utils/units";
 
+/**
+ * Defines a specific piece.
+ */
 export enum PieceType {
     PAWN = "",
     BISHOP = "B",
@@ -9,6 +12,9 @@ export enum PieceType {
     KING = "K",
 }
 
+/**
+ * Defines playing with the white or black pieces.
+ */
 export enum Side {
     WHITE = "w",
     BLACK = "b",
@@ -20,4 +26,13 @@ export function oppositeSide(side: Side) {
 
 export function getStartHeading(side: Side) {
     return side == Side.WHITE ? 90 * DEGREE : 270 * DEGREE;
+}
+
+/**
+ * Defines a type of session.
+ */
+export enum ClientType {
+    HOST = "host",
+    CLIENT = "client",
+    SPECTATOR = "spectate",
 }

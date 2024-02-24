@@ -2,8 +2,10 @@ import express, { RequestHandler, Express } from "express";
 import ViteExpress from "vite-express";
 import cookieParser from "cookie-parser";
 import { v4 as uuid } from "uuid";
-import { apiRouter, clientManager, websocketHandler } from "./api/api";
+import { apiRouter, websocketHandler } from "./api/api";
 import expressWebSocket from "express-ws";
+import { ClientType } from "../common/types";
+import { clientManager } from "./api/managers";
 
 const app = expressWebSocket(express()).app;
 
@@ -35,17 +37,13 @@ app.use(checkAuthentication);
  * Registers all players with the client manager.
  */
 app.use((req, _, next) => {
-    clientManager.registerPlayer(req.cookies.id);
+    clientManager.assignPlayer(req.cookies.id);
     return next();
 });
 
 app.get("/", (req, res) => {
-    const playerType = clientManager.registerPlayer(req.cookies.id);
-    if (playerType == 0) {
-        return res.redirect("/setup");
-    } else {
-        return res.redirect("/lobby");
-    }
+    const clientType = clientManager.getClientType(req.cookies.id);
+    return res.redirect(`/home?client-type=${clientType}`);
 });
 
 app.ws("/ws", websocketHandler);

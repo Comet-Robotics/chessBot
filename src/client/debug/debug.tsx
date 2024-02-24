@@ -1,8 +1,7 @@
 import { Dialog, DialogBody, Spinner } from "@blueprintjs/core";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { WEBSOCKET_URL, get } from "../api";
-import useWebSocket from "react-use-websocket";
+import { get, useSocket } from "../api";
 import { SelectRobot } from "./select-robot";
 import { DriveRobot } from "./drive-robot";
 
@@ -16,10 +15,12 @@ export function Debug() {
     >();
     const navigate = useNavigate();
 
-    const { sendMessage } = useWebSocket(WEBSOCKET_URL);
+    const sendMessage = useSocket();
 
     useEffect(() => {
+        console.log("Fetch ids");
         const fetchIds = async () => {
+            console.log("Start fetch");
             const response = await get("/get-ids");
             setRobotIds(response.ids);
         };
@@ -51,7 +52,7 @@ export function Debug() {
         <Dialog
             isOpen
             canOutsideClickClose={false}
-            onClose={() => navigate("..")}
+            onClose={() => navigate("/home")}
             title="Debug"
         >
             <DialogBody>{body}</DialogBody>

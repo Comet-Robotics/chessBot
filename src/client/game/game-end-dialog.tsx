@@ -26,7 +26,7 @@ export function GameEndDialog(props: GameEndDialogProps) {
             rightIcon="arrow-right"
             intent="primary"
             onClick={() => {
-                navigate("/setup");
+                navigate("/home");
             }}
         />
     );
