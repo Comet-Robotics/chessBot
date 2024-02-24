@@ -11,7 +11,7 @@ interface SetupGameProps {
 export function SetupGame(props: SetupGameProps) {
     const { gameType } = props;
     const navigate = useNavigate();
-    const [difficulty, setDifficulty] = useState(Difficulty.BABY);
+    const [difficulty, setDifficulty] = useState(Difficulty.BEGINNER);
 
     const difficultySlider =
         props.gameType === GameType.COMPUTER ?
@@ -21,12 +21,17 @@ export function SetupGame(props: SetupGameProps) {
             />
         :   null;
 
-    const options = <>{difficultySlider}</>;
+    const options = (
+        <>
+            {difficultySlider}
+            {/* TODO: Add SelectSide component here */}
+        </>
+    );
 
     const title =
         props.gameType === GameType.COMPUTER ?
-            "Play against the computer"
-        :   "Setup game";
+            "Play Against the Computer"
+        :   "Setup Game";
 
     const submit = (
         <Button
