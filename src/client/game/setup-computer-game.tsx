@@ -7,7 +7,7 @@ import { Side } from "../../common/types";
 import { Difficulty } from "../../common/chess-engine";
 
 export function SetupComputerGame() {
-    const [difficulty, setDifficulty] = useState(3);
+    const [difficulty, setDifficulty] = useState(Difficulty.BEGINNER);
     const navigate = useNavigate();
 
     return (
@@ -29,18 +29,18 @@ export function SetupComputerGame() {
                         value={difficulty}
                         onChange={setDifficulty}
                         labelRenderer={(value) => {
-                            if (value == 1) {
-                                return Difficulty.BABY;
-                            } else if (value == 2) {
-                                return Difficulty.BEGINNER;
-                            } else if (value == 3) {
-                                return Difficulty.INTERMEDIATE;
+                            if (value == Difficulty.BABY) {
+                                return "BABY";
+                            } else if (value == Difficulty.BEGINNER) {
+                                return "BEGINNER";
+                            } else if (value == Difficulty.INTERMEDIATE) {
+                                return "INTERMEDIATE";
                             } else {
-                                return Difficulty.ADVANCED;
+                                return "ADVANCED";
                             }
                         }}
-                        min={1}
-                        max={4}
+                        min={0}
+                        max={3}
                     />
                 </div>
                 <Button
@@ -53,8 +53,7 @@ export function SetupComputerGame() {
                                 gameType: GameType.COMPUTER,
                                 // TODO: Let user choose color
                                 side: Side.WHITE,
-                                // Normalize to 0 - 3
-                                difficulty: difficulty - 1,
+                                difficulty: difficulty,
                             },
                         });
                     }}
