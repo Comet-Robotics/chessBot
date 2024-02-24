@@ -17,9 +17,9 @@ test.each([
     new StartGameMessage(GameType.HUMAN, Side.BLACK),
     new StopGameMessage(StopGameReason.ABORTED),
     new PositionMessage("aaaaaaaaa"),
-    new MoveMessage("a1", "a2"),
-    new MoveMessage("a1", "a3", PieceType.BISHOP),
-    new MoveMessage("a1", "a4", PieceType.PAWN),
+    new MoveMessage({ from: "a1", to: "a2" }),
+    new MoveMessage({ from: "a1", to: "a3", promotion: PieceType.BISHOP }),
+    new MoveMessage({ from: "a1", to: "a4", promotion: PieceType.PAWN }),
     new DriveRobotMessage("robot1", 0.5, 0.5),
     new StopRobotMessage("robot2"),
 ])("Message should serialize correctly", (message: Message) => {

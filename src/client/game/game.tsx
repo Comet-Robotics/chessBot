@@ -1,5 +1,4 @@
 import { Dispatch, useEffect, useState } from "react";
-import { Square } from "chess.js";
 
 import {
     StopGameMessage,
@@ -16,7 +15,7 @@ import { MessageHandler } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
-import { PieceType } from "../../common/game-types";
+import { Move } from "../../common/game-types";
 
 /**
  * Creates a MessageHandler function.
@@ -32,7 +31,7 @@ function getMessageHandler(
         } else if (message instanceof MoveMessage) {
             // Must be a new instance of ChessEngine to trigger UI redraw
             const chessCopy = new ChessEngine(chess.fen);
-            chessCopy.makeMove(message.from, message.to);
+            chessCopy.makeMove(message.move);
             setChess(chessCopy);
         } else if (message instanceof StopGameMessage) {
             setGameStopped(message.reason);
@@ -67,16 +66,11 @@ export function Game(): JSX.Element {
         gameEndDialog = <GameEndDialog reason={gameStopped} side={side} />;
     }
 
-    const handleMove = (
-        from: Square,
-        to: Square,
-        promotionPiece?: PieceType,
-    ): void => {
+    const handleMove = (move: Move): void => {
         const chessCopy = new ChessEngine(chess.fen);
-        chessCopy.makeMove(from, to, promotionPiece);
+        chessCopy.makeMove(move);
         setChess(chessCopy);
-        sendMessage(new MoveMessage(from, to, promotionPiece));
-        sendMessage(new MoveMessage(from, to));
+        sendMessage(new MoveMessage(move));
     };
 
     return (

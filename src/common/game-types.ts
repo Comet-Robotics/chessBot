@@ -42,3 +42,8 @@ export enum GameType {
     COMPUTER = "computer",
     HUMAN = "human",
 }
+export interface Move {
+    from: Square;
+    to: Square;
+    promotion?: PieceType;
+}

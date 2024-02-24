@@ -3,6 +3,7 @@ import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
+import { Move } from "../../common/game-types";
 import { Side, PieceType } from "../../common/game-types";
 
 const CLICK_STYLE = {
@@ -21,7 +22,7 @@ interface ChessboardWrapperProps {
     /**
      * A callback function this component invokes whenever a move is made.
      */
-    onMove: (from: Square, to: Square, promotionPiece?: PieceType) => void;
+    onMove: (move: Move) => void;
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
@@ -55,7 +56,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         return chess.getLegalSquares(from).includes(to);
     };
 
-    const isPromotion = (from: Square, to: Square, piece: PieceType) => {
+    /**
+     * Returns true if a move is a promotion, and false otherwise.
+     */
+    const isPromotionMove = (from: Square, to: Square, piece: PieceType) => {
         if (piece !== PieceType.PAWN) {
             return false;
         } else if (side === Side.WHITE) {
@@ -64,12 +68,8 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         return from[1] === "2" && to[1] === "1";
     };
 
-    const doMove = (
-        from: Square,
-        to: Square,
-        promotionPiece?: PieceType,
-    ): void => {
-        onMove(from, to, promotionPiece);
+    const doMove = (move: Move): void => {
+        onMove(move);
         setLastClickedSquare(undefined);
     };
 
@@ -85,7 +85,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     pieceAndSide: string,
                 ) => {
                     const piece = pieceAndSide[1].toLowerCase() as PieceType;
-                    const promoting = isPromotion(from, to, piece);
+                    const promoting = isPromotionMove(from, to, piece);
                     setIsPromoting(promoting);
                     return promoting;
                 }}
@@ -97,7 +97,11 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     const piece: PieceType =
                         pieceAndSide[1].toLowerCase() as PieceType;
                     if (isLegalMove(from, to)) {
-                        doMove(from, to, isPromoting ? piece : undefined);
+                        doMove({
+                            from,
+                            to,
+                            promotion: isPromoting ? piece : undefined,
+                        });
                         setIsPromoting(false);
                         return true;
                     }
@@ -114,7 +118,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         lastClickedSquare !== undefined &&
                         legalSquares.includes(square)
                     ) {
-                        doMove(lastClickedSquare, square);
+                        doMove({ from: lastClickedSquare, to: square });
                     } else if (lastClickedSquare === square) {
                         setLastClickedSquare(undefined);
                     } else {

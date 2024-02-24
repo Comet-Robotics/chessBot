@@ -2,13 +2,7 @@ import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
 import { FinishGameReason } from "./game-end-reason";
 import { Difficulty } from "./client-types";
-import { PieceType } from "./game-types";
-
-export interface Move {
-    from: Square;
-    to: Square;
-    promotion?: PieceType;
-}
+import { Move } from "./game-types";
 
 export class ChessEngine {
     private chess: Chess;
