@@ -2,6 +2,9 @@ import { Square } from "chess.js";
 import { Robot } from "../server/robot/robot";
 import { DEGREE } from "../server/utils/units";
 
+/**
+ * Defines a specific piece.
+ */
 export enum PieceType {
     PAWN = "p",
     BISHOP = "b",
@@ -11,9 +14,16 @@ export enum PieceType {
     KING = "k",
 }
 
+/**
+ * Defines playing with the white or black pieces.
+ */
 export enum Side {
     WHITE = "w",
     BLACK = "b",
+}
+
+export function oppositeSide(side: Side) {
+    return side === Side.WHITE ? Side.BLACK : Side.WHITE;
 }
 
 export function getStartHeading(side: Side) {

@@ -3,7 +3,7 @@ import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
-import { PieceType, Side } from "../../common/types";
+import { Side, PieceType } from "../../common/game-types";
 
 const CLICK_STYLE = {
     backgroundColor: "green",
@@ -14,7 +14,6 @@ interface ChessboardWrapperProps {
      * The chess.js instance displayed by this class.
      */
     chess: ChessEngine;
-
     /**
      * The side of the current player.
      */
@@ -43,7 +42,8 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const customSquareStyles: { [square: string]: Object } = {};
     let legalSquares: string[] | undefined = undefined;
     if (lastClickedSquare !== undefined) {
-        chess.getLegalSquares(lastClickedSquare).forEach((square) => {
+        legalSquares = chess.getLegalSquares(lastClickedSquare);
+        legalSquares.forEach((square) => {
             customSquareStyles[square] = CLICK_STYLE;
         });
     }
@@ -52,8 +52,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
      * Returns true if a move is legal, and false otherwise.
      */
     const isLegalMove = (from: Square, to: Square): boolean => {
-        const legalSquares = chess.getLegalSquares(from);
-        return legalSquares.includes(to);
+        return chess.getLegalSquares(from).includes(to);
     };
 
     const isPromotion = (from: Square, to: Square, piece: PieceType) => {

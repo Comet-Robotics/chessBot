@@ -3,39 +3,32 @@ import { Setup } from "./setup/setup";
 import { Debug } from "./debug/debug";
 import { Game } from "./game/game";
 import { Puzzle } from "./puzzle/puzzle";
-import { SetupComputerGame } from "./game/setup-computer-game";
+import { Lobby } from "./setup/lobby";
+import { Home } from "./home";
 
 export const router = createBrowserRouter([
     {
-        path: "/",
-        element: <Navigate to="/setup" />,
+        path: "/home",
+        element: <Home />,
     },
     {
-        path: "setup",
+        path: "/debug",
+        element: <Debug />,
+    },
+    {
+        path: "/setup",
         element: <Setup />,
-        children: [
-            {
-                path: "debug",
-                element: <Debug />,
-            },
-        ],
     },
     {
-        path: "puzzle",
+        path: "/lobby",
+        element: <Lobby />,
+    },
+    {
+        path: "/puzzle",
         element: <Puzzle />,
     },
     {
-        path: "game",
+        path: "/game",
         element: <Game />,
-        children: [
-            {
-                path: "debug",
-                element: <Debug />,
-            },
-        ],
-    },
-    {
-        path: "setup-computer-game",
-        element: <SetupComputerGame />,
     },
 ]);
