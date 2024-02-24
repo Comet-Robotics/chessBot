@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { SocketManager } from "./socket-manager";
-import { ClientType } from "../../common/types";
+import { ClientType } from "../../common/client-types";
 
 /**
  * A class which maps client ids to their corresponding sockets (if any).

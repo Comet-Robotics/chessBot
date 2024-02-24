@@ -1,6 +1,6 @@
 import { Square } from "chess.js";
 import { Robot } from "./robot";
-import { PieceType, Side } from "../../common/types";
+import { PieceType, Side } from "../../common/game-types";
 
 export class Piece {
     constructor(

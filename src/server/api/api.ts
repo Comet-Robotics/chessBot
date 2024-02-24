@@ -10,7 +10,7 @@ import { MoveMessage } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
 import { PacketType, TCPServer } from "./tcp-interface";
-import { GameType } from "../../common/types";
+import { GameType } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
 import { clientManager, socketManager } from "./managers";
 import {

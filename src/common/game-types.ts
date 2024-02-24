@@ -27,17 +27,3 @@ export function oppositeSide(side: Side) {
 export function getStartHeading(side: Side) {
     return side == Side.WHITE ? 90 * DEGREE : 270 * DEGREE;
 }
-
-/**
- * Defines a type of session.
- */
-export enum ClientType {
-    HOST = "host",
-    CLIENT = "client",
-    SPECTATOR = "spectate",
-}
-
-export enum GameType {
-    COMPUTER = "computer",
-    HUMAN = "human",
-}

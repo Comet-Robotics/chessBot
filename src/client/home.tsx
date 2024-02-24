@@ -1,5 +1,5 @@
 import { Navigate, useSearchParams } from "react-router-dom";
-import { ClientType } from "../common/types";
+import { ClientType } from "../common/client-types";
 
 /**
  * The home route.

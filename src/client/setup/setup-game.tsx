@@ -1,8 +1,8 @@
 import { Button, H3, H6, Slider } from "@blueprintjs/core";
 import { Dispatch, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GameType } from "../../common/types";
-import { Side } from "../../common/types";
+import { GameType } from "../../common/client-types";
+import { Side } from "../../common/game-types";
 
 interface SetupGameProps {
     gameType: GameType;

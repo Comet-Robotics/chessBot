@@ -6,10 +6,10 @@ import {
     StartGameMessage,
     StopGameMessage,
 } from "../../common/message/game-message";
-import { Side, oppositeSide } from "../../common/types";
+import { Side, oppositeSide } from "../../common/game-types";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
-import { ClientType } from "../../common/types";
+import { ClientType } from "../../common/client-types";
 
 export abstract class GameManager {
     constructor(

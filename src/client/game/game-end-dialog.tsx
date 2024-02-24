@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FinishGameReason, StopGameReason } from "../../common/game-end-reason";
 import { useState } from "react";
-import { Side } from "../../common/types";
+import { Side } from "../../common/game-types";
 
 interface GameEndDialogProps {
     reason: FinishGameReason | StopGameReason;

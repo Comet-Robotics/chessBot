@@ -1,4 +1,4 @@
-import { GameType } from "../../common/types";
+import { GameType } from "../../common/client-types";
 
 export enum SetupType {
     MAIN = "main",
