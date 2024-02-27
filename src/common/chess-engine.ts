@@ -1,6 +1,6 @@
 import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
-import { GameFinishedReason } from "./game-end-reason";
+import { GameFinishedReason } from "./game-end-reasons";
 import { Difficulty } from "./client-types";
 
 export class ChessEngine {

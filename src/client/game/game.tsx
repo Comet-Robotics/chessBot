@@ -7,7 +7,7 @@ import {
 } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
 import { PositionMessage } from "../../common/message/game-message";
-import { GameInterruptedReason } from "../../common/game-end-reason";
+import { GameInterruptedReason } from "../../common/game-end-reasons";
 
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";

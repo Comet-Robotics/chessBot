@@ -7,7 +7,7 @@ import {
 } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
 import { StopGameMessage } from "../../common/message/game-message";
-import { GameInterruptedReason } from "../../common/game-end-reason";
+import { GameInterruptedReason } from "../../common/game-end-reasons";
 import { SendMessage } from "../../common/message/message";
 
 interface NavbarMenuProps {

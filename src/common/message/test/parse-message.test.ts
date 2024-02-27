@@ -1,4 +1,4 @@
-import { GameInterruptedReason } from "../../game-end-reason";
+import { GameInterruptedReason } from "../../game-end-reasons";
 import { GameType } from "../../client-types";
 import { PieceType, Side } from "../../game-types";
 import { DriveRobotMessage, StopRobotMessage } from "../drive-robot-message";

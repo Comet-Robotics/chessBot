@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import {
     GameFinishedReason,
     GameInterruptedReason,
-} from "../../common/game-end-reason";
+} from "../../common/game-end-reasons";
 import { useState } from "react";
 import { Side } from "../../common/game-types";
 
