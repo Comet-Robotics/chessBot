@@ -30,7 +30,7 @@ jobs:
             - name: Install modules
               run: yarn install --frozen-lockfile
 
-            - name: Check lint
+            - name: Lint
               run: yarn lint-check
 
     test:
@@ -47,3 +47,18 @@ jobs:
 
             - name: Run tests
               run: yarn test
+
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  cache: yarn
+
+            - name: Install modules
+              run: yarn install --frozen-lockfile
+
+            - name: Lint
+              run: yarn build
