@@ -30,10 +30,8 @@ export function DriveRobot(props: DriveRobotProps) {
 
     const handleDriveForward = getManualMoveHandler(1, 1);
     const handleDriveBackward = getManualMoveHandler(-1, -1);
-    const handleDriveRight = getManualMoveHandler(0.5, -0.5);
-    const handleDriveLeft = getManualMoveHandler(-0.5, 0.5);
-
-    /* Declare other handlers here */
+    const handleTurnRight = getManualMoveHandler(0.5, -0.5);
+    const handleTurnLeft = getManualMoveHandler(-0.5, 0.5);
 
     const hotkeys = useMemo(
         () => [
@@ -58,7 +56,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 group: "Debug",
                 global: true,
                 label: "Drive Right",
-                onKeyDown: handleDriveRight,
+                onKeyDown: handleTurnRight,
                 onKeyUp: handleStopMove,
             },
             {
@@ -66,7 +64,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 group: "Debug",
                 global: true,
                 label: "Drive left",
-                onKeyDown: handleDriveLeft,
+                onKeyDown: handleTurnLeft,
                 onKeyUp: handleStopMove,
             },
             {
@@ -90,7 +88,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 group: "Debug",
                 global: true,
                 label: "Drive Right",
-                onKeyDown: handleDriveRight,
+                onKeyDown: handleTurnRight,
                 onKeyUp: handleStopMove,
             },
             {
@@ -98,18 +96,16 @@ export function DriveRobot(props: DriveRobotProps) {
                 group: "Debug",
                 global: true,
                 label: "Drive left",
-                onKeyDown: handleDriveLeft,
+                onKeyDown: handleTurnLeft,
                 onKeyUp: handleStopMove,
             },
-
-            // ... declare other key combos for wasd and arrow keys (see documentation)
         ],
         [
             handleStopMove,
             handleDriveForward,
             handleDriveBackward,
-            handleDriveLeft,
-            handleDriveRight,
+            handleTurnLeft,
+            handleTurnRight,
         ],
     );
 
@@ -119,23 +115,23 @@ export function DriveRobot(props: DriveRobotProps) {
             <Button
                 icon="arrow-up"
                 onMouseUp={handleStopMove}
-                onMouseDown={getManualMoveHandler(1, 1)}
+                onMouseDown={handleDriveForward}
             />
             <br />
             <Button
                 icon="arrow-left"
                 onMouseUp={handleStopMove}
-                onMouseDown={getManualMoveHandler(-0.5, 0.5)}
+                onMouseDown={handleTurnLeft}
             />
             <Button
                 icon="arrow-down"
                 onMouseUp={handleStopMove}
-                onMouseDown={getManualMoveHandler(-1, -1)}
+                onMouseDown={handleDriveBackward}
             />
             <Button
                 icon="arrow-right"
                 onMouseUp={handleStopMove}
-                onMouseDown={getManualMoveHandler(0.5, -0.5)}
+                onMouseDown={handleTurnRight}
             />
         </div>
     );
