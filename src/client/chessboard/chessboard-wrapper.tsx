@@ -37,7 +37,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     >();
 
     // Maps squares to style objects
-    const customSquareStyles: { [square: string]: Object } = {};
+    const customSquareStyles: { [square: string]: object } = {};
     let legalSquares: string[] | undefined = undefined;
     if (lastClickedSquare !== undefined) {
         legalSquares = chess.getLegalSquares(lastClickedSquare);

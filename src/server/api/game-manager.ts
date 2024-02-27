@@ -10,7 +10,11 @@ import { Side, oppositeSide } from "../../common/game-types";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
 import { ClientType } from "../../common/client-types";
+<<<<<<< HEAD
 import { GameFinishedReason } from "../../common/game-end-reasons";
+=======
+import { WebSocket } from "ws";
+>>>>>>> origin/main
 
 export abstract class GameManager {
     constructor(
@@ -39,7 +43,7 @@ export class HumanGameManager extends GameManager {
 
     public handleMessage(message: Message, id: string): void {
         const clientType = this.clientManager.getClientType(id);
-        let opponentSocket = undefined;
+        let opponentSocket: WebSocket | undefined = undefined;
         if (clientType === ClientType.HOST) {
             opponentSocket = this.clientManager.getClientSocket();
         } else {

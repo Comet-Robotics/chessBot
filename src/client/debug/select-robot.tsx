@@ -1,4 +1,4 @@
-import { Button, MenuItem, Spinner } from "@blueprintjs/core";
+import { Button, MenuItem } from "@blueprintjs/core";
 import { ItemRenderer, Select } from "@blueprintjs/select";
 
 const renderRobotIds: ItemRenderer<string> = (

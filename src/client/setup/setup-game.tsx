@@ -83,11 +83,11 @@ function DifficultySlider(props: DifficultySliderProps) {
                     value={props.difficulty}
                     onChange={props.onDifficultyChange}
                     labelRenderer={(value) => {
-                        if (value == 0) {
+                        if (value === Difficulty.BABY) {
                             return "Baby";
-                        } else if (value == 1) {
+                        } else if (value === Difficulty.BEGINNER) {
                             return "Beginner";
-                        } else if (value == 2) {
+                        } else if (value === Difficulty.INTERMEDIATE) {
                             return "Intermediate";
                         } else {
                             return "Advanced";
