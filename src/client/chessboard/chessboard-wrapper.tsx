@@ -3,8 +3,9 @@ import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
-import { Move } from "../../common/game-types";
+import { Move, Piece } from "../../common/game-types";
 import { Side, PieceType } from "../../common/game-types";
+//import { Square } from "@blueprintjs/icons";
 
 const CLICK_STYLE = {
     backgroundColor: "green",
@@ -56,22 +57,17 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         return chess.getLegalSquares(from).includes(to);
     };
 
-    /**
-     * Returns true if a move is a promotion, and false otherwise.
-     */
-    const isPromotionMove = (from: Square, to: Square, piece: PieceType) => {
-        if (piece !== PieceType.PAWN) {
-            return false;
-        } else if (side === Side.WHITE) {
-            return from[1] === "7" && to[1] === "8";
-        }
-        return from[1] === "2" && to[1] === "1";
-    };
-
     const doMove = (move: Move): void => {
         onMove(move);
         setLastClickedSquare(undefined);
     };
+
+    const [manualPromotionSquare, setManualPromotionSquare] = useState<
+        Square | undefined
+    >();
+    const [lastClickedPiece, setLastClickedPiece] = useState<
+        PieceType | undefined
+    >();
 
     return (
         <BoardContainer onWidthChange={setWidth}>
@@ -85,10 +81,12 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     pieceAndSide: string,
                 ) => {
                     const piece = pieceAndSide[1].toLowerCase() as PieceType;
-                    const promoting = isPromotionMove(from, to, piece);
+                    const promoting = chess.isPromotionMove(from, to);
                     setIsPromoting(promoting);
                     return promoting;
                 }}
+                showPromotionDialog={manualPromotionSquare !== undefined}
+                promotionToSquare={manualPromotionSquare}
                 onPieceDrop={(
                     from: Square,
                     to: Square,
@@ -97,11 +95,23 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     const piece: PieceType =
                         pieceAndSide[1].toLowerCase() as PieceType;
                     if (isLegalMove(from, to)) {
-                        doMove({
-                            from,
-                            to,
-                            promotion: isPromoting ? piece : undefined,
-                        });
+                        if (manualPromotionSquare !== undefined) {
+                            doMove({
+                                // from is undefined in manual promotion flow
+                                from: lastClickedSquare!,
+                                to,
+                                promotion: piece,
+                            });
+                            setManualPromotionSquare(undefined);
+                        } else {
+                            doMove({
+                                from,
+                                to,
+                                // Include piece only if promoting
+                                promotion: isPromoting ? piece : undefined,
+                            });
+                        }
+                        // Reset state
                         setIsPromoting(false);
                         return true;
                     }
@@ -113,15 +123,30 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     }
                 }}
                 onSquareClick={(square: Square) => {
-                    if (
-                        legalSquares !== undefined &&
+                    console.log(chess.getPiece(square));
+                    setManualPromotionSquare(undefined);
+
+                    const isSquareLegalMove =
                         lastClickedSquare !== undefined &&
-                        legalSquares.includes(square)
-                    ) {
-                        doMove({ from: lastClickedSquare, to: square });
+                        legalSquares !== undefined &&
+                        legalSquares.includes(square);
+
+                    if (isSquareLegalMove) {
+                        if (chess.isPromotionMove(lastClickedSquare, square)) {
+                            // Manually show promotion dialog
+                            setManualPromotionSquare(square);
+                        } else {
+                            doMove({
+                                from: lastClickedSquare,
+                                to: square,
+                            });
+                        }
+                        // Square is clicked again
                     } else if (lastClickedSquare === square) {
+                        // Deselect square
                         setLastClickedSquare(undefined);
                     } else {
+                        // Select clicked square
                         setLastClickedSquare(square);
                     }
                 }}

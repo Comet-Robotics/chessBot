@@ -1,5 +1,5 @@
 import { Message, MessageType } from "./message";
-import { Move, Side } from "../game-types";
+import { Move, PieceType, Side } from "../game-types";
 import { GameType } from "../client-types";
 import { StopGameReason } from "../game-end-reason";
 import { Difficulty } from "../client-types";
