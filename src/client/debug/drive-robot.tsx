@@ -1,5 +1,5 @@
 import { Button, useHotkeys } from "@blueprintjs/core";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { StopRobotMessage } from "../../common/message/drive-robot-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
@@ -30,6 +30,35 @@ function useManualMoveHandler(
 export function DriveRobot(props: DriveRobotProps) {
     const handleStopMove = useCallback(() => {
         props.sendMessage(new StopRobotMessage(props.robotId));
+    }, [props]);
+
+    useEffect(() => {
+        if (!navigator.getGamepads) {
+            console.log("Gamepad API not supported");
+            return;
+        }
+        const handleGamepadInput = () => {
+            for (const gamepad of navigator.getGamepads()) {
+                if (gamepad) {
+                    // tank-style drive
+                    const leftPower = gamepad.axes[1] * -1;
+                    const rightPower = gamepad.axes[3] * -1;
+                    props.sendMessage(
+                        new DriveRobotMessage(
+                            props.robotId,
+                            leftPower,
+                            rightPower,
+                        ),
+                    );
+                }
+            }
+        };
+
+        const gamepadPollingInterval = setInterval(handleGamepadInput, 50);
+
+        return () => {
+            clearInterval(gamepadPollingInterval);
+        };
     }, [props]);
 
     const handleDriveForward = useManualMoveHandler(props, 1, 1);
@@ -116,6 +145,10 @@ export function DriveRobot(props: DriveRobotProps) {
     const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys);
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+            <p>
+                Control this robot using the buttons below, arrow keys, WASD, or
+                a connected gamepad.
+            </p>
             <Button
                 icon="arrow-up"
                 onMouseUp={handleStopMove}
@@ -137,6 +170,10 @@ export function DriveRobot(props: DriveRobotProps) {
                 onMouseUp={handleStopMove}
                 onMouseDown={handleTurnRight}
             />
+            <br />
+            <Button icon="stop" onClick={handleStopMove}>
+                Stop
+            </Button>
         </div>
     );
 }

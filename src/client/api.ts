@@ -34,6 +34,7 @@ export function useSocket(handleMessage?: MessageHandler): SendMessage {
 
     const sendMessageHandler = useMemo(() => {
         return (message: Message) => {
+            console.log("Sending message: " + message.toJson());
             sendMessage(message.toJson());
         };
     }, [sendMessage]);
