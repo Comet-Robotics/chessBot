@@ -111,17 +111,7 @@ export class BotTunnel {
         const type = parseInt(str.substring(0, 2), 16);
         const contents = str.substring(3);
 
-        this.handlePacket(type, contents);
-
-        if (
-            this.dataBuffer !== undefined &&
-            this.dataBuffer.indexOf(";") !== -1
-        ) {
-            this.handleQueue();
-        }
-    }
-
-    handlePacket(type: PacketType, contents: string) {
+        // Parse packet based on type
         switch (type) {
             case PacketType.NOTHING: {
                 break;
@@ -130,6 +120,14 @@ export class BotTunnel {
                 this.onHandshake(contents);
                 this.connected = true;
             }
+        }
+
+        // Handle next message if the data buffer has another one
+        if (
+            this.dataBuffer !== undefined &&
+            this.dataBuffer.indexOf(";") !== -1
+        ) {
+            this.handleQueue();
         }
     }
 
