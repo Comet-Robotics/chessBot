@@ -1,5 +1,5 @@
 import { Button, useHotkeys } from "@blueprintjs/core";
-import React, { createRef, useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { StopRobotMessage } from "../../common/message/drive-robot-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
@@ -20,14 +20,12 @@ export function DriveRobot(props: DriveRobotProps) {
         leftPower: number,
         rightPower: number,
     ): (() => void) => {
-        const handleManualMove = () => {
+        const handleManualMove = () =>
             props.sendMessage(
                 new DriveRobotMessage(props.robotId, leftPower, rightPower),
             );
-        };
         return handleManualMove;
     };
-
     const handleDriveForward = getManualMoveHandler(1, 1);
     const handleDriveBackward = getManualMoveHandler(-1, -1);
     const handleTurnRight = getManualMoveHandler(0.5, -0.5);
@@ -55,7 +53,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 combo: "a",
                 group: "Debug",
                 global: true,
-                label: "Drive Right",
+                label: "Turn right",
                 onKeyDown: handleTurnRight,
                 onKeyUp: handleStopMove,
             },
@@ -63,7 +61,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 combo: "d",
                 group: "Debug",
                 global: true,
-                label: "Drive left",
+                label: "Turn left",
                 onKeyDown: handleTurnLeft,
                 onKeyUp: handleStopMove,
             },
@@ -87,7 +85,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 combo: "right",
                 group: "Debug",
                 global: true,
-                label: "Drive Right",
+                label: "Turn right",
                 onKeyDown: handleTurnRight,
                 onKeyUp: handleStopMove,
             },
@@ -95,7 +93,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 combo: "left",
                 group: "Debug",
                 global: true,
-                label: "Drive left",
+                label: "Turn left",
                 onKeyDown: handleTurnLeft,
                 onKeyUp: handleStopMove,
             },
