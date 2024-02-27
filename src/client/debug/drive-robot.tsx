@@ -158,6 +158,13 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
                 onMouseUp={handleStopMove}
                 onMouseDown={handleTurnRight}
             />
+            <br />
+            <Button
+                icon="stop"
+                onClick={handleStopMove}
+            >
+                Stop
+            </Button>
         </div>
     );
 }
