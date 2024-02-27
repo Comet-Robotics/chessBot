@@ -85,7 +85,7 @@ export class ComputerGameManager extends GameManager {
         } else if (message instanceof MoveMessage) {
             this.chess.makeMove(message.from, message.to);
 
-            if (this.chess.getGameFinishedReason() != undefined) {
+            if (this.chess.getGameFinishedReason() !== undefined) {
                 // Game is naturally finished; we're done
                 return;
             }

@@ -85,7 +85,7 @@ export class BotTunnel {
         let str = this.dataBuffer.toString();
         const terminator = str.indexOf(";");
 
-        if (terminator == -1) {
+        if (terminator === -1) {
             if (str.length > 200) {
                 // Invalid state, reset buf
                 this.dataBuffer = undefined;
@@ -115,7 +115,7 @@ export class BotTunnel {
 
         if (
             this.dataBuffer !== undefined &&
-            this.dataBuffer.indexOf(";") != -1
+            this.dataBuffer.indexOf(";") !== -1
         ) {
             this.handleQueue();
         }
