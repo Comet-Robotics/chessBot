@@ -16,7 +16,6 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
         sendMessage(new StopRobotMessage(robotId));
     }, [sendMessage, robotId]);
 
-
     useEffect(() => {
         if (!navigator.getGamepads) {
             console.log("Gamepad API not supported");
@@ -28,7 +27,9 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
                     // tank-style drive
                     const leftPower = gamepad.axes[1] * -1;
                     const rightPower = gamepad.axes[3] * -1;
-                    sendMessage(new DriveRobotMessage(robotId, leftPower, rightPower));
+                    sendMessage(
+                        new DriveRobotMessage(robotId, leftPower, rightPower),
+                    );
                 }
             }
         };
@@ -40,22 +41,33 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
         };
     }, [robotId, sendMessage]);
 
+    const getManualMoveHandler = useCallback(
+        (leftPower: number, rightPower: number): (() => void) => {
+            const handleManualMove = () =>
+                sendMessage(
+                    new DriveRobotMessage(robotId, leftPower, rightPower),
+                );
+            return handleManualMove;
+        },
+        [robotId, sendMessage],
+    );
 
-    const getManualMoveHandler = useCallback((
-        leftPower: number,
-        rightPower: number,
-    ): (() => void) => {
-        const handleManualMove = () =>
-            sendMessage(
-                new DriveRobotMessage(robotId, leftPower, rightPower),
-            );
-        return handleManualMove;
-    }, [robotId, sendMessage]);
-
-    const handleDriveForward = useMemo(() => getManualMoveHandler(1, 1), [getManualMoveHandler]);
-    const handleDriveBackward = useMemo(() => getManualMoveHandler(-1, -1), [getManualMoveHandler]);
-    const handleTurnRight = useMemo(() => getManualMoveHandler(0.5, -0.5), [getManualMoveHandler]);
-    const handleTurnLeft = useMemo(() => getManualMoveHandler(-0.5, 0.5), [getManualMoveHandler]);
+    const handleDriveForward = useMemo(
+        () => getManualMoveHandler(1, 1),
+        [getManualMoveHandler],
+    );
+    const handleDriveBackward = useMemo(
+        () => getManualMoveHandler(-1, -1),
+        [getManualMoveHandler],
+    );
+    const handleTurnRight = useMemo(
+        () => getManualMoveHandler(0.5, -0.5),
+        [getManualMoveHandler],
+    );
+    const handleTurnLeft = useMemo(
+        () => getManualMoveHandler(-0.5, 0.5),
+        [getManualMoveHandler],
+    );
 
     const hotkeys = useMemo(
         () => [
@@ -136,7 +148,10 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
     const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys);
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
-            <p>Control this robot using the buttons below, arrow keys, WASD, or a connected gamepad.</p>
+            <p>
+                Control this robot using the buttons below, arrow keys, WASD, or
+                a connected gamepad.
+            </p>
             <Button
                 icon="arrow-up"
                 onMouseUp={handleStopMove}
@@ -159,10 +174,7 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
                 onMouseDown={handleTurnRight}
             />
             <br />
-            <Button
-                icon="stop"
-                onClick={handleStopMove}
-            >
+            <Button icon="stop" onClick={handleStopMove}>
                 Stop
             </Button>
         </div>
