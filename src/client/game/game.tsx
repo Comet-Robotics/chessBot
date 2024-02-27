@@ -54,7 +54,7 @@ export function Game(): JSX.Element {
 
     useEffect(() => {
         sendMessage(new GameStartMessage(gameType, side, difficulty));
-    }, [sendMessage]);
+    }, [sendMessage, gameType, side, difficulty]);
 
     let gameOverReason: GameEndReason | undefined = undefined;
     const gameFinishedReason = chess.getGameFinishedReason();
