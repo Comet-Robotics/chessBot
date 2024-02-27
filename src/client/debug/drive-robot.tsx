@@ -27,10 +27,10 @@ function useManualMoveHandler(
 /**
  * A component which can be used to drive an individual robot around.
  */
-export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
+export function DriveRobot(props: DriveRobotProps) {
     const handleStopMove = useCallback(() => {
-        sendMessage(new StopRobotMessage(robotId));
-    }, [sendMessage, robotId]);
+        props.sendMessage(new StopRobotMessage(props.robotId));
+    }, [props]);
 
     useEffect(() => {
         if (!navigator.getGamepads) {
@@ -43,8 +43,8 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
                     // tank-style drive
                     const leftPower = gamepad.axes[1] * -1;
                     const rightPower = gamepad.axes[3] * -1;
-                    sendMessage(
-                        new DriveRobotMessage(robotId, leftPower, rightPower),
+                    props.sendMessage(
+                        new DriveRobotMessage(props.robotId, leftPower, rightPower),
                     );
                 }
             }
@@ -55,7 +55,7 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
         return () => {
             clearInterval(gamepadPollingInterval);
         };
-    }, [robotId, sendMessage]);
+    }, [props]);
     
     const handleDriveForward = useManualMoveHandler(props, 1, 1);
     const handleDriveBackward = useManualMoveHandler(props, -1, -1);
