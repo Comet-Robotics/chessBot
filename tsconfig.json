@@ -18,6 +18,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": false,
 
         /* Bonus options */
         "allowJs": false,

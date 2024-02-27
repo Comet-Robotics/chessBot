@@ -1,4 +1,4 @@
-import { Dispatch, useEffect, useState } from "react";
+import { Dispatch, ReactElement, useEffect, useState } from "react";
 import { Square } from "chess.js";
 
 import {
@@ -54,7 +54,7 @@ export function Game(): JSX.Element {
         sendMessage(new StartGameMessage(gameType, side, difficulty));
     }, [sendMessage, gameType, side, difficulty]);
 
-    let gameEndDialog = null;
+    let gameEndDialog: ReactElement | null = null;
     if (chess.isGameOver()) {
         gameEndDialog = (
             <GameEndDialog
