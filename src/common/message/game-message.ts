@@ -2,7 +2,7 @@ import { Square } from "chess.js";
 import { Message, MessageType } from "./message";
 import { PieceType, Side } from "../game-types";
 import { GameType } from "../client-types";
-import { StopGameReason } from "../game-end-reason";
+import { GameInterruptedReason } from "../game-end-reason";
 import { Difficulty } from "../client-types";
 
 export class PositionMessage extends Message {
@@ -70,7 +70,7 @@ export class StartGameMessage extends Message {
 }
 
 export class StopGameMessage extends Message {
-    constructor(public readonly reason: StopGameReason) {
+    constructor(public readonly reason: GameInterruptedReason) {
         super();
     }
 

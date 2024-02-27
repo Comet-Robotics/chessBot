@@ -1,6 +1,6 @@
 import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
-import { FinishGameReason } from "./game-end-reason";
+import { GameFinishedReason } from "./game-end-reason";
 import { Difficulty } from "./client-types";
 
 export class ChessEngine {
@@ -11,10 +11,6 @@ export class ChessEngine {
      */
     constructor(fen?: string) {
         this.chess = new Chess(fen);
-    }
-
-    reset() {
-        this.chess.reset();
     }
 
     getLegalMoves(square?: Square) {
@@ -54,20 +50,20 @@ export class ChessEngine {
         return this.makeMove(from, to);
     }
 
-    getGameFinishedReason(): FinishGameReason | undefined {
+    getGameFinishedReason(): GameFinishedReason | undefined {
         if (this.chess.isCheckmate()) {
             // If it's your turn, you lost
             return this.chess.turn() === "w" ?
-                    FinishGameReason.WHITE_CHECKMATED
-                :   FinishGameReason.BLACK_CHECKMATED;
+                    GameFinishedReason.WHITE_CHECKMATED
+                :   GameFinishedReason.BLACK_CHECKMATED;
         } else if (this.chess.isStalemate()) {
-            return FinishGameReason.STALEMATE;
+            return GameFinishedReason.STALEMATE;
         } else if (this.chess.isThreefoldRepetition()) {
-            return FinishGameReason.THREEFOLD_REPETITION;
+            return GameFinishedReason.THREEFOLD_REPETITION;
         } else if (this.chess.isDraw()) {
             return this.chess.isInsufficientMaterial() ?
-                    FinishGameReason.INSUFFICIENT_MATERIAL
-                :   FinishGameReason.FIFTY_MOVES;
+                    GameFinishedReason.INSUFFICIENT_MATERIAL
+                :   GameFinishedReason.FIFTY_MOVES;
         }
         return undefined;
     }

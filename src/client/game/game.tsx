@@ -7,7 +7,7 @@ import {
 } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
 import { PositionMessage } from "../../common/message/game-message";
-import { StopGameReason } from "../../common/game-end-reason";
+import { GameInterruptedReason } from "../../common/game-end-reason";
 
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
@@ -24,7 +24,7 @@ import { ChessEngine } from "../../common/chess-engine";
 function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
-    setGameStopped: Dispatch<StopGameReason>,
+    setGameStopped: Dispatch<GameInterruptedReason>,
 ): MessageHandler {
     return (message) => {
         if (message instanceof PositionMessage) {
@@ -45,7 +45,7 @@ export function Game(): JSX.Element {
     const { gameType, side, difficulty } = state;
 
     const [chess, setChess] = useState(new ChessEngine());
-    const [gameStopped, setGameStopped] = useState<StopGameReason>();
+    const [gameStopped, setGameStopped] = useState<GameInterruptedReason>();
 
     const sendMessage = useSocket(
         getMessageHandler(chess, setChess, setGameStopped),
