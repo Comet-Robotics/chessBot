@@ -1,5 +1,5 @@
 import { Button, useHotkeys } from "@blueprintjs/core";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { StopRobotMessage } from "../../common/message/drive-robot-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
@@ -12,9 +12,9 @@ interface DriveRobotProps {
  * A component which can be used to drive an individual robot around.
  */
 export function DriveRobot(props: DriveRobotProps) {
-    const handleStopMove = () => {
+    const handleStopMove = useCallback(() => {
         props.sendMessage(new StopRobotMessage(props.robotId));
-    };
+    }, [props]);
 
     const getManualMoveHandler = (
         leftPower: number,
