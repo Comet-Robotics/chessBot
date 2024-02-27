@@ -1,3 +1,5 @@
+export type GameEndReason = GameFinishedReason | GameInterruptedReason;
+
 export enum GameFinishedReason {
     /**
      * White is checkmated.

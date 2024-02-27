@@ -3,8 +3,8 @@ import { Router } from "express";
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
-    StartGameMessage,
-    StopGameMessage,
+    GameStartMessage,
+    GameEndReasonMessage,
 } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
@@ -39,7 +39,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
         if (message instanceof RegisterWebsocketMessage) {
             socketManager.registerSocket(req.cookies.id, ws);
-        } else if (message instanceof StartGameMessage) {
+        } else if (message instanceof GameStartMessage) {
             if (message.gameType === GameType.COMPUTER) {
                 gameManager = new ComputerGameManager(
                     new ChessEngine(),
@@ -54,7 +54,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 );
             }
             gameManager?.handleMessage(message, req.cookies.id);
-        } else if (message instanceof StopGameMessage) {
+        } else if (message instanceof GameEndReasonMessage) {
             gameManager?.handleMessage(message, req.cookies.id);
             gameManager = null;
         } else if (message instanceof DriveRobotMessage) {

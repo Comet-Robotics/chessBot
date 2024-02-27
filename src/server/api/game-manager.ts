@@ -3,13 +3,14 @@ import { ChessEngine } from "../../common/chess-engine";
 import {
     MoveMessage,
     PositionMessage,
-    StartGameMessage,
-    StopGameMessage,
+    GameStartMessage,
+    GameEndReasonMessage,
 } from "../../common/message/game-message";
 import { Side, oppositeSide } from "../../common/game-types";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
 import { ClientType } from "../../common/client-types";
+import { GameFinishedReason } from "../../common/game-end-reasons";
 
 export abstract class GameManager {
     constructor(
@@ -45,9 +46,9 @@ export class HumanGameManager extends GameManager {
             opponentSocket = this.clientManager.getHostSocket();
         }
 
-        if (message instanceof StartGameMessage) {
+        if (message instanceof GameStartMessage) {
             opponentSocket?.send(
-                new StartGameMessage(
+                new GameStartMessage(
                     message.gameType,
                     oppositeSide(message.side),
                 ).toJson(),
@@ -57,7 +58,7 @@ export class HumanGameManager extends GameManager {
             opponentSocket?.send(
                 new MoveMessage(message.from, message.to).toJson(),
             );
-        } else if (message instanceof StopGameMessage) {
+        } else if (message instanceof GameEndReasonMessage) {
             this.socketManager.sendToSocket(id, message);
             opponentSocket?.send(message.toJson());
         }
@@ -74,19 +75,25 @@ export class ComputerGameManager extends GameManager {
     }
 
     public handleMessage(message: Message, id: string): void {
-        if (message instanceof StartGameMessage) {
+        if (message instanceof GameStartMessage) {
             // If the person starting the game is black, we're white and need to make the first move
             if (message.side === Side.BLACK) {
                 const { from, to } = this.chess.makeAiMove(this.difficulty);
                 this.socketManager.sendToSocket(id, new MoveMessage(from, to));
             }
-        } else if (message instanceof StopGameMessage) {
+        } else if (message instanceof GameEndReasonMessage) {
+            // Reflect end game reason to server
             this.socketManager.sendToSocket(id, message);
         } else if (message instanceof MoveMessage) {
             this.chess.makeMove(message.from, message.to);
 
-            if (this.chess.getGameFinishedReason() != undefined) {
+            const gameFinishedReason = this.chess.getGameFinishedReason();
+            if (gameFinishedReason != undefined) {
                 // Game is naturally finished; we're done
+                this.socketManager.sendToSocket(
+                    id,
+                    new GameEndReasonMessage(gameFinishedReason),
+                );
                 return;
             }
 

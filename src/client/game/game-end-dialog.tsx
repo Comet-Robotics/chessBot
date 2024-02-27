@@ -9,6 +9,7 @@ import {
 } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
 import {
+    GameEndReason,
     GameFinishedReason,
     GameInterruptedReason,
 } from "../../common/game-end-reasons";
@@ -16,7 +17,7 @@ import { useState } from "react";
 import { Side } from "../../common/game-types";
 
 interface GameEndDialogProps {
-    reason: GameFinishedReason | GameInterruptedReason;
+    reason: GameEndReason;
     side: Side;
 }
 
@@ -52,10 +53,7 @@ export function GameEndDialog(props: GameEndDialogProps) {
     );
 }
 
-function gameOverIcon(
-    reason: GameFinishedReason | GameInterruptedReason,
-    side: Side,
-) {
+function gameOverIcon(reason: GameEndReason, side: Side) {
     const whiteWon =
         reason === GameFinishedReason.BLACK_CHECKMATED ||
         reason === GameInterruptedReason.BLACK_RESIGNED;
@@ -93,7 +91,7 @@ function gameOverIcon(
     );
 }
 
-function gameOverMessage(reason: GameFinishedReason | GameInterruptedReason) {
+function gameOverMessage(reason: GameEndReason) {
     switch (reason) {
         case GameFinishedReason.WHITE_CHECKMATED:
             return "Checkmate - Black Wins";
