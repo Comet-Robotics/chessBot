@@ -6,7 +6,6 @@ import {
     StartGameMessage,
     StopGameMessage,
 } from "../../common/message/game-message";
-import { MoveMessage } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
 import { PacketType, TCPServer } from "./tcp-interface";
@@ -93,16 +92,6 @@ apiRouter.get("/get-puzzles", (_, res) => {
         ],
     });
 });
-
-function doMove(message: MoveMessage) {
-    // chess.move({ from: message.from, to: message.to });
-    // TODO: handle invalid moves, implement
-    // const command = processMove(
-    //   Square.fromString(move.from),
-    //   Square.fromString(move.to)
-    // );
-    // executor.execute(command);
-}
 
 function doDriveRobot(message: DriveRobotMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {

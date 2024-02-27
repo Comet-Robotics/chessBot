@@ -49,6 +49,7 @@ export async function post(
     apiPath: string,
     query: Record<string, string> = {},
     body: object = {},
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
     try {
         let normalizedUrl = `/api${apiPath}`;
@@ -74,6 +75,7 @@ export async function post(
 export async function get(
     apiPath: string,
     query: Record<string, string> = {},
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
     try {
         const normalizedUrl = `/api${apiPath}?${new URLSearchParams(query)}`;

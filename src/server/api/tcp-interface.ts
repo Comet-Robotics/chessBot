@@ -1,5 +1,5 @@
 import * as net from "net";
-const config = require("./bot-server-config.json");
+import config from "./bot-server-config.json";
 
 // MUST be kept in sync with chessBotArduino/include/packet.h PacketType
 export enum PacketType {

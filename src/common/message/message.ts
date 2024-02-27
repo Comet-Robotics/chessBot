@@ -58,7 +58,7 @@ export abstract class Message {
      * Sends this class to an object which can be serialized as json.
      * The only usage of this method is by `toJson`.
      */
-    protected toObj(): Object {
+    protected toObj(): object {
         return { type: this.type };
     }
 }

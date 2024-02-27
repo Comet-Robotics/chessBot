@@ -12,7 +12,7 @@ export class PositionMessage extends Message {
 
     protected type = MessageType.POSITION;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return { ...super.toObj(), position: this.position };
     }
 }
@@ -27,7 +27,7 @@ export class MoveMessage extends Message {
 
     protected type = MessageType.MOVE;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return { ...super.toObj(), from: this.from, to: this.to };
     }
 }
@@ -43,7 +43,7 @@ export class PromotionMessage extends MoveMessage {
 
     protected type = MessageType.PROMOTION;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return { ...super.toObj(), promotion: this.promotion };
     }
 }
@@ -59,7 +59,7 @@ export class StartGameMessage extends Message {
 
     protected type = MessageType.START_GAME;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return {
             ...super.toObj(),
             gameType: this.gameType,
@@ -76,7 +76,7 @@ export class StopGameMessage extends Message {
 
     protected type = MessageType.STOP_GAME;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return {
             ...super.toObj(),
             reason: this.reason,
