@@ -8,12 +8,16 @@ import {
     NonIdealStateIconSize,
 } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
-import { FinishGameReason, StopGameReason } from "../../common/game-end-reason";
+import {
+    GameEndReason,
+    GameFinishedReason,
+    GameInterruptedReason,
+} from "../../common/game-end-reasons";
 import { useState } from "react";
 import { Side } from "../../common/game-types";
 
 interface GameEndDialogProps {
-    reason: FinishGameReason | StopGameReason;
+    reason: GameEndReason;
     side: Side;
 }
 
@@ -49,13 +53,13 @@ export function GameEndDialog(props: GameEndDialogProps) {
     );
 }
 
-function gameOverIcon(reason: FinishGameReason | StopGameReason, side: Side) {
+function gameOverIcon(reason: GameEndReason, side: Side) {
     const whiteWon =
-        reason === FinishGameReason.BLACK_CHECKMATED ||
-        reason === StopGameReason.BLACK_RESIGNED;
+        reason === GameFinishedReason.BLACK_CHECKMATED ||
+        reason === GameInterruptedReason.BLACK_RESIGNED;
     const blackWon =
-        reason === FinishGameReason.WHITE_CHECKMATED ||
-        reason === StopGameReason.WHITE_RESIGNED;
+        reason === GameFinishedReason.WHITE_CHECKMATED ||
+        reason === GameInterruptedReason.WHITE_RESIGNED;
 
     const won = side === Side.WHITE ? whiteWon : blackWon;
     const lost = side === Side.WHITE ? blackWon : whiteWon;
@@ -87,25 +91,25 @@ function gameOverIcon(reason: FinishGameReason | StopGameReason, side: Side) {
     );
 }
 
-function gameOverMessage(reason: FinishGameReason | StopGameReason) {
+function gameOverMessage(reason: GameEndReason) {
     switch (reason) {
-        case FinishGameReason.WHITE_CHECKMATED:
+        case GameFinishedReason.WHITE_CHECKMATED:
             return "Checkmate - Black Wins";
-        case FinishGameReason.BLACK_CHECKMATED:
+        case GameFinishedReason.BLACK_CHECKMATED:
             return "Checkmate - White Wins";
-        case FinishGameReason.STALEMATE:
+        case GameFinishedReason.STALEMATE:
             return "Draw - Stalemate";
-        case FinishGameReason.THREEFOLD_REPETITION:
+        case GameFinishedReason.THREEFOLD_REPETITION:
             return "Draw - Threefold Repetition";
-        case FinishGameReason.INSUFFICIENT_MATERIAL:
+        case GameFinishedReason.INSUFFICIENT_MATERIAL:
             return "Draw By Insufficient Material";
-        case StopGameReason.DRAW_ACCEPTED:
+        case GameInterruptedReason.DRAW_ACCEPTED:
             return "Draw by Mutual Agreement";
-        case StopGameReason.WHITE_RESIGNED:
+        case GameInterruptedReason.WHITE_RESIGNED:
             return "White Resigned - Black Wins";
-        case StopGameReason.BLACK_RESIGNED:
+        case GameInterruptedReason.BLACK_RESIGNED:
             return "Black Resigned - White Wins";
-        case StopGameReason.ABORTED:
+        case GameInterruptedReason.ABORTED:
             return "Game Aborted";
     }
 }

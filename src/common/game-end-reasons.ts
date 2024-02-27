@@ -1,4 +1,6 @@
-export enum FinishGameReason {
+export type GameEndReason = GameFinishedReason | GameInterruptedReason;
+
+export enum GameFinishedReason {
     /**
      * White is checkmated.
      */
@@ -18,7 +20,7 @@ export enum FinishGameReason {
 /**
  * A reason for a game to be stopped outside the normal flow of moves.
  */
-export enum StopGameReason {
+export enum GameInterruptedReason {
     WHITE_RESIGNED = "white-resigned",
     BLACK_RESIGNED = "black-resigned",
     DRAW_ACCEPTED = "draw-accepted",

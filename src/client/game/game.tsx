@@ -1,13 +1,16 @@
-import { Dispatch, ReactElement, useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import { Square } from "chess.js";
 
 import {
-    StopGameMessage,
-    StartGameMessage,
+    GameInterruptedMessage,
+    GameStartMessage,
 } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
 import { PositionMessage } from "../../common/message/game-message";
-import { StopGameReason } from "../../common/game-end-reason";
+import {
+    GameEndReason,
+    GameInterruptedReason,
+} from "../../common/game-end-reasons";
 
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
@@ -23,18 +26,16 @@ import { ChessEngine } from "../../common/chess-engine";
 function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
-    setGameStopped: Dispatch<StopGameReason>,
+    setGameInterruptedReason: Dispatch<GameInterruptedReason>,
 ): MessageHandler {
     return (message) => {
         if (message instanceof PositionMessage) {
-            setChess(new ChessEngine(message.position));
+            setChess(new ChessEngine(message.pgn));
         } else if (message instanceof MoveMessage) {
             // Must be a new instance of ChessEngine to trigger UI redraw
-            const chessCopy = new ChessEngine(chess.fen);
-            chessCopy.makeMove(message.from, message.to);
-            setChess(chessCopy);
-        } else if (message instanceof StopGameMessage) {
-            setGameStopped(message.reason);
+            setChess(chess.copy(message));
+        } else if (message instanceof GameInterruptedMessage) {
+            setGameInterruptedReason(message.reason);
         }
     };
 }
@@ -44,32 +45,31 @@ export function Game(): JSX.Element {
     const { gameType, side, difficulty } = state;
 
     const [chess, setChess] = useState(new ChessEngine());
-    const [gameStopped, setGameStopped] = useState<StopGameReason>();
+    const [gameInterruptedReason, setGameInterruptedReason] =
+        useState<GameInterruptedReason>();
 
     const sendMessage = useSocket(
-        getMessageHandler(chess, setChess, setGameStopped),
+        getMessageHandler(chess, setChess, setGameInterruptedReason),
     );
 
     useEffect(() => {
-        sendMessage(new StartGameMessage(gameType, side, difficulty));
+        sendMessage(new GameStartMessage(gameType, side, difficulty));
     }, [sendMessage, gameType, side, difficulty]);
 
-    let gameEndDialog: ReactElement | null = null;
-    if (chess.isGameOver()) {
-        gameEndDialog = (
-            <GameEndDialog
-                reason={chess.getGameFinishedReason()!}
-                side={side}
-            />
-        );
-    } else if (gameStopped !== undefined) {
-        gameEndDialog = <GameEndDialog reason={gameStopped} side={side} />;
+    let gameOverReason: GameEndReason | undefined = undefined;
+    const gameFinishedReason = chess.getGameFinishedReason();
+    if (gameFinishedReason !== undefined) {
+        gameOverReason = gameFinishedReason;
+    } else if (gameInterruptedReason !== undefined) {
+        gameOverReason = gameInterruptedReason;
     }
+    const gameEndDialog =
+        gameOverReason !== undefined ?
+            <GameEndDialog reason={gameOverReason} side={side} />
+        :   null;
 
     const handleMove = (from: Square, to: Square): void => {
-        const chessCopy = new ChessEngine(chess.fen);
-        chessCopy.makeMove(from, to);
-        setChess(chessCopy);
+        setChess(chess.copy({ from, to }));
         sendMessage(new MoveMessage(from, to));
     };
 
