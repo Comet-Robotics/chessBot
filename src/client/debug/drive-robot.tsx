@@ -11,18 +11,18 @@ interface DriveRobotProps {
 /**
  * A component which can be used to drive an individual robot around.
  */
-export function DriveRobot(props: DriveRobotProps) {
+export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
     const handleStopMove = useCallback(() => {
-        props.sendMessage(new StopRobotMessage(props.robotId));
-    }, [props]);
+        sendMessage(new StopRobotMessage(robotId));
+    }, [sendMessage, robotId]);
 
     const getManualMoveHandler = (
         leftPower: number,
         rightPower: number,
     ): (() => void) => {
         const handleManualMove = () =>
-            props.sendMessage(
-                new DriveRobotMessage(props.robotId, leftPower, rightPower),
+            sendMessage(
+                new DriveRobotMessage(robotId, leftPower, rightPower),
             );
         return handleManualMove;
     };
