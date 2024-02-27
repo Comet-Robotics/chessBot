@@ -1,5 +1,5 @@
 import { Button, useHotkeys } from "@blueprintjs/core";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { StopRobotMessage } from "../../common/message/drive-robot-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
@@ -15,6 +15,31 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
     const handleStopMove = useCallback(() => {
         sendMessage(new StopRobotMessage(robotId));
     }, [sendMessage, robotId]);
+
+
+    useEffect(() => {
+        if (!navigator.getGamepads) {
+            console.log("Gamepad API not supported");
+            return;
+        }
+        const handleGamepadInput = () => {
+            for (const gamepad of navigator.getGamepads()) {
+                if (gamepad) {
+                    // tank-style drive
+                    const leftPower = gamepad.axes[1] * -1;
+                    const rightPower = gamepad.axes[3] * -1;
+                    sendMessage(new DriveRobotMessage(robotId, leftPower, rightPower));
+                }
+            }
+        };
+
+        const gamepadPollingInterval = setInterval(handleGamepadInput, 50);
+
+        return () => {
+            clearInterval(gamepadPollingInterval);
+        };
+    }, [robotId, sendMessage]);
+
 
     const getManualMoveHandler = (
         leftPower: number,
