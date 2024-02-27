@@ -60,5 +60,5 @@ jobs:
             - name: Install modules
               run: yarn install --frozen-lockfile
 
-            - name: Lint
+            - name: Build
               run: yarn build
