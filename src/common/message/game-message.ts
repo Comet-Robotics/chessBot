@@ -2,18 +2,18 @@ import { Square } from "chess.js";
 import { Message, MessageType } from "./message";
 import { PieceType, Side } from "../game-types";
 import { GameType } from "../client-types";
-import { GameEndReason } from "../game-end-reasons";
+import { GameInterruptedReason } from "../game-end-reasons";
 import { Difficulty } from "../client-types";
 
 export class PositionMessage extends Message {
-    constructor(public readonly position: string) {
+    constructor(public readonly pgn: string) {
         super();
     }
 
     protected type = MessageType.POSITION;
 
     protected toObj(): object {
-        return { ...super.toObj(), position: this.position };
+        return { ...super.toObj(), pgn: this.pgn };
     }
 }
 
@@ -69,12 +69,12 @@ export class GameStartMessage extends Message {
     }
 }
 
-export class GameEndReasonMessage extends Message {
-    constructor(public readonly reason: GameEndReason) {
+export class GameInterruptedMessage extends Message {
+    constructor(public readonly reason: GameInterruptedReason) {
         super();
     }
 
-    protected type = MessageType.GAME_END;
+    protected type = MessageType.GAME_INTERRUPTED;
 
     protected toObj(): object {
         return {

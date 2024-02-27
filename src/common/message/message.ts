@@ -32,9 +32,11 @@ export enum MessageType {
      */
     GAME_START = "game-start",
     /**
-     * A server-client message indicating the end of a game.
+     * A two-way message indicating a game has been interrupted.
+     *
+     * Note this does not include the game ending as a part of the normal flow of moves.
      */
-    GAME_END = "game-end",
+    GAME_INTERRUPTED = "game-interrupted",
     /**
      * A client-server message containing instructions for manually driving a robot.
      */

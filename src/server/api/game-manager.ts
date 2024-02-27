@@ -4,17 +4,13 @@ import {
     MoveMessage,
     PositionMessage,
     GameStartMessage,
-    GameEndReasonMessage,
+    GameInterruptedMessage,
 } from "../../common/message/game-message";
 import { Side, oppositeSide } from "../../common/game-types";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
 import { ClientType } from "../../common/client-types";
-<<<<<<< HEAD
-import { GameFinishedReason } from "../../common/game-end-reasons";
-=======
 import { WebSocket } from "ws";
->>>>>>> origin/main
 
 export abstract class GameManager {
     constructor(
@@ -62,7 +58,7 @@ export class HumanGameManager extends GameManager {
             opponentSocket?.send(
                 new MoveMessage(message.from, message.to).toJson(),
             );
-        } else if (message instanceof GameEndReasonMessage) {
+        } else if (message instanceof GameInterruptedMessage) {
             this.socketManager.sendToSocket(id, message);
             opponentSocket?.send(message.toJson());
         }
@@ -85,19 +81,14 @@ export class ComputerGameManager extends GameManager {
                 const { from, to } = this.chess.makeAiMove(this.difficulty);
                 this.socketManager.sendToSocket(id, new MoveMessage(from, to));
             }
-        } else if (message instanceof GameEndReasonMessage) {
-            // Reflect end game reason to server
+        } else if (message instanceof GameInterruptedMessage) {
+            // Reflect end game reason back to client
             this.socketManager.sendToSocket(id, message);
         } else if (message instanceof MoveMessage) {
             this.chess.makeMove(message.from, message.to);
 
-            const gameFinishedReason = this.chess.getGameFinishedReason();
-            if (gameFinishedReason != undefined) {
+            if (this.chess.isGameFinished()) {
                 // Game is naturally finished; we're done
-                this.socketManager.sendToSocket(
-                    id,
-                    new GameEndReasonMessage(gameFinishedReason),
-                );
                 return;
             }
 

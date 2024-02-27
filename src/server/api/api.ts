@@ -4,7 +4,7 @@ import { Router } from "express";
 import { parseMessage } from "../../common/message/parse-message";
 import {
     GameStartMessage,
-    GameEndReasonMessage,
+    GameInterruptedMessage,
 } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
@@ -53,7 +53,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 );
             }
             gameManager?.handleMessage(message, req.cookies.id);
-        } else if (message instanceof GameEndReasonMessage) {
+        } else if (message instanceof GameInterruptedMessage) {
             gameManager?.handleMessage(message, req.cookies.id);
             gameManager = null;
         } else if (message instanceof DriveRobotMessage) {

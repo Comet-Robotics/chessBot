@@ -1,7 +1,4 @@
-import {
-    GameFinishedReason,
-    GameInterruptedReason,
-} from "../../game-end-reasons";
+import { GameInterruptedReason } from "../../game-end-reasons";
 import { GameType } from "../../client-types";
 import { PieceType, Side } from "../../game-types";
 import { DriveRobotMessage, StopRobotMessage } from "../drive-robot-message";
@@ -10,7 +7,7 @@ import {
     PositionMessage,
     PromotionMessage,
     GameStartMessage,
-    GameEndReasonMessage,
+    GameInterruptedMessage,
 } from "../game-message";
 import { Message } from "../message";
 import { parseMessage } from "../parse-message";
@@ -19,8 +16,7 @@ import { expect, test } from "vitest";
 test.each([
     new GameStartMessage(GameType.COMPUTER, Side.WHITE, 3),
     new GameStartMessage(GameType.HUMAN, Side.BLACK),
-    new GameEndReasonMessage(GameInterruptedReason.ABORTED),
-    new GameEndReasonMessage(GameFinishedReason.THREEFOLD_REPETITION),
+    new GameInterruptedMessage(GameInterruptedReason.ABORTED),
     new PositionMessage("aaaaaaaaa"),
     new PromotionMessage("h7", "b3", PieceType.KNIGHT),
     new MoveMessage("a1", "a4"),

@@ -1,11 +1,11 @@
 import { Message, MessageType, RegisterWebsocketMessage } from "./message";
 import { DriveRobotMessage } from "./drive-robot-message";
 import {
-    GameStartMessage,
-    GameEndReasonMessage,
     PositionMessage,
     MoveMessage,
     PromotionMessage,
+    GameStartMessage,
+    GameInterruptedMessage,
 } from "./game-message";
 
 /**
@@ -28,10 +28,10 @@ export function parseMessage(text: string): Message {
                     parseInt(obj.difficulty)
                 :   undefined,
             );
-        case MessageType.GAME_END:
-            return new GameEndReasonMessage(obj.reason);
+        case MessageType.GAME_INTERRUPTED:
+            return new GameInterruptedMessage(obj.reason);
         case MessageType.POSITION:
-            return new PositionMessage(obj.position);
+            return new PositionMessage(obj.pgn);
         case MessageType.MOVE:
             return new MoveMessage(obj.from, obj.to);
         case MessageType.PROMOTION:
