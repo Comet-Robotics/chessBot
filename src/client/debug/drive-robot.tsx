@@ -41,7 +41,7 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
     }, [robotId, sendMessage]);
 
 
-    const getManualMoveHandler = (
+    const getManualMoveHandler = useCallback((
         leftPower: number,
         rightPower: number,
     ): (() => void) => {
@@ -50,11 +50,12 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
                 new DriveRobotMessage(robotId, leftPower, rightPower),
             );
         return handleManualMove;
-    };
-    const handleDriveForward = getManualMoveHandler(1, 1);
-    const handleDriveBackward = getManualMoveHandler(-1, -1);
-    const handleTurnRight = getManualMoveHandler(0.5, -0.5);
-    const handleTurnLeft = getManualMoveHandler(-0.5, 0.5);
+    }, [robotId, sendMessage]);
+
+    const handleDriveForward = useMemo(() => getManualMoveHandler(1, 1), [getManualMoveHandler]);
+    const handleDriveBackward = useMemo(() => getManualMoveHandler(-1, -1), [getManualMoveHandler]);
+    const handleTurnRight = useMemo(() => getManualMoveHandler(0.5, -0.5), [getManualMoveHandler]);
+    const handleTurnLeft = useMemo(() => getManualMoveHandler(-0.5, 0.5), [getManualMoveHandler]);
 
     const hotkeys = useMemo(
         () => [
