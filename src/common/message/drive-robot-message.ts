@@ -11,7 +11,7 @@ export class DriveRobotMessage extends Message {
 
     protected type = MessageType.DRIVE_ROBOT;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return {
             ...super.toObj(),
             id: this.id,

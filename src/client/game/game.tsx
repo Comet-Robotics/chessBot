@@ -1,4 +1,4 @@
-import { Dispatch, useEffect, useState } from "react";
+import { Dispatch, ReactElement, useEffect, useState } from "react";
 import { Square } from "chess.js";
 
 import {
@@ -13,7 +13,6 @@ import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
 import { useSocket } from "../api";
 import { MessageHandler } from "../../common/message/message";
-import { SendMessage } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
@@ -53,9 +52,9 @@ export function Game(): JSX.Element {
 
     useEffect(() => {
         sendMessage(new StartGameMessage(gameType, side, difficulty));
-    }, [sendMessage]);
+    }, [sendMessage, gameType, side, difficulty]);
 
-    let gameEndDialog = null;
+    let gameEndDialog: ReactElement | null = null;
     if (chess.isGameOver()) {
         gameEndDialog = (
             <GameEndDialog

@@ -38,7 +38,7 @@ export class Robot {
      */
     public async absoluteRotate(heading: number): Promise<void> {
         const delta1: number = heading - this.heading;
-        var delta2: number;
+        let delta2: number;
         if (this.heading < heading) {
             delta2 = heading - (this.heading + FULL_ROTATION);
         } else {

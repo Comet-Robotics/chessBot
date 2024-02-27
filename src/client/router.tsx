@@ -1,4 +1,4 @@
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { Setup } from "./setup/setup";
 import { Debug } from "./debug/debug";
 import { Game } from "./game/game";
