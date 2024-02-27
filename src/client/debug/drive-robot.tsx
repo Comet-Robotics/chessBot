@@ -44,7 +44,11 @@ export function DriveRobot(props: DriveRobotProps) {
                     const leftPower = gamepad.axes[1] * -1;
                     const rightPower = gamepad.axes[3] * -1;
                     props.sendMessage(
-                        new DriveRobotMessage(props.robotId, leftPower, rightPower),
+                        new DriveRobotMessage(
+                            props.robotId,
+                            leftPower,
+                            rightPower,
+                        ),
                     );
                 }
             }
@@ -56,7 +60,7 @@ export function DriveRobot(props: DriveRobotProps) {
             clearInterval(gamepadPollingInterval);
         };
     }, [props]);
-    
+
     const handleDriveForward = useManualMoveHandler(props, 1, 1);
     const handleDriveBackward = useManualMoveHandler(props, -1, -1);
     const handleTurnRight = useManualMoveHandler(props, 0.5, -0.5);
