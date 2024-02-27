@@ -61,7 +61,7 @@ export class ChessEngine {
     }
 
     makeAiMove(difficulty: Difficulty): { from: Square; to: Square } {
-        const val = Object.entries(aiMove(this.chess.fen(), difficulty))[0] as [
+        const val = Object.entries(aiMove(this.fen, difficulty))[0] as [
             string,
             string,
         ];
