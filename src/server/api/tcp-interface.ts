@@ -134,7 +134,7 @@ export class BotTunnel {
     }
 
     send(type: PacketType, ...contents: (string | number)[]) {
-        var msg = ":";
+        let msg = ":";
         msg += type.toString(16).padStart(2, "0");
         if (contents.length > 0) {
             msg += "," + contents.join(",");
@@ -180,7 +180,7 @@ export class TCPServer {
             socket,
             ((mac: string) => {
                 console.log("Adding robot with mac ", mac, " to arr");
-                var id: number;
+                let id: number;
                 if (!(mac in config["bots"])) {
                     id = Math.floor(Math.random() * 900) + 100;
                     console.log(

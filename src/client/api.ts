@@ -76,7 +76,7 @@ export async function get(
     query: Record<string, string> = {},
 ): Promise<any> {
     try {
-        let normalizedUrl = `/api${apiPath}?${new URLSearchParams(query)}`;
+        const normalizedUrl = `/api${apiPath}?${new URLSearchParams(query)}`;
         return fetch(normalizedUrl, {
             method: "GET",
             mode: "cors",
