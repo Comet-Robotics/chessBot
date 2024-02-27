@@ -8,6 +8,22 @@ interface DriveRobotProps {
     robotId: string;
     sendMessage: SendMessage;
 }
+
+function useManualMoveHandler(
+    props: DriveRobotProps,
+    leftPower: number,
+    rightPower: number,
+) {
+    const handleManualMove = useCallback(
+        () =>
+            props.sendMessage(
+                new DriveRobotMessage(props.robotId, leftPower, rightPower),
+            ),
+        [props, leftPower, rightPower],
+    );
+    return handleManualMove;
+}
+
 /**
  * A component which can be used to drive an individual robot around.
  */
@@ -16,20 +32,10 @@ export function DriveRobot(props: DriveRobotProps) {
         props.sendMessage(new StopRobotMessage(props.robotId));
     }, [props]);
 
-    const getManualMoveHandler = (
-        leftPower: number,
-        rightPower: number,
-    ): (() => void) => {
-        const handleManualMove = () =>
-            props.sendMessage(
-                new DriveRobotMessage(props.robotId, leftPower, rightPower),
-            );
-        return handleManualMove;
-    };
-    const handleDriveForward = getManualMoveHandler(1, 1);
-    const handleDriveBackward = getManualMoveHandler(-1, -1);
-    const handleTurnRight = getManualMoveHandler(0.5, -0.5);
-    const handleTurnLeft = getManualMoveHandler(-0.5, 0.5);
+    const handleDriveForward = useManualMoveHandler(props, 1, 1);
+    const handleDriveBackward = useManualMoveHandler(props, -1, -1);
+    const handleTurnRight = useManualMoveHandler(props, 0.5, -0.5);
+    const handleTurnLeft = useManualMoveHandler(props, -0.5, 0.5);
 
     const hotkeys = useMemo(
         () => [
