@@ -8,9 +8,9 @@ import {
     NonIdealStateIconSize,
 } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
-import { FinishGameReason, StopGameReason } from "../../common/game-end";
+import { FinishGameReason, StopGameReason } from "../../common/game-end-reason";
 import { useState } from "react";
-import { Side } from "../../common/types";
+import { Side } from "../../common/game-types";
 
 interface GameEndDialogProps {
     reason: FinishGameReason | StopGameReason;
@@ -26,7 +26,7 @@ export function GameEndDialog(props: GameEndDialogProps) {
             rightIcon="arrow-right"
             intent="primary"
             onClick={() => {
-                navigate("/setup");
+                navigate("/home");
             }}
         />
     );

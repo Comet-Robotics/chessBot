@@ -17,5 +17,6 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "files.eol": "\n",
+    "files.autoSave": "afterDelay",
     "editor.formatOnSave": true
 }

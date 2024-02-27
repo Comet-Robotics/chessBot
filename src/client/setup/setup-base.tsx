@@ -2,9 +2,8 @@ import { Dialog, DialogBody, DialogFooter } from "@blueprintjs/core";
 import { Outlet } from "react-router-dom";
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { PropsWithChildren, ReactNode } from "react";
-import { Chess, DEFAULT_POSITION, Square } from "chess.js";
 import { ChessEngine } from "../../common/chess-engine";
-import { Side } from "../../common/types";
+import { Side } from "../../common/game-types";
 
 interface SetupBaseProps extends PropsWithChildren {
     actions?: ReactNode;

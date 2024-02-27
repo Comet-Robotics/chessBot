@@ -1,8 +1,7 @@
 import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
-import { FinishGameReason } from "./game-end";
-
-type MoveEntry = [string, string];
+import { FinishGameReason } from "./game-end-reason";
+import { Difficulty } from "./client-types";
 
 export class ChessEngine {
     private chess: Chess;
@@ -33,27 +32,26 @@ export class ChessEngine {
         return this.chess.fen();
     }
 
-    makeMove(from: Square, to: Square) {
+    /**
+     * Makes a move on the chess engine.
+     * Returns the move that was made.
+     */
+    makeMove(from: Square, to: Square): { from: Square; to: Square } {
         this.chess.move({
             from,
             to,
         });
-        console.log("Chess engine updated:", this.chess.fen());
-        // Additional logging as needed
+        return { from, to };
     }
 
-    makeAiMove(difficulty: number): { from: Square; to: Square } {
-        const val = Object.entries(
-            aiMove(this.chess.fen(), difficulty),
-        )[0] as MoveEntry;
+    makeAiMove(difficulty: Difficulty): { from: Square; to: Square } {
+        const val = Object.entries(aiMove(this.chess.fen(), difficulty))[0] as [
+            string,
+            string,
+        ];
         const from = val[0].toLowerCase() as Square;
         const to = val[1].toLowerCase() as Square;
-
-        this.makeMove(from, to);
-        return {
-            from,
-            to,
-        };
+        return this.makeMove(from, to);
     }
 
     getGameFinishedReason(): FinishGameReason | undefined {
