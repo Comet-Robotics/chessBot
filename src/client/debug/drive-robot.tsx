@@ -136,6 +136,7 @@ export function DriveRobot({ sendMessage, robotId }: DriveRobotProps) {
     const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys);
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+            <p>Control this robot using the buttons below, arrow keys, WASD, or a connected gamepad.</p>
             <Button
                 icon="arrow-up"
                 onMouseUp={handleStopMove}
