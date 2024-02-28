@@ -2,6 +2,9 @@ import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
 import { GameFinishedReason } from "./game-end-reasons";
 import { Difficulty } from "./client-types";
+import { Move } from "./game-types";
+import { PieceType } from "./game-types";
+import { Side } from "./game-types";
 
 export class ChessEngine {
     private chess: Chess;
@@ -16,11 +19,11 @@ export class ChessEngine {
         }
     }
 
-    copy(move?: { from: Square; to: Square }): ChessEngine {
+    copy(move?: Move): ChessEngine {
         const copy = new ChessEngine();
         copy.loadPgn(this.pgn);
         if (move !== undefined) {
-            copy.makeMove(move.from, move.to);
+            copy.makeMove(move);
         }
         return copy;
     }
@@ -37,6 +40,16 @@ export class ChessEngine {
         this.chess.loadPgn(pgn);
     }
 
+    //returns the PieceType of the of the piece on the square or undefined
+    getPiece(square: Square): PieceType | undefined {
+        const piece = this.chess.get(square);
+        if (piece !== null) {
+            return piece.type as PieceType;
+        } else {
+            return undefined;
+        }
+    }
+
     getLegalMoves(square?: Square) {
         return this.chess.moves({
             square,
@@ -49,25 +62,43 @@ export class ChessEngine {
     }
 
     /**
-     * Makes a move on the chess engine.
-     * Returns the move that was made.
+     * Makes a move on the chessboard.
+     * @returns the move that was made.
      */
-    makeMove(from: Square, to: Square): { from: Square; to: Square } {
-        this.chess.move({
-            from,
-            to,
-        });
-        return { from, to };
+    makeMove(move: Move): Move {
+        this.chess.move(move);
+        return move;
     }
 
-    makeAiMove(difficulty: Difficulty): { from: Square; to: Square } {
-        const val = Object.entries(aiMove(this.fen, difficulty))[0] as [
-            string,
-            string,
-        ];
+    /**
+     * Returns true if a move is a promotion, and false otherwise.
+     */
+    isPromotionMove = (from: Square, to: Square): boolean => {
+        if (this.getPiece(from) !== PieceType.PAWN) {
+            return false;
+        } else if (this.chess.get(from).color === Side.WHITE) {
+            return from[1] === "7" && to[1] === "8";
+        }
+        return from[1] === "2" && to[1] === "1";
+    };
+
+    makeAiMove(difficulty: Difficulty): Move {
+        // result is an object e.g. { "A1": "A2" }
+        const result = aiMove(this.fen, difficulty);
+        // val is an array e.g. ["A1", "A2"]
+        const val = Object.entries(result)[0] as [string, string];
         const from = val[0].toLowerCase() as Square;
         const to = val[1].toLowerCase() as Square;
-        return this.makeMove(from, to);
+
+        if (this.isPromotionMove(from, to)) {
+            // ai always promotes to queen
+            return this.makeMove({
+                from,
+                to,
+                promotion: PieceType.QUEEN,
+            });
+        }
+        return this.makeMove({ from, to });
     }
 
     getGameFinishedReason(): GameFinishedReason | undefined {

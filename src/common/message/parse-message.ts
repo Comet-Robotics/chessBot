@@ -3,7 +3,6 @@ import { DriveRobotMessage } from "./drive-robot-message";
 import {
     PositionMessage,
     MoveMessage,
-    PromotionMessage,
     GameStartMessage,
     GameInterruptedMessage,
 } from "./game-message";
@@ -33,9 +32,7 @@ export function parseMessage(text: string): Message {
         case MessageType.POSITION:
             return new PositionMessage(obj.pgn);
         case MessageType.MOVE:
-            return new MoveMessage(obj.from, obj.to);
-        case MessageType.PROMOTION:
-            return new PromotionMessage(obj.from, obj.to, obj.promotion);
+            return new MoveMessage(obj.move);
         case MessageType.DRIVE_ROBOT:
             return new DriveRobotMessage(
                 obj.id,

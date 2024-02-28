@@ -1,5 +1,4 @@
 import { Dispatch, useEffect, useState } from "react";
-import { Square } from "chess.js";
 
 import {
     GameInterruptedMessage,
@@ -19,6 +18,7 @@ import { MessageHandler } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
+import { Move } from "../../common/game-types";
 
 /**
  * Creates a MessageHandler function.
@@ -33,7 +33,7 @@ function getMessageHandler(
             setChess(new ChessEngine(message.pgn));
         } else if (message instanceof MoveMessage) {
             // Must be a new instance of ChessEngine to trigger UI redraw
-            setChess(chess.copy(message));
+            setChess(chess.copy(message.move));
         } else if (message instanceof GameInterruptedMessage) {
             setGameInterruptedReason(message.reason);
         }
@@ -68,9 +68,9 @@ export function Game(): JSX.Element {
             <GameEndDialog reason={gameOverReason} side={side} />
         :   null;
 
-    const handleMove = (from: Square, to: Square): void => {
-        setChess(chess.copy({ from, to }));
-        sendMessage(new MoveMessage(from, to));
+    const handleMove = (move: Move): void => {
+        setChess(chess.copy(move));
+        sendMessage(new MoveMessage(move));
     };
 
     return (
