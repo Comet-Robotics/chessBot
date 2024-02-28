@@ -40,6 +40,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
 
     const [isPromoting, setIsPromoting] = useState(false);
 
+    const [manualPromotionSquare, setManualPromotionSquare] = useState<
+        Square | undefined
+    >();
+
     // Maps squares to style objects
     const customSquareStyles: { [square: string]: Object } = {};
     let legalSquares: string[] | undefined = undefined;
@@ -61,13 +65,6 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         onMove(move);
         setLastClickedSquare(undefined);
     };
-
-    const [manualPromotionSquare, setManualPromotionSquare] = useState<
-        Square | undefined
-    >();
-    const [lastClickedPiece, setLastClickedPiece] = useState<
-        PieceType | undefined
-    >();
 
     return (
         <BoardContainer onWidthChange={setWidth}>
