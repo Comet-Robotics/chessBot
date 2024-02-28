@@ -88,8 +88,9 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     if (isLegalMove(from, to)) {
                         if (manualPromotionSquare !== undefined) {
                             doMove({
-                                // from is undefined in manual promotion flow
+                                // `from` is undefined in manual promotion flow
                                 from: lastClickedSquare!,
+                                // `to: manualPromotionSquare` is also valid
                                 to,
                                 promotion: piece,
                             });
@@ -142,6 +143,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     }
                 }}
                 isDraggablePiece={({ piece }) => {
+                    // piece is color and piece type, e.g. "wP"
                     return piece[0] === side;
                 }}
                 arePremovesAllowed={false}
