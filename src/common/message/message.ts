@@ -22,7 +22,6 @@ export enum MessageType {
      * A two-way message containing a single move.
      */
     MOVE = "move",
-    
     /**
      * A client-server message used to indicate the start of a game.
      */
