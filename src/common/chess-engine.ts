@@ -2,7 +2,7 @@ import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
 import { FinishGameReason } from "./game-end-reason";
 import { Difficulty } from "./client-types";
-import { Move } from "./game-types";
+import { Move, Piece } from "./game-types";
 import { PieceType } from "./game-types";
 import { Side } from "./game-types";
 
@@ -45,14 +45,19 @@ export class ChessEngine {
         return this.chess.fen();
     }
 
-    makeMove(move: Move) {
+    /**
+     * Makes a move on the chessboard.
+     * @returns the move that was made.
+     */
+    makeMove(move: Move): Move {
         this.chess.move(move);
+        return move;
     }
 
     /**
      * Returns true if a move is a promotion, and false otherwise.
      */
-    isPromotionMove = (from: Square, to: Square) => {
+    isPromotionMove = (from: Square, to: Square): boolean => {
         if (this.getPiece(from) !== PieceType.PAWN) {
             return false;
         } else if (this.chess.get(from).color === Side.WHITE) {
@@ -70,12 +75,13 @@ export class ChessEngine {
         const to = val[1].toLowerCase() as Square;
 
         if (this.isPromotionMove(from, to)) {
-            this.makeMove({ from, to, promotion: PieceType.QUEEN });
-        } else {
-            this.makeMove({ from, to });
+            return this.makeMove({
+                from,
+                to,
+                promotion: PieceType.QUEEN,
+            });
         }
-
-        return { from, to, promotion: PieceType.QUEEN };
+        return this.makeMove({ from, to });
     }
 
     getGameFinishedReason(): FinishGameReason | undefined {
