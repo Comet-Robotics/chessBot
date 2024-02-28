@@ -3,9 +3,8 @@ import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
-import { Move, Piece } from "../../common/game-types";
+import { Move } from "../../common/game-types";
 import { Side, PieceType } from "../../common/game-types";
-//import { Square } from "@blueprintjs/icons";
 
 const CLICK_STYLE = {
     backgroundColor: "green",
@@ -72,12 +71,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
                 position={chess.fen}
-                onPromotionCheck={(
-                    from: Square,
-                    to: Square,
-                    pieceAndSide: string,
-                ) => {
-                    const piece = pieceAndSide[1].toLowerCase() as PieceType;
+                onPromotionCheck={(from: Square, to: Square) => {
                     const promoting = chess.isPromotionMove(from, to);
                     setIsPromoting(promoting);
                     return promoting;
