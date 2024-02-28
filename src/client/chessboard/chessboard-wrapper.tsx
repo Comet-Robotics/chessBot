@@ -115,7 +115,6 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     }
                 }}
                 onSquareClick={(square: Square) => {
-                    console.log(chess.getPiece(square));
                     setManualPromotionSquare(undefined);
 
                     const isSquareLegalMove =
