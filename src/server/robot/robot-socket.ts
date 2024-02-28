@@ -1,4 +1,4 @@
-import { BotTunnel, PacketType } from "../api/tcp-interface";
+import { BotTunnel } from "../api/tcp-interface";
 
 /**
  * Represents a connection to a physical robot.
@@ -19,8 +19,8 @@ export class RobotSocket {
      *
      * @param distance The distance to drive forward or backwards by. 1 is defined as the length of a tile.
      */
-    public async drive(distance: number): Promise<void> {
-        this.tunnel.send(PacketType.DRIVE_TILES, distance.toString());
+    public async drive(distanceTiles: number): Promise<void> {
+        this.tunnel.send({ type: "DRIVE_TILES", distanceTiles });
         // TODO: wait for tunnel to receive ACTION_X message
     }
 
@@ -31,7 +31,7 @@ export class RobotSocket {
      * @param deltaHeading A relative heading to turn by, in radians. May be positive or negative.
      */
     public async turn(deltaHeading: number): Promise<void> {
-        this.tunnel.send(PacketType.TURN_BY_ANGLE, deltaHeading.toString());
+        this.tunnel.send({ type: "TURN_BY_ANGLE", deltaHeading });
         // TODO: wait for tunnel to receive ACTION_X message
     }
 }

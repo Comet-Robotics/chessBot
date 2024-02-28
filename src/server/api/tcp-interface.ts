@@ -1,24 +1,6 @@
 import * as net from "net";
 import config from "./bot-server-config.json";
-
-// MUST be kept in sync with chessBotArduino/include/packet.h PacketType
-export class PacketType {
-    static NOTHING = {};
-    static CLIENT_HELLO = { macAddress: string };
-    static SERVER_HELLO = {};
-    static PING_SEND = {};
-    static PING_RESPONSE = {};
-    static QUERY_VAR = {};
-    static QUERY_RESPONSE = {};
-    static INFORM_VAR = {};
-    static SET_VAR = {};
-    static TURN_BY_ANGLE = { deltaHeading: number };
-    static DRIVE_TILES = { distanceTiles: number };
-    static ACTION_SUCCESS = {};
-    static ACTION_FAIL = {};
-    static DRIVE_TANK = {};
-    static ESTOP = {};
-}
+import { Packet, packetFromJson, packetToJson } from "../utils/tcp-packet";
 
 export class BotTunnel {
     connected: boolean = false;
@@ -108,16 +90,15 @@ export class BotTunnel {
             this.dataBuffer = undefined;
         }
 
-        const type = parseInt(str.substring(0, 2), 16);
-        const contents = str.substring(3);
+        const packet = packetFromJson(str);
 
         // Parse packet based on type
-        switch (type) {
-            case PacketType.NOTHING: {
+        switch (packet["type"]) {
+            case "NOTHING": {
                 break;
             }
-            case PacketType.CLIENT_HELLO: {
-                this.onHandshake(contents);
+            case "CLIENT_HELLO": {
+                this.onHandshake(packet["macAddress"]);
                 this.connected = true;
             }
         }
@@ -131,12 +112,11 @@ export class BotTunnel {
         }
     }
 
-    send(type: PacketType, ...contents: (string | number)[]) {
+    send(packet: Packet) {
+        const str = packetToJson(packet);
+        if (str === "") return; // invalid packet, possibly do other things
         let msg = ":";
-        msg += type.toString(16).padStart(2, "0");
-        if (contents.length > 0) {
-            msg += "," + contents.join(",");
-        }
+        msg += str;
         msg += ";";
         this.sendRaw(msg);
     }
