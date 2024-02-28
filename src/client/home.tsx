@@ -8,7 +8,7 @@ import { ClientType } from "../common/client-types";
  */
 export function Home() {
     const params = useSearchParams()[0];
-    let clientType = undefined;
+    let clientType: ClientType | undefined = undefined;
     if (params.has("client-type")) {
         clientType = params.get("client-type") as ClientType;
         localStorage.setItem("client-type", clientType!);

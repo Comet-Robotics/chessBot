@@ -11,7 +11,7 @@ const mockRobotSocket = new RobotSocket(vi.mocked(BotTunnel.prototype));
 // const mockRobotSocket = jest.mocked(RobotSocket.prototype);
 
 const mockTurn = vi.spyOn(RobotSocket.prototype, "turn");
-const mockDrive = vi.spyOn(RobotSocket.prototype, "drive");
+// const mockDrive = vi.spyOn(RobotSocket.prototype, "drive");
 
 afterEach(() => {
     vi.clearAllMocks();

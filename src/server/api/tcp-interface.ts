@@ -1,5 +1,5 @@
 import * as net from "net";
-const config = require("./bot-server-config.json");
+import config from "./bot-server-config.json";
 
 // MUST be kept in sync with chessBotArduino/include/packet.h PacketType
 export enum PacketType {
@@ -85,7 +85,7 @@ export class BotTunnel {
         let str = this.dataBuffer.toString();
         const terminator = str.indexOf(";");
 
-        if (terminator == -1) {
+        if (terminator === -1) {
             if (str.length > 200) {
                 // Invalid state, reset buf
                 this.dataBuffer = undefined;
@@ -115,7 +115,7 @@ export class BotTunnel {
 
         if (
             this.dataBuffer !== undefined &&
-            this.dataBuffer.indexOf(";") != -1
+            this.dataBuffer.indexOf(";") !== -1
         ) {
             this.handleQueue();
         }
@@ -134,7 +134,7 @@ export class BotTunnel {
     }
 
     send(type: PacketType, ...contents: (string | number)[]) {
-        var msg = ":";
+        let msg = ":";
         msg += type.toString(16).padStart(2, "0");
         if (contents.length > 0) {
             msg += "," + contents.join(",");
@@ -180,7 +180,7 @@ export class TCPServer {
             socket,
             ((mac: string) => {
                 console.log("Adding robot with mac ", mac, " to arr");
-                var id: number;
+                let id: number;
                 if (!(mac in config["bots"])) {
                     id = Math.floor(Math.random() * 900) + 100;
                     console.log(

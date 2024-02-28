@@ -1,18 +1,18 @@
 import { Message, MessageType } from "./message";
-import { Move, PieceType, Side } from "../game-types";
+import { Move, Side } from "../game-types";
 import { GameType } from "../client-types";
-import { StopGameReason } from "../game-end-reason";
+import { GameInterruptedReason } from "../game-end-reasons";
 import { Difficulty } from "../client-types";
 
 export class PositionMessage extends Message {
-    constructor(public readonly position: string) {
+    constructor(public readonly pgn: string) {
         super();
     }
 
     protected type = MessageType.POSITION;
 
-    protected toObj(): Object {
-        return { ...super.toObj(), position: this.position };
+    protected toObj(): object {
+        return { ...super.toObj(), pgn: this.pgn };
     }
 }
 
@@ -23,7 +23,7 @@ export class MoveMessage extends Message {
 
     protected type = MessageType.MOVE;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return {
             ...super.toObj(),
             move: this.move,
@@ -31,7 +31,7 @@ export class MoveMessage extends Message {
     }
 }
 
-export class StartGameMessage extends Message {
+export class GameStartMessage extends Message {
     constructor(
         public readonly gameType: GameType,
         public readonly side: Side,
@@ -40,9 +40,9 @@ export class StartGameMessage extends Message {
         super();
     }
 
-    protected type = MessageType.START_GAME;
+    protected type = MessageType.GAME_START;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return {
             ...super.toObj(),
             gameType: this.gameType,
@@ -52,14 +52,14 @@ export class StartGameMessage extends Message {
     }
 }
 
-export class StopGameMessage extends Message {
-    constructor(public readonly reason: StopGameReason) {
+export class GameInterruptedMessage extends Message {
+    constructor(public readonly reason: GameInterruptedReason) {
         super();
     }
 
-    protected type = MessageType.STOP_GAME;
+    protected type = MessageType.GAME_INTERRUPTED;
 
-    protected toObj(): Object {
+    protected toObj(): object {
         return {
             ...super.toObj(),
             reason: this.reason,

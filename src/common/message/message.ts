@@ -25,14 +25,13 @@ export enum MessageType {
     /**
      * A client-server message used to indicate the start of a game.
      */
-    START_GAME = "start-game",
+    GAME_START = "game-start",
     /**
-     * A server-client message indicating the stop of a game.
+     * A two-way message indicating a game has been interrupted.
      *
-     * Note this message is only used in cases where the game has stopped for a (possibly unexpected) reason.
-     * It is not sent in cases where the normal flow of moves naturally ends the game.
+     * Note this does not include the game ending as a part of the normal flow of moves.
      */
-    STOP_GAME = "stop-game",
+    GAME_INTERRUPTED = "game-interrupted",
     /**
      * A client-server message containing instructions for manually driving a robot.
      */
@@ -53,7 +52,7 @@ export abstract class Message {
      * Sends this class to an object which can be serialized as json.
      * The only usage of this method is by `toJson`.
      */
-    protected toObj(): Object {
+    protected toObj(): object {
         return { type: this.type };
     }
 }

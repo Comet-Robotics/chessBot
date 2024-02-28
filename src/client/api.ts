@@ -34,6 +34,7 @@ export function useSocket(handleMessage?: MessageHandler): SendMessage {
 
     const sendMessageHandler = useMemo(() => {
         return (message: Message) => {
+            console.log("Sending message: " + message.toJson());
             sendMessage(message.toJson());
         };
     }, [sendMessage]);
@@ -49,6 +50,7 @@ export async function post(
     apiPath: string,
     query: Record<string, string> = {},
     body: object = {},
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
     try {
         let normalizedUrl = `/api${apiPath}`;
@@ -74,9 +76,10 @@ export async function post(
 export async function get(
     apiPath: string,
     query: Record<string, string> = {},
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
     try {
-        let normalizedUrl = `/api${apiPath}?${new URLSearchParams(query)}`;
+        const normalizedUrl = `/api${apiPath}?${new URLSearchParams(query)}`;
         return fetch(normalizedUrl, {
             method: "GET",
             mode: "cors",
