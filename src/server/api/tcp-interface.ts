@@ -120,19 +120,16 @@ export class BotTunnel {
         let msg = ":";
         msg += str;
         msg += ";";
-        this.sendRaw(msg);
-    }
 
-    sendRaw(contents: string) {
         if (this.isActive()) {
-            console.log({ contents });
-            this.socket.write(contents);
+            console.log({ msg });
+            this.socket.write(msg);
         } else {
             console.log(
                 "Connection to ",
                 this.getIdentifier(),
                 " is inactive, failed to write",
-                contents,
+                msg,
             );
         }
     }
