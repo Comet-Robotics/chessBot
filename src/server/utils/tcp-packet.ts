@@ -67,7 +67,7 @@ export type Packet = Static<typeof Packet>;
 // );
 // export type Packet = Static<typeof Packet>;
 
-export function packetFromJson(json: string): Packet | null {
+export function jsonToPacket(json: string): Packet | null {
     const obj = JSON.parse(json);
     if (Packet.guard(obj)) {
         return obj as Packet;

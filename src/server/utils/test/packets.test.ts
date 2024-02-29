@@ -1,7 +1,7 @@
 import * as net from "net";
 import { BotTunnel } from "../../api/tcp-interface";
 import { vi, test, expect, afterEach } from "vitest";
-import { Packet, packetFromJson, packetToJson } from "../tcp-packet";
+import { Packet, jsonToPacket, packetToJson } from "../tcp-packet";
 
 vi.mock("net");
 
@@ -48,7 +48,7 @@ test.each(testCases)(
 test.each(testCases)(
     "Verify packetFromJson",
     async (obj: object, valid: boolean) => {
-        expect(packetFromJson(JSON.stringify(obj))).toEqual(valid ? obj : null);
+        expect(jsonToPacket(JSON.stringify(obj))).toEqual(valid ? obj : null);
     },
 );
 

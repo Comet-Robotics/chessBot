@@ -1,6 +1,6 @@
 import * as net from "net";
 import config from "./bot-server-config.json";
-import { Packet, packetFromJson, packetToJson } from "../utils/tcp-packet";
+import { Packet, jsonToPacket, packetToJson } from "../utils/tcp-packet";
 
 export class BotTunnel {
     connected: boolean = false;
@@ -90,7 +90,7 @@ export class BotTunnel {
             this.dataBuffer = undefined;
         }
 
-        const packet = packetFromJson(str);
+        const packet = jsonToPacket(str);
 
         if (packet !== null) {
             // Parse packet based on type
