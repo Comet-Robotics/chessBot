@@ -92,14 +92,16 @@ export class BotTunnel {
 
         const packet = packetFromJson(str);
 
-        // Parse packet based on type
-        switch (packet["type"]) {
-            case "NOTHING": {
-                break;
-            }
-            case "CLIENT_HELLO": {
-                this.onHandshake(packet["macAddress"]);
-                this.connected = true;
+        if (packet !== null) {
+            // Parse packet based on type
+            switch (packet["type"]) {
+                case "NOTHING": {
+                    break;
+                }
+                case "CLIENT_HELLO": {
+                    this.onHandshake(packet["macAddress"]);
+                    this.connected = true;
+                }
             }
         }
 
@@ -114,7 +116,7 @@ export class BotTunnel {
 
     send(packet: Packet) {
         const str = packetToJson(packet);
-        if (str === "") return; // invalid packet, possibly do other things
+        if (str === null) return; // invalid packet, possibly do other things
         let msg = ":";
         msg += str;
         msg += ";";
