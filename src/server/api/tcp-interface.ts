@@ -94,12 +94,12 @@ export class BotTunnel {
 
         if (packet !== null) {
             // Parse packet based on type
-            switch (packet["type"]) {
+            switch (packet.type) {
                 case "NOTHING": {
                     break;
                 }
                 case "CLIENT_HELLO": {
-                    this.onHandshake(packet["macAddress"]);
+                    this.onHandshake(packet.macAddress);
                     this.connected = true;
                 }
             }
