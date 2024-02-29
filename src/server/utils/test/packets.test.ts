@@ -16,51 +16,39 @@ mockBotTunnel.address = "lul";
 const mockWrite = vi.spyOn(mockSocket, "write");
 
 const testCases = [
-    [{}, false],
-    [{ type: "NOTHING" }, true],
-    [{ type: "CLIENT_HELLO" }, false],
-    [{ type: "CLIENT_HELLO", macAddress: "HELLO3" }, true],
-    [{ type: "DRIVE_TANK" }, false],
-    [{ type: "DRIVE_TANK", left: 0.3 }, false],
-    [{ type: "DRIVE_TANK", left: 0.3, right: -0.4 }, true],
-] as [object, boolean][];
+    { obj: {}, valid: false },
+    { obj: { type: "NOTHING" }, valid: true },
+    { obj: { type: "CLIENT_HELLO" }, valid: false },
+    { obj: { type: "CLIENT_HELLO", macAddress: "HELLO3" }, valid: true },
+    { obj: { type: "DRIVE_TANK" }, valid: false },
+    { obj: { type: "DRIVE_TANK", left: 0.3 }, valid: false },
+    { obj: { type: "DRIVE_TANK", left: 0.3, right: -0.4 }, valid: true },
+] as { obj: object; valid: boolean }[];
 
 afterEach(() => {
     vi.clearAllMocks();
 });
 
-test.each(testCases)(
-    "Validate packet guard",
-    async (obj: object, valid: boolean) => {
-        expect(Packet.guard(obj)).toEqual(valid);
-    },
-);
+test.each(testCases)("Validate packet guard", async ({ obj, valid }) => {
+    expect(Packet.guard(obj)).toEqual(valid);
+});
 
-test.each(testCases)(
-    "Verify packetToJson",
-    async (obj: object, valid: boolean) => {
-        expect(packetToJson(obj as Packet)).toEqual(
-            valid ? JSON.stringify(obj) : null,
+test.each(testCases)("Verify packetToJson", async ({ obj, valid }) => {
+    expect(packetToJson(obj as Packet)).toEqual(
+        valid ? JSON.stringify(obj) : null,
+    );
+});
+
+test.each(testCases)("Verify packetFromJson", async ({ obj, valid }) => {
+    expect(jsonToPacket(JSON.stringify(obj))).toEqual(valid ? obj : null);
+});
+
+test.each(testCases)("Test message sending", async ({ obj, valid }) => {
+    vi.spyOn(mockBotTunnel, "isActive").mockReturnValue(true);
+    mockBotTunnel.send(obj as Packet);
+    if (valid)
+        expect(mockWrite.mock.calls[0][0]).toStrictEqual(
+            `:${JSON.stringify(obj)};`,
         );
-    },
-);
-
-test.each(testCases)(
-    "Verify packetFromJson",
-    async (obj: object, valid: boolean) => {
-        expect(jsonToPacket(JSON.stringify(obj))).toEqual(valid ? obj : null);
-    },
-);
-
-test.each(testCases)(
-    "Test message sending",
-    async (obj: object, valid: boolean) => {
-        vi.spyOn(mockBotTunnel, "isActive").mockReturnValue(true);
-        mockBotTunnel.send(obj as Packet);
-        if (valid)
-            expect(mockWrite.mock.calls[0][0]).toStrictEqual(
-                `:${JSON.stringify(obj)};`,
-            );
-        else expect(mockWrite.mock.calls.length).toEqual(0);
-    },
-);
+    else expect(mockWrite.mock.calls.length).toEqual(0);
+});
