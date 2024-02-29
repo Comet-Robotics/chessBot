@@ -40,21 +40,20 @@ afterEach(() => {
 
 test.each([
     [{}, null],
-    [{ type: "NOTHING" }, JSON.stringify({type: "NOTHING"})],
+    [{ type: "NOTHING" }, JSON.stringify({ type: "NOTHING" })],
     [{ type: "CLIENT_HELLO" }, null],
-    [{ type: "CLIENT_HELLO", macAddress: "HELLO3" }, JSON.stringify({ type: "CLIENT_HELLO", macAddress: "HELLO3" })],
-])(
-    "Test packet writing",
-    async (packet: object, expected: string | null) => {
-        vi.spyOn(mockBotTunnel, "isActive").mockReturnValue(true);
-        expect(mockBotTunnel.isActive()).toEqual(true);
+    [
+        { type: "CLIENT_HELLO", macAddress: "HELLO3" },
+        JSON.stringify({ type: "CLIENT_HELLO", macAddress: "HELLO3" }),
+    ],
+])("Test packet writing", async (packet: object, expected: string | null) => {
+    vi.spyOn(mockBotTunnel, "isActive").mockReturnValue(true);
+    expect(mockBotTunnel.isActive()).toEqual(true);
 
-        expect(packetToJson(packet as Packet)).toEqual(expected);
+    expect(packetToJson(packet as Packet)).toEqual(expected);
 
-        mockBotTunnel.send(packet as Packet);
-        if (expected !== null)
-            expect(mockWrite.mock.calls[0][0]).toStrictEqual(expected);
-        else
-            expect(mockWrite.mock.calls.length).toEqual(0);
-    },
-);
+    mockBotTunnel.send(packet as Packet);
+    if (expected !== null)
+        expect(mockWrite.mock.calls[0][0]).toStrictEqual(`:${expected};`);
+    else expect(mockWrite.mock.calls.length).toEqual(0);
+});

@@ -104,7 +104,11 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
         // if (leftPower == 0 && rightPower == 0) {
         //   tunnel.send(PacketType.ESTOP);
         // } else {
-        tunnel.send({ type: "DRIVE_TANK", left: message.leftPower, right: message.rightPower });
+        tunnel.send({
+            type: "DRIVE_TANK",
+            left: message.leftPower,
+            right: message.rightPower,
+        });
     }
     return true;
 }
