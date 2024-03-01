@@ -92,16 +92,14 @@ export class BotTunnel {
 
         const packet = jsonToPacket(str);
 
-        if (packet !== null) {
-            // Parse packet based on type
-            switch (packet.type) {
-                case "NOTHING": {
-                    break;
-                }
-                case "CLIENT_HELLO": {
-                    this.onHandshake(packet.macAddress);
-                    this.connected = true;
-                }
+        // Parse packet based on type
+        switch (packet.type) {
+            case "NOTHING": {
+                break;
+            }
+            case "CLIENT_HELLO": {
+                this.onHandshake(packet.macAddress);
+                this.connected = true;
             }
         }
 
@@ -116,22 +114,25 @@ export class BotTunnel {
 
     send(packet: Packet) {
         const str = packetToJson(packet);
-        if (str === null) return; // invalid packet, possibly do other things
         let msg = ":";
         msg += str;
         msg += ";";
 
-        if (this.isActive()) {
-            console.log({ msg });
-            this.socket.write(msg);
-        } else {
+        if (!this.isActive()) {
             console.log(
                 "Connection to ",
                 this.getIdentifier(),
                 " is inactive, failed to write",
                 msg,
             );
+            throw new Error(
+                "Cannot send packet to inactive connection: " +
+                    this.getIdentifier(),
+            );
         }
+
+        console.log({ msg });
+        this.socket.write(msg);
     }
 }
 
