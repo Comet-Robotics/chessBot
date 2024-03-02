@@ -34,7 +34,7 @@ export class Robot {
     }
 
     /**
-     * @param heading An absolute heading to turn to.
+     * @param heading - An absolute heading to turn to.
      */
     public async absoluteRotate(heading: number): Promise<void> {
         const delta1: number = heading - this.heading;
@@ -51,7 +51,7 @@ export class Robot {
     }
 
     /**
-     * @param deltaHeading A relative heading to turn by.
+     * @param deltaHeading - A relative heading to turn by.
      */
     public async relativeRotate(deltaHeading: number): Promise<void> {
         this.heading = clampHeading(this.heading + deltaHeading);
@@ -60,7 +60,7 @@ export class Robot {
 
     /**
      * Turns and drives the robot to `this.position + deltaPosition`.
-     * @param deltaPosition The amount to offset the current position by.
+     * @param deltaPosition - The amount to offset the current position by.
      */
     public async relativeMove(deltaPosition: Position): Promise<void> {
         // TODO: Compute drive arguments

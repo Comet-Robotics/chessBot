@@ -17,7 +17,7 @@ export interface Command {
 
     /**
      * Implicitly wraps a Command into a Sequential Command.
-     * @param next The command which is run next.
+     * @param next - The command which is run next.
      */
     then(next: Command): SequentialCommandGroup;
 }

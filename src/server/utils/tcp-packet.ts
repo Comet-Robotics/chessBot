@@ -20,7 +20,7 @@ export const TURN_BY_ANGLE = Record({
 });
 export const DRIVE_TILES = Record({
     type: Literal("DRIVE_TILES"),
-    distanceTiles: Number,
+    tileDistance: Number,
 });
 export const ACTION_SUCCESS = Record({ type: Literal("ACTION_SUCCESS") });
 export const ACTION_FAIL = Record({ type: Literal("ACTION_FAIL") });

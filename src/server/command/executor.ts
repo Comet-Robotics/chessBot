@@ -33,7 +33,7 @@ export class CommandExecutor {
 
     /**
      * Executes a command after checking the requirements.
-     * @param command The command to execute.
+     * @param command - The command to execute.
      */
     public execute(command: Command) {
         this.checkRequirements(command);
