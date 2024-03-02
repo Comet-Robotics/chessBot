@@ -98,8 +98,8 @@ export class BotTunnel {
                     this.connected = true;
                 }
             }
-        } catch {
-            
+        } catch (e) {
+            console.log("Received invalid packet with error", e);
         }
 
         // Handle next message if the data buffer has another one
