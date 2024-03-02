@@ -47,8 +47,9 @@ export function DriveRobot(props: DriveRobotProps) {
                     let rightPower = gamepad.axes[3] * -1;
                     if (Math.abs(leftPower) < DEADZONE) leftPower = 0;
                     if (Math.abs(rightPower) < DEADZONE) rightPower = 0;
-                    leftPower = Math.sign(leftPower) * leftPower * leftPower;
-                    rightPower = Math.sign(rightPower) * rightPower * rightPower;
+                    leftPower = Math.sign(leftPower) * Math.pow(leftPower, 2);
+                    rightPower =
+                        Math.sign(rightPower) * Math.pow(rightPower, 2);
                     props.sendMessage(
                         new DriveRobotMessage(
                             props.robotId,
