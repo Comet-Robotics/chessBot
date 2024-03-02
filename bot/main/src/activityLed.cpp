@@ -3,6 +3,8 @@
 
 #include <freertos/task.h>
 
+#include <esp_log.h>
+
 #include <driver/gpio.h>
 
 #include <chessbot/unit.h>
@@ -10,7 +12,7 @@
 #define ONBOARD_LED GPIO_NUM_15
 
 namespace chessbot {
-TickType_t activityLedDelay = 1_s;
+TickType_t activityLedDelay = 100_ms;
 TaskHandle_t activityLedTask = nullptr;
 
 void run(void*)
@@ -20,7 +22,8 @@ void run(void*)
     while (true) {
         gpio_set_level(ONBOARD_LED, status = !status);
         vTaskDelay(activityLedDelay);
-        printf("Run\n");
+        //printf("Run\n");
+        //ESP_LOGD("", "running");
     }
 }
 

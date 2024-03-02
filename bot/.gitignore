@@ -5,3 +5,4 @@ sdkconfig.old
 /*.log
 esp-idf-vscode-generated.gdb
 /dependencies.lock
+env.h

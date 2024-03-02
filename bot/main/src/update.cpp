@@ -12,20 +12,17 @@
 
 #include <ArduinoJson.h>
 
+#include <chessbot/util.h>
 #include <chessbot/wireless.h>
 
 #define TAG "update"
-
-#ifndef MIN
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
-#endif
 
 namespace chessbot {
 // Max size of the document describing available updates
 constexpr int32_t OTA_HTTP_RESP_SIZE = 2048;
 
 // Will be filled with the build timestamp at link time
-extern uint64_t currentFirmwareVersion;
+/*extern*/ uint64_t currentFirmwareVersion = 1;
 
 // The JSON parsing space for the OTA task
 JsonDocument otaJson;

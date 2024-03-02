@@ -9,14 +9,22 @@
 #include <freertos/event_groups.h>
 #include <nvs_flash.h>
 
+#include <chessbot/util.h>
+
 #define TAG "wireless"
 
 namespace chessbot {
 EventGroupHandle_t wifiEvents;
 #define WIFI_CONNECTED_BIT BIT0
 
+#if __has_include("../../env.h")
+#include "../../env.h"
+#else
+
+#warning "Wifi will not work without an SSID and password"
 const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
+#endif
 
 bool isWifiConnected()
 {
@@ -38,6 +46,8 @@ void wifiEventHandler(void* arg, esp_event_base_t event_base,
         ESP_LOGI(TAG, "connect to the AP fail");
 
         xEventGroupClearBits(wifiEvents, WIFI_CONNECTED_BIT);
+
+        vTaskDelay(randIn(1, 10) * configTICK_RATE_HZ);
 
         // Never give up, maybe the network will come up at some point
         // todo: make sure this isn't spamming the network

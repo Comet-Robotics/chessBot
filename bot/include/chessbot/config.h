@@ -39,6 +39,9 @@ enum class ConfigKey : uint32_t {
     // Example: -1 / 12000 for a 12kcpr encoder
     ENCODER_MULTIPLIER,
 
+    SERVER_IP,
+    SERVER_PORT,
+
     CONFIG_SIZE
 };
 
@@ -63,6 +66,7 @@ void setConfig(ConfigKey key, ValT val)
 #define PINCONFIG(target) (getConfig<gpio_num_t>(ConfigKey::target))
 #define FCONFIG(target) (getConfig<float>(ConfigKey::target))
 #define ICONFIG(target) (getConfig<int32_t>(ConfigKey::target))
+#define UCONFIG(target) (getConfig<uint32_t>(ConfigKey::target))
 }; // namespace chessbot
 
 #endif // ifndef CHESSBOT_CONFIG_H

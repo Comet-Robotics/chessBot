@@ -13,7 +13,7 @@
 
 namespace chessbot {
 
-template <typename ErrT>
+template <typename ErrT = bool>
 inline void checkImpl(ErrT val, const char* file, int line);
 
 // Verify the success of a function that returns esp_err_t

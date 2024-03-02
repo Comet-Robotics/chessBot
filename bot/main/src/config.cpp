@@ -28,5 +28,9 @@ uint32_t configStore[(size_t)ConfigKey::CONFIG_SIZE] = {
     bitcast<uint32_t>(-1.0f), // MOTOR_B_DRIVE_MULTIPLIER
 
     bitcast<uint32_t>(-12000.0f), // ENCODER_MULTIPLER
+
+    //(uint32_t)inet_addr("192.168.21.248"), // SERVER_IP
+    (uint32_t)3232274827, // SERVER_IP 192.168.21.248
+    3001, // SERVER_PORT
 };
 }; // namespace chessbot

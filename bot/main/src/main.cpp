@@ -15,11 +15,13 @@
 #include <chessbot/activityLed.h>
 #include <chessbot/adc.h>
 #include <chessbot/dac.h>
+#include <chessbot/net.h>
 #include <chessbot/robot.h>
 #include <chessbot/unit.h>
 #include <chessbot/update.h>
+#include <chessbot/wireless.h>
 
-#define TEST
+// #define TEST
 
 #ifdef TEST
 #include <chessbot/test.h>
@@ -35,11 +37,34 @@ extern "C" void app_main_alt()
 {
     printf("Start ChessBot v%d https://chessbots.cometrobotics.org\n", (int)currentFirmwareVersion);
     startActivityLed();
-    CHECK(gpio_install_isr_service(0));
+
+    // If on USB and debugging
+    //for (int i = 0; i < 3; i++) {
+    //    printf("Starting...");
+    //    vTaskDelay(1_s);
+    //}
+
+    startWifi();
+    waitForWifiConnection();
+
+    startNetThread();
+
+    // TcpClient client("192.168.0.251", 9999);
+    // client.connect();
+
+    /*while (true) {
+        client.tick();
+
+        printf("Sending and recv\n");
+        client.send("{\"type\":\"test\"};");
+        client.recv();
+
+        vTaskDelay(1_s);
+    }*/
 
     Robot robot;
 
-    gpio_set_level(PINCONFIG(RELAY_IR_LED), true);
+    //gpio_set_level(PINCONFIG(RELAY_IR_LED), false);
 
     // adcInitPin(ADC_CHANNEL_0);
     // adcInitPin(ADC_CHANNEL_1);
@@ -53,8 +78,8 @@ extern "C" void app_main_alt()
         // adcRead(ADC_CHANNEL_3), adcRead(ADC_CHANNEL_5));
         bool button = gpio_get_level(GPIO_NUM_0);
 
-        robot.right.set(button ? 0 : frand());
-        robot.left.set(button ? 0 : frand());
+        //robot.right.set(button ? 0 : frand());
+        //robot.left.set(button ? 0 : frand());
 
         vTaskDelay(500_ms);
     }

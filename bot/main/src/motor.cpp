@@ -53,20 +53,15 @@ Motor::Motor(gpio_num_t motorChannelA_,
     gpio_num_t encoderChannelA_,
     gpio_num_t encoderChannelB_,
     float driveMultiplier_)
-    : encoder(new Encoder(encoderChannelA_, encoderChannelB_))
+    //: encoder(new Encoder(encoderChannelA_, encoderChannelB_))
+    : encoder(nullptr)
     , powerPin(motorChannelA_)
     , channelA(motorChannelA_)
     , channelB(motorChannelB_)
     , driveMultiplier(driveMultiplier_)
 {
-}
-
-Motor::Motor(gpio_num_t motorChannelA_, gpio_num_t motorChannelB_, float driveMultiplier_)
-    : powerPin(motorChannelA_)
-    , channelA(motorChannelA_)
-    , channelB(motorChannelB_)
-    , driveMultiplier(driveMultiplier_)
-{
+    gpio_set_direction(motorChannelB_, GPIO_MODE_OUTPUT);
+    gpio_set_level(motorChannelB_, 0);
 }
 
 int32_t Motor::pos() { return encoder->read(); }
