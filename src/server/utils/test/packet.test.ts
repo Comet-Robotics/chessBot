@@ -40,6 +40,6 @@ test.each(validMessages)("Test message sending", async (packet) => {
     mockBotTunnel.send(packet);
     expect(mockWrite).toBeCalledTimes(1);
     expect(mockWrite.mock.calls[0][0]).toStrictEqual(
-        `:${packetToJson(packet)};`,
+        `${packetToJson(packet)};`,
     );
 });

@@ -77,12 +77,7 @@ export class BotTunnel {
             return;
         }
 
-        if (str.at(0) !== ":") {
-            this.dataBuffer = undefined;
-            return;
-        }
-
-        str = str.substring(1, terminator);
+        str = str.substring(0, terminator);
 
         if (this.dataBuffer.length > terminator) {
             this.dataBuffer = this.dataBuffer.subarray(terminator + 1);
@@ -114,9 +109,7 @@ export class BotTunnel {
 
     send(packet: Packet) {
         const str = packetToJson(packet);
-        let msg = ":";
-        msg += str;
-        msg += ";";
+        const msg = str + ";";
 
         if (!this.isActive()) {
             console.log(
