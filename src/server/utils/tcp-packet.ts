@@ -53,14 +53,14 @@ export type Packet = Static<typeof Packet>;
 export function jsonToPacket(jsonStr: string): Packet {
     const obj = JSON.parse(jsonStr);
     if (!Packet.guard(obj)) {
-        throw new Error("Invalid packet: " + obj);
+        throw new Error("Invalid packet: " + jsonStr);
     }
     return obj as Packet;
 }
 
 export function packetToJson(packet: Packet): string {
     if (!Packet.guard(packet)) {
-        throw new Error("Invalid packet: " + packet);
+        throw new Error("Invalid packet: " + JSON.stringify(packet));
     }
     return JSON.stringify(packet);
 }

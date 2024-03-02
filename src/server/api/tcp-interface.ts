@@ -85,17 +85,21 @@ export class BotTunnel {
             this.dataBuffer = undefined;
         }
 
-        const packet = jsonToPacket(str);
+        try {
+            const packet = jsonToPacket(str);
 
-        // Parse packet based on type
-        switch (packet.type) {
-            case "NOTHING": {
-                break;
+            // Parse packet based on type
+            switch (packet.type) {
+                case "NOTHING": {
+                    break;
+                }
+                case "CLIENT_HELLO": {
+                    this.onHandshake(packet.macAddress);
+                    this.connected = true;
+                }
             }
-            case "CLIENT_HELLO": {
-                this.onHandshake(packet.macAddress);
-                this.connected = true;
-            }
+        } catch {
+            
         }
 
         // Handle next message if the data buffer has another one
@@ -150,7 +154,7 @@ export class TCPServer {
         const tunnel = new BotTunnel(
             socket,
             ((mac: string) => {
-                console.log("Adding robot with mac ", mac, " to arr");
+                console.log("Adding robot with mac", mac, "to arr");
                 let id: number;
                 if (!(mac in config["bots"])) {
                     id = Math.floor(Math.random() * 900) + 100;
