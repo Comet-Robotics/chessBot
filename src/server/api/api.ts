@@ -8,7 +8,7 @@ import {
 } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
-import { PacketType, TCPServer } from "./tcp-interface";
+import { TCPServer } from "./tcp-interface";
 import { GameType } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
 import { clientManager, socketManager } from "./managers";
@@ -68,8 +68,8 @@ export const apiRouter = Router();
 
 apiRouter.get("/get-ids", (_, res) => {
     return res.send({
-        ids: ["10", "11"],
-        // ids: tcpServer.getConnectedIds(),
+        // ids: ["10", "11"],
+        ids: tcpServer.getConnectedIds(),
     });
 });
 
@@ -104,11 +104,11 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
         // if (leftPower == 0 && rightPower == 0) {
         //   tunnel.send(PacketType.ESTOP);
         // } else {
-        tunnel.send(
-            PacketType.DRIVE_TANK,
-
-            message.rightPower.toString(),
-        );
+        tunnel.send({
+            type: "DRIVE_TANK",
+            left: message.leftPower,
+            right: message.rightPower,
+        });
     }
     return true;
 }

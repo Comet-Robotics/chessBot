@@ -1,24 +1,6 @@
 import * as net from "net";
 import config from "./bot-server-config.json";
-
-// MUST be kept in sync with chessBotArduino/include/packet.h PacketType
-export enum PacketType {
-    NOTHING,
-    CLIENT_HELLO,
-    SERVER_HELLO,
-    PING_SEND,
-    PING_RESPONSE,
-    QUERY_VAR,
-    QUERY_RESPONSE,
-    INFORM_VAR,
-    SET_VAR,
-    TURN_BY_ANGLE,
-    DRIVE_TILES,
-    ACTION_SUCCESS,
-    ACTION_FAIL,
-    DRIVE_TANK,
-    ESTOP,
-}
+import { Packet, jsonToPacket, packetToJson } from "../utils/tcp-packet";
 
 export class BotTunnel {
     connected: boolean = false;
@@ -95,12 +77,7 @@ export class BotTunnel {
             return;
         }
 
-        if (str.at(0) !== ":") {
-            this.dataBuffer = undefined;
-            return;
-        }
-
-        str = str.substring(1, terminator);
+        str = str.substring(0, terminator);
 
         if (this.dataBuffer.length > terminator) {
             this.dataBuffer = this.dataBuffer.subarray(terminator + 1);
@@ -108,11 +85,24 @@ export class BotTunnel {
             this.dataBuffer = undefined;
         }
 
-        const type = parseInt(str.substring(0, 2), 16);
-        const contents = str.substring(3);
+        try {
+            const packet = jsonToPacket(str);
 
-        this.handlePacket(type, contents);
+            // Parse packet based on type
+            switch (packet.type) {
+                case "NOTHING": {
+                    break;
+                }
+                case "CLIENT_HELLO": {
+                    this.onHandshake(packet.macAddress);
+                    this.connected = true;
+                }
+            }
+        } catch (e) {
+            console.log("Received invalid packet with error", e);
+        }
 
+        // Handle next message if the data buffer has another one
         if (
             this.dataBuffer !== undefined &&
             this.dataBuffer.indexOf(";") !== -1
@@ -121,40 +111,25 @@ export class BotTunnel {
         }
     }
 
-    handlePacket(type: PacketType, contents: string) {
-        switch (type) {
-            case PacketType.NOTHING: {
-                break;
-            }
-            case PacketType.CLIENT_HELLO: {
-                this.onHandshake(contents);
-                this.connected = true;
-            }
-        }
-    }
+    send(packet: Packet) {
+        const str = packetToJson(packet);
+        const msg = str + ";";
 
-    send(type: PacketType, ...contents: (string | number)[]) {
-        let msg = ":";
-        msg += type.toString(16).padStart(2, "0");
-        if (contents.length > 0) {
-            msg += "," + contents.join(",");
-        }
-        msg += ";";
-        this.sendRaw(msg);
-    }
-
-    sendRaw(contents: string) {
-        if (this.isActive()) {
-            console.log({ contents });
-            this.socket.write(contents);
-        } else {
+        if (!this.isActive()) {
             console.log(
                 "Connection to ",
                 this.getIdentifier(),
                 " is inactive, failed to write",
-                contents,
+                msg,
+            );
+            throw new Error(
+                "Cannot send packet to inactive connection: " +
+                    this.getIdentifier(),
             );
         }
+
+        console.log({ msg });
+        this.socket.write(msg);
     }
 }
 
@@ -179,7 +154,7 @@ export class TCPServer {
         const tunnel = new BotTunnel(
             socket,
             ((mac: string) => {
-                console.log("Adding robot with mac ", mac, " to arr");
+                console.log("Adding robot with mac", mac, "to arr");
                 let id: number;
                 if (!(mac in config["bots"])) {
                     id = Math.floor(Math.random() * 900) + 100;

@@ -41,8 +41,15 @@ export function DriveRobot(props: DriveRobotProps) {
             for (const gamepad of navigator.getGamepads()) {
                 if (gamepad) {
                     // tank-style drive
-                    const leftPower = gamepad.axes[1] * -1;
-                    const rightPower = gamepad.axes[3] * -1;
+                    // deadzone and scaling to be more sensitive at lower values
+                    const DEADZONE = 0.15;
+                    let leftPower = gamepad.axes[1] * -1;
+                    let rightPower = gamepad.axes[3] * -1;
+                    if (Math.abs(leftPower) < DEADZONE) leftPower = 0;
+                    if (Math.abs(rightPower) < DEADZONE) rightPower = 0;
+                    leftPower = Math.sign(leftPower) * Math.pow(leftPower, 2);
+                    rightPower =
+                        Math.sign(rightPower) * Math.pow(rightPower, 2);
                     props.sendMessage(
                         new DriveRobotMessage(
                             props.robotId,
@@ -54,7 +61,7 @@ export function DriveRobot(props: DriveRobotProps) {
             }
         };
 
-        const gamepadPollingInterval = setInterval(handleGamepadInput, 50);
+        const gamepadPollingInterval = setInterval(handleGamepadInput, 100);
 
         return () => {
             clearInterval(gamepadPollingInterval);
