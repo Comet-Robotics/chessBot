@@ -1,0 +1,12 @@
+{
+    "tcpServerPort": 3001,
+    "bots": {
+        "48:27:e2:5d:c6:e8": "15",
+        "c0:4e:30:4b:68:76": "11"
+    },
+    "botAttributes": {
+        "15": {
+            "leftMotorK": "0"
+        }
+    }
+}

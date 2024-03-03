@@ -1,0 +1,64 @@
+name: validate
+on:
+    push:
+
+jobs:
+    format-check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  cache: yarn
+
+            - name: Install modules
+              run: yarn install --frozen-lockfile
+
+            - name: Check formatting
+              run: yarn format-check
+
+    lint-check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  cache: yarn
+
+            - name: Install modules
+              run: yarn install --frozen-lockfile
+
+            - name: Lint
+              run: yarn lint-check
+
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  cache: yarn
+
+            - name: Install modules
+              run: yarn install --frozen-lockfile
+
+            - name: Run tests
+              run: yarn test
+
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  cache: yarn
+
+            - name: Install modules
+              run: yarn install --frozen-lockfile
+
+            - name: Build
+              run: yarn build
