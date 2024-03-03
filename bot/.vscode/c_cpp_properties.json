@@ -13,7 +13,7 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.22000.0",
-            "compilerPath": "cl.exe",
+            "compilerPath": "${config:idf.toolsPath}/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32s2-elf-gcc",
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "windows-msvc-x64"

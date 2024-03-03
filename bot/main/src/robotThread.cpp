@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <ArduinoJson.h>
+
 #include <chessbot/robot.h>
 
 namespace chessbot {
@@ -10,7 +12,7 @@ namespace chessbot {
 void robotThread(void* robotPtr)
 {
     Robot& bot = *(Robot*)(robotPtr);
-    // JsonDocument json;
+    JsonDocument json;
 
     while (true) {
         auto& buf = bot.client->rxBuf;
@@ -20,22 +22,21 @@ void robotThread(void* robotPtr)
             std::cout << "Deserializing " << str << '\n';
 
             // Read JSON packet
-            // DeserializationError error = deserializeJson(json, str);
+            DeserializationError error = deserializeJson(json, str);
             buf.r += offset;
             printf("Next char is now %c\n", *buf.r);
             buf.r++; // Read past semicolon
 
-            // if (error) {
-            //     printf("deserializeJson() failed: %s\n", error.c_str());
-            // }
+            if (error) {
+                printf("deserializeJson() failed: %s\n", error.c_str());
+            }
 
-            if (false) // if (json["type"] == "DRIVE_TANK")
-            {
-                // float left = json["left"].as<float>();
-                // float right = json["right"].as<float>();
-                // printf("Driving that tank! %f %f\n", left, right);
-                // bot.left.set(left);
-                // bot.right.set(right);
+            if (json["type"] == "DRIVE_TANK") {
+                float left = json["left"].as<float>();
+                float right = json["right"].as<float>();
+                printf("Driving that tank! %f %f\n", left, right);
+                bot.left.set(left);
+                bot.right.set(right);
             }
         }
 

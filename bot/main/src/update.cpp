@@ -10,6 +10,8 @@
 #include <esp_ota_ops.h>
 #include <esp_tls.h>
 
+#include <ArduinoJson.h>
+
 #include <chessbot/util.h>
 #include <chessbot/wireless.h>
 
@@ -23,7 +25,7 @@ constexpr int32_t OTA_HTTP_RESP_SIZE = 2048;
 /*extern*/ uint64_t currentFirmwareVersion = 1;
 
 // The JSON parsing space for the OTA task
-// JsonDocument otaJson;
+JsonDocument otaJson;
 char otaHttpResp[OTA_HTTP_RESP_SIZE + 1];
 
 // How often to poll the server for updates in seconds
@@ -114,12 +116,12 @@ esp_err_t getJsonFromHost(const char* host)
     }
 
     printf("Parsing JSON %s\n", otaHttpResp);
-    // DeserializationError jerr = deserializeJson(otaJson, otaHttpResp);
+    DeserializationError jerr = deserializeJson(otaJson, otaHttpResp);
 
-    // if (jerr) {
-    //     printf("Failed deserializing json from %s because %s\n", host, "");
-    //     return ESP_FAIL;
-    // }
+    if (jerr) {
+        printf("Failed deserializing json from %s because %s\n", host, "");
+        return ESP_FAIL;
+    }
 
     return ESP_OK;
 }
@@ -134,7 +136,7 @@ void findUpdate()
             continue;
         }
 
-        /*int32_t version = otaJson["version"];
+        int32_t version = otaJson["version"];
         const char* url = otaJson["url"];
         int32_t newCheckFreq = otaJson["checkFreq"];
 
@@ -167,7 +169,7 @@ void findUpdate()
             esp_restart();
         } else {
             ESP_LOGE(TAG, "Firmware upgrade failed");
-        }*/
+        }
     }
 }
 

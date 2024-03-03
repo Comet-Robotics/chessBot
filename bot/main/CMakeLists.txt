@@ -14,3 +14,5 @@ idf_component_register(
     INCLUDE_DIRS "../include" ${CMAKE_BINARY_DIR}/esp32-rotary-encoder)
 
 #idf_build_set_property(COMPILE_OPTIONS "-fsanitize=undefined" "-fno-sanitize=shift-base" APPEND)
+add_compile_options(-fsanitize=undefined)
+add_link_options(-fsanitize=undefined)

@@ -57,7 +57,7 @@ void example_adc_calibration_deinit(adc_cali_handle_t handle)
 // ADC_ATTEN_DB_0 0.1V to 1.1V
 // ADC_ATTEN_DB_2_5 0.1V to 1.5V
 // ADC_ATTEN_DB_6 0.1V to 2.2V
-// ADC_ATTEN_DB_11 0.1V to 3.9V
+// ADC_ATTEN_DB_12 0.1V to 3.9V
 
 void adcInitPin(adc_channel_t channel, adc_atten_t atten)
 {

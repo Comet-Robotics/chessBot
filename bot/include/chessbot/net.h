@@ -10,11 +10,6 @@
 #include <chessbot/unit.h>
 
 namespace chessbot {
-enum class NetClientType {
-    Tcp,
-    Udp,
-};
-
 template <int bufSize>
 struct NetBuf {
     char buf[bufSize] = {};
