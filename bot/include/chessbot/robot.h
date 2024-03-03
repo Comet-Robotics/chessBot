@@ -5,8 +5,6 @@
 
 #include <esp_sleep.h>
 
-#include <ArduinoJson.h>
-
 #include <chessbot/button.h>
 #include <chessbot/config.h>
 #include <chessbot/differentialKinematics.h>
@@ -23,9 +21,9 @@ public:
     Motor left;
     Motor right;
 
-    //DifferentialKinematics kinematics;
+    // DifferentialKinematics kinematics;
 
-    //LightSensor frontLeft, frontRight, backLeft, backRight;
+    // LightSensor frontLeft, frontRight, backLeft, backRight;
 
     TcpClient* client;
     TaskHandle_t task;
@@ -34,11 +32,11 @@ public:
         : button0(GPIO_NUM_0)
         , left(PINCONFIG(MOTOR_A_PIN1), PINCONFIG(MOTOR_A_PIN2), PINCONFIG(ENCODER_A_PIN1), PINCONFIG(ENCODER_A_PIN2), FCONFIG(MOTOR_A_DRIVE_MULTIPLIER))
         , right(PINCONFIG(MOTOR_B_PIN1), PINCONFIG(MOTOR_B_PIN2), PINCONFIG(ENCODER_B_PIN1), PINCONFIG(ENCODER_B_PIN2), FCONFIG(MOTOR_B_DRIVE_MULTIPLIER))
-        //, kinematics(left, right)
-        //, frontLeft(PINCONFIG(PHOTODIODE_FRONT_LEFT))
-        //, frontRight(PINCONFIG(PHOTODIODE_FRONT_RIGHT))
-        //, backLeft(PINCONFIG(PHOTODIODE_BACK_LEFT))
-        //, backRight(PINCONFIG(PHOTODIODE_BACK_RIGHT))
+    //, kinematics(left, right)
+    //, frontLeft(PINCONFIG(PHOTODIODE_FRONT_LEFT))
+    //, frontRight(PINCONFIG(PHOTODIODE_FRONT_RIGHT))
+    //, backLeft(PINCONFIG(PHOTODIODE_BACK_LEFT))
+    //, backRight(PINCONFIG(PHOTODIODE_BACK_RIGHT))
     {
         vTaskDelay(5_s);
         printf("send 1\n");
@@ -74,8 +72,8 @@ public:
 
     IVec2 displacements()
     {
-        return {0,0};
-        //return { left.pos(), right.pos() };
+        return { 0, 0 };
+        // return { left.pos(), right.pos() };
     }
 
     void estop()
@@ -91,8 +89,8 @@ public:
 
     std::array<int, 4> lightLevels()
     {
-        //return { frontLeft.read(), frontRight.read(), backLeft.read(), backRight.read() };
-        return {0,0,0,0};
+        // return { frontLeft.read(), frontRight.read(), backLeft.read(), backRight.read() };
+        return { 0, 0, 0, 0 };
     }
 
     void runThread();

@@ -8,17 +8,16 @@
 
 namespace chessbot {
 
-std::vector<std::variant<TcpClient>> clients;
+TcpClient* clients[10];
+int clientsCount = 0;
 
 // Puts TCP socket output into strings, re-establishes closed/crashed sockets
-//todo: freertos-native tcp queue abstraction
+// todo: freertos-native tcp queue abstraction
 void netThread(void*)
 {
     while (true) {
-        for (auto& container : clients) {
-            if (TcpClient* client = std::get_if<TcpClient>(&container)) {
-                client->tick();
-            }
+        for (int i = 0; i < clientsCount; i++) {
+            clients[i]->tick();
         }
 
         vTaskDelay(10_ms);
@@ -32,8 +31,8 @@ void startNetThread()
 
 TcpClient* addTcpClient(uint32_t targetIp, uint16_t port)
 {
-    clients.emplace_back(TcpClient(targetIp, port));
-    return std::get_if<TcpClient>(&clients.back());
+    clients[clientsCount++] = new TcpClient(targetIp, port);
+    return clients[clientsCount - 1];
 }
 
 }; // namespace chessbot

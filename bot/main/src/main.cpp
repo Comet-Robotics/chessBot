@@ -9,8 +9,6 @@
 #include <soc/periph_defs.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <tusb_cdc_acm.h>
-#include <tusb_console.h>
 
 #include <chessbot/activityLed.h>
 #include <chessbot/adc.h>
@@ -39,7 +37,7 @@ extern "C" void app_main_alt()
     startActivityLed();
 
     // If on USB and debugging
-    //for (int i = 0; i < 3; i++) {
+    // for (int i = 0; i < 3; i++) {
     //    printf("Starting...");
     //    vTaskDelay(1_s);
     //}
@@ -64,7 +62,7 @@ extern "C" void app_main_alt()
 
     Robot robot;
 
-    //gpio_set_level(PINCONFIG(RELAY_IR_LED), false);
+    // gpio_set_level(PINCONFIG(RELAY_IR_LED), false);
 
     // adcInitPin(ADC_CHANNEL_0);
     // adcInitPin(ADC_CHANNEL_1);
@@ -78,8 +76,8 @@ extern "C" void app_main_alt()
         // adcRead(ADC_CHANNEL_3), adcRead(ADC_CHANNEL_5));
         bool button = gpio_get_level(GPIO_NUM_0);
 
-        //robot.right.set(button ? 0 : frand());
-        //robot.left.set(button ? 0 : frand());
+        // robot.right.set(button ? 0 : frand());
+        // robot.left.set(button ? 0 : frand());
 
         vTaskDelay(500_ms);
     }

@@ -22,8 +22,8 @@ void run(void*)
     while (true) {
         gpio_set_level(ONBOARD_LED, status = !status);
         vTaskDelay(activityLedDelay);
-        //printf("Run\n");
-        //ESP_LOGD("", "running");
+        // printf("Run\n");
+        // ESP_LOGD("", "running");
     }
 }
 

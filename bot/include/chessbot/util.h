@@ -44,8 +44,7 @@ inline bool within(int32_t val, int32_t range, int32_t target)
 
 inline void waitForever()
 {
-    while (true)
-    {
+    while (true) {
         vTaskDelay(1_s);
     }
 }

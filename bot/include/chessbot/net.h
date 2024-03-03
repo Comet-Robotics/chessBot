@@ -21,6 +21,11 @@ struct NetBuf {
     char* r = buf;
     char* w = buf;
 
+    std::string_view str()
+    {
+        return std::string_view(r, w - r);
+    }
+
     int remaining()
     {
         return bufSize - size();
@@ -49,7 +54,9 @@ struct NetBuf {
     void push_back(char c)
     {
         CHECK(!full());
-        if (full) {return;}
+        if (full()) {
+            return;
+        }
 
         *w++ = c;
     }
@@ -66,9 +73,8 @@ struct NetBuf {
 
     void compact()
     {
-        //CHECK(w >= r);
-        if (w < r)
-        {
+        // CHECK(w >= r);
+        if (w < r) {
             printf("Buffer corrupted, returning to center\n");
             w = buf;
             r = buf;
@@ -95,7 +101,7 @@ struct NetBuf {
 
     bool contains(char c)
     {
-        for (char* i = r; r < w; i++) {
+        for (char* i = r; i < w; i++) {
             if (*i == c) {
                 return true;
             }
@@ -106,7 +112,7 @@ struct NetBuf {
 
     int find(char c)
     {
-        for (char* i = r; r < w; i++) {
+        for (char* i = r; i < w; i++) {
             if (*i == c) {
                 return i - read();
             }
@@ -118,8 +124,9 @@ struct NetBuf {
 
 class TcpClient {
 public:
-    constexpr static size_t TCP_BUF_SIZE = 8192 / 2;
-    constexpr static TickType_t TCP_RETRY_FREQUENCY = 10_s;
+    constexpr static int TCP_BUF_SIZE = 8192 / 2;
+    constexpr static int TCP_MSG_SIZE_MAX = 1024;
+    constexpr static std::pair<TickType_t, TickType_t> TCP_RETRY_FREQUENCY = { 3_s, 10_s };
 
     enum class Status {
         OFF,
@@ -136,7 +143,7 @@ public:
 
     TcpClient(uint32_t targetIp, uint16_t port)
     {
-        //destAddr.sin_addr.s_addr = targetIp;
+        // destAddr.sin_addr.s_addr = targetIp;
 
         inet_pton(AF_INET, "192.168.153.73", &destAddr.sin_addr);
 
@@ -156,10 +163,9 @@ public:
 
         // Backoff
         TickType_t now = xTaskGetTickCount();
-        if (now - lastRetry < TCP_RETRY_FREQUENCY) {
+        if (now - lastRetry < TCP_RETRY_FREQUENCY.first) {
             return;
-        }
-        else {
+        } else {
             lastRetry = now;
         }
 
@@ -177,7 +183,7 @@ public:
 
         int err = ::connect(sock, (sockaddr*)&destAddr, sizeof(destAddr));
         if (err != 0) {
-            //printf("Socket unable to connect: errno %d", errno);
+            // printf("Socket unable to connect: errno %d", errno);
             perror("Socket unable to connect:");
             sock = -1;
             status = Status::BAD;
@@ -209,8 +215,7 @@ public:
 
     void waitToConnect()
     {
-        while (status != Status::OPEN)
-        {
+        while (status != Status::OPEN) {
             vTaskDelay(1_s);
             printf("Waiting for socket to be open\n");
         }
