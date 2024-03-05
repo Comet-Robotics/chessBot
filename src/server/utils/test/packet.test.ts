@@ -16,15 +16,16 @@ afterEach(() => {
 });
 
 const validMessages: Packet[] = [
-    { type: "NOTHING" },
     { type: "CLIENT_HELLO", macAddress: "HELLO3" },
     { type: "DRIVE_TANK", left: 0.3, right: -0.4 },
+    { type: "SET_VAR", var_id: 3, var_type: "uint32", var_val: 10 },
 ];
 
 const invalidMessages = [
     {},
     { type: "INVALID_TYPE" },
     { type: "DRIVE_TANK", left: 0.3 },
+    { type: "SET_VAR", var_id: 0, var_type: "int32", var_val: -3.14 },
 ];
 
 test.each(validMessages)("Test packet serialization", async (packet) => {
