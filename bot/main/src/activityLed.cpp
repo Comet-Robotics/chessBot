@@ -12,7 +12,7 @@
 #define ONBOARD_LED GPIO_NUM_15
 
 namespace chessbot {
-TickType_t activityLedDelay = 100_ms;
+TickType_t activityLedDelay = 3000_ms;
 TaskHandle_t activityLedTask = nullptr;
 
 void run(void*)

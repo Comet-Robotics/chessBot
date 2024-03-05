@@ -2,7 +2,11 @@
 #define CHESSBOT_NET_H
 
 #include <errno.h>
+#include <lwip/sockets.h>
 #include <sys/socket.h>
+
+#include <freertos/event_groups.h>
+#include <freertos/stream_buffer.h>
 
 #include <string_view>
 
@@ -10,151 +14,65 @@
 #include <chessbot/unit.h>
 
 namespace chessbot {
-template <int bufSize>
-struct NetBuf {
-    char buf[bufSize] = {};
-    char* r = buf;
-    char* w = buf;
-
-    std::string_view str()
-    {
-        return std::string_view(r, w - r);
-    }
-
-    int remaining()
-    {
-        return bufSize - size();
-    }
-
-    int size()
-    {
-        return w - r;
-    }
-
-    char* end()
-    {
-        return buf + bufSize;
-    }
-
-    bool full()
-    {
-        return w == end() - 1;
-    }
-
-    bool empty()
-    {
-        return r == w;
-    }
-
-    void push_back(char c)
-    {
-        CHECK(!full());
-        if (full()) {
-            return;
-        }
-
-        *w++ = c;
-    }
-
-    char* write()
-    {
-        return w;
-    }
-
-    char* read()
-    {
-        return r;
-    }
-
-    void compact()
-    {
-        // CHECK(w >= r);
-        if (w < r) {
-            printf("Buffer corrupted, returning to center\n");
-            w = buf;
-            r = buf;
-            return;
-        }
-
-        char* front = buf;
-
-        while (r != w) {
-            *front++ = *r++;
-        }
-
-        *front = '\0';
-        r = buf;
-        w = front;
-    }
-
-    void clear()
-    {
-        r = buf;
-        w = buf;
-        *w = '\0';
-    }
-
-    bool contains(char c)
-    {
-        for (char* i = r; i < w; i++) {
-            if (*i == c) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    int find(char c)
-    {
-        for (char* i = r; i < w; i++) {
-            if (*i == c) {
-                return i - read();
-            }
-        }
-
-        return -1;
-    }
-};
-
 class TcpClient {
 public:
-    constexpr static int TCP_BUF_SIZE = 8192 / 2;
+    constexpr static int TCP_BUF_SIZE = 1024;
     constexpr static int TCP_MSG_SIZE_MAX = 1024;
     constexpr static std::pair<TickType_t, TickType_t> TCP_RETRY_FREQUENCY = { 3_s, 10_s };
 
-    enum class Status {
-        OFF,
-        BAD,
-        OPEN
-    };
-
-    NetBuf<TCP_BUF_SIZE> rxBuf;
+    constexpr static int OPEN = BIT1; // Normal
+    constexpr static int CONNECTING = BIT2; // Normal
 
     sockaddr_in destAddr = {};
     int sock = -1;
-    Status status = Status::OFF;
+    EventGroupHandle_t status;
     TickType_t lastRetry = 0;
+
+    char rxBuf[TCP_BUF_SIZE] = {};
+    StreamBufferHandle_t rxStream = nullptr;
 
     TcpClient(uint32_t targetIp, uint16_t port)
     {
-        // destAddr.sin_addr.s_addr = targetIp;
-
-        inet_pton(AF_INET, "192.168.153.73", &destAddr.sin_addr);
+        status = xEventGroupCreate();
+        rxStream = xStreamBufferCreate(TCP_BUF_SIZE, 1);
 
         destAddr.sin_family = AF_INET;
-        destAddr.sin_port = htons(3001);
+        destAddr.sin_addr.s_addr = targetIp;
+        destAddr.sin_port = htons(port);
+    }
+
+    TcpClient(const char* targetIp, uint16_t port)
+    {
+        status = xEventGroupCreate();
+        rxStream = xStreamBufferCreate(TCP_BUF_SIZE, 1);
+
+        destAddr.sin_family = AF_INET;
+        inet_pton(AF_INET, targetIp, &destAddr.sin_addr);
+        destAddr.sin_port = htons(port);
+    }
+
+    void invalidate()
+    {
+        printf("Invalidating socket\n");
+
+        sock = -1;
+        xEventGroupClearBits(status, OPEN);
+
+        // Note: if a task is waiting on this stream, this call will silently fail
+        xStreamBufferReset(rxStream);
     }
 
     void connect()
     {
-        if (status == Status::OPEN) {
+        if (sock != -1) {
+            printf("Tried to connect on full socket\n");
+            // Already connected
             return;
-        } else if (status == Status::BAD) {
-            // Clear
-            rxBuf.clear();
-            sock = -1;
         }
+
+        xEventGroupSetBits(status, CONNECTING);
+
+        printf("Start connect\n");
 
         // Backoff
         TickType_t now = xTaskGetTickCount();
@@ -164,44 +82,49 @@ public:
             lastRetry = now;
         }
 
-        printf("Start connect 3\n");
+        printf("Start connect 2\n");
 
-        sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+        sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (sock < 0) {
-            perror("Sock fail:");
-            printf("Socket creation failed: errno %d", errno);
-            sock = -1;
-            status = Status::BAD;
+            perror("Socket creation failed");
+            invalidate();
             return;
         }
+        // CHECK(::ioctl(sock, O_NONBLOCK, 0) >= 0);
+        // CHECK(esp_tls_set_socket_non_blocking(sock, true));
+
         printf("Socket created, connecting\n");
 
         int err = ::connect(sock, (sockaddr*)&destAddr, sizeof(destAddr));
         if (err != 0) {
-            // printf("Socket unable to connect: errno %d", errno);
-            perror("Socket unable to connect:");
-            sock = -1;
-            status = Status::BAD;
+            perror("Socket unable to connect");
+            invalidate();
             return;
         }
         printf("Successfully connected");
 
-        status = Status::OPEN;
+        int flags = fcntl(sock, F_GETFL, NULL);
+        CHECK(flags >= 0);
+        flags |= O_NONBLOCK;
+        CHECK(fcntl(sock, F_SETFL, flags));
+
+        xEventGroupClearBits(status, CONNECTING);
+        xEventGroupSetBits(status, OPEN);
     }
 
-    bool check()
+    bool isOpen()
     {
         if (sock == -1) {
-            status = Status::BAD;
+            invalidate();
             return false;
         }
 
         int error = 0;
-        socklen_t len = sizeof(error);
-        int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, &error, &len);
+        socklen_t errorsz = sizeof(error);
+        int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, &error, &errorsz);
 
         if (ret != 0 || error != 0) {
-            status = Status::BAD;
+            invalidate();
             return false;
         }
 
@@ -210,20 +133,7 @@ public:
 
     void waitToConnect()
     {
-        while (status != Status::OPEN) {
-            vTaskDelay(1_s);
-            printf("Waiting for socket to be open\n");
-        }
-    }
-
-    void tick()
-    {
-        if (!check()) {
-            connect();
-            return;
-        }
-
-        recv();
+        xEventGroupWaitBits(status, OPEN, pdFALSE, pdFALSE, portMAX_DELAY);
     }
 
     void send(std::string_view msg)
@@ -237,31 +147,61 @@ public:
 
     void recv()
     {
-        if (!check()) {
+        if (!isOpen()) {
             connect();
             return;
         }
 
-        int len = ::recv(sock, rxBuf.write(), rxBuf.remaining(), 0);
+        errno = 0;
+        int len = ::recv(sock, rxBuf, sizeof(rxBuf), 0);
 
         if (len < 0) {
-            // Error occurred during receiving
-            printf("recv failed: errno %d", errno);
-            perror("recv failed\n");
-            status = Status::BAD;
+            if (errno == EWOULDBLOCK || errno == EAGAIN || errno == EINPROGRESS) {
+                // Just skip it for now
+            } else {
+                // Error occurred during receiving, or socket closed
+                perror("recv failed\n");
+                invalidate();
+            }
         } else {
             // Data received
             printf("Received %d bytes\n", len);
 
-            rxBuf.w += len;
-            rxBuf.compact();
+            size_t sent = xStreamBufferSend(rxStream, (void*)rxBuf, len, portMAX_DELAY);
+            CHECK(sent == len);
+        }
+    }
 
-            printf("%s\n", rxBuf.read());
+    int readUntilTerminator(char* buf, int max, char terminator)
+    {
+        printf("Start read\n");
+        char* i = buf;
+        do {
+            // Read a character out of the TCP stream
+            int read = xStreamBufferReceive(rxStream, i, max, portMAX_DELAY);
+
+            if (read < 0)
+            {
+                printf("Stream buffer got bad msg %d\n", read);
+                return -1;
+            }
+
+            i += read;
+        } while (i != buf + max && i[-1] != terminator);
+
+        if (i == buf + max) {
+            // Packet was too big, abort
+            printf("packet was too big\n");
+            invalidate();
+            return 0;
+        } else {
+            return i - buf - 1;
         }
     }
 
     ~TcpClient()
     {
+        // todo: this
         shutdown(sock, 0);
         close(sock);
     }
@@ -269,7 +209,7 @@ public:
 
 void startNetThread();
 
-TcpClient* addTcpClient(uint32_t targetIp, uint16_t port);
+TcpClient* addTcpClient(const char* targetIp, uint16_t port);
 }; // namespace chessbot
 
 #endif // ifndef CHESSBOT_NET_H

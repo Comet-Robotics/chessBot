@@ -41,21 +41,26 @@ public:
         vTaskDelay(5_s);
         printf("send 1\n");
 
-        runThread();
-
-        auto addr = inet_addr("192.168.153.139");
-        uint16_t port = htons(3001);
+        auto addr = "192.168.78.248";
+        uint16_t port = 3001;
 
         client = addTcpClient(addr, port);
-        client->waitToConnect();
 
         printf("send 2\n");
+
+        client->waitToConnect();
+
+        printf("send 3\n");
+
+        runThread();
+
+        printf("send 4\n");
 
         char helloPacket[] = R"({"type":"CLIENT_HELLO","macAddress":"c0:4e:30:4b:68:76"};)";
 
         client->send(helloPacket);
 
-        printf("send 3\n");
+        printf("send 5\n");
     }
 
     void tick(uint64_t us)

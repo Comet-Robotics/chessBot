@@ -8,37 +8,42 @@
 
 namespace chessbot {
 
+char buf[TcpClient::TCP_BUF_SIZE];
+
 // On its thread, a robot parses commands and acts on them
 void robotThread(void* robotPtr)
 {
     Robot& bot = *(Robot*)(robotPtr);
-    JsonDocument json;
 
     while (true) {
-        auto& buf = bot.client->rxBuf;
-        int offset = buf.find(';');
-        if (offset != -1) {
-            std::string_view str(buf.read(), offset);
-            std::cout << "Deserializing " << str << '\n';
+        printf("Start loop\n");
+        int read = bot.client->readUntilTerminator(buf, sizeof(buf), ';');
 
-            // Read JSON packet
-            DeserializationError error = deserializeJson(json, str);
-            buf.r += offset;
-            printf("Next char is now %c\n", *buf.r);
-            buf.r++; // Read past semicolon
+        printf("Mid loop\n");
 
-            if (error) {
-                printf("deserializeJson() failed: %s\n", error.c_str());
-            }
+        std::string_view str(buf, read);
+        std::cout << "Deserializing " << str << '\n';
 
-            if (json["type"] == "DRIVE_TANK") {
-                float left = json["left"].as<float>();
-                float right = json["right"].as<float>();
-                printf("Driving that tank! %f %f\n", left, right);
-                bot.left.set(left);
-                bot.right.set(right);
-            }
+        // Read JSON packet
+        //JsonDocument json;
+        //DeserializationError error = deserializeJson(json, str);
+
+        /*if (error) {
+            printf("deserializeJson() failed: %s\n", error.c_str());
         }
+
+        printf("Post deserialize\n");
+
+        if (json["type"] == "DRIVE_TANK") {
+            printf("Post in\n");
+            float left = json["left"].as<float>();
+            float right = json["right"].as<float>();
+            printf("Post f\n");
+            printf("Driving that tank! %f %f\n", left, right);
+            bot.left.set(left);
+            bot.right.set(right);
+            printf("Post set\n");
+        }*/
 
         vTaskDelay(10_ms);
     }
