@@ -101,9 +101,6 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
         return false;
     } else {
         const tunnel = tcpServer.getTunnelFromId(message.id);
-        // if (leftPower == 0 && rightPower == 0) {
-        //   tunnel.send(PacketType.ESTOP);
-        // } else {
         if (!tunnel.connected) {
             console.warn(
                 "attempted manual move for disconnected robot ID " + message.id,
