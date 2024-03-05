@@ -1,6 +1,11 @@
 import * as net from "net";
 import config from "./bot-server-config.json";
-import { Packet, jsonToPacket, packetToJson } from "../utils/tcp-packet";
+import {
+    Packet,
+    SERVER_PROTOCOL_VERSION,
+    jsonToPacket,
+    packetToJson,
+} from "../utils/tcp-packet";
 
 export class BotTunnel {
     connected: boolean = false;
@@ -96,7 +101,10 @@ export class BotTunnel {
             switch (packet.type) {
                 case "CLIENT_HELLO": {
                     this.onHandshake(packet.macAddress);
-                    this.send({ type: "SERVER_HELLO" });
+                    this.send({
+                        type: "SERVER_HELLO",
+                        protocol: SERVER_PROTOCOL_VERSION,
+                    });
                     this.connected = true;
                     break;
                 }

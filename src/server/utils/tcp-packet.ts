@@ -8,12 +8,16 @@ import {
 } from "runtypes";
 
 // MUST be kept in sync with chessBotArduino/include/packet.h PacketType
+export const SERVER_PROTOCOL_VERSION = 1;
 
 export const CLIENT_HELLO = Record({
     type: Literal("CLIENT_HELLO"),
     macAddress: String,
 });
-export const SERVER_HELLO = Record({ type: Literal("SERVER_HELLO") });
+export const SERVER_HELLO = Record({
+    type: Literal("SERVER_HELLO"),
+    protocol: NumberType,
+});
 export const PING_SEND = Record({ type: Literal("PING_SEND") });
 export const PING_RESPONSE = Record({ type: Literal("PING_RESPONSE") });
 
