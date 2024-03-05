@@ -39,7 +39,11 @@ export class BotTunnel {
     }
 
     onError(err: Error) {
-        console.log("Connection error from %s: %s", this.getIdentifier(), err);
+        console.error(
+            "Connection error from %s: %s",
+            this.getIdentifier(),
+            err,
+        );
         this.connected = false;
     }
 
@@ -96,10 +100,15 @@ export class BotTunnel {
                 case "CLIENT_HELLO": {
                     this.onHandshake(packet.macAddress);
                     this.connected = true;
+                    break;
+                }
+                case "PING_SEND": {
+                    this.send({ type: "PING_RESPONSE" });
+                    break;
                 }
             }
         } catch (e) {
-            console.log("Received invalid packet with error", e);
+            console.warn("Received invalid packet with error", e);
         }
 
         // Handle next message if the data buffer has another one
@@ -116,16 +125,16 @@ export class BotTunnel {
         const msg = str + ";";
 
         if (!this.isActive()) {
-            console.log(
-                "Connection to ",
+            console.error(
+                "Connection to",
                 this.getIdentifier(),
-                " is inactive, failed to write",
+                "is inactive, failed to write",
                 msg,
             );
-            throw new Error(
-                "Cannot send packet to inactive connection: " +
-                    this.getIdentifier(),
-            );
+            // throw new Error(
+            //     "Cannot send packet to inactive connection: " +
+            //         this.getIdentifier(),
+            // );
         }
 
         console.log({ msg });
