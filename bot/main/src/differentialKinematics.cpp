@@ -2,7 +2,7 @@
 
 #include <chessbot/differentialKinematics.h>
 
-#include <cmath>
+#include <math.h>
 
 #include <pid_ctrl.h>
 

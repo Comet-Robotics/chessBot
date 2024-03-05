@@ -38,10 +38,9 @@ public:
     //, backLeft(PINCONFIG(PHOTODIODE_BACK_LEFT))
     //, backRight(PINCONFIG(PHOTODIODE_BACK_RIGHT))
     {
-        vTaskDelay(5_s);
         printf("send 1\n");
 
-        auto addr = "192.168.78.248";
+        auto addr = "192.168.78.139";
         uint16_t port = 3001;
 
         client = addTcpClient(addr, port);
@@ -57,7 +56,6 @@ public:
         printf("send 4\n");
 
         char helloPacket[] = R"({"type":"CLIENT_HELLO","macAddress":"c0:4e:30:4b:68:76"};)";
-
         client->send(helloPacket);
 
         printf("send 5\n");

@@ -77,11 +77,17 @@ void Motor::tick(uint64_t us) { encoder->tick(us); }
 // [-1.0, 1.0]
 void Motor::set(float power)
 {
+    bool reverse = power < 0.0;
+
     power *= driveMultiplier;
+
+    if (reverse) {
+        power = 1 - power;
+    }
 
     powerPin.set(power);
 
-    gpio_set_level(channelB, power < 0.0);
+    gpio_set_level(channelB, reverse);
     return;
 }
 }; // namespace chessbot

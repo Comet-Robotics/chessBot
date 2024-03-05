@@ -3,8 +3,7 @@
 
 #include <freertos/FreeRTOS.h> // Mandatory first include
 
-#include <bit>
-#include <cstdint>
+#include <stdint.h>
 
 #include <chessbot/log.h>
 #include <chessbot/util.h>
@@ -64,9 +63,9 @@ void setConfig(ConfigKey key, ValT val)
 }
 
 #define PINCONFIG(target) (getConfig<gpio_num_t>(ConfigKey::target))
-#define FCONFIG(target) (getConfig<float>(ConfigKey::target))
 #define ICONFIG(target) (getConfig<int32_t>(ConfigKey::target))
 #define UCONFIG(target) (getConfig<uint32_t>(ConfigKey::target))
+#define FCONFIG(target) (getConfig<float>(ConfigKey::target))
 }; // namespace chessbot
 
 #endif // ifndef CHESSBOT_CONFIG_H

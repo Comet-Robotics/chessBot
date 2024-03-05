@@ -2,8 +2,6 @@
 
 #include <chessbot/dac.h>
 
-#include <bitset>
-
 #include <driver/ledc.h>
 
 #include <chessbot/log.h>
@@ -57,19 +55,23 @@ PwmPin::~PwmPin()
 
 void PwmPin::set(float val)
 {
-    int32_t duty = ((2 << LEDC_DUTY_RES) - 1) - ((2 << LEDC_DUTY_RES) - 1) * val;
+    // val is [0.0,1.0]
+    int32_t duty = /*((1 << LEDC_DUTY_RES) - 1) - */ int32_t(float((1 << LEDC_DUTY_RES) - 1) * val);
+
+    printf("Calculated duty cycle %d from %f\n", (int)duty, val);
 
     CHECK(ledc_set_duty(LEDC_MODE, this->channel, duty));
     CHECK(ledc_update_duty(LEDC_MODE, this->channel));
 }
 
-std::bitset<LEDC_CHANNEL_MAX> ledcChannels;
+// [0,LEDC_CHANNEL_MAX=8)
+uint32_t ledcChannels = 0;
 
 ledc_channel_t PwmPin::getFreeLedcChannel()
 {
-    for (ledc_channel_t i = LEDC_CHANNEL_0; i < ledcChannels.size(); i = ledc_channel_t((int)i + 1)) {
-        if (!ledcChannels.test(i)) {
-            ledcChannels.set(i);
+    for (ledc_channel_t i = LEDC_CHANNEL_0; i < LEDC_CHANNEL_MAX; i = ledc_channel_t((int)i + 1)) {
+        if (!(ledcChannels & (1 << i))) {
+            ledcChannels |= (1 << i);
             return i;
         }
     }
@@ -79,7 +81,7 @@ ledc_channel_t PwmPin::getFreeLedcChannel()
 
 void PwmPin::freeLedcChannel(ledc_channel_t channel)
 {
-    CHECK(ledcChannels.test(channel));
-    ledcChannels.reset(channel);
+    CHECK(channel & (1 << int(channel)));
+    ledcChannels &= ~(1 << int(channel));
 }
 }; // namespace chessbot

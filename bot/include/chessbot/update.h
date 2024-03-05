@@ -3,7 +3,7 @@
 
 #include <freertos/FreeRTOS.h> // Mandatory first include
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace chessbot {
 extern uint64_t currentFirmwareVersion;

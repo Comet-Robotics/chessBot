@@ -9,7 +9,7 @@ uint32_t configStore[(size_t)ConfigKey::CONFIG_SIZE] = {
     38, // MOTOR_A_PIN1
     33,
     21, // MOTOR_B_PIN1
-    17,
+    16,
 
     32, // ENCODER_A_PIN1
     31,
@@ -24,7 +24,7 @@ uint32_t configStore[(size_t)ConfigKey::CONFIG_SIZE] = {
 
     bitcast<uint32_t>(4.375f), // WHEEL_DIAMETER_INCHES
 
-    bitcast<uint32_t>(1.0f), // MOTOR_A_DRIVE_MULTIPLIER
+    bitcast<uint32_t>(-0.5f), // MOTOR_A_DRIVE_MULTIPLIER
     bitcast<uint32_t>(-1.0f), // MOTOR_B_DRIVE_MULTIPLIER
 
     bitcast<uint32_t>(-12000.0f), // ENCODER_MULTIPLER

@@ -44,21 +44,7 @@ extern "C" void app_main_alt()
 
     startWifi();
     waitForWifiConnection();
-
     startNetThread();
-
-    // TcpClient client("192.168.0.251", 9999);
-    // client.connect();
-
-    /*while (true) {
-        client.tick();
-
-        printf("Sending and recv\n");
-        client.send("{\"type\":\"test\"};");
-        client.recv();
-
-        vTaskDelay(1_s);
-    }*/
 
     Robot robot;
 
@@ -74,11 +60,13 @@ extern "C" void app_main_alt()
     while (true) {
         // printf("Hello world! %d %d %d %d\n", adcRead(ADC_CHANNEL_0), adcRead(ADC_CHANNEL_1),
         // adcRead(ADC_CHANNEL_3), adcRead(ADC_CHANNEL_5));
-        bool button = gpio_get_level(GPIO_NUM_0);
+        bool button = !gpio_get_level(GPIO_NUM_0);
 
         // robot.right.set(button ? 0 : frand());
         // robot.left.set(button ? 0 : frand());
 
-        vTaskDelay(500_ms);
+        // std::cout << "setting high" << std::endl;
+
+        vTaskDelay(1_s);
     }
 }

@@ -180,8 +180,7 @@ public:
             // Read a character out of the TCP stream
             int read = xStreamBufferReceive(rxStream, i, max, portMAX_DELAY);
 
-            if (read < 0)
-            {
+            if (read < 0) {
                 printf("Stream buffer got bad msg %d\n", read);
                 return -1;
             }

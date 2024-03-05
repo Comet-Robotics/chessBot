@@ -25,13 +25,6 @@ OutT bitcast(InT in) noexcept
     return out;
 }
 
-inline float frand()
-{
-    static uint32_t next = 1;
-    next = next * 1103515245 + 12345;
-    return float((uint32_t)(next / 65536) % 32768) / 32768;
-}
-
 inline bool within(float val, float range, float target)
 {
     return std::abs(target - val) <= range;
@@ -53,6 +46,11 @@ inline void waitForever()
 inline int randIn(int low, int high)
 {
     return esp_random() % (high + 1 - low) + low;
+}
+
+inline float frand()
+{
+    return ((double)esp_random() / (RAND_MAX)) * 2 - 1;
 }
 
 struct TaskPriority {

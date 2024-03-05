@@ -2,8 +2,6 @@
 
 #include <chessbot/update.h>
 
-#include <memory>
-
 #include <esp_http_client.h>
 #include <esp_https_ota.h>
 #include <esp_log.h>
@@ -87,13 +85,6 @@ esp_err_t httpEventHandler(esp_http_client_event_t* evt)
     return ESP_OK;
 }
 
-struct cleanupHttpClient {
-    void operator()(esp_http_client* client)
-    {
-        esp_http_client_cleanup(client);
-    }
-};
-
 esp_err_t getJsonFromHost(const char* host)
 {
     esp_http_client_config_t httpConfig = {};
@@ -103,7 +94,6 @@ esp_err_t getJsonFromHost(const char* host)
     httpConfig.event_handler = httpEventHandler;
 
     esp_http_client_handle_t client = esp_http_client_init(&httpConfig);
-    std::unique_ptr<esp_http_client, cleanupHttpClient> cleanup(client);
 
     memset(otaHttpResp, 0, sizeof(otaHttpResp));
     esp_err_t err = esp_http_client_perform(client);
@@ -112,6 +102,7 @@ esp_err_t getJsonFromHost(const char* host)
         printf("Successful HTTP request to %s, status %d, length %d\n", host, esp_http_client_get_status_code(client), (int)esp_http_client_get_content_length(client));
     } else {
         printf("Failed HTTP request to %s\n", host);
+        esp_http_client_cleanup(client);
         return err;
     }
 
@@ -120,9 +111,11 @@ esp_err_t getJsonFromHost(const char* host)
 
     if (jerr) {
         printf("Failed deserializing json from %s because %s\n", host, "");
+        esp_http_client_cleanup(client);
         return ESP_FAIL;
     }
 
+    esp_http_client_cleanup(client);
     return ESP_OK;
 }
 

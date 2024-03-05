@@ -55,8 +55,6 @@ void wifiEventHandler(void* arg, esp_event_base_t eBase,
         ESP_LOGI(TAG, "Wifi stop\n");
     } else if (eId == WIFI_EVENT_STA_CONNECTED) {
         ESP_LOGI(TAG, "Wifi connected\n");
-
-        xEventGroupSetBits(wifiEvents, WIFI_CONNECTED_BIT);
     } else if (eId == WIFI_EVENT_STA_DISCONNECTED) {
         ESP_LOGI(TAG, "Wifi disconnected");
 

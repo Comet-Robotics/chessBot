@@ -1,16 +1,13 @@
 #include <freertos/FreeRTOS.h> // Mandatory first include
 
-#include <variant>
-#include <vector>
-
-#include <sys/poll.h>
-#include <esp_netif.h>
 #include <esp_log.h>
+#include <esp_netif.h>
 #include <netdb.h>
+#include <sys/poll.h>
 
+#include <chessbot/log.h>
 #include <chessbot/net.h>
 #include <chessbot/util.h>
-#include <chessbot/log.h>
 
 #define TAG "netthread"
 
@@ -22,7 +19,6 @@ TcpClient* clients[MAX_TCP_SOCKETS];
 int clientsCount = 0;
 
 pollfd pollDescriptors[MAX_TCP_SOCKETS] = {};
-int pipeFd = -1;
 
 int pipe()
 {
@@ -34,7 +30,7 @@ int pipe()
     int err;
     struct sockaddr_in saddr = { 0 };
 
-    //ESP_ERROR_CHECK(esp_netif_init());
+    // ESP_ERROR_CHECK(esp_netif_init());
 
     err = getaddrinfo("localhost", "79", &hints, &res);
 
@@ -69,7 +65,7 @@ int pipe()
         return -1;
     }
 
-    //freeaddrinfo(res);
+    // freeaddrinfo(res);
     return socket_fd;
 }
 
@@ -78,26 +74,14 @@ int pipe()
 void netThread(void*)
 {
     while (true) {
-        int rc = poll(pollDescriptors, clientsCount + 1, 500);
-        printf("Poll");
+        int rc = poll(pollDescriptors, clientsCount, 500);
         if (rc < 0) {
             printf("Fail\n");
             FAIL();
         } else if (rc > 0) {
             // Something happened to a descriptor
-            printf("Poll interrupt\n");
-
-            if (pollDescriptors[0].revents) {
-                printf("started pipe recv\n");
-                // Got bytes on the pipe, need to re-run poll()
-                char buf[1];
-                ::recv(pipeFd, buf, sizeof(buf), 0);
-                printf("passed pipe recv\n");
-            }
-
             for (int i = 0; i < clientsCount; i++) {
-                int revents = pollDescriptors[i + 1].revents;
-                printf("Reading revent %d\n", revents);
+                int revents = pollDescriptors[i].revents;
 
                 // This is designed so that remaining data is read first, then an invalid state is handled
                 if (revents & POLLIN) {
@@ -118,14 +102,7 @@ void netThread(void*)
 
 void startNetThread()
 {
-    pipeFd = pipe();
-
-    pollDescriptors[0] = {
-        .fd = pipeFd,
-        .events = POLLIN
-    };
-
-    xTaskCreate(netThread, "net", configMINIMAL_STACK_SIZE, nullptr, TaskPriority::net, nullptr);
+    xTaskCreate(netThread, "net", CONFIG_TINYUSB_TASK_STACK_SIZE, nullptr, TaskPriority::net, nullptr);
     printf("Start net thread\n");
 }
 
@@ -136,13 +113,12 @@ TcpClient* addTcpClient(const char* targetIp, uint16_t port)
     clients[clientsCount] = c;
     c->connect();
 
-    pollDescriptors[1 + clientsCount] = {
+    pollDescriptors[clientsCount] = {
         .fd = c->sock,
         .events = POLLERR | POLLHUP | POLLIN
     };
 
     printf("Sending interrupt to pipe\n");
-    ::send(pipeFd, "\0", 1, 0);
 
     return clients[clientsCount++];
 }
