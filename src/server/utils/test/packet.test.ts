@@ -22,10 +22,11 @@ const validMessages: Packet[] = [
 ];
 
 const invalidMessages = [
-    {},
-    { type: "INVALID_TYPE" },
-    { type: "DRIVE_TANK", left: 0.3 },
-    { type: "SET_VAR", var_id: 0, var_type: "int32", var_val: -3.14 },
+    {}, // missing type
+    { type: "INVALID_TYPE" }, // invalid type
+    { type: "DRIVE_TANK", left: 0.3 }, // missing property
+    { type: "DRIVE_TANK", left: 100, right: -0.9 }, // property outside constraint bounds
+    { type: "SET_VAR", var_id: 0, var_type: "int32", var_val: -3.14 }, // property with invalid type
 ];
 
 test.each(validMessages)("Test packet serialization", async (packet) => {
