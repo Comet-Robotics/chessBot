@@ -12,13 +12,11 @@ function useManualMoveHandler(
     //useManualMoveHandler takes in the state powers and the setPowers functions, and returns a function that sets the power levels in the state.
     leftPower: number,
     rightPower: number,
-    setLeftPower: Dispatch<number>,
-    setRightPower: Dispatch<number>,
+    setPower: Dispatch<{ left: number; right: number }>,
 ) {
     const handleManualMove = useCallback(() => {
-        setLeftPower(leftPower);
-        setRightPower(rightPower);
-    }, [leftPower, rightPower, setLeftPower, setRightPower]);
+        setPower({ left: leftPower, right: rightPower });
+    }, [leftPower, rightPower, setPower]);
     return handleManualMove;
 }
 
@@ -27,24 +25,20 @@ function useManualMoveHandler(
  */
 export function DriveRobot(props: DriveRobotProps) {
     //state variable for handling the power levels of the robot
-    const [leftPower, setLeftPower] = useState(0);
-    const [rightPower, setRightPower] = useState(0);
-    const [prevPadLeft, setPrevPadLeft] = useState(0);
-    const [prevPadRight, setPrevPadRight] = useState(0);
-    const [prevLeft, setPrevLeft] = useState(0);
-    const [prevRight, setPrevRight] = useState(0);
+    const [power, setPower] = useState({ left: 0, right: 0 });
+    const [prevPad, setPrevPad] = useState({ left: 0, right: 0 });
+    const [prev, setPrev] = useState({ left: 0, right: 0 });
 
     //useEffect hook to send the power levels to the robot if there is a change in the power levels
     useEffect(() => {
-        if (prevLeft === leftPower && prevRight === rightPower) {
+        if (prev.left === power.left && prev.right === power.right) {
             return;
         }
         props.sendMessage(
-            new DriveRobotMessage(props.robotId, leftPower, rightPower),
+            new DriveRobotMessage(props.robotId, power.left, power.right),
         );
-        setPrevLeft(leftPower);
-        setPrevRight(rightPower);
-    }, [props, leftPower, rightPower, prevLeft, prevRight]);
+        setPrev({ left: power.left, right: power.right });
+    }, [props, power.left, power.right, prev]);
 
     useEffect(() => {
         if (!navigator.getGamepads) {
@@ -66,17 +60,15 @@ export function DriveRobot(props: DriveRobotProps) {
                     padRightPower =
                         Math.sign(padRightPower) * Math.pow(padRightPower, 2);
                     if (
-                        prevPadLeft === 0 &&
-                        prevPadRight === 0 &&
+                        prevPad.left === 0 &&
+                        prevPad.right === 0 &&
                         padLeftPower === 0 &&
                         padRightPower === 0
                     ) {
                         continue;
                     }
-                    setLeftPower(padLeftPower);
-                    setRightPower(padRightPower);
-                    setPrevPadLeft(padLeftPower);
-                    setPrevPadRight(padRightPower);
+                    setPower({ left: padLeftPower, right: padRightPower });
+                    setPrevPad({ left: padLeftPower, right: padRightPower });
                 }
             }
         };
@@ -86,43 +78,22 @@ export function DriveRobot(props: DriveRobotProps) {
         return () => {
             clearInterval(gamepadPollingInterval);
         };
-    }, [props, prevPadLeft, prevPadRight]);
+    }, [props, prevPad]);
 
     const handleStopMove = useCallback(() => {
-        setLeftPower(0);
-        setRightPower(0);
+        setPower({ left: 0, right: 0 });
     }, []);
 
-    const handleDriveForward = useManualMoveHandler(
-        1,
-        1,
-        setLeftPower,
-        setRightPower,
-    );
-    const handleDriveBackward = useManualMoveHandler(
-        -1,
-        -1,
-        setLeftPower,
-        setRightPower,
-    );
-    const handleTurnRight = useManualMoveHandler(
-        0.5,
-        -0.5,
-        setLeftPower,
-        setRightPower,
-    );
-    const handleTurnLeft = useManualMoveHandler(
-        -0.5,
-        0.5,
-        setLeftPower,
-        setRightPower,
-    );
+    const handleDriveForward = useManualMoveHandler(1, 1, setPower);
+    const handleDriveBackward = useManualMoveHandler(-1, -1, setPower);
+    const handleTurnRight = useManualMoveHandler(0.5, -0.5, setPower);
+    const handleTurnLeft = useManualMoveHandler(-0.5, 0.5, setPower);
 
     const handleLeftPowerChange = (value: number) => {
-        setLeftPower(value);
+        setPower({ left: value, right: power.right });
     };
     const handleRightPowerChange = (value: number) => {
-        setRightPower(value);
+        setPower({ left: power.left, right: value });
     };
 
     const hotkeys = useMemo(
@@ -238,7 +209,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 min={-1}
                 max={1}
                 stepSize={0.01}
-                value={leftPower}
+                value={power.left}
                 initialValue={0}
                 onChange={handleLeftPowerChange}
                 vertical
@@ -247,7 +218,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 min={-1}
                 max={1}
                 stepSize={0.01}
-                value={rightPower}
+                value={power.right}
                 initialValue={0}
                 onChange={handleRightPowerChange}
                 vertical
