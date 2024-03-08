@@ -1,7 +1,11 @@
 import { Socket } from "net";
-import { BotTunnel } from "../../api/tcp-interface";
+import { BotTunnel } from "../../../server/api/tcp-interface";
 import { vi, test, expect, afterEach } from "vitest";
-import { Packet, jsonToPacket, packetToJson } from "../tcp-packet";
+import {
+    Packet,
+    jsonToPacket,
+    packetToJson,
+} from "../tcp-packet";
 
 vi.mock("net");
 
