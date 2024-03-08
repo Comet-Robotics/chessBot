@@ -85,12 +85,18 @@ export function DriveRobot(props: DriveRobotProps) {
         setPower({ left: -0.5, right: 0.5 });
     }, []);
 
-    const handleLeftPowerChange = useCallback((value: number) => {
-        setPower({ left: value, right: power.right });
-    }, []);
-    const handleRightPowerChange = useCallback((value: number) => {
-        setPower({ left: power.left, right: value });
-    }, []);
+    const handleLeftPowerChange = useCallback(
+        (value: number) => {
+            setPower({ left: value, right: power.right });
+        },
+        [power.right],
+    );
+    const handleRightPowerChange = useCallback(
+        (value: number) => {
+            setPower({ left: power.left, right: value });
+        },
+        [power.left],
+    );
 
     const hotkeys = useMemo(
         () => [
