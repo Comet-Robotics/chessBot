@@ -1,5 +1,5 @@
 import { Button, useHotkeys, Slider } from "@blueprintjs/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, Dispatch } from "react";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
 
@@ -12,8 +12,8 @@ function useManualMoveHandler(
     //useManualMoveHandler takes in the state powers and the setPowers functions, and returns a function that sets the power levels in the state.
     leftPower: number,
     rightPower: number,
-    setLeftPower: React.Dispatch<React.SetStateAction<number>>,
-    setRightPower: React.Dispatch<React.SetStateAction<number>>,
+    setLeftPower: Dispatch<number>,
+    setRightPower: Dispatch<number>,
 ) {
     const handleManualMove = useCallback(() => {
         setLeftPower(leftPower);
