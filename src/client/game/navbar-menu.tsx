@@ -6,12 +6,12 @@ import {
     NavbarHeading,
 } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
-import { GameInterruptedMessage } from "../../common/message/game-message";
 import { GameInterruptedReason } from "../../common/game-end-reasons";
 import { SendMessage } from "../../common/message/message";
+import { ClientToServerMessage } from "../../common/message/client-server";
 
 interface NavbarMenuProps {
-    sendMessage: SendMessage;
+    sendMessage: SendMessage<ClientToServerMessage>;
 }
 
 export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
@@ -28,11 +28,10 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                     text="Abort Game"
                     intent="warning"
                     onClick={async () => {
-                        props.sendMessage(
-                            new GameInterruptedMessage(
-                                GameInterruptedReason.ABORTED,
-                            ),
-                        );
+                        props.sendMessage({
+                            type: "GAME_INTERRUPTED",
+                            reason: GameInterruptedReason.ABORTED,
+                        });
                     }}
                 />
             </NavbarGroup>

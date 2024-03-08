@@ -1,72 +1,45 @@
-/**
- * Defines messages sent across web sockets between the server and the client (and/or the client and the server).
- *
- * To add a new message, first add a member to MessageType, then create a corresponding class which extends `Message` and implements the `type` method and the `toObj` method.
- * Finally, add a corresponding case to `parseMessage` in `./parse-message`.
- */
+import { Union, Static, Runtype } from "runtypes";
+import { ClientToServerMessage, ServerToClientMessage } from "./client-server";
 
-/**
- * A collection of WebSocket message types.
- */
-export enum MessageType {
-    /**
-     * A client-server message used to register a websocket with the server.
-     */
-    REGISTER_WEBSOCKET = "register-websocket",
-    /**
-     * A server-client message defining the current position of a game.
-     * Used to allow clients to reconnect.
-     */
-    POSITION = "position",
-    /**
-     * A two-way message containing a single move.
-     */
-    MOVE = "move",
-    /**
-     * A client-server message used to indicate the start of a game.
-     */
-    GAME_START = "game-start",
-    /**
-     * A two-way message indicating a game has been interrupted.
-     *
-     * Note this does not include the game ending as a part of the normal flow of moves.
-     */
-    GAME_INTERRUPTED = "game-interrupted",
-    /**
-     * A client-server message containing instructions for manually driving a robot.
-     */
-    DRIVE_ROBOT = "drive-robot",
-}
-
-export abstract class Message {
-    /**
-     * Serializes the message as json.
-     */
-    public toJson(): string {
-        return JSON.stringify(this.toObj());
-    }
-
-    protected abstract type: MessageType;
-
-    /**
-     * Sends this class to an object which can be serialized as json.
-     * The only usage of this method is by `toJson`.
-     */
-    protected toObj(): object {
-        return { type: this.type };
-    }
-}
-
-export class RegisterWebsocketMessage extends Message {
-    protected type = MessageType.REGISTER_WEBSOCKET;
-}
+export const Message = Union(ClientToServerMessage, ServerToClientMessage);
+export type Message = Static<typeof Message>;
 
 /**
  * A function which can be used to send a message somewhere.
  */
-export type SendMessage = (message: Message) => void;
+export type SendMessage<T extends Partial<Message>> = (message: T) => void;
 
 /**
  * A function which receives messages and should do stuff with them.
  */
-export type MessageHandler = (message: Message) => void;
+export type MessageHandler<T extends Partial<Message>> = (message: T) => void;
+
+/**
+ * Convert json to Message object
+ * @param jsonStr - json string
+ * @returns parsed Message object
+ * @throws if json string is not a Message object
+ */
+export function jsonToMessage<T = Message>(
+    jsonStr: string,
+    guard?: Runtype<T>,
+): T {
+    const obj = JSON.parse(jsonStr);
+    if (!(guard || Message).guard(obj)) {
+        throw new Error("Invalid message: " + jsonStr);
+    }
+    return obj as T;
+}
+
+/**
+ * Convert Message object to json
+ * @param message - message object
+ * @returns stringified object
+ * @throws if provided object is not a Message
+ */
+export function messageToJson(message: Message): string {
+    if (!Message.guard(message)) {
+        throw new Error("Invalid message: " + JSON.stringify(message));
+    }
+    return JSON.stringify(message);
+}

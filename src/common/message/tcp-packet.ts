@@ -1,23 +1,5 @@
-import {
-    Number as NumberType,
-    String,
-    Record,
-    Union,
-    Static,
-    Literal,
-} from "runtypes";
-
-const Float = NumberType.withConstraint((n) => Number.isFinite(n), {
-    name: "float",
-});
-const Int32 = Float.withConstraint((n) => Number.isSafeInteger(n), {
-    name: "int32",
-});
-const Uint32 = Int32.withConstraint((n) => n >= 0, { name: "uint32" });
-const VarId = Uint32;
-const MotorPower = Float.withConstraint((n) => -1 <= n && n <= 1, {
-    name: "motor_power",
-});
+import { String, Record, Union, Static, Literal } from "runtypes";
+import { Float, Int32, MotorPower, Uint32, VarId } from "./core";
 
 // MUST be kept in sync with chessBotArduino/include/packet.h PacketType
 export const SERVER_PROTOCOL_VERSION = 1;

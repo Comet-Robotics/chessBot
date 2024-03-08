@@ -5,7 +5,7 @@ import {
     SERVER_PROTOCOL_VERSION,
     jsonToPacket,
     packetToJson,
-} from "../utils/tcp-packet";
+} from "../../common/message/tcp-packet";
 
 export class BotTunnel {
     connected: boolean = false;

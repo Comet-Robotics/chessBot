@@ -1,9 +1,16 @@
 import useWebSocket from "react-use-websocket";
-import { Message, RegisterWebsocketMessage } from "../common/message/message";
+import {
+    Message,
+    messageToJson,
+    MessageHandler,
+    SendMessage,
+    jsonToMessage,
+} from "../common/message/message";
 import { useMemo } from "react";
-import { parseMessage } from "../common/message/parse-message";
-import { SendMessage } from "../common/message/message";
-import { MessageHandler } from "../common/message/message";
+import {
+    ClientToServerMessage,
+    ServerToClientMessage,
+} from "../common/message/client-server";
 
 /**
  * The URL to use for connecting to the websocket backend.
@@ -16,15 +23,20 @@ const WEBSOCKET_URL = "ws://localhost:3000/ws";
  * @param handleMessage - A function which gets invoked each time a message is received.
  * @returns A function which can be used to send messages.
  */
-export function useSocket(handleMessage?: MessageHandler): SendMessage {
+export function useSocket(
+    handleMessage?: MessageHandler<ServerToClientMessage>,
+): SendMessage<ClientToServerMessage> {
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
         onOpen: () => {
             console.log("Connection established");
-            sendMessage(new RegisterWebsocketMessage().toJson());
+            sendMessage(messageToJson({ type: "REGISTER_WEBSOCKET" }));
         },
         onMessage: (msg: MessageEvent) => {
-            const message = parseMessage(msg.data.toString());
-            console.log("Handle message: " + message.toJson());
+            const message = jsonToMessage(
+                msg.data.toString(),
+                ServerToClientMessage,
+            );
+            console.log("Handle message: " + JSON.stringify(message));
 
             if (handleMessage !== undefined) {
                 handleMessage(message);
@@ -34,8 +46,9 @@ export function useSocket(handleMessage?: MessageHandler): SendMessage {
 
     const sendMessageHandler = useMemo(() => {
         return (message: Message) => {
-            console.log("Sending message: " + message.toJson());
-            sendMessage(message.toJson());
+            const msgString = messageToJson(message);
+            console.log("Sending message: " + msgString);
+            sendMessage(msgString);
         };
     }, [sendMessage]);
     return sendMessageHandler;

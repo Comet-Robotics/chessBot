@@ -2,9 +2,8 @@ import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
 import { GameFinishedReason } from "./game-end-reasons";
 import { Difficulty } from "./client-types";
-import { Move } from "./game-types";
-import { PieceType } from "./game-types";
-import { Side } from "./game-types";
+import { PieceType, Side } from "./game-types";
+import { Move } from "./message/core";
 
 export class ChessEngine {
     private chess: Chess;

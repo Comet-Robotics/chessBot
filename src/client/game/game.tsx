@@ -1,12 +1,6 @@
 import { Dispatch, useEffect, useState } from "react";
 
 import {
-    GameInterruptedMessage,
-    GameStartMessage,
-} from "../../common/message/game-message";
-import { MoveMessage } from "../../common/message/game-message";
-import { PositionMessage } from "../../common/message/game-message";
-import {
     GameEndReason,
     GameInterruptedReason,
 } from "../../common/game-end-reasons";
@@ -14,11 +8,12 @@ import {
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
 import { useSocket } from "../api";
-import { MessageHandler } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
 import { Outlet, useLocation } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
-import { Move } from "../../common/game-types";
+import { Move } from "../../common/message/core";
+import { MessageHandler } from "../../common/message/message";
+import { ServerToClientMessage } from "../../common/message/client-server";
 
 /**
  * Creates a MessageHandler function.
@@ -27,14 +22,14 @@ function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
     setGameInterruptedReason: Dispatch<GameInterruptedReason>,
-): MessageHandler {
+): MessageHandler<ServerToClientMessage> {
     return (message) => {
-        if (message instanceof PositionMessage) {
+        if (message.type === "POSITION") {
             setChess(new ChessEngine(message.pgn));
-        } else if (message instanceof MoveMessage) {
+        } else if (message.type === "MOVE") {
             // Must be a new instance of ChessEngine to trigger UI redraw
             setChess(chess.copy(message.move));
-        } else if (message instanceof GameInterruptedMessage) {
+        } else if (message.type === "GAME_INTERRUPTED") {
             setGameInterruptedReason(message.reason);
         }
     };
@@ -53,7 +48,7 @@ export function Game(): JSX.Element {
     );
 
     useEffect(() => {
-        sendMessage(new GameStartMessage(gameType, side, difficulty));
+        sendMessage({ type: "GAME_START", gameType, side, difficulty });
     }, [sendMessage, gameType, side, difficulty]);
 
     let gameOverReason: GameEndReason | undefined = undefined;
@@ -70,7 +65,7 @@ export function Game(): JSX.Element {
 
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
-        sendMessage(new MoveMessage(move));
+        sendMessage({ type: "MOVE", move });
     };
 
     return (

@@ -1,11 +1,12 @@
 import { Button, useHotkeys, Slider } from "@blueprintjs/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
+import { DrivePower } from "../../common/message/core";
+import { ClientToServerMessage } from "../../common/message/client-server";
 
 interface DriveRobotProps {
     robotId: string;
-    sendMessage: SendMessage;
+    sendMessage: SendMessage<ClientToServerMessage>;
 }
 
 const approxeq = (v1: number, v2: number, epsilon = 0.01) =>
@@ -16,9 +17,9 @@ const approxeq = (v1: number, v2: number, epsilon = 0.01) =>
  */
 export function DriveRobot(props: DriveRobotProps) {
     //state variable for handling the power levels of the robot
-    const [power, setPower] = useState({ left: 0, right: 0 });
-    const [prevPad, setPrevPad] = useState({ left: 0, right: 0 });
-    const [prev, setPrev] = useState({ left: 0, right: 0 });
+    const [power, setPower] = useState<DrivePower>({ left: 0, right: 0 });
+    const [prevPad, setPrevPad] = useState<DrivePower>({ left: 0, right: 0 });
+    const [prev, setPrev] = useState<DrivePower>({ left: 0, right: 0 });
 
     //useEffect hook to send the power levels to the robot if there is a change in the power levels
     useEffect(() => {
@@ -28,11 +29,9 @@ export function DriveRobot(props: DriveRobotProps) {
         ) {
             return;
         }
-        props.sendMessage(
-            new DriveRobotMessage(props.robotId, power.left, power.right),
-        );
-        setPrev({ left: power.left, right: power.right });
-    }, [props, power.left, power.right, prev]);
+        props.sendMessage({ type: "DRIVE_ROBOT", id: props.robotId, power });
+        setPrev(power);
+    }, [props, power, prev]);
 
     useEffect(() => {
         if (!navigator.getGamepads) {

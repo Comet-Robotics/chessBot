@@ -1,16 +1,8 @@
 import { WebsocketRequestHandler } from "express-ws";
 import { Router } from "express";
 
-import { parseMessage } from "../../common/message/parse-message";
-import {
-    GameStartMessage,
-    GameInterruptedMessage,
-} from "../../common/message/game-message";
-import { DriveRobotMessage } from "../../common/message/drive-robot-message";
-
 import { TCPServer } from "./tcp-interface";
-import { GameType } from "../../common/client-types";
-import { RegisterWebsocketMessage } from "../../common/message/message";
+import { jsonToMessage, messageToJson } from "../../common/message/message";
 import { clientManager, socketManager } from "./managers";
 import {
     ComputerGameManager,
@@ -18,6 +10,11 @@ import {
     HumanGameManager,
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
+import {
+    ClientToServerMessage,
+    DriveRobotMessage,
+} from "../../common/message/client-server";
+import { GameType } from "../../common/game-types";
 
 const tcpServer = new TCPServer();
 let gameManager: GameManager | null = null;
@@ -33,12 +30,12 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     });
 
     ws.on("message", (data) => {
-        const message = parseMessage(data.toString());
-        console.log("Received message: " + message.toJson());
+        const message = jsonToMessage(data.toString(), ClientToServerMessage);
+        console.log("Received message: " + messageToJson(message));
 
-        if (message instanceof RegisterWebsocketMessage) {
+        if (message.type === "REGISTER_WEBSOCKET") {
             socketManager.registerSocket(req.cookies.id, ws);
-        } else if (message instanceof GameStartMessage) {
+        } else if (message.type === "GAME_START") {
             if (message.gameType === GameType.COMPUTER) {
                 gameManager = new ComputerGameManager(
                     new ChessEngine(),
@@ -53,10 +50,10 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 );
             }
             gameManager?.handleMessage(message, req.cookies.id);
-        } else if (message instanceof GameInterruptedMessage) {
+        } else if (message.type === "GAME_INTERRUPTED") {
             gameManager?.handleMessage(message, req.cookies.id);
             gameManager = null;
-        } else if (message instanceof DriveRobotMessage) {
+        } else if (message.type === "DRIVE_ROBOT") {
             doDriveRobot(message);
         } else {
             gameManager?.handleMessage(message, req.cookies.id);
@@ -109,8 +106,8 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
         } else {
             tunnel.send({
                 type: "DRIVE_TANK",
-                left: message.leftPower,
-                right: message.rightPower,
+                left: message.power.left,
+                right: message.power.right,
             });
         }
     }
