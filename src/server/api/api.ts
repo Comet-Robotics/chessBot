@@ -95,20 +95,24 @@ apiRouter.get("/get-puzzles", (_, res) => {
 
 function doDriveRobot(message: DriveRobotMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {
-        console.log(
+        console.warn(
             "attempted manual move for non-existent robot ID " + message.id,
         );
         return false;
     } else {
         const tunnel = tcpServer.getTunnelFromId(message.id);
-        // if (leftPower == 0 && rightPower == 0) {
-        //   tunnel.send(PacketType.ESTOP);
-        // } else {
-        tunnel.send({
-            type: "DRIVE_TANK",
-            left: message.leftPower,
-            right: message.rightPower,
-        });
+        if (!tunnel.connected) {
+            console.warn(
+                "attempted manual move for disconnected robot ID " + message.id,
+            );
+            return false;
+        } else {
+            tunnel.send({
+                type: "DRIVE_TANK",
+                left: message.leftPower,
+                right: message.rightPower,
+            });
+        }
     }
     return true;
 }
