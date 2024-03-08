@@ -1,23 +1,11 @@
 import { Button, useHotkeys, Slider } from "@blueprintjs/core";
-import { useCallback, useEffect, useMemo, useState, Dispatch } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
 
 interface DriveRobotProps {
     robotId: string;
     sendMessage: SendMessage;
-}
-
-function useManualMoveHandler(
-    //useManualMoveHandler takes in the state powers and the setPowers functions, and returns a function that sets the power levels in the state.
-    leftPower: number,
-    rightPower: number,
-    setPower: Dispatch<{ left: number; right: number }>,
-) {
-    const handleManualMove = useCallback(() => {
-        setPower({ left: leftPower, right: rightPower });
-    }, [leftPower, rightPower, setPower]);
-    return handleManualMove;
 }
 
 /**
@@ -84,17 +72,25 @@ export function DriveRobot(props: DriveRobotProps) {
         setPower({ left: 0, right: 0 });
     }, []);
 
-    const handleDriveForward = useManualMoveHandler(1, 1, setPower);
-    const handleDriveBackward = useManualMoveHandler(-1, -1, setPower);
-    const handleTurnRight = useManualMoveHandler(0.5, -0.5, setPower);
-    const handleTurnLeft = useManualMoveHandler(-0.5, 0.5, setPower);
+    const handleDriveForward = useCallback(() => {
+        setPower({ left: 1, right: 1 });
+    }, []);
+    const handleDriveBackward = useCallback(() => {
+        setPower({ left: -1, right: -1 });
+    }, []);
+    const handleTurnRight = useCallback(() => {
+        setPower({ left: 0.5, right: -0.5 });
+    }, []);
+    const handleTurnLeft = useCallback(() => {
+        setPower({ left: -0.5, right: 0.5 });
+    }, []);
 
-    const handleLeftPowerChange = (value: number) => {
+    const handleLeftPowerChange = useCallback((value: number) => {
         setPower({ left: value, right: power.right });
-    };
-    const handleRightPowerChange = (value: number) => {
+    }, []);
+    const handleRightPowerChange = useCallback((value: number) => {
         setPower({ left: power.left, right: value });
-    };
+    }, []);
 
     const hotkeys = useMemo(
         () => [
