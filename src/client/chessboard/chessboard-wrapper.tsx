@@ -138,7 +138,6 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     return piece[0] === side;
                 }}
                 arePremovesAllowed={false}
-                //customSquareStyles={customSquareStyles}
                 customSquare={getCustomSquareRenderer(legalSquares, chess)}
             />
         </BoardContainer>
