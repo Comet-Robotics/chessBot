@@ -5,10 +5,7 @@ import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
 import { Side, PieceType } from "../../common/game-types";
-
-const CLICK_STYLE = {
-    backgroundColor: "green",
-};
+import { getCustomSquareRenderer } from "./custom-square-renderer";
 
 interface ChessboardWrapperProps {
     /**
@@ -44,13 +41,9 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     >();
 
     // Maps squares to style objects
-    const customSquareStyles: { [square: string]: object } = {};
-    let legalSquares: string[] | undefined = undefined;
+    let legalSquares: string[] = [];
     if (lastClickedSquare !== undefined) {
         legalSquares = chess.getLegalSquares(lastClickedSquare);
-        legalSquares.forEach((square) => {
-            customSquareStyles[square] = CLICK_STYLE;
-        });
     }
 
     /**
@@ -119,7 +112,6 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
 
                     const isSquareLegalMove =
                         lastClickedSquare !== undefined &&
-                        legalSquares !== undefined &&
                         legalSquares.includes(square);
 
                     if (isSquareLegalMove) {
@@ -146,7 +138,8 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     return piece[0] === side;
                 }}
                 arePremovesAllowed={false}
-                customSquareStyles={customSquareStyles}
+                //customSquareStyles={customSquareStyles}
+                customSquare={getCustomSquareRenderer(legalSquares, chess)}
             />
         </BoardContainer>
     );
