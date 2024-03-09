@@ -8,6 +8,9 @@ interface DriveRobotProps {
     sendMessage: SendMessage;
 }
 
+const approxeq = (v1: number, v2: number, epsilon = 0.001) =>
+    Math.abs(v1 - v2) <= epsilon;
+
 /**
  * A component which can be used to drive an individual robot around.
  */
@@ -19,7 +22,10 @@ export function DriveRobot(props: DriveRobotProps) {
 
     //useEffect hook to send the power levels to the robot if there is a change in the power levels
     useEffect(() => {
-        if (prev.left === power.left && prev.right === power.right) {
+        if (
+            approxeq(prev.left, power.left) &&
+            approxeq(prev.right, power.right)
+        ) {
             return;
         }
         props.sendMessage(
