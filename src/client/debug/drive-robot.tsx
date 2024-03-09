@@ -8,7 +8,7 @@ interface DriveRobotProps {
     sendMessage: SendMessage;
 }
 
-const approxeq = (v1: number, v2: number, epsilon = 0.001) =>
+const approxeq = (v1: number, v2: number, epsilon = 0.01) =>
     Math.abs(v1 - v2) <= epsilon;
 
 /**
