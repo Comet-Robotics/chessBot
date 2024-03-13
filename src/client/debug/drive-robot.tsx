@@ -29,8 +29,8 @@ export function DriveRobot(props: DriveRobotProps) {
             return;
         }
         props.sendMessage({ type: "drive-robot", id: props.robotId, power });
-        setPrev({ left: power.left, right: power.right });
-    }, [props, power.left, power.right, prev]);
+        setPrev(power);
+    }, [props, power, prev]);
 
     useEffect(() => {
         if (!navigator.getGamepads) {
