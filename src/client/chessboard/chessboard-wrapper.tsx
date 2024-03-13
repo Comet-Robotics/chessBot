@@ -3,8 +3,8 @@ import { Square } from "chess.js";
 import { useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
-import { Move } from "../../common/game-types";
 import { Side, PieceType } from "../../common/game-types";
+import { Move } from "../../common/message/core";
 
 const CLICK_STYLE = {
     backgroundColor: "green",

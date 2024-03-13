@@ -1,11 +1,5 @@
-import { Message } from "../../common/message/message";
+import { Message, messageToJson } from "../../common/message/message";
 import { ChessEngine } from "../../common/chess-engine";
-import {
-    MoveMessage,
-    PositionMessage,
-    GameStartMessage,
-    GameInterruptedMessage,
-} from "../../common/message/game-message";
 import { Side, oppositeSide } from "../../common/game-types";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
@@ -19,10 +13,10 @@ export abstract class GameManager {
     ) {}
 
     public handleReconnect(id: string): void {
-        this.socketManager.sendToSocket(
-            id,
-            new PositionMessage(this.chess.fen),
-        );
+        this.socketManager.sendToSocket(id, {
+            type: "position",
+            pgn: this.chess.fen,
+        });
     }
 
     public abstract handleMessage(message: Message, id: string): void;
@@ -46,19 +40,21 @@ export class HumanGameManager extends GameManager {
             opponentSocket = this.clientManager.getHostSocket();
         }
 
-        if (message instanceof GameStartMessage) {
+        if (message.type === "game-start") {
             opponentSocket?.send(
-                new GameStartMessage(
-                    message.gameType,
-                    oppositeSide(message.side),
-                ).toJson(),
+                messageToJson({
+                    type: "game-start",
+                    gameType: message.gameType,
+                    side: oppositeSide(message.side),
+                }),
             );
-        } else if (message instanceof MoveMessage) {
-            this.chess.makeMove(message.move);
-            opponentSocket?.send(new MoveMessage(message.move).toJson());
-        } else if (message instanceof GameInterruptedMessage) {
+        } else if (message.type === "move") {
+            // TODO
+            // this.chess.makeMove(message.move);
+            opponentSocket?.send(messageToJson(message));
+        } else if (message.type === "game-interrupted") {
             this.socketManager.sendToSocket(id, message);
-            opponentSocket?.send(message.toJson());
+            opponentSocket?.send(messageToJson(message));
         }
     }
 }
@@ -73,25 +69,28 @@ export class ComputerGameManager extends GameManager {
     }
 
     public handleMessage(message: Message, id: string): void {
-        if (message instanceof GameStartMessage) {
+        if (message.type === "game-start") {
             // If the person starting the game is black, we're white and need to make the first move
             if (message.side === Side.BLACK) {
+                // TODO
                 const move = this.chess.makeAiMove(this.difficulty);
-                this.socketManager.sendToSocket(id, new MoveMessage(move));
+                this.socketManager.sendToSocket(id, { type: "move", move });
             }
-        } else if (message instanceof GameInterruptedMessage) {
+        } else if (message.type === "game-interrupted") {
             // Reflect end game reason back to client
             this.socketManager.sendToSocket(id, message);
-        } else if (message instanceof MoveMessage) {
-            this.chess.makeMove(message.move);
+        } else if (message.type === "move") {
+            // TODO
+            // this.chess.makeMove(message.move);
 
             if (this.chess.isGameFinished()) {
                 // Game is naturally finished; we're done
                 return;
             }
 
-            const move = this.chess.makeAiMove(this.difficulty);
-            this.socketManager.sendToSocket(id, new MoveMessage(move));
+            // TODO
+            // const move = this.chess.makeAiMove(this.difficulty);
+            // this.socketManager.sendToSocket(id, new MoveMessage(move));
         }
     }
 }
