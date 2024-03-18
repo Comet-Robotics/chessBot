@@ -12,8 +12,6 @@ enum SetupType {
     PUZZLE = "puzzle",
 }
 
-
-
 export function Setup(): JSX.Element {
     const [setupType, setSetupType] = useState(SetupType.MAIN);
 

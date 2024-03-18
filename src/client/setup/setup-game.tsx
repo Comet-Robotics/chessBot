@@ -1,4 +1,4 @@
-import { Button, H3, H6, Slider} from "@blueprintjs/core";
+import { Button, H3, H6, Slider } from "@blueprintjs/core";
 import { Dispatch, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Difficulty, GameType } from "../../common/client-types";
@@ -18,7 +18,9 @@ export function SetupGame(props: SetupGameProps) {
     const { gameType } = props;
     const navigate = useNavigate();
     const [difficulty, setDifficulty] = useState(Difficulty.BEGINNER);
-    const [desiredSide, setDesiredSide] = useState<DesiredSide>(DesiredSide.WHITE);
+    const [desiredSide, setDesiredSide] = useState<DesiredSide>(
+        DesiredSide.WHITE,
+    );
 
     const difficultySlider =
         props.gameType === GameType.COMPUTER ?
@@ -32,7 +34,7 @@ export function SetupGame(props: SetupGameProps) {
         <SelectSide
             desiredSide={desiredSide}
             onDesiredSideChange={setDesiredSide}
-            />
+        />
     );
 
     const options = (
@@ -55,9 +57,13 @@ export function SetupGame(props: SetupGameProps) {
             onClick={async () => {
                 let selectedSide: Side;
                 if (desiredSide === DesiredSide.RANDOM) {
-                    selectedSide = Math.random() < 0.5 ? Side.WHITE : Side.BLACK;
+                    selectedSide =
+                        Math.random() < 0.5 ? Side.WHITE : Side.BLACK;
                 } else {
-                    selectedSide = desiredSide === DesiredSide.WHITE ? Side.WHITE : Side.BLACK;
+                    selectedSide =
+                        desiredSide === DesiredSide.WHITE ?
+                            Side.WHITE
+                        :   Side.BLACK;
                 }
                 navigate("/game", {
                     state: {
@@ -131,7 +137,9 @@ function SelectSide(props: SelectSideProps) {
             <H6>Desired Side</H6>
             <select
                 value={props.desiredSide}
-                onChange={(e) => props.onDesiredSideChange(e.target.value as DesiredSide)}
+                onChange={(e) =>
+                    props.onDesiredSideChange(e.target.value as DesiredSide)
+                }
             >
                 <option value={DesiredSide.WHITE}>White</option>
                 <option value={DesiredSide.BLACK}>Black</option>
