@@ -1,4 +1,4 @@
-import { Button, H3, H6, Slider } from "@blueprintjs/core";
+import { Button, H3, H6, Slider} from "@blueprintjs/core";
 import { Dispatch, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Difficulty, GameType } from "../../common/client-types";

@@ -2,7 +2,10 @@
     "name": "utd-chess-bots",
     "private": true,
     "version": "0.0.0",
-    "workspaces": ["src/client", "src/server"],
+    "workspaces": [
+        "src/client",
+        "src/server"
+    ],
     "scripts": {
         "dev": "nodemon src/server/main.ts",
         "start": "NODE_ENV=production ts-node ./src/server/main.ts",
@@ -14,13 +17,14 @@
         "format-check": "prettier --check *"
     },
     "dependencies": {
+        "@blueprintjs/select": "^5.1.2",
         "chess.js": "^1.0.0-beta.6",
         "typescript": "^4.9.3",
         "vite-express": "^0.11.1"
     },
     "devDependencies": {
-        "@types/node": "^18.11.18",
         "@knodes/typedoc-plugin-pages": "^0.23.4",
+        "@types/node": "^18.11.18",
         "@vitejs/plugin-react": "^3.1.0",
         "nodemon": "^3.0.1",
         "prettier": "^3.2.4",
