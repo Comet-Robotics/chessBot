@@ -11,7 +11,8 @@ export function getCustomSquareRenderer(
     legalSquares: string[],
     chess: ChessEngine,
 ) {
-    // Since React chessboard treats this function as a Component, the existence of the ref key triggers an error
+    // Since React chessboard treats this function as a component,
+    // the existence of the ref key triggers an error
     // We wrap with forwardRef to suppress this error
     return forwardRef((props: CustomSquareProps, _ref) => {
         let selectedElement: ReactElement | null = null;

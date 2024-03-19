@@ -1,4 +1,4 @@
-import { Dispatch, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 
 import {
     GameInterruptedMessage,
@@ -32,7 +32,6 @@ function getMessageHandler(
         if (message instanceof PositionMessage) {
             setChess(new ChessEngine(message.pgn));
         } else if (message instanceof MoveMessage) {
-            // Must be a new instance of ChessEngine to trigger UI redraw
             setChess(chess.copy(message.move));
         } else if (message instanceof GameInterruptedMessage) {
             setGameInterruptedReason(message.reason);
@@ -50,8 +49,11 @@ export function Game(): JSX.Element {
 
     const sendMessage = useSocket(
         getMessageHandler(chess, setChess, setGameInterruptedReason),
-        () => sendMessage(new GameStartMessage(gameType, side, difficulty)),
     );
+
+    useEffect(() => {
+        sendMessage(new GameStartMessage(gameType, side, difficulty));
+    }, []);
 
     let gameOverReason: GameEndReason | undefined = undefined;
     const gameFinishedReason = chess.getGameFinishedReason();

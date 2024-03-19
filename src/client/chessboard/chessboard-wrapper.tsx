@@ -76,33 +76,33 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     to: Square,
                     pieceAndSide: string,
                 ): boolean => {
+                    if (!isLegalMove(from, to)) {
+                        return false;
+                    }
                     const piece: PieceType =
                         pieceAndSide[1].toLowerCase() as PieceType;
-                    if (isLegalMove(from, to)) {
-                        if (manualPromotionSquare !== undefined) {
-                            doMove({
-                                // `from` is undefined in manual promotion flow
-                                from: lastClickedSquare!,
-                                // `to: manualPromotionSquare` is also valid
-                                to,
-                                promotion: piece,
-                            });
-                            setManualPromotionSquare(undefined);
-                        } else {
-                            doMove({
-                                from,
-                                to,
-                                // Include piece only if promoting
-                                promotion: isPromoting ? piece : undefined,
-                            });
-                        }
-                        // Reset state
-                        setIsPromoting(false);
-                        return true;
+                    if (manualPromotionSquare !== undefined) {
+                        doMove({
+                            // `from` is undefined in manual promotion flow
+                            from: lastClickedSquare!,
+                            // `to: manualPromotionSquare` is also valid
+                            to,
+                            promotion: piece,
+                        });
+                        setManualPromotionSquare(undefined);
+                    } else {
+                        doMove({
+                            from,
+                            to,
+                            // Include piece only if promoting
+                            promotion: isPromoting ? piece : undefined,
+                        });
                     }
-                    return false;
+                    // Reset state
+                    setIsPromoting(false);
+                    return true;
                 }}
-                onPieceDragBegin={(_, square: Square) => {
+                onPieceDragBegin={(_piece, square: Square) => {
                     if (square !== lastClickedSquare) {
                         setLastClickedSquare(undefined);
                     }
