@@ -39,6 +39,6 @@ export class Piece {
 }
 
 export enum GameType {
-    COMPUTER = "computer",
-    HUMAN = "human",
+    COMPUTER = "COMPUTER",
+    HUMAN = "HUMAN",
 }

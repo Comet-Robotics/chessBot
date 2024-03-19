@@ -2,9 +2,9 @@
  * Defines a type of session.
  */
 export enum ClientType {
-    HOST = "host",
-    CLIENT = "client",
-    SPECTATOR = "spectate",
+    HOST = "HOST",
+    CLIENT = "CLIENT",
+    SPECTATOR = "SPECTATOR",
 }
 
 /**
