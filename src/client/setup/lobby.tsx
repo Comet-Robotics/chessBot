@@ -7,7 +7,7 @@ export function Lobby() {
     const navigate = useNavigate();
 
     useSocket((message) => {
-        if (message.type === "game-start") {
+        if (message.type === "GAME_START") {
             navigate("/game", {
                 state: {
                     gameType: message.gameType,

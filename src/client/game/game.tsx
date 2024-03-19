@@ -23,12 +23,12 @@ function getMessageHandler(
     setGameInterruptedReason: Dispatch<GameInterruptedReason>,
 ): MessageHandler {
     return (message) => {
-        if (message.type === "position") {
+        if (message.type === "POSITION") {
             setChess(new ChessEngine(message.pgn));
-        } else if (message.type === "move") {
+        } else if (message.type === "MOVE") {
             // Must be a new instance of ChessEngine to trigger UI redraw
             setChess(chess.copy(message.move));
-        } else if (message.type === "game-interrupted") {
+        } else if (message.type === "GAME_INTERRUPTED") {
             setGameInterruptedReason(message.reason);
         }
     };
@@ -44,7 +44,7 @@ export function Game(): JSX.Element {
 
     const sendMessage = useSocket(
         getMessageHandler(chess, setChess, setGameInterruptedReason),
-        () => sendMessage({ type: "game-start", gameType, side, difficulty }),
+        () => sendMessage({ type: "GAME_START", gameType, side, difficulty }),
     );
 
     let gameOverReason: GameEndReason | undefined = undefined;
@@ -61,7 +61,7 @@ export function Game(): JSX.Element {
 
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
-        sendMessage({ type: "move", move });
+        sendMessage({ type: "MOVE", move });
     };
 
     return (

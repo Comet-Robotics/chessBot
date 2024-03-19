@@ -28,7 +28,7 @@ export function DriveRobot(props: DriveRobotProps) {
         ) {
             return;
         }
-        props.sendMessage({ type: "drive-robot", id: props.robotId, power });
+        props.sendMessage({ type: "DRIVE_ROBOT", id: props.robotId, power });
         setPrev(power);
     }, [props, power, prev]);
 

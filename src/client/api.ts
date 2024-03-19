@@ -27,7 +27,7 @@ export function useSocket(
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
         onOpen: () => {
             console.log("Connection established");
-            sendMessage(messageToJson({ type: "register-websocket" }));
+            sendMessage(messageToJson({ type: "REGISTER_WEBSOCKET" }));
             if (onOpen !== undefined) {
                 onOpen();
             }

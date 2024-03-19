@@ -14,7 +14,7 @@ export abstract class GameManager {
 
     public handleReconnect(id: string): void {
         this.socketManager.sendToSocket(id, {
-            type: "position",
+            type: "POSITION",
             pgn: this.chess.fen,
         });
     }
@@ -40,19 +40,19 @@ export class HumanGameManager extends GameManager {
             opponentSocket = this.clientManager.getHostSocket();
         }
 
-        if (message.type === "game-start") {
+        if (message.type === "GAME_START") {
             opponentSocket?.send(
                 messageToJson({
-                    type: "game-start",
+                    type: "GAME_START",
                     gameType: message.gameType,
                     side: oppositeSide(message.side),
                 }),
             );
-        } else if (message.type === "move") {
+        } else if (message.type === "MOVE") {
             // TODO
             // this.chess.makeMove(message.move);
             opponentSocket?.send(messageToJson(message));
-        } else if (message.type === "game-interrupted") {
+        } else if (message.type === "GAME_INTERRUPTED") {
             this.socketManager.sendToSocket(id, message);
             opponentSocket?.send(messageToJson(message));
         }
@@ -69,17 +69,17 @@ export class ComputerGameManager extends GameManager {
     }
 
     public handleMessage(message: Message, id: string): void {
-        if (message.type === "game-start") {
+        if (message.type === "GAME_START") {
             // If the person starting the game is black, we're white and need to make the first move
             if (message.side === Side.BLACK) {
                 // TODO
                 const move = this.chess.makeAiMove(this.difficulty);
-                this.socketManager.sendToSocket(id, { type: "move", move });
+                this.socketManager.sendToSocket(id, { type: "MOVE", move });
             }
-        } else if (message.type === "game-interrupted") {
+        } else if (message.type === "GAME_INTERRUPTED") {
             // Reflect end game reason back to client
             this.socketManager.sendToSocket(id, message);
-        } else if (message.type === "move") {
+        } else if (message.type === "MOVE") {
             // TODO
             // this.chess.makeMove(message.move);
 

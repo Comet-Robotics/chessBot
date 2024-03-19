@@ -9,7 +9,7 @@ import { GameInterruptedReason } from "../game-end-reasons";
  * A client-server message used to register a websocket with the server.
  */
 export const REGISTER_WEBSOCKET = Record({
-    type: Literal("register-websocket"),
+    type: Literal("REGISTER_WEBSOCKET"),
 });
 
 /**
@@ -17,7 +17,7 @@ export const REGISTER_WEBSOCKET = Record({
  * Used to allow clients to reconnect.
  */
 export const POSITION = Record({
-    type: Literal("position"),
+    type: Literal("POSITION"),
     pgn: String,
 });
 
@@ -25,7 +25,7 @@ export const POSITION = Record({
  * A two-way message containing a single move.
  */
 export const MOVE = Record({
-    type: Literal("move"),
+    type: Literal("MOVE"),
     move: Move,
 });
 
@@ -33,7 +33,7 @@ export const MOVE = Record({
  * A client-server message used to indicate the start of a game.
  */
 export const GAME_START = Record({
-    type: Literal("game-start"),
+    type: Literal("GAME_START"),
     gameType: runtypeFromEnum(GameType),
     side: runtypeFromEnum(Side),
     // difficulty: Optional(runtypeFromEnum<Difficulty>(Difficulty)),
@@ -47,7 +47,7 @@ export const GAME_START = Record({
  * Note this does not include the game ending as a part of the normal flow of moves.
  */
 export const GAME_INTERRUPTED = Record({
-    type: Literal("game-interrupted"),
+    type: Literal("GAME_INTERRUPTED"),
     reason: runtypeFromEnum(GameInterruptedReason),
 });
 
@@ -55,7 +55,7 @@ export const GAME_INTERRUPTED = Record({
  * A client-server message containing instructions for manually driving a robot.
  */
 export const DRIVE_ROBOT = Record({
-    type: Literal("drive-robot"),
+    type: Literal("DRIVE_ROBOT"),
     id: String,
     power: DrivePower,
 });
