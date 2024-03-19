@@ -1,14 +1,12 @@
 import { Chessboard } from "react-chessboard";
 import { Square } from "chess.js";
 import { useState } from "react";
-import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side, PieceType } from "../../common/game-types";
 import { Move } from "../../common/message/core";
 
-const CLICK_STYLE = {
-    backgroundColor: "green",
-};
+import { BoardContainer } from "./board-container";
+import { getCustomSquareRenderer } from "./custom-square-renderer";
 
 interface ChessboardWrapperProps {
     /**
@@ -44,13 +42,9 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     >();
 
     // Maps squares to style objects
-    const customSquareStyles: { [square: string]: object } = {};
-    let legalSquares: string[] | undefined = undefined;
+    let legalSquares: string[] = [];
     if (lastClickedSquare !== undefined) {
         legalSquares = chess.getLegalSquares(lastClickedSquare);
-        legalSquares.forEach((square) => {
-            customSquareStyles[square] = CLICK_STYLE;
-        });
     }
 
     /**
@@ -117,9 +111,9 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 onSquareClick={(square: Square) => {
                     setManualPromotionSquare(undefined);
 
+                    // Protects the type of lastClickedSquare, and is true when the clicked square is legal
                     const isSquareLegalMove =
                         lastClickedSquare !== undefined &&
-                        legalSquares !== undefined &&
                         legalSquares.includes(square);
 
                     if (isSquareLegalMove) {
@@ -146,7 +140,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     return piece[0] === side;
                 }}
                 arePremovesAllowed={false}
-                customSquareStyles={customSquareStyles}
+                customSquare={getCustomSquareRenderer(legalSquares, chess)}
             />
         </BoardContainer>
     );

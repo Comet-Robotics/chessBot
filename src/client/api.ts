@@ -16,21 +16,28 @@ const WEBSOCKET_URL = "ws://localhost:3000/ws";
 /**
  * A custom hook which allows using a websocket to connect to the server.
  *
- * @param handleMessage - A function which gets invoked each time a message is received.
+ * @param onMessage - A function which gets invoked each time a message is received.
+ * @param onOpen - A function which gets invoked when the socket is opened.
  * @returns A function which can be used to send messages.
  */
-export function useSocket(handleMessage?: MessageHandler): SendMessage {
+export function useSocket(
+    onMessage?: MessageHandler,
+    onOpen?: () => void,
+): SendMessage {
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
         onOpen: () => {
             console.log("Connection established");
             sendMessage(messageToJson({ type: "register-websocket" }));
+            if (onOpen !== undefined) {
+                onOpen();
+            }
         },
         onMessage: (msg: MessageEvent) => {
             const message = jsonToMessage(msg.data.toString());
             console.log("Handle message: " + JSON.stringify(message));
 
-            if (handleMessage !== undefined) {
-                handleMessage(message);
+            if (onMessage !== undefined) {
+                onMessage(message);
             }
         },
     });
