@@ -1,13 +1,19 @@
 import { CustomSquareProps } from "react-chessboard/dist/chessboard/types";
 import { ChessEngine } from "../../common/chess-engine";
-import { ReactElement } from "react";
+import { ReactElement, forwardRef } from "react";
 import { CenterDot, OutsideCorners } from "./svg-components";
 
+/**
+ * Returns a function which, when called, can be used to render a square.
+ * Note this function masquerades as a React component for react chessboard purposes.
+ */
 export function getCustomSquareRenderer(
     legalSquares: string[],
     chess: ChessEngine,
 ) {
-    return (props: CustomSquareProps) => {
+    // Since React chessboard treats this function as a Component, the existence of the ref key triggers an error
+    // We wrap with forwardRef to suppress this error
+    return forwardRef((props: CustomSquareProps, _ref) => {
         let selectedElement: ReactElement | null = null;
 
         if (legalSquares.includes(props.square)) {
@@ -32,5 +38,5 @@ export function getCustomSquareRenderer(
                 {props.children}
             </div>
         );
-    };
+    });
 }
