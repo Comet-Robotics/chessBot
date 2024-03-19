@@ -30,9 +30,9 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         const message = jsonToMessage(data.toString());
         console.log("Received message: " + messageToJson(message));
 
-        if (message.type === "register-websocket") {
+        if (message.type === "REGISTER_WEBSOCKET") {
             socketManager.registerSocket(req.cookies.id, ws);
-        } else if (message.type === "game-start") {
+        } else if (message.type === "GAME_START") {
             if (message.gameType === GameType.COMPUTER) {
                 gameManager = new ComputerGameManager(
                     new ChessEngine(),
@@ -47,10 +47,10 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 );
             }
             gameManager?.handleMessage(message, req.cookies.id);
-        } else if (message.type === "game-interrupted") {
+        } else if (message.type === "GAME_INTERRUPTED") {
             gameManager?.handleMessage(message, req.cookies.id);
             gameManager = null;
-        } else if (message.type === "drive-robot") {
+        } else if (message.type === "DRIVE_ROBOT") {
             doDriveRobot(message);
         } else {
             gameManager?.handleMessage(message, req.cookies.id);

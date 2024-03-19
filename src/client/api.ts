@@ -23,7 +23,7 @@ export function useSocket(handleMessage?: MessageHandler): SendMessage {
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
         onOpen: () => {
             console.log("Connection established");
-            sendMessage(messageToJson({ type: "register-websocket" }));
+            sendMessage(messageToJson({ type: "REGISTER_WEBSOCKET" }));
         },
         onMessage: (msg: MessageEvent) => {
             const message = jsonToMessage(msg.data.toString());

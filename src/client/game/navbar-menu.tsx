@@ -28,7 +28,7 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                     intent="warning"
                     onClick={async () => {
                         props.sendMessage({
-                            type: "game-interrupted",
+                            type: "GAME_INTERRUPTED",
                             reason: GameInterruptedReason.ABORTED,
                         });
                     }}
