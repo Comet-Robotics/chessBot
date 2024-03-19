@@ -13,6 +13,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/message/core";
 import { MessageHandler } from "../../common/message/message";
+import { ServerToClientMessage } from "../../common/message/client-server";
 
 /**
  * Creates a MessageHandler function.
@@ -21,7 +22,7 @@ function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
     setGameInterruptedReason: Dispatch<GameInterruptedReason>,
-): MessageHandler {
+): MessageHandler<ServerToClientMessage> {
     return (message) => {
         if (message.type === "POSITION") {
             setChess(new ChessEngine(message.pgn));

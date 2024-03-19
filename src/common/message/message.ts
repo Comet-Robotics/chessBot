@@ -1,18 +1,18 @@
-import { Union, Static } from "runtypes";
-import { CLIENT_TO_SERVER, SERVER_TO_CLIENT } from "./client-server";
+import { Union, Static, Runtype } from "runtypes";
+import { ClientToServerMessage, ServerToClientMessage } from "./client-server";
 
-export const Message = Union(CLIENT_TO_SERVER, SERVER_TO_CLIENT);
+export const Message = Union(ClientToServerMessage, ServerToClientMessage);
 export type Message = Static<typeof Message>;
 
 /**
  * A function which can be used to send a message somewhere.
  */
-export type SendMessage = (message: Message) => void;
+export type SendMessage<T extends Partial<Message>> = (message: T) => void;
 
 /**
  * A function which receives messages and should do stuff with them.
  */
-export type MessageHandler = (message: Message) => void;
+export type MessageHandler<T extends Partial<Message>> = (message: T) => void;
 
 /**
  * Convert json to Message object
@@ -20,12 +20,15 @@ export type MessageHandler = (message: Message) => void;
  * @returns parsed Message object
  * @throws if json string is not a Message object
  */
-export function jsonToMessage(jsonStr: string): Message {
+export function jsonToMessage<T = Message>(
+    jsonStr: string,
+    guard?: Runtype<T>,
+): T {
     const obj = JSON.parse(jsonStr);
-    if (!Message.guard(obj)) {
+    if (!(guard || Message).guard(obj)) {
         throw new Error("Invalid message: " + jsonStr);
     }
-    return obj as Message;
+    return obj as T;
 }
 
 /**

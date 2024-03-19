@@ -8,9 +8,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { GameInterruptedReason } from "../../common/game-end-reasons";
 import { SendMessage } from "../../common/message/message";
+import { ClientToServerMessage } from "../../common/message/client-server";
 
 interface NavbarMenuProps {
-    sendMessage: SendMessage;
+    sendMessage: SendMessage<ClientToServerMessage>;
 }
 
 export function NavbarMenu(props: NavbarMenuProps): JSX.Element {

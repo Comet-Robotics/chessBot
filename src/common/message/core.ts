@@ -11,9 +11,13 @@ import { PieceType } from "../game-types";
 
 // See https://github.com/runtypes/runtypes/issues/66#issuecomment-788129292
 export function runtypeFromEnum<EnumType>(
-    theEnum: Record<string, EnumType>,
+    theEnum: Record<string, string | EnumType>,
 ): Runtype<EnumType> {
-    const values = Object.values<unknown>(theEnum);
+    let values = Object.values<unknown>(theEnum);
+    const number_values = values.filter((v) => typeof v === "number");
+    if (number_values.length > 0) {
+        values = number_values;
+    }
     const isEnumValue = (input: unknown): input is EnumType =>
         values.includes(input);
     const errorMessage = (input: unknown): string =>

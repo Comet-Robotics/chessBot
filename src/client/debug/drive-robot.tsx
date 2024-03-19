@@ -2,10 +2,11 @@ import { Button, useHotkeys, Slider } from "@blueprintjs/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SendMessage } from "../../common/message/message";
 import { DrivePower } from "../../common/message/core";
+import { ClientToServerMessage } from "../../common/message/client-server";
 
 interface DriveRobotProps {
     robotId: string;
-    sendMessage: SendMessage;
+    sendMessage: SendMessage<ClientToServerMessage>;
 }
 
 const approxeq = (v1: number, v2: number, epsilon = 0.01) =>

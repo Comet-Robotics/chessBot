@@ -7,6 +7,10 @@ import {
     jsonToMessage,
 } from "../common/message/message";
 import { useMemo } from "react";
+import {
+    ClientToServerMessage,
+    ServerToClientMessage,
+} from "../common/message/client-server";
 
 /**
  * The URL to use for connecting to the websocket backend.
@@ -21,9 +25,9 @@ const WEBSOCKET_URL = "ws://localhost:3000/ws";
  * @returns A function which can be used to send messages.
  */
 export function useSocket(
-    onMessage?: MessageHandler,
+    onMessage?: MessageHandler<ServerToClientMessage>,
     onOpen?: () => void,
-): SendMessage {
+): SendMessage<ClientToServerMessage> {
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
         onOpen: () => {
             console.log("Connection established");
@@ -33,7 +37,10 @@ export function useSocket(
             }
         },
         onMessage: (msg: MessageEvent) => {
-            const message = jsonToMessage(msg.data.toString());
+            const message = jsonToMessage(
+                msg.data.toString(),
+                ServerToClientMessage,
+            );
             console.log("Handle message: " + JSON.stringify(message));
 
             if (onMessage !== undefined) {

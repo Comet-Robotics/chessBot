@@ -1,3 +1,4 @@
+import { Difficulty } from "../../client-types";
 import { GameInterruptedReason } from "../../game-end-reasons";
 import { GameType, PieceType, Side } from "../../game-types";
 import { Message, jsonToMessage, messageToJson } from "../message";
@@ -8,7 +9,7 @@ test.each([
         type: "GAME_START",
         gameType: GameType.COMPUTER,
         side: Side.WHITE,
-        difficulty: 3,
+        difficulty: Difficulty.ADVANCED,
     },
     { type: "GAME_START", gameType: GameType.HUMAN, side: Side.BLACK },
     { type: "GAME_INTERRUPTED", reason: GameInterruptedReason.ABORTED },

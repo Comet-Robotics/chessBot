@@ -10,7 +10,7 @@ import {
     HumanGameManager,
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
-import { DriveRobotMessage } from "../../common/message/client-server";
+import { ClientToServerMessage, DriveRobotMessage } from "../../common/message/client-server";
 import { GameType } from "../../common/game-types";
 
 const tcpServer = new TCPServer();
@@ -27,7 +27,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     });
 
     ws.on("message", (data) => {
-        const message = jsonToMessage(data.toString());
+        const message = jsonToMessage(data.toString(), ClientToServerMessage);
         console.log("Received message: " + messageToJson(message));
 
         if (message.type === "REGISTER_WEBSOCKET") {
