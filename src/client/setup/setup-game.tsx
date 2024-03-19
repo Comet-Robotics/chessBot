@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { Difficulty, GameType } from "../../common/client-types";
 import { Side } from "../../common/game-types";
 
-interface SetupGameProps {
-    gameType: GameType;
+enum DesiredSide {
+    WHITE = "white",
+    BLACK = "black",
+    RANDOM = "random",
 }
 
-enum DesiredSide {
-    WHITE = "White",
-    BLACK = "Black",
-    RANDOM = "Random",
+interface SetupGameProps {
+    gameType: GameType;
 }
 
 export function SetupGame(props: SetupGameProps) {
