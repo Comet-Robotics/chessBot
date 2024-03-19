@@ -3,13 +3,12 @@ import { Router } from "express";
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
-    StartGameMessage,
-    StopGameMessage,
+    GameStartMessage,
+    GameInterruptedMessage,
 } from "../../common/message/game-message";
-import { MoveMessage } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
-import { PacketType, TCPServer } from "./tcp-interface";
+import { TCPServer } from "./tcp-interface";
 import { GameType } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
 import { clientManager, socketManager } from "./managers";
@@ -39,7 +38,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
         if (message instanceof RegisterWebsocketMessage) {
             socketManager.registerSocket(req.cookies.id, ws);
-        } else if (message instanceof StartGameMessage) {
+        } else if (message instanceof GameStartMessage) {
             if (message.gameType === GameType.COMPUTER) {
                 gameManager = new ComputerGameManager(
                     new ChessEngine(),
@@ -54,7 +53,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 );
             }
             gameManager?.handleMessage(message, req.cookies.id);
-        } else if (message instanceof StopGameMessage) {
+        } else if (message instanceof GameInterruptedMessage) {
             gameManager?.handleMessage(message, req.cookies.id);
             gameManager = null;
         } else if (message instanceof DriveRobotMessage) {
@@ -69,8 +68,8 @@ export const apiRouter = Router();
 
 apiRouter.get("/get-ids", (_, res) => {
     return res.send({
-        ids: ["10", "11"],
-        // ids: tcpServer.getConnectedIds(),
+        // ids: ["10", "11"],
+        ids: tcpServer.getConnectedIds(),
     });
 });
 
@@ -94,32 +93,26 @@ apiRouter.get("/get-puzzles", (_, res) => {
     });
 });
 
-function doMove(message: MoveMessage) {
-    // chess.move({ from: message.from, to: message.to });
-    // TODO: handle invalid moves, implement
-    // const command = processMove(
-    //   Square.fromString(move.from),
-    //   Square.fromString(move.to)
-    // );
-    // executor.execute(command);
-}
-
 function doDriveRobot(message: DriveRobotMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {
-        console.log(
+        console.warn(
             "attempted manual move for non-existent robot ID " + message.id,
         );
         return false;
     } else {
         const tunnel = tcpServer.getTunnelFromId(message.id);
-        // if (leftPower == 0 && rightPower == 0) {
-        //   tunnel.send(PacketType.ESTOP);
-        // } else {
-        tunnel.send(
-            PacketType.DRIVE_TANK,
-
-            message.rightPower.toString(),
-        );
+        if (!tunnel.connected) {
+            console.warn(
+                "attempted manual move for disconnected robot ID " + message.id,
+            );
+            return false;
+        } else {
+            tunnel.send({
+                type: "DRIVE_TANK",
+                left: message.leftPower,
+                right: message.rightPower,
+            });
+        }
     }
     return true;
 }

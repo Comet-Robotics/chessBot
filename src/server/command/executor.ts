@@ -33,13 +33,13 @@ export class CommandExecutor {
 
     /**
      * Executes a command after checking the requirements.
-     * @param command The command to execute.
+     * @param command - The command to execute.
      */
     public execute(command: Command) {
         this.checkRequirements(command);
         this.runningCommands.push(command);
         command.execute().finally(() => {
-            let index = this.runningCommands.indexOf(command);
+            const index = this.runningCommands.indexOf(command);
             if (index >= 0) {
                 this.runningCommands.splice(index, 1);
             }

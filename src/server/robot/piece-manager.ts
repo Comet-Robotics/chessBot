@@ -1,5 +1,5 @@
-import { Piece } from "./piece";
 import { Square } from "chess.js";
+import { Piece } from "./piece";
 
 /**
  * Stores the pieces used in the game of chess.

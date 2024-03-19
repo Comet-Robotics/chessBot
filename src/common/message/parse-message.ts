@@ -1,11 +1,10 @@
 import { Message, MessageType, RegisterWebsocketMessage } from "./message";
 import { DriveRobotMessage } from "./drive-robot-message";
 import {
-    StartGameMessage,
-    StopGameMessage,
     PositionMessage,
     MoveMessage,
-    PromotionMessage,
+    GameStartMessage,
+    GameInterruptedMessage,
 } from "./game-message";
 
 /**
@@ -20,22 +19,20 @@ export function parseMessage(text: string): Message {
     switch (obj.type) {
         case MessageType.REGISTER_WEBSOCKET:
             return new RegisterWebsocketMessage();
-        case MessageType.START_GAME:
-            return new StartGameMessage(
+        case MessageType.GAME_START:
+            return new GameStartMessage(
                 obj.gameType,
                 obj.side,
                 obj.difficulty !== undefined ?
                     parseInt(obj.difficulty)
                 :   undefined,
             );
-        case MessageType.STOP_GAME:
-            return new StopGameMessage(obj.reason);
+        case MessageType.GAME_INTERRUPTED:
+            return new GameInterruptedMessage(obj.reason);
         case MessageType.POSITION:
-            return new PositionMessage(obj.position);
+            return new PositionMessage(obj.pgn);
         case MessageType.MOVE:
-            return new MoveMessage(obj.from, obj.to);
-        case MessageType.PROMOTION:
-            return new PromotionMessage(obj.from, obj.to, obj.promotion);
+            return new MoveMessage(obj.move);
         case MessageType.DRIVE_ROBOT:
             return new DriveRobotMessage(
                 obj.id,

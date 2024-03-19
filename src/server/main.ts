@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import { v4 as uuid } from "uuid";
 import { apiRouter, websocketHandler } from "./api/api";
 import expressWebSocket from "express-ws";
-import { ClientType } from "../common/client-types";
 import { clientManager } from "./api/managers";
 
 const app = expressWebSocket(express()).app;

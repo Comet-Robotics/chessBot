@@ -1,20 +1,53 @@
 import { Chess, Square } from "chess.js";
 import { aiMove } from "js-chess-engine";
-import { FinishGameReason } from "./game-end-reason";
+import { GameFinishedReason } from "./game-end-reasons";
 import { Difficulty } from "./client-types";
+import { Move } from "./game-types";
+import { PieceType } from "./game-types";
+import { Side } from "./game-types";
 
 export class ChessEngine {
     private chess: Chess;
 
     /**
-     * @param fen - The fen to use. If undefined, a new game is created.
+     * @param pgn - The pgn to use. If undefined, a new game is created.
      */
-    constructor(fen?: string) {
-        this.chess = new Chess(fen);
+    constructor(pgn?: string) {
+        this.chess = new Chess();
+        if (pgn !== undefined) {
+            this.chess.loadPgn(pgn);
+        }
     }
 
-    reset() {
-        this.chess.reset();
+    copy(move?: Move): ChessEngine {
+        const copy = new ChessEngine();
+        copy.loadPgn(this.pgn);
+        if (move !== undefined) {
+            copy.makeMove(move);
+        }
+        return copy;
+    }
+
+    get fen(): string {
+        return this.chess.fen();
+    }
+
+    get pgn(): string {
+        return this.chess.pgn();
+    }
+
+    loadPgn(pgn: string) {
+        this.chess.loadPgn(pgn);
+    }
+
+    //returns the PieceType of the of the piece on the square or undefined
+    getPiece(square: Square): PieceType | undefined {
+        const piece = this.chess.get(square);
+        if (piece !== null) {
+            return piece.type as PieceType;
+        } else {
+            return undefined;
+        }
     }
 
     getLegalMoves(square?: Square) {
@@ -28,52 +61,68 @@ export class ChessEngine {
         return this.getLegalMoves(square).map((move) => move.to);
     }
 
-    get fen() {
-        return this.chess.fen();
+    /**
+     * Makes a move on the chessboard.
+     * @returns the move that was made.
+     */
+    makeMove(move: Move): Move {
+        this.chess.move(move);
+        return move;
     }
 
     /**
-     * Makes a move on the chess engine.
-     * Returns the move that was made.
+     * Returns true if a move is a promotion, and false otherwise.
      */
-    makeMove(from: Square, to: Square): { from: Square; to: Square } {
-        this.chess.move({
-            from,
-            to,
-        });
-        return { from, to };
-    }
+    isPromotionMove = (from: Square, to: Square): boolean => {
+        if (this.getPiece(from) !== PieceType.PAWN) {
+            return false;
+        } else if (this.chess.get(from).color === Side.WHITE) {
+            return from[1] === "7" && to[1] === "8";
+        }
+        return from[1] === "2" && to[1] === "1";
+    };
 
-    makeAiMove(difficulty: Difficulty): { from: Square; to: Square } {
-        const val = Object.entries(aiMove(this.chess.fen(), difficulty))[0] as [
-            string,
-            string,
-        ];
+    makeAiMove(difficulty: Difficulty): Move {
+        // result is an object e.g. { "A1": "A2" }
+        const result = aiMove(this.fen, difficulty);
+        // val is an array e.g. ["A1", "A2"]
+        const val = Object.entries(result)[0] as [string, string];
         const from = val[0].toLowerCase() as Square;
         const to = val[1].toLowerCase() as Square;
-        return this.makeMove(from, to);
+
+        if (this.isPromotionMove(from, to)) {
+            // ai always promotes to queen
+            return this.makeMove({
+                from,
+                to,
+                promotion: PieceType.QUEEN,
+            });
+        }
+        return this.makeMove({ from, to });
     }
 
-    getGameFinishedReason(): FinishGameReason | undefined {
+    getGameFinishedReason(): GameFinishedReason | undefined {
         if (this.chess.isCheckmate()) {
             // If it's your turn, you lost
             return this.chess.turn() === "w" ?
-                    FinishGameReason.WHITE_CHECKMATED
-                :   FinishGameReason.BLACK_CHECKMATED;
+                    GameFinishedReason.WHITE_CHECKMATED
+                :   GameFinishedReason.BLACK_CHECKMATED;
         } else if (this.chess.isStalemate()) {
-            return FinishGameReason.STALEMATE;
+            return GameFinishedReason.STALEMATE;
         } else if (this.chess.isThreefoldRepetition()) {
-            return FinishGameReason.THREEFOLD_REPETITION;
+            return GameFinishedReason.THREEFOLD_REPETITION;
         } else if (this.chess.isDraw()) {
             return this.chess.isInsufficientMaterial() ?
-                    FinishGameReason.INSUFFICIENT_MATERIAL
-                :   FinishGameReason.FIFTY_MOVES;
+                    GameFinishedReason.INSUFFICIENT_MATERIAL
+                :   GameFinishedReason.FIFTY_MOVES;
         }
         return undefined;
     }
 
-    // This checks if getGameFinishedReason() is not undefined
-    isGameOver(): boolean {
+    /**
+     * Returns true if `getGameFinishedReason` does not return undefined.
+     */
+    isGameFinished(): boolean {
         return this.getGameFinishedReason() !== undefined;
     }
 }
