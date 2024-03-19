@@ -16,11 +16,17 @@ const WEBSOCKET_URL = "ws://localhost:3000/ws";
  * @param handleMessage - A function which gets invoked each time a message is received.
  * @returns A function which can be used to send messages.
  */
-export function useSocket(handleMessage?: MessageHandler): SendMessage {
+export function useSocket(
+    handleMessage?: MessageHandler,
+    handleOpen?: () => void,
+): SendMessage {
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
         onOpen: () => {
             console.log("Connection established");
             sendMessage(new RegisterWebsocketMessage().toJson());
+            if (handleOpen !== undefined) {
+                handleOpen();
+            }
         },
         onMessage: (msg: MessageEvent) => {
             const message = parseMessage(msg.data.toString());

@@ -1,4 +1,4 @@
-import { Dispatch, useEffect, useState } from "react";
+import { Dispatch, useState } from "react";
 
 import {
     GameInterruptedMessage,
@@ -50,11 +50,8 @@ export function Game(): JSX.Element {
 
     const sendMessage = useSocket(
         getMessageHandler(chess, setChess, setGameInterruptedReason),
+        () => sendMessage(new GameStartMessage(gameType, side, difficulty)),
     );
-
-    useEffect(() => {
-        sendMessage(new GameStartMessage(gameType, side, difficulty));
-    }, [sendMessage, gameType, side, difficulty]);
 
     let gameOverReason: GameEndReason | undefined = undefined;
     const gameFinishedReason = chess.getGameFinishedReason();
