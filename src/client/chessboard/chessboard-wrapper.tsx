@@ -110,6 +110,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 onSquareClick={(square: Square) => {
                     setManualPromotionSquare(undefined);
 
+                    // Protects the type of lastClickedSquare, and is true when the clicked square is legal
                     const isSquareLegalMove =
                         lastClickedSquare !== undefined &&
                         legalSquares.includes(square);
