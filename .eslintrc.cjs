@@ -8,8 +8,9 @@ module.exports = {
     ],
     ignorePatterns: ["dist", ".eslintrc.cjs"],
     parser: "@typescript-eslint/parser",
-    plugins: ["react-refresh"],
+    plugins: ["react-refresh", "eslint-plugin-tsdoc"],
     rules: {
+        "@typescript-eslint/no-unused-vars": "error",
         "react-refresh/only-export-components": [
             "warn",
             { allowConstantExport: true },
@@ -23,6 +24,7 @@ module.exports = {
                 caughtErrorsIgnorePattern: "^_",
             },
         ],
-        eqeqeq: ["warn"],
+        eqeqeq: "warn",
+        "tsdoc/syntax": "warn",
     },
 };
