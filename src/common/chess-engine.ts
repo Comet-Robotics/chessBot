@@ -19,6 +19,10 @@ export class ChessEngine {
         }
     }
 
+    /**
+     * Copies the chess engine, optionally with an extra move on the copy.
+     * @param move - A move to make.
+     */
     copy(move?: Move): ChessEngine {
         const copy = new ChessEngine();
         copy.loadPgn(this.pgn);

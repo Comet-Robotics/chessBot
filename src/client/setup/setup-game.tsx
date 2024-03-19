@@ -4,6 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { Difficulty, GameType } from "../../common/client-types";
 import { Side } from "../../common/game-types";
 
+enum DesiredSide {
+    WHITE = "white",
+    BLACK = "black",
+    RANDOM = "random",
+}
+
 interface SetupGameProps {
     gameType: GameType;
 }
@@ -12,6 +18,9 @@ export function SetupGame(props: SetupGameProps) {
     const { gameType } = props;
     const navigate = useNavigate();
     const [difficulty, setDifficulty] = useState(Difficulty.BEGINNER);
+    const [desiredSide, setDesiredSide] = useState<DesiredSide>(
+        DesiredSide.WHITE,
+    );
 
     const difficultySlider =
         props.gameType === GameType.COMPUTER ?
@@ -21,10 +30,17 @@ export function SetupGame(props: SetupGameProps) {
             />
         :   null;
 
+    const selectSide = (
+        <SelectSide
+            desiredSide={desiredSide}
+            onDesiredSideChange={setDesiredSide}
+        />
+    );
+
     const options = (
         <>
             {difficultySlider}
-            {/* TODO: Add SelectSide component here */}
+            {selectSide}
         </>
     );
 
@@ -39,11 +55,21 @@ export function SetupGame(props: SetupGameProps) {
             icon="arrow-right"
             intent="primary"
             onClick={async () => {
+                let selectedSide: Side;
+                if (desiredSide === DesiredSide.RANDOM) {
+                    selectedSide =
+                        Math.random() < 0.5 ? Side.WHITE : Side.BLACK;
+                } else {
+                    selectedSide =
+                        desiredSide === DesiredSide.WHITE ?
+                            Side.WHITE
+                        :   Side.BLACK;
+                }
                 navigate("/game", {
                     state: {
                         gameType,
                         // TODO: Let user choose side
-                        side: Side.WHITE,
+                        side: selectedSide,
                         difficulty,
                     },
                 });
@@ -97,6 +123,28 @@ function DifficultySlider(props: DifficultySliderProps) {
                     max={3}
                 />
             </div>
+        </>
+    );
+}
+interface SelectSideProps {
+    desiredSide: DesiredSide;
+    onDesiredSideChange: Dispatch<DesiredSide>;
+}
+
+function SelectSide(props: SelectSideProps) {
+    return (
+        <>
+            <H6>Desired Side</H6>
+            <select
+                value={props.desiredSide}
+                onChange={(e) =>
+                    props.onDesiredSideChange(e.target.value as DesiredSide)
+                }
+            >
+                <option value={DesiredSide.WHITE}>White</option>
+                <option value={DesiredSide.BLACK}>Black</option>
+                <option value={DesiredSide.RANDOM}>Random</option>
+            </select>
         </>
     );
 }
