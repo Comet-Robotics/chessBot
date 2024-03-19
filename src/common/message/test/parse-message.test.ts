@@ -1,6 +1,5 @@
 import { GameInterruptedReason } from "../../game-end-reasons";
-import { GameType } from "../../client-types";
-import { PieceType, Side } from "../../game-types";
+import { GameType, PieceType, Side } from "../../game-types";
 import { Message, jsonToMessage, messageToJson } from "../message";
 import { expect, test } from "vitest";
 

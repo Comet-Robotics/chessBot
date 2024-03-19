@@ -1,8 +1,3 @@
-export enum GameType {
-    COMPUTER = "computer",
-    HUMAN = "human",
-}
-
 /**
  * Defines a type of session.
  */

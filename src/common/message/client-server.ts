@@ -1,7 +1,6 @@
 // import { Square } from "chess.js";
 import { Record, Literal, String, Optional, Union, Static } from "runtypes";
-import { GameType } from "../client-types";
-import { Side } from "../game-types";
+import { GameType, Side } from "../game-types";
 import { DrivePower, Move, runtypeFromEnum } from "./core";
 import { GameInterruptedReason } from "../game-end-reasons";
 

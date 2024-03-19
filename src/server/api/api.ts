@@ -2,7 +2,6 @@ import { WebsocketRequestHandler } from "express-ws";
 import { Router } from "express";
 
 import { TCPServer } from "./tcp-interface";
-import { GameType } from "../../common/client-types";
 import { jsonToMessage, messageToJson } from "../../common/message/message";
 import { clientManager, socketManager } from "./managers";
 import {
@@ -12,6 +11,7 @@ import {
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
 import { DriveRobotMessage } from "../../common/message/client-server";
+import { GameType } from "../../common/game-types";
 
 const tcpServer = new TCPServer();
 let gameManager: GameManager | null = null;
