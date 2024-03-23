@@ -1,5 +1,5 @@
 import { Dispatch, useEffect, useState } from "react";
-
+import { Square } from "chess.js";
 import {
     GameInterruptedMessage,
     GameStartMessage,
@@ -10,7 +10,6 @@ import {
     GameEndReason,
     GameInterruptedReason,
 } from "../../common/game-end-reasons";
-
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
 import { useSocket } from "../api";
@@ -27,13 +26,14 @@ function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
     setGameInterruptedReason: Dispatch<GameInterruptedReason>,
+    setLastMove: Dispatch<{ from: Square; to: Square }>,
 ): MessageHandler {
     return (message) => {
         if (message instanceof PositionMessage) {
             setChess(new ChessEngine(message.pgn));
         } else if (message instanceof MoveMessage) {
-            // Must be a new instance of ChessEngine to trigger UI redraw
             setChess(chess.copy(message.move));
+            setLastMove(message.move);
         } else if (message instanceof GameInterruptedMessage) {
             setGameInterruptedReason(message.reason);
         }
@@ -45,11 +45,17 @@ export function Game(): JSX.Element {
     const { gameType, side, difficulty } = state;
 
     const [chess, setChess] = useState(new ChessEngine());
+
     const [gameInterruptedReason, setGameInterruptedReason] =
         useState<GameInterruptedReason>();
-
+    const [lastMove, setLastMove] = useState<{ from: Square; to: Square }>();
     const sendMessage = useSocket(
-        getMessageHandler(chess, setChess, setGameInterruptedReason),
+        getMessageHandler(
+            chess,
+            setChess,
+            setGameInterruptedReason,
+            setLastMove,
+        ),
     );
 
     useEffect(() => {
@@ -71,6 +77,7 @@ export function Game(): JSX.Element {
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
         sendMessage(new MoveMessage(move));
+        setLastMove({ from: move.from, to: move.to });
     };
 
     return (
@@ -81,7 +88,9 @@ export function Game(): JSX.Element {
                     side={side}
                     chess={chess}
                     onMove={handleMove}
+                    lastMove={lastMove}
                 />
+
                 {gameEndDialog}
                 <Outlet />
             </div>

@@ -23,11 +23,13 @@ interface ChessboardWrapperProps {
      * A callback function this component invokes whenever a move is made.
      */
     onMove: (move: Move) => void;
+
+    lastMove?: { from: Square, to: Square };
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
-    const { chess, side, onMove } = props;
-
+    const { chess, side, onMove} = props;
+     
     /**
      * The width of the chessboard in pixels.
      */
@@ -42,15 +44,20 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const [manualPromotionSquare, setManualPromotionSquare] = useState<
         Square | undefined
     >();
+    
 
     // Maps squares to style objects
-    const customSquareStyles: { [square: string]: object } = {};
+    const customSquareStyles: { [square: string]: object  } = {};
     let legalSquares: string[] | undefined = undefined;
     if (lastClickedSquare !== undefined) {
         legalSquares = chess.getLegalSquares(lastClickedSquare);
         legalSquares.forEach((square) => {
             customSquareStyles[square] = CLICK_STYLE;
         });
+    }
+    if (props.lastMove !== undefined) {
+        customSquareStyles[props.lastMove.from] = { backgroundColor: "green" };
+        customSquareStyles[props.lastMove.to] = { backgroundColor: "blue" };
     }
 
     /**
@@ -64,13 +71,17 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         onMove(move);
         setLastClickedSquare(undefined);
     };
+     
+   
 
     return (
         <BoardContainer onWidthChange={setWidth}>
+          
             <Chessboard
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
                 position={chess.fen}
+                
                 onPromotionCheck={(from: Square, to: Square) => {
                     const promoting = chess.isPromotionMove(from, to);
                     setIsPromoting(promoting);
@@ -145,8 +156,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     // piece is color and piece type, e.g. "wP"
                     return piece[0] === side;
                 }}
+               
                 arePremovesAllowed={false}
                 customSquareStyles={customSquareStyles}
+               
             />
         </BoardContainer>
     );
