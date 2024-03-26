@@ -37,10 +37,12 @@ export function Debug() {
                     onRobotIdSelected={setSelectedRobotId}
                 />
                 {selectedRobotId === undefined ? null : (
-                    <DriveRobot
-                        sendMessage={sendMessage}
-                        robotId={selectedRobotId}
-                    />
+                    <div style={{ height: 300 }}>
+                        <DriveRobot
+                            sendMessage={sendMessage}
+                            robotId={selectedRobotId}
+                        />
+                    </div>
                 )}
             </>
         );
