@@ -193,7 +193,7 @@ export function DriveRobot(props: DriveRobotProps) {
                     style={{
                         position: "absolute",
                         float: "left",
-                        bottom: -12,
+                        bottom: -63,
                         right: 225,
                     }}
                 >
@@ -211,7 +211,7 @@ export function DriveRobot(props: DriveRobotProps) {
                     style={{
                         position: "absolute",
                         float: "left",
-                        bottom: -25,
+                        bottom: -75,
                         right: 255,
                     }}
                 >
@@ -227,7 +227,7 @@ export function DriveRobot(props: DriveRobotProps) {
                     style={{
                         position: "absolute",
                         float: "left",
-                        bottom: -25,
+                        bottom: -75,
                         right: 225,
                     }}
                 >
@@ -243,7 +243,7 @@ export function DriveRobot(props: DriveRobotProps) {
                     style={{
                         position: "absolute",
                         float: "left",
-                        bottom: -25,
+                        bottom: -75,
                         right: 195,
                     }}
                 >
@@ -261,7 +261,7 @@ export function DriveRobot(props: DriveRobotProps) {
                     style={{
                         position: "absolute",
                         float: "left",
-                        bottom: -200,
+                        bottom: -90,
                         right: 204,
                     }}
                 >
