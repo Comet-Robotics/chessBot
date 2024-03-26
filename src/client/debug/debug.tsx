@@ -32,7 +32,7 @@ export function Debug() {
         body = (
             <>
                 <SelectRobot
-                    robotIds={robotIds}
+                    robotIds={["1", "2", "3"]}
                     selectedRobotId={selectedRobotId}
                     onRobotIdSelected={setSelectedRobotId}
                 />
@@ -52,6 +52,7 @@ export function Debug() {
             canOutsideClickClose={false}
             onClose={() => navigate("/home")}
             title="Debug"
+            style={{ height: "100%" }}
         >
             <DialogBody>{body}</DialogBody>
         </Dialog>

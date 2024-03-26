@@ -188,49 +188,130 @@ export function DriveRobot(props: DriveRobotProps) {
                 a connected gamepad. If arrow keys are not working, make sure
                 controls are in focus.
             </p>
-            <Button
-                icon="arrow-up"
-                onMouseUp={handleStopMove}
-                onMouseDown={handleDriveForward}
-            />
+            <div style={{ position: "relative" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        float: "left",
+                        bottom: -12,
+                        right: 225,
+                    }}
+                >
+                    <Button
+                        icon="arrow-up"
+                        onMouseUp={handleStopMove}
+                        onMouseDown={handleDriveForward}
+                    />
+                </div>
+            </div>
+
             <br />
-            <Button
-                icon="arrow-left"
-                onMouseUp={handleStopMove}
-                onMouseDown={handleTurnLeft}
-            />
-            <Button
-                icon="arrow-down"
-                onMouseUp={handleStopMove}
-                onMouseDown={handleDriveBackward}
-            />
-            <Button
-                icon="arrow-right"
-                onMouseUp={handleStopMove}
-                onMouseDown={handleTurnRight}
-            />
+            <div style={{ position: "relative" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        float: "left",
+                        bottom: -25,
+                        right: 255,
+                    }}
+                >
+                    <Button
+                        icon="arrow-left"
+                        onMouseUp={handleStopMove}
+                        onMouseDown={handleTurnLeft}
+                    />
+                </div>
+            </div>
+            <div style={{ position: "relative" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        float: "left",
+                        bottom: -25,
+                        right: 225,
+                    }}
+                >
+                    <Button
+                        icon="arrow-down"
+                        onMouseUp={handleStopMove}
+                        onMouseDown={handleDriveBackward}
+                    />
+                </div>
+            </div>
+            <div style={{ position: "relative" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        float: "left",
+                        bottom: -25,
+                        right: 195,
+                    }}
+                >
+                    <Button
+                        icon="arrow-right"
+                        onMouseUp={handleStopMove}
+                        onMouseDown={handleTurnRight}
+                    />
+                </div>
+            </div>
+
             <br />
-            <Button icon="stop" onClick={handleStopMove}>
-                Stop
-            </Button>
-            <Slider
-                min={-1}
-                max={1}
-                stepSize={0.01}
-                value={power.left}
-                initialValue={0}
-                onChange={handleLeftPowerChange}
-                vertical
-            />
-            <Slider
-                min={-1}
-                max={1}
-                stepSize={0.01}
-                value={power.right}
-                initialValue={0}
-                onChange={handleRightPowerChange}
-                vertical
-            />
+            <div style={{ position: "relative" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        float: "left",
+                        bottom: -200,
+                        right: 204,
+                    }}
+                >
+                    <Button icon="stop" onClick={handleStopMove}>
+                        Stop
+                    </Button>
+                </div>
+            </div>
+
+            <div style={{ position: "relative" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        float: "left",
+                        bottom: -150,
+                        left: 25,
+                    }}
+                >
+                    <Slider
+                        min={-1}
+                        max={1}
+                        stepSize={0.01}
+                        value={power.left}
+                        initialValue={0}
+                        onChange={handleLeftPowerChange}
+                        vertical
+                    />
+                </div>
+            </div>
+
+            <div style={{ position: "relative" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        float: "left",
+                        bottom: -150,
+                        right: 25,
+                    }}
+                >
+                    <Slider
+                        min={-1}
+                        max={1}
+                        stepSize={0.01}
+                        value={power.right}
+                        initialValue={0}
+                        onChange={handleRightPowerChange}
+                        vertical
+                    />
+                </div>
+            </div>
         </div>
     );
 }
