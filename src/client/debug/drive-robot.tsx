@@ -183,6 +183,7 @@ export function DriveRobot(props: DriveRobotProps) {
     const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys);
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+            <br />
             <p>
                 Control this robot using the buttons below, arrow keys, WASD, or
                 a connected gamepad. If arrow keys are not working, make sure
@@ -204,7 +205,6 @@ export function DriveRobot(props: DriveRobotProps) {
                     />
                 </div>
             </div>
-
             <br />
             <div style={{ position: "relative" }}>
                 <div
@@ -281,6 +281,7 @@ export function DriveRobot(props: DriveRobotProps) {
                     }}
                 >
                     <Slider
+                        disabled
                         min={-1}
                         max={1}
                         stepSize={0.01}
@@ -302,6 +303,7 @@ export function DriveRobot(props: DriveRobotProps) {
                     }}
                 >
                     <Slider
+                        disabled
                         min={-1}
                         max={1}
                         stepSize={0.01}

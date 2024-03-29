@@ -68,8 +68,8 @@ export const apiRouter = Router();
 
 apiRouter.get("/get-ids", (_, res) => {
     return res.send({
-        // ids: ["10", "11"],
-        ids: tcpServer.getConnectedIds(),
+        ids: ["10", "11"],
+        // ids: tcpServer.getConnectedIds(),
     });
 });
 
