@@ -1,4 +1,4 @@
-import { Position } from "../robot/pair";
+import { Position } from "./pair";
 import { Square } from "chess.js";
 
 const FILE_LOOKUP = "abcdefgh";

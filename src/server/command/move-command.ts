@@ -1,6 +1,6 @@
 import { RobotCommand, Reversible } from "./command";
-import { Position } from "../robot/pair";
 import { Robot } from "../robot/robot";
+import { Position } from "../robot/position";
 
 /**
  * Represents a rotation.

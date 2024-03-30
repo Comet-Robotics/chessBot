@@ -1,6 +1,7 @@
-import { Position, ZERO_POSITION } from "./pair";
 import { RobotSocket } from "./robot-socket";
 import { FULL_ROTATION, clampHeading } from "../utils/units";
+import { Position, ZERO_POSITION } from "./position";
+import { GridIndices } from "./grid-indices";
 
 /**
  * Represents a robot.
@@ -10,10 +11,14 @@ export class Robot {
     private _heading: number;
 
     constructor(
+        public readonly id: string,
         private readonly socket: RobotSocket,
+        /**
+         * The location the robot lives in when its not in use.
+         */
+        public readonly homeIndices: GridIndices,
         public readonly startHeading: number = 0,
         private _position: Position = ZERO_POSITION,
-        
     ) {
         this._heading = startHeading;
     }
@@ -22,8 +27,8 @@ export class Robot {
         return this._position;
     }
 
-    private set position(position: Position) {
-        this._position = position;
+    private set position(coords: Position) {
+        this._position = coords;
     }
 
     public get heading(): number {
