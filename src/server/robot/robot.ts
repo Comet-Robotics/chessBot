@@ -13,6 +13,7 @@ export class Robot {
         private readonly socket: RobotSocket,
         public readonly startHeading: number = 0,
         private _position: Position = ZERO_POSITION,
+        
     ) {
         this._heading = startHeading;
     }
