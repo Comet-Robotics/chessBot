@@ -8,8 +8,9 @@ interface DriveRobotProps {
     sendMessage: SendMessage;
 }
 
-const approxeq = (v1: number, v2: number, epsilon = 0.01) =>
-    Math.abs(v1 - v2) <= epsilon;
+function almostEqual(v1: number, v2: number, epsilon: number = 0.01): boolean {
+    return Math.abs(v1 - v2) <= epsilon;
+}
 
 /**
  * A component which can be used to drive an individual robot around.
@@ -23,8 +24,8 @@ export function DriveRobot(props: DriveRobotProps) {
     //useEffect hook to send the power levels to the robot if there is a change in the power levels
     useEffect(() => {
         if (
-            approxeq(prev.left, power.left) &&
-            approxeq(prev.right, power.right)
+            almostEqual(prev.left, power.left) &&
+            almostEqual(prev.right, power.right)
         ) {
             return;
         }
@@ -204,9 +205,6 @@ export function DriveRobot(props: DriveRobotProps) {
                         onMouseDown={handleDriveForward}
                     />
                 </div>
-            </div>
-            <br />
-            <div style={{ position: "relative" }}>
                 <div
                     style={{
                         position: "absolute",
@@ -221,8 +219,6 @@ export function DriveRobot(props: DriveRobotProps) {
                         onMouseDown={handleTurnLeft}
                     />
                 </div>
-            </div>
-            <div style={{ position: "relative" }}>
                 <div
                     style={{
                         position: "absolute",
@@ -237,8 +233,6 @@ export function DriveRobot(props: DriveRobotProps) {
                         onMouseDown={handleDriveBackward}
                     />
                 </div>
-            </div>
-            <div style={{ position: "relative" }}>
                 <div
                     style={{
                         position: "absolute",
@@ -253,10 +247,6 @@ export function DriveRobot(props: DriveRobotProps) {
                         onMouseDown={handleTurnRight}
                     />
                 </div>
-            </div>
-
-            <br />
-            <div style={{ position: "relative" }}>
                 <div
                     style={{
                         position: "absolute",
@@ -265,13 +255,8 @@ export function DriveRobot(props: DriveRobotProps) {
                         right: 204,
                     }}
                 >
-                    <Button icon="stop" onClick={handleStopMove}>
-                        Stop
-                    </Button>
+                    <Button icon="stop" onClick={handleStopMove} title="Stop" />
                 </div>
-            </div>
-
-            <div style={{ position: "relative" }}>
                 <div
                     style={{
                         position: "absolute",
@@ -291,9 +276,6 @@ export function DriveRobot(props: DriveRobotProps) {
                         vertical
                     />
                 </div>
-            </div>
-
-            <div style={{ position: "relative" }}>
                 <div
                     style={{
                         position: "absolute",
