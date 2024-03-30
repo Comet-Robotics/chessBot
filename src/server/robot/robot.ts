@@ -11,8 +11,8 @@ export class Robot {
     private _heading: number;
 
     constructor(
-        public readonly id: string,
         private readonly socket: RobotSocket,
+        public readonly id: string,
         /**
          * The location the robot lives in when its not in use.
          */

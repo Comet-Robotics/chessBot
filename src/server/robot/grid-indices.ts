@@ -25,3 +25,6 @@ export class GridIndices extends Pair<GridIndices> {
         return `${this.i}, ${this.j}`;
     }
 }
+
+export const ZERO_INDICES = new GridIndices(0, 0);
+// export const MAX_INDICES = new GridIndices(11, 11);
