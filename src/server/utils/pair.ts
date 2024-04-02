@@ -1,10 +1,14 @@
 export abstract class Pair<T extends Pair<T>> {
     constructor(
-        protected item1: number,
-        protected item2: number,
+        // Pair is implemented atomically and doesn't support mutation
+        protected readonly item1: number,
+        protected readonly item2: number,
     ) {}
 
-    abstract create(item1: number, item2: number): T;
+    /**
+     * An abstract method used to dynamically generate new instances of the class at runtime.
+     */
+    protected abstract create(item1: number, item2: number): T;
 
     toTuple(): [number, number] {
         return [this.item1, this.item2];

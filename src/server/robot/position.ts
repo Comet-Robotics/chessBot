@@ -8,7 +8,7 @@ export class Position extends Pair<Position> {
         super(x, y);
     }
 
-    create(x: number, y: number): Position {
+    protected create(x: number, y: number): Position {
         return new Position(x, y);
     }
 }

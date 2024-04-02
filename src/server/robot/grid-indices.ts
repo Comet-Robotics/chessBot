@@ -17,7 +17,7 @@ export class GridIndices extends Pair<GridIndices> {
         super(i, j);
     }
 
-    create(i: number, j: number): GridIndices {
+    protected create(i: number, j: number): GridIndices {
         return new GridIndices(i, j);
     }
 
