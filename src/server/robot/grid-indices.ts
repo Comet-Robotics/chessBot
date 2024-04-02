@@ -8,16 +8,16 @@ export class GridIndices extends Pair<GridIndices> {
         public readonly i: number,
         public readonly j: number,
     ) {
-        super(i, j);
-    }
-
-    create(i: number, j: number): GridIndices {
-        if (i < 0 || i > 12) {
+        if (i < 0 || i > 11) {
             throw new Error("Index " + i + " is out of bounds.");
         }
         if (j < 0 || j > 11) {
             throw new Error("Index " + j + " is out of bounds.");
         }
+        super(i, j);
+    }
+
+    create(i: number, j: number): GridIndices {
         return new GridIndices(i, j);
     }
 
