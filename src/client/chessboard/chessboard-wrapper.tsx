@@ -65,7 +65,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 boardWidth={width}
                 position={chess.fen}
                 onPromotionCheck={(from: Square, to: Square) => {
-                    const promoting = chess.isPromotionMove(from, to);
+                    const promoting = chess.checkPromotion(from, to);
                     setIsPromoting(promoting);
                     return promoting;
                 }}
@@ -116,7 +116,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         legalSquares.includes(square);
 
                     if (isSquareLegalMove) {
-                        if (chess.isPromotionMove(lastClickedSquare, square)) {
+                        if (chess.checkPromotion(lastClickedSquare, square)) {
                             // Manually show promotion dialog
                             setManualPromotionSquare(square);
                         } else {

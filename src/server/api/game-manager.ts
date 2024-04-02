@@ -32,7 +32,7 @@ export class HumanGameManager extends GameManager {
     constructor(
         chess: ChessEngine,
         socketManager: SocketManager,
-        private clientManager: ClientManager,
+        protected clientManager: ClientManager,
     ) {
         super(chess, socketManager);
     }
@@ -67,7 +67,7 @@ export class ComputerGameManager extends GameManager {
     constructor(
         chess: ChessEngine,
         socketManager: SocketManager,
-        private difficulty: number,
+        protected difficulty: number,
     ) {
         super(chess, socketManager);
     }
@@ -95,11 +95,3 @@ export class ComputerGameManager extends GameManager {
         }
     }
 }
-
-// export type Puzzle = object;
-
-// export class PuzzleManager extends GameManager {
-//     constructor(private puzzle: Puzzle) {
-//         super();
-//     }
-// }

@@ -1,5 +1,6 @@
 import { BotTunnel } from "../../api/tcp-interface";
 import { DEGREE } from "../../utils/units";
+import { ZERO_INDICES } from "../grid-indices";
 import { Robot } from "../robot";
 import { RobotSocket } from "../robot-socket";
 import { vi, test, expect, afterEach } from "vitest";
@@ -26,7 +27,12 @@ test.each([
     async (start: number, end: number, expected: number) => {
         // Convert degrees to radians
         const endRadians = end * DEGREE;
-        const robot = new Robot(mockRobotSocket, start * DEGREE);
+        const robot = new Robot(
+            mockRobotSocket,
+            "robot1",
+            ZERO_INDICES,
+            start * DEGREE,
+        );
         await robot.absoluteRotate(endRadians);
         expect(mockTurn.mock.calls[0][0]).toBeCloseTo(expected * DEGREE);
         expect(robot.heading).toBeCloseTo(endRadians);
@@ -45,7 +51,12 @@ test.each([
     async (start: number, delta: number, expected: number) => {
         // Convert degrees to radians
         const deltaRadians = delta * DEGREE;
-        const robot = new Robot(mockRobotSocket, start * DEGREE);
+        const robot = new Robot(
+            mockRobotSocket,
+            "robot1",
+            ZERO_INDICES,
+            start * DEGREE,
+        );
         await robot.relativeRotate(deltaRadians);
 
         expect(mockTurn.mock.calls[0][0]).toBeCloseTo(delta * DEGREE);

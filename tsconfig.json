@@ -55,11 +55,11 @@
                                 },
                                 {
                                     "name": "Architecture",
-                                    "source": "server_client.md"
+                                    "source": "Server-Client.md"
                                 },
                                 {
                                     "name": "Writing Tests",
-                                    "source": "writing_tests.md"
+                                    "source": "Writing-Tests.md"
                                 },
                                 {
                                     "name": "Resource Library",
