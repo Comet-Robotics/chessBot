@@ -28,4 +28,4 @@ dist-ssr
 site/
 !site/CNAME
 
-.env
+*/.env
