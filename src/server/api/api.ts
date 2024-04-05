@@ -18,6 +18,7 @@ import {
     HumanGameManager,
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
+import { IS_DEVELOPMENT } from "../utils/env";
 
 const tcpServer = new TCPServer();
 let gameManager: GameManager | null = null;
@@ -67,10 +68,11 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 export const apiRouter = Router();
 
 apiRouter.get("/get-ids", (_, res) => {
-    return res.send({
-        // ids: ["10", "11"],
-        ids: tcpServer.getConnectedIds(),
-    });
+    const ids = tcpServer.getConnectedIds();
+    if (IS_DEVELOPMENT) {
+        ids.push("dummy-id-1", "dummy-id-2");
+    }
+    return res.send({ ids });
 });
 
 /**
