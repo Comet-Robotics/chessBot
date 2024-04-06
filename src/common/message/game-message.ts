@@ -28,6 +28,13 @@ export class MoveMessage extends Message {
         };
     }
 }
+export class GameStartedMessage extends Message {
+    constructor() {
+        super();
+    }
+
+    protected type = MessageType.GAME_STARTED;
+}
 
 export class GameInterruptedMessage extends Message {
     constructor(public readonly reason: GameInterruptedReason) {

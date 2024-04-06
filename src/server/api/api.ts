@@ -2,14 +2,11 @@ import { WebsocketRequestHandler } from "express-ws";
 import { Router } from "express";
 
 import { parseMessage } from "../../common/message/parse-message";
-import {
-    GameStartMessage,
-    GameInterruptedMessage,
-} from "../../common/message/game-message";
+import { GameInterruptedMessage } from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
 import { TCPServer } from "./tcp-interface";
-import { Difficulty, GameType } from "../../common/client-types";
+import { Difficulty } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
 import { clientManager, socketManager } from "./managers";
 import {
@@ -21,7 +18,7 @@ import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
 
 const tcpServer = new TCPServer();
-let gameManager: GameManager | null = null;
+export let gameManager: GameManager | null = null;
 
 /**
  * An endpoint used to establish a websocket connection with the server.
@@ -37,23 +34,9 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         const message = parseMessage(data.toString());
         console.log("Received message: " + message.toJson());
 
+        // TODO: Handle game manager not existing
         if (message instanceof RegisterWebsocketMessage) {
             socketManager.registerSocket(req.cookies.id, ws);
-        } else if (message instanceof GameStartMessage) {
-            if (message.gameType === GameType.COMPUTER) {
-                gameManager = new ComputerGameManager(
-                    new ChessEngine(),
-                    socketManager,
-                    message.difficulty!,
-                );
-            } else {
-                gameManager = new HumanGameManager(
-                    new ChessEngine(),
-                    socketManager,
-                    clientManager,
-                );
-            }
-            gameManager.handleMessage(message, req.cookies.id);
         } else if (message instanceof GameInterruptedMessage) {
             gameManager?.handleMessage(message, req.cookies.id);
             gameManager = null;
@@ -67,23 +50,47 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
 export const apiRouter = Router();
 
-apiRouter.post("/start-computer-game", (req) => {
+apiRouter.get("/client-information", (req, res) => {
+    const clientType = clientManager.getClientType(req.cookies.id);
+    const isGameActive = gameManager !== null;
+    console.log("Fetch client information");
+    return res.send({
+        clientType,
+        isGameActive,
+    });
+});
+
+apiRouter.get("/game-state", (req, res) => {
+    if (gameManager === null) {
+        console.log("Invalid attempt to fetch game state");
+        return res.status(400).send({ message: "No game is currently active" });
+    }
+    const clientType = clientManager.getClientType(req.cookies.id);
+    return res.send(gameManager.getGameState(clientType));
+});
+
+apiRouter.post("/start-computer-game", (req, res) => {
+    console.log("Start computer game");
     const side = req.query.side as Side;
-    const difficulty = parseInt(req.query.difficulty) as Difficulty;
+    const difficulty = parseInt(req.query.difficulty as string) as Difficulty;
     gameManager = new ComputerGameManager(
         new ChessEngine(),
         socketManager,
+        side,
         difficulty,
     );
+    return res.send({ message: "success" });
 });
 
-apiRouter.post("/start-human-game", (req) => {
+apiRouter.post("/start-human-game", (req, res) => {
     const side = req.query.side as Side;
     gameManager = new HumanGameManager(
         new ChessEngine(),
         socketManager,
+        side,
         clientManager,
     );
+    return res.send({ message: "success" });
 });
 
 apiRouter.get("/get-ids", (_, res) => {

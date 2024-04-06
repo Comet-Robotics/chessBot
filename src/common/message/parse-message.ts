@@ -4,6 +4,7 @@ import {
     PositionMessage,
     MoveMessage,
     GameInterruptedMessage,
+    GameStartedMessage,
 } from "./game-message";
 
 /**
@@ -18,6 +19,8 @@ export function parseMessage(text: string): Message {
     switch (obj.type) {
         case MessageType.REGISTER_WEBSOCKET:
             return new RegisterWebsocketMessage();
+        case MessageType.GAME_STARTED:
+            return new GameStartedMessage();
         case MessageType.GAME_INTERRUPTED:
             return new GameInterruptedMessage(obj.reason);
         case MessageType.POSITION:

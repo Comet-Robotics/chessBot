@@ -66,18 +66,20 @@ export function SetupGame(props: SetupGameProps) {
                         :   Side.BLACK;
                 }
 
+                let promise: Promise<unknown>;
                 if (props.gameType === GameType.COMPUTER) {
-                    post("/start-computer-game", {
+                    promise = post("/start-computer-game", {
                         side: selectedSide,
                         difficulty: difficulty.toString(),
                     });
                 } else {
-                    post("/start-human-game", {
+                    promise = post("/start-human-game", {
                         side: selectedSide,
                     });
                 }
-
-                navigate("/game");
+                promise.then(() => {
+                    navigate("/game");
+                });
             }}
         />
     );

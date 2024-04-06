@@ -5,12 +5,14 @@ import {
     MoveMessage,
     PositionMessage,
     GameInterruptedMessage,
+    GameStartedMessage,
 } from "../game-message";
 import { Message } from "../message";
 import { parseMessage } from "../parse-message";
 import { expect, test } from "vitest";
 
 test.each([
+    new GameStartedMessage(),
     new GameInterruptedMessage(GameInterruptedReason.ABORTED),
     new PositionMessage("aaaaaaaaa"),
     new MoveMessage({ from: "a1", to: "a2" }),

@@ -40,9 +40,8 @@ app.use((req, _, next) => {
     return next();
 });
 
-app.get("/", (req, res) => {
-    const clientType = clientManager.getClientType(req.cookies.id);
-    return res.redirect(`/home?client-type=${clientType}`);
+app.get("/", (_, res) => {
+    return res.redirect("/home");
 });
 
 app.ws("/ws", websocketHandler);
