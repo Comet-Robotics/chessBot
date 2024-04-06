@@ -3,6 +3,7 @@
     "task.allowAutomaticTasks": "off",
     "task.autoDetect": "off",
     "cSpell.words": ["blueprintjs", "Chessbots", "Premoves"],
+    "cSpell.enableFiletypes": ["properties"],
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
