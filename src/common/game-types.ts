@@ -4,6 +4,7 @@ import { DEGREE } from "../server/utils/units";
 
 /**
  * Defines a specific piece.
+ * Values are defined to be consistent with the chess.js library.
  */
 export enum PieceType {
     PAWN = "p",
@@ -16,6 +17,7 @@ export enum PieceType {
 
 /**
  * Defines playing with the white or black pieces.
+ * Values are defined to be consistent with the chess.js library.
  */
 export enum Side {
     WHITE = "w",
