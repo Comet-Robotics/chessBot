@@ -3,7 +3,6 @@ import { DriveRobotMessage } from "./drive-robot-message";
 import {
     PositionMessage,
     MoveMessage,
-    GameStartMessage,
     GameInterruptedMessage,
 } from "./game-message";
 
@@ -19,14 +18,6 @@ export function parseMessage(text: string): Message {
     switch (obj.type) {
         case MessageType.REGISTER_WEBSOCKET:
             return new RegisterWebsocketMessage();
-        case MessageType.GAME_START:
-            return new GameStartMessage(
-                obj.gameType,
-                obj.side,
-                obj.difficulty !== undefined ?
-                    parseInt(obj.difficulty)
-                :   undefined,
-            );
         case MessageType.GAME_INTERRUPTED:
             return new GameInterruptedMessage(obj.reason);
         case MessageType.POSITION:

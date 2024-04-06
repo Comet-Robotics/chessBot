@@ -1,9 +1,6 @@
 import { Dispatch, useState } from "react";
 
-import {
-    GameInterruptedMessage,
-    GameStartMessage,
-} from "../../common/message/game-message";
+import { GameInterruptedMessage } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
 import { PositionMessage } from "../../common/message/game-message";
 import {
@@ -16,7 +13,7 @@ import { NavbarMenu } from "./navbar-menu";
 import { useSocket } from "../api";
 import { MessageHandler } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
 
@@ -41,8 +38,8 @@ function getMessageHandler(
 }
 
 export function Game(): JSX.Element {
-    const state = useLocation().state;
-    const { gameType, side, difficulty } = state;
+    // const state = useLocation().state;
+    // const { gameType, side, difficulty } = state;
 
     const [chess, setChess] = useState(new ChessEngine());
     const [gameInterruptedReason, setGameInterruptedReason] =
@@ -50,7 +47,6 @@ export function Game(): JSX.Element {
 
     const sendMessage = useSocket(
         getMessageHandler(chess, setChess, setGameInterruptedReason),
-        () => sendMessage(new GameStartMessage(gameType, side, difficulty)),
     );
 
     let gameOverReason: GameEndReason | undefined = undefined;

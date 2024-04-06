@@ -3,10 +3,8 @@ import { ChessEngine } from "../../common/chess-engine";
 import {
     MoveMessage,
     PositionMessage,
-    GameStartMessage,
     GameInterruptedMessage,
 } from "../../common/message/game-message";
-import { Side, oppositeSide } from "../../common/game-types";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
 import { ClientType } from "../../common/client-types";
@@ -46,14 +44,14 @@ export class HumanGameManager extends GameManager {
             opponentSocket = this.clientManager.getHostSocket();
         }
 
-        if (message instanceof GameStartMessage) {
-            opponentSocket?.send(
-                new GameStartMessage(
-                    message.gameType,
-                    oppositeSide(message.side),
-                ).toJson(),
-            );
-        } else if (message instanceof MoveMessage) {
+        // if (message instanceof GameStartMessage) {
+        // opponentSocket?.send(
+        //     new GameStartMessage(
+        //         message.gameType,
+        //         oppositeSide(message.side),
+        //     ).toJson(),
+        // );
+        if (message instanceof MoveMessage) {
             this.chess.makeMove(message.move);
             opponentSocket?.send(new MoveMessage(message.move).toJson());
         } else if (message instanceof GameInterruptedMessage) {
@@ -72,14 +70,19 @@ export class ComputerGameManager extends GameManager {
         super(chess, socketManager);
     }
 
+    /**
+     * If the host is black, this method needs to be called.
+     */
+    public makeInitialMove(id: string): void {
+        // if (hostSide === Side.BLACK) {
+        const move = this.chess.makeAiMove(this.difficulty);
+        // Okay it if doesn't work - client will get it when the socket connects and syncs
+        this.socketManager.sendToSocket(id, new MoveMessage(move));
+        // }
+    }
+
     public handleMessage(message: Message, id: string): void {
-        if (message instanceof GameStartMessage) {
-            // If the person starting the game is black, we're white and need to make the first move
-            if (message.side === Side.BLACK) {
-                const move = this.chess.makeAiMove(this.difficulty);
-                this.socketManager.sendToSocket(id, new MoveMessage(move));
-            }
-        } else if (message instanceof GameInterruptedMessage) {
+        if (message instanceof GameInterruptedMessage) {
             // Reflect end game reason back to client
             this.socketManager.sendToSocket(id, message);
         } else if (message instanceof MoveMessage) {

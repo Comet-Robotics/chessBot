@@ -9,7 +9,7 @@ import {
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
 import { TCPServer } from "./tcp-interface";
-import { GameType } from "../../common/client-types";
+import { Difficulty, GameType } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
 import { clientManager, socketManager } from "./managers";
 import {
@@ -18,6 +18,7 @@ import {
     HumanGameManager,
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
+import { Side } from "../../common/game-types";
 
 const tcpServer = new TCPServer();
 let gameManager: GameManager | null = null;
@@ -65,6 +66,25 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 };
 
 export const apiRouter = Router();
+
+apiRouter.post("/start-computer-game", (req) => {
+    const side = req.query.side as Side;
+    const difficulty = parseInt(req.query.difficulty) as Difficulty;
+    gameManager = new ComputerGameManager(
+        new ChessEngine(),
+        socketManager,
+        difficulty,
+    );
+});
+
+apiRouter.post("/start-human-game", (req) => {
+    const side = req.query.side as Side;
+    gameManager = new HumanGameManager(
+        new ChessEngine(),
+        socketManager,
+        clientManager,
+    );
+});
 
 apiRouter.get("/get-ids", (_, res) => {
     return res.send({
