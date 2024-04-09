@@ -21,7 +21,7 @@ export class RobotSocket {
      */
     public async drive(tileDistance: number): Promise<void> {
         this.tunnel.send({ type: "DRIVE_TILES", tileDistance });
-        // TODO: wait for tunnel to receive ACTION_X message
+        return this.tunnel.waitForActionResponse();
     }
 
     /**
@@ -32,6 +32,6 @@ export class RobotSocket {
      */
     public async turn(deltaHeading: number): Promise<void> {
         this.tunnel.send({ type: "TURN_BY_ANGLE", deltaHeading });
-        // TODO: wait for tunnel to receive ACTION_X message
+        return this.tunnel.waitForActionResponse();
     }
 }
