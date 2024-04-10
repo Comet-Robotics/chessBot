@@ -1,6 +1,5 @@
-import { Button, useHotkeys } from "@blueprintjs/core";
-import { useCallback, useEffect, useMemo } from "react";
-import { StopRobotMessage } from "../../common/message/drive-robot-message";
+import { Button, useHotkeys, Slider } from "@blueprintjs/core";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
 
@@ -9,28 +8,31 @@ interface DriveRobotProps {
     sendMessage: SendMessage;
 }
 
-function useManualMoveHandler(
-    props: DriveRobotProps,
-    leftPower: number,
-    rightPower: number,
-) {
-    const handleManualMove = useCallback(
-        () =>
-            props.sendMessage(
-                new DriveRobotMessage(props.robotId, leftPower, rightPower),
-            ),
-        [props, leftPower, rightPower],
-    );
-    return handleManualMove;
-}
+const approxeq = (v1: number, v2: number, epsilon = 0.01) =>
+    Math.abs(v1 - v2) <= epsilon;
 
 /**
  * A component which can be used to drive an individual robot around.
  */
 export function DriveRobot(props: DriveRobotProps) {
-    const handleStopMove = useCallback(() => {
-        props.sendMessage(new StopRobotMessage(props.robotId));
-    }, [props]);
+    //state variable for handling the power levels of the robot
+    const [power, setPower] = useState({ left: 0, right: 0 });
+    const [prevPad, setPrevPad] = useState({ left: 0, right: 0 });
+    const [prev, setPrev] = useState({ left: 0, right: 0 });
+
+    //useEffect hook to send the power levels to the robot if there is a change in the power levels
+    useEffect(() => {
+        if (
+            approxeq(prev.left, power.left) &&
+            approxeq(prev.right, power.right)
+        ) {
+            return;
+        }
+        props.sendMessage(
+            new DriveRobotMessage(props.robotId, power.left, power.right),
+        );
+        setPrev({ left: power.left, right: power.right });
+    }, [props, power.left, power.right, prev]);
 
     useEffect(() => {
         if (!navigator.getGamepads) {
@@ -43,35 +45,64 @@ export function DriveRobot(props: DriveRobotProps) {
                     // tank-style drive
                     // deadzone and scaling to be more sensitive at lower values
                     const DEADZONE = 0.15;
-                    let leftPower = gamepad.axes[1] * -1;
-                    let rightPower = gamepad.axes[3] * -1;
-                    if (Math.abs(leftPower) < DEADZONE) leftPower = 0;
-                    if (Math.abs(rightPower) < DEADZONE) rightPower = 0;
-                    leftPower = Math.sign(leftPower) * Math.pow(leftPower, 2);
-                    rightPower =
-                        Math.sign(rightPower) * Math.pow(rightPower, 2);
-                    props.sendMessage(
-                        new DriveRobotMessage(
-                            props.robotId,
-                            leftPower,
-                            rightPower,
-                        ),
-                    );
+                    let padLeftPower = gamepad.axes[1] * -1;
+                    let padRightPower = gamepad.axes[3] * -1;
+                    if (Math.abs(padLeftPower) < DEADZONE) padLeftPower = 0;
+                    if (Math.abs(padRightPower) < DEADZONE) padRightPower = 0;
+                    padLeftPower =
+                        Math.sign(padLeftPower) * Math.pow(padLeftPower, 2);
+                    padRightPower =
+                        Math.sign(padRightPower) * Math.pow(padRightPower, 2);
+                    if (
+                        prevPad.left === 0 &&
+                        prevPad.right === 0 &&
+                        padLeftPower === 0 &&
+                        padRightPower === 0
+                    ) {
+                        continue;
+                    }
+                    setPower({ left: padLeftPower, right: padRightPower });
+                    setPrevPad({ left: padLeftPower, right: padRightPower });
                 }
             }
         };
 
-        const gamepadPollingInterval = setInterval(handleGamepadInput, 100);
+        const gamepadPollingInterval = setInterval(handleGamepadInput, 50);
 
         return () => {
             clearInterval(gamepadPollingInterval);
         };
-    }, [props]);
+    }, [props, prevPad]);
 
-    const handleDriveForward = useManualMoveHandler(props, 1, 1);
-    const handleDriveBackward = useManualMoveHandler(props, -1, -1);
-    const handleTurnRight = useManualMoveHandler(props, 0.5, -0.5);
-    const handleTurnLeft = useManualMoveHandler(props, -0.5, 0.5);
+    const handleStopMove = useCallback(() => {
+        setPower({ left: 0, right: 0 });
+    }, []);
+
+    const handleDriveForward = useCallback(() => {
+        setPower({ left: 1, right: 1 });
+    }, []);
+    const handleDriveBackward = useCallback(() => {
+        setPower({ left: -1, right: -1 });
+    }, []);
+    const handleTurnRight = useCallback(() => {
+        setPower({ left: 0.5, right: -0.5 });
+    }, []);
+    const handleTurnLeft = useCallback(() => {
+        setPower({ left: -0.5, right: 0.5 });
+    }, []);
+
+    const handleLeftPowerChange = useCallback(
+        (value: number) => {
+            setPower({ left: value, right: power.right });
+        },
+        [power.right],
+    );
+    const handleRightPowerChange = useCallback(
+        (value: number) => {
+            setPower({ left: power.left, right: value });
+        },
+        [power.left],
+    );
 
     const hotkeys = useMemo(
         () => [
@@ -110,7 +141,7 @@ export function DriveRobot(props: DriveRobotProps) {
             {
                 combo: "up",
                 group: "Debug",
-                global: true,
+                global: false,
                 label: "Drive forward",
                 onKeyDown: handleDriveForward,
                 onKeyUp: handleStopMove,
@@ -118,7 +149,7 @@ export function DriveRobot(props: DriveRobotProps) {
             {
                 combo: "down",
                 group: "Debug",
-                global: true,
+                global: false,
                 label: "Drive backward",
                 onKeyDown: handleDriveBackward,
                 onKeyUp: handleStopMove,
@@ -126,7 +157,7 @@ export function DriveRobot(props: DriveRobotProps) {
             {
                 combo: "right",
                 group: "Debug",
-                global: true,
+                global: false,
                 label: "Turn right",
                 onKeyDown: handleTurnRight,
                 onKeyUp: handleStopMove,
@@ -134,7 +165,7 @@ export function DriveRobot(props: DriveRobotProps) {
             {
                 combo: "left",
                 group: "Debug",
-                global: true,
+                global: false,
                 label: "Turn left",
                 onKeyDown: handleTurnLeft,
                 onKeyUp: handleStopMove,
@@ -154,7 +185,8 @@ export function DriveRobot(props: DriveRobotProps) {
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
             <p>
                 Control this robot using the buttons below, arrow keys, WASD, or
-                a connected gamepad.
+                a connected gamepad. If arrow keys are not working, make sure
+                controls are in focus.
             </p>
             <Button
                 icon="arrow-up"
@@ -181,6 +213,24 @@ export function DriveRobot(props: DriveRobotProps) {
             <Button icon="stop" onClick={handleStopMove}>
                 Stop
             </Button>
+            <Slider
+                min={-1}
+                max={1}
+                stepSize={0.01}
+                value={power.left}
+                initialValue={0}
+                onChange={handleLeftPowerChange}
+                vertical
+            />
+            <Slider
+                min={-1}
+                max={1}
+                stepSize={0.01}
+                value={power.right}
+                initialValue={0}
+                onChange={handleRightPowerChange}
+                vertical
+            />
         </div>
     );
 }

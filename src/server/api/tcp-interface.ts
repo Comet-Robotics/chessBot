@@ -1,6 +1,11 @@
 import * as net from "net";
 import config from "./bot-server-config.json";
-import { Packet, jsonToPacket, packetToJson } from "../utils/tcp-packet";
+import {
+    Packet,
+    SERVER_PROTOCOL_VERSION,
+    jsonToPacket,
+    packetToJson,
+} from "../utils/tcp-packet";
 
 export class BotTunnel {
     connected: boolean = false;
@@ -39,7 +44,11 @@ export class BotTunnel {
     }
 
     onError(err: Error) {
-        console.log("Connection error from %s: %s", this.getIdentifier(), err);
+        console.error(
+            "Connection error from %s: %s",
+            this.getIdentifier(),
+            err,
+        );
         this.connected = false;
     }
 
@@ -90,16 +99,22 @@ export class BotTunnel {
 
             // Parse packet based on type
             switch (packet.type) {
-                case "NOTHING": {
-                    break;
-                }
                 case "CLIENT_HELLO": {
                     this.onHandshake(packet.macAddress);
+                    this.send({
+                        type: "SERVER_HELLO",
+                        protocol: SERVER_PROTOCOL_VERSION,
+                    });
                     this.connected = true;
+                    break;
+                }
+                case "PING_SEND": {
+                    this.send({ type: "PING_RESPONSE" });
+                    break;
                 }
             }
         } catch (e) {
-            console.log("Received invalid packet with error", e);
+            console.warn("Received invalid packet with error", e);
         }
 
         // Handle next message if the data buffer has another one
@@ -116,16 +131,16 @@ export class BotTunnel {
         const msg = str + ";";
 
         if (!this.isActive()) {
-            console.log(
-                "Connection to ",
+            console.error(
+                "Connection to",
                 this.getIdentifier(),
-                " is inactive, failed to write",
+                "is inactive, failed to write",
                 msg,
             );
-            throw new Error(
-                "Cannot send packet to inactive connection: " +
-                    this.getIdentifier(),
-            );
+            // throw new Error(
+            //     "Cannot send packet to inactive connection: " +
+            //         this.getIdentifier(),
+            // );
         }
 
         console.log({ msg });

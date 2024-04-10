@@ -18,6 +18,7 @@ import {
     HumanGameManager,
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
+import { IS_DEVELOPMENT } from "../utils/env";
 
 const tcpServer = new TCPServer();
 let gameManager: GameManager | null = null;
@@ -52,7 +53,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                     clientManager,
                 );
             }
-            gameManager?.handleMessage(message, req.cookies.id);
+            gameManager.handleMessage(message, req.cookies.id);
         } else if (message instanceof GameInterruptedMessage) {
             gameManager?.handleMessage(message, req.cookies.id);
             gameManager = null;
@@ -67,10 +68,11 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 export const apiRouter = Router();
 
 apiRouter.get("/get-ids", (_, res) => {
-    return res.send({
-        // ids: ["10", "11"],
-        ids: tcpServer.getConnectedIds(),
-    });
+    const ids = tcpServer.getConnectedIds();
+    if (IS_DEVELOPMENT) {
+        ids.push("dummy-id-1", "dummy-id-2");
+    }
+    return res.send({ ids });
 });
 
 /**
@@ -95,20 +97,24 @@ apiRouter.get("/get-puzzles", (_, res) => {
 
 function doDriveRobot(message: DriveRobotMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {
-        console.log(
+        console.warn(
             "attempted manual move for non-existent robot ID " + message.id,
         );
         return false;
     } else {
         const tunnel = tcpServer.getTunnelFromId(message.id);
-        // if (leftPower == 0 && rightPower == 0) {
-        //   tunnel.send(PacketType.ESTOP);
-        // } else {
-        tunnel.send({
-            type: "DRIVE_TANK",
-            left: message.leftPower,
-            right: message.rightPower,
-        });
+        if (!tunnel.connected) {
+            console.warn(
+                "attempted manual move for disconnected robot ID " + message.id,
+            );
+            return false;
+        } else {
+            tunnel.send({
+                type: "DRIVE_TANK",
+                left: message.leftPower,
+                right: message.rightPower,
+            });
+        }
     }
     return true;
 }
