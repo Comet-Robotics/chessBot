@@ -2,7 +2,10 @@ import { WebsocketRequestHandler } from "express-ws";
 import { Router } from "express";
 
 import { parseMessage } from "../../common/message/parse-message";
-import { GameInterruptedMessage } from "../../common/message/game-message";
+import {
+    GameInterruptedMessage,
+    MoveMessage,
+} from "../../common/message/game-message";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 
 import { TCPServer } from "./tcp-interface";
@@ -18,6 +21,7 @@ import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
 
 const tcpServer = new TCPServer();
+
 export let gameManager: GameManager | null = null;
 
 /**
@@ -34,16 +38,16 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         const message = parseMessage(data.toString());
         console.log("Received message: " + message.toJson());
 
-        // TODO: Handle game manager not existing
         if (message instanceof RegisterWebsocketMessage) {
             socketManager.registerSocket(req.cookies.id, ws);
-        } else if (message instanceof GameInterruptedMessage) {
+        } else if (
+            message instanceof GameInterruptedMessage ||
+            message instanceof MoveMessage
+        ) {
+            // TODO: Handle game manager not existing
             gameManager?.handleMessage(message, req.cookies.id);
-            gameManager = null;
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
-        } else {
-            gameManager?.handleMessage(message, req.cookies.id);
         }
     });
 };
@@ -52,8 +56,8 @@ export const apiRouter = Router();
 
 apiRouter.get("/client-information", (req, res) => {
     const clientType = clientManager.getClientType(req.cookies.id);
-    const isGameActive = gameManager !== null;
-    console.log("Fetch client information");
+    // Checking isGameFinished could also be removed so reconnecting clients can see results of last game
+    const isGameActive = gameManager !== null && !gameManager.isGameEnded();
     return res.send({
         clientType,
         isGameActive,
@@ -62,7 +66,7 @@ apiRouter.get("/client-information", (req, res) => {
 
 apiRouter.get("/game-state", (req, res) => {
     if (gameManager === null) {
-        console.log("Invalid attempt to fetch game state");
+        console.warn("Invalid attempt to fetch game state");
         return res.status(400).send({ message: "No game is currently active" });
     }
     const clientType = clientManager.getClientType(req.cookies.id);
@@ -70,7 +74,6 @@ apiRouter.get("/game-state", (req, res) => {
 });
 
 apiRouter.post("/start-computer-game", (req, res) => {
-    console.log("Start computer game");
     const side = req.query.side as Side;
     const difficulty = parseInt(req.query.difficulty as string) as Difficulty;
     gameManager = new ComputerGameManager(

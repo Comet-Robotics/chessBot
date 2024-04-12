@@ -1,4 +1,4 @@
-import { Dispatch, useState } from "react";
+import { Dispatch, useId, useState } from "react";
 
 import { GameInterruptedMessage } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
@@ -12,7 +12,7 @@ import { NavbarMenu } from "./navbar-menu";
 import { get, useSocket } from "../api";
 import { MessageHandler } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
 import { useQuery } from "@tanstack/react-query";
@@ -37,7 +37,6 @@ function getMessageHandler(
 }
 
 export function Game(): JSX.Element {
-    const navigate = useNavigate();
     const [chess, setChess] = useState(new ChessEngine());
     const [gameInterruptedReason, setGameInterruptedReason] =
         useState<GameInterruptedReason>();
@@ -46,39 +45,46 @@ export function Game(): JSX.Element {
         getMessageHandler(chess, setChess, setGameInterruptedReason),
     );
 
-    const { isPending, data } = useQuery({
-        queryKey: ["game-state"],
+    const id = useId();
+    const { isPending, data, isError } = useQuery({
+        queryKey: ["game-state" + id],
         queryFn: async () => {
-            return get("/game-state")
-                .then((gameState) => {
-                    setChess(new ChessEngine(gameState.position));
-                    return gameState;
-                })
-                .catch((error) => {
-                    // Bad request; indicates game isn't active
-                    if (error.status === 400) {
-                        navigate("/home");
-                    }
-                });
+            return get("/game-state").then((gameState) => {
+                setChess(new ChessEngine(gameState.position));
+                if (gameState.gameEndReason !== undefined) {
+                    setGameInterruptedReason(gameState.gameEndReason);
+                }
+                return gameState;
+            });
         },
+        staleTime: Infinity,
+        retry: false,
     });
 
     if (isPending) {
-        return <NonIdealState icon={<Spinner />} title="Loading..." />;
+        return (
+            <NonIdealState
+                icon={<Spinner intent="primary" />}
+                title="Loading..."
+            />
+        );
+    } else if (isError) {
+        return <Navigate to="/home" />;
     }
 
     const side = data.side;
 
-    let gameOverReason: GameEndReason | undefined = undefined;
+    let gameEndReason: GameEndReason | undefined = undefined;
     const gameFinishedReason = chess.getGameFinishedReason();
     if (gameFinishedReason !== undefined) {
-        gameOverReason = gameFinishedReason;
+        gameEndReason = gameFinishedReason;
     } else if (gameInterruptedReason !== undefined) {
-        gameOverReason = gameInterruptedReason;
+        gameEndReason = gameInterruptedReason;
     }
+
     const gameEndDialog =
-        gameOverReason !== undefined ?
-            <GameEndDialog reason={gameOverReason} side={side} />
+        gameEndReason !== undefined ?
+            <GameEndDialog reason={gameEndReason} side={side} />
         :   null;
 
     const handleMove = (move: Move): void => {

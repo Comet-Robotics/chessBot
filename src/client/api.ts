@@ -91,7 +91,13 @@ export async function get(
             method: "GET",
             mode: "cors",
             headers: { "Content-Type": "application/json" },
-        }).then((response) => response.json());
+        }).then((response) => {
+            if (response.status !== 200) {
+                // Throw an error to switch to the .catch flow
+                throw new Error("Invalid response");
+            }
+            return response.json();
+        });
     } catch (error) {
         return Promise.reject(error);
     }
