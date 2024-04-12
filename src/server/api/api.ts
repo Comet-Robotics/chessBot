@@ -19,6 +19,7 @@ import {
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
+import { IS_DEVELOPMENT } from "../utils/env";
 
 const tcpServer = new TCPServer();
 
@@ -97,10 +98,11 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.get("/get-ids", (_, res) => {
-    return res.send({
-        // ids: ["10", "11"],
-        ids: tcpServer.getConnectedIds(),
-    });
+    const ids = tcpServer.getConnectedIds();
+    if (IS_DEVELOPMENT) {
+        ids.push("dummy-id-1", "dummy-id-2");
+    }
+    return res.send({ ids });
 });
 
 /**

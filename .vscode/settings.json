@@ -9,6 +9,7 @@
         "runtypes",
         "tanstack"
     ],
+    "cSpell.enableFiletypes": ["properties"],
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
