@@ -6,7 +6,10 @@ import {
     GameInterruptedMessage,
     MoveMessage,
 } from "../../common/message/game-message";
-import { DriveRobotMessage } from "../../common/message/robot-message";
+import {
+    DriveRobotMessage,
+    SetRobotVariableMessage,
+} from "../../common/message/robot-message";
 
 import { TCPServer } from "./tcp-interface";
 import { Difficulty } from "../../common/client-types";
@@ -49,6 +52,8 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             gameManager?.handleMessage(message, req.cookies.id);
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
+        } else if (message instanceof SetRobotVariableMessage) {
+            doSetRobotVariable(message);
         }
     });
 };
@@ -146,6 +151,32 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
                 type: "DRIVE_TANK",
                 left: message.leftPower,
                 right: message.rightPower,
+            });
+        }
+    }
+    return true;
+}
+
+function doSetRobotVariable(message: SetRobotVariableMessage): boolean {
+    if (!tcpServer.getConnectedIds().includes(message.id)) {
+        console.warn(
+            "Attempted set variable for non-existent robot ID " + message.id,
+        );
+        return false;
+    } else {
+        const tunnel = tcpServer.getTunnelFromId(message.id);
+        if (!tunnel.connected) {
+            console.warn(
+                "Attempted set robot variable for disconnected robot ID " +
+                    message.id,
+            );
+            return false;
+        } else {
+            tunnel.send({
+                type: "SET_VAR",
+                var_id: parseInt(message.variableName),
+                var_type: "float",
+                var_val: message.variableValue,
             });
         }
     }
