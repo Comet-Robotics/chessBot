@@ -2837,7 +2837,7 @@ raw-body@2.5.2:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-chessboard@^4.3.4:
+react-chessboard@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/react-chessboard/-/react-chessboard-4.5.0.tgz#01c1952f59b1b18c7cd21fe74e7c971f38f03384"
   integrity sha512-YS91zFMZlaW05vIFOAkM2KnR5wp/sqBCzglUe1GJrXOtVkxzDT7Tr6cetm2txMGmSwdFQgurIi2/wKV1YQs34w==

@@ -6,17 +6,21 @@ import {
     jsonToPacket,
     packetToJson,
 } from "../utils/tcp-packet";
+import EventEmitter from "node:events";
 
 export class BotTunnel {
     connected: boolean = false;
     dataBuffer: Buffer | undefined;
     address: string | undefined;
     id: number | undefined;
+    emitter: EventEmitter;
 
     constructor(
         private socket: net.Socket,
         private onHandshake: (packetContent: string) => void,
-    ) {}
+    ) {
+        this.emitter = new EventEmitter();
+    }
 
     isActive() {
         return this.socket.readyState === "open";
@@ -112,6 +116,17 @@ export class BotTunnel {
                     this.send({ type: "PING_RESPONSE" });
                     break;
                 }
+                case "ACTION_SUCCESS": {
+                    this.emitter.emit("actionComplete", { success: true });
+                    break;
+                }
+                case "ACTION_FAIL": {
+                    this.emitter.emit("actionComplete", {
+                        success: false,
+                        reason: packet.reason,
+                    });
+                    break;
+                }
             }
         } catch (e) {
             console.warn("Received invalid packet with error", e);
@@ -145,6 +160,15 @@ export class BotTunnel {
 
         console.log({ msg });
         this.socket.write(msg);
+    }
+
+    async waitForActionResponse(): Promise<void> {
+        return new Promise((res, rej) => {
+            this.emitter.once("actionComplete", (args) => {
+                if (args.success) res();
+                else rej(args.reason);
+            });
+        });
     }
 }
 
