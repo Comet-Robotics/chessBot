@@ -24,4 +24,4 @@ A new PCB is being made for the ChessBots that will allow them to work easily wi
 
 ## Resource Library
 
-In addition, we also have helpful information for concepts used in the project in our [Resource Library](Resource-Library)
+In addition, we also have helpful information for concepts used in the project in our [Resource Library](Resource-Library).

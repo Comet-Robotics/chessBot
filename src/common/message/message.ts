@@ -23,9 +23,9 @@ export enum MessageType {
      */
     MOVE = "move",
     /**
-     * A client-server message used to indicate the start of a game.
+     * A server-client message used to tell player two a game has started.
      */
-    GAME_START = "game-start",
+    GAME_STARTED = "game-started",
     /**
      * A two-way message indicating a game has been interrupted.
      *

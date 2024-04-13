@@ -77,14 +77,14 @@ export class ChessEngine {
     /**
      * Returns true if a move is a promotion, and false otherwise.
      */
-    isPromotionMove = (from: Square, to: Square): boolean => {
+    checkPromotion(from: Square, to: Square): boolean {
         if (this.getPiece(from) !== PieceType.PAWN) {
             return false;
         } else if (this.chess.get(from).color === Side.WHITE) {
             return from[1] === "7" && to[1] === "8";
         }
         return from[1] === "2" && to[1] === "1";
-    };
+    }
 
     makeAiMove(difficulty: Difficulty): Move {
         // result is an object e.g. { "A1": "A2" }
@@ -94,7 +94,7 @@ export class ChessEngine {
         const from = val[0].toLowerCase() as Square;
         const to = val[1].toLowerCase() as Square;
 
-        if (this.isPromotionMove(from, to)) {
+        if (this.checkPromotion(from, to)) {
             // ai always promotes to queen
             return this.makeMove({
                 from,

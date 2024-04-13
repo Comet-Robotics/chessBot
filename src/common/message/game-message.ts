@@ -1,8 +1,6 @@
 import { Message, MessageType } from "./message";
-import { Move, Side } from "../game-types";
-import { GameType } from "../client-types";
+import { Move } from "../game-types";
 import { GameInterruptedReason } from "../game-end-reasons";
-import { Difficulty } from "../client-types";
 
 export class PositionMessage extends Message {
     constructor(public readonly pgn: string) {
@@ -30,26 +28,12 @@ export class MoveMessage extends Message {
         };
     }
 }
-
-export class GameStartMessage extends Message {
-    constructor(
-        public readonly gameType: GameType,
-        public readonly side: Side,
-        public readonly difficulty?: Difficulty,
-    ) {
+export class GameStartedMessage extends Message {
+    constructor() {
         super();
     }
 
-    protected type = MessageType.GAME_START;
-
-    protected toObj(): object {
-        return {
-            ...super.toObj(),
-            gameType: this.gameType,
-            side: this.side,
-            difficulty: this.difficulty,
-        };
-    }
+    protected type = MessageType.GAME_STARTED;
 }
 
 export class GameInterruptedMessage extends Message {
