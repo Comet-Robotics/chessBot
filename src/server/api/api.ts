@@ -56,7 +56,10 @@ export const apiRouter = Router();
 
 apiRouter.get("/client-information", (req, res) => {
     const clientType = clientManager.getClientType(req.cookies.id);
-    // Checking isGameFinished could also be removed so reconnecting clients can see results of last game
+    /**
+     * Note the client currently redirects to home from the game over screen
+     * So removing the isGameEnded check here results in an infinite loop
+     */
     const isGameActive = gameManager !== null && !gameManager.isGameEnded();
     return res.send({
         clientType,

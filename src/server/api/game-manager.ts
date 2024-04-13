@@ -15,7 +15,6 @@ import {
 } from "../../common/game-end-reasons";
 
 export abstract class GameManager {
-    // TODO: Technically this will only ever be a GameInterrupted reason, kinda suss
     protected gameInterruptedReason: GameInterruptedReason | undefined =
         undefined;
 
