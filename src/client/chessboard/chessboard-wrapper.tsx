@@ -1,11 +1,12 @@
 import { Chessboard } from "react-chessboard";
 import { Square } from "chess.js";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
 import { Side, PieceType } from "../../common/game-types";
-import { getCustomSquareRenderer } from "./custom-square-renderer";
+import { customSquareRenderer } from "./custom-square-renderer";
+import { CustomSquareContext } from "./custom-square-context";
 
 interface ChessboardWrapperProps {
     /**
@@ -22,13 +23,13 @@ interface ChessboardWrapperProps {
     onMove: (move: Move) => void;
 }
 
-export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
+export function ChessboardWrapper(props: ChessboardWrapperProps): ReactNode {
     const { chess, side, onMove } = props;
 
     /**
      * The width of the chessboard in pixels.
      */
-    const [width, setWidth] = useState<number>(50); // Can't be 0 to avoid bug
+    const [width, setWidth] = useState<number | undefined>();
 
     const [lastClickedSquare, setLastClickedSquare] = useState<
         Square | undefined
@@ -58,8 +59,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         setLastClickedSquare(undefined);
     };
 
-    return (
-        <BoardContainer onWidthChange={setWidth}>
+    // Don't render while width isn't set
+    let chessboard: ReactNode = null;
+    if (width !== undefined) {
+        chessboard = (
             <Chessboard
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
@@ -76,33 +79,33 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     to: Square,
                     pieceAndSide: string,
                 ): boolean => {
-                    if (!isLegalMove(from, to)) {
-                        return false;
-                    }
                     const piece: PieceType =
                         pieceAndSide[1].toLowerCase() as PieceType;
-                    if (manualPromotionSquare !== undefined) {
-                        doMove({
-                            // `from` is undefined in manual promotion flow
-                            from: lastClickedSquare!,
-                            // `to: manualPromotionSquare` is also valid
-                            to,
-                            promotion: piece,
-                        });
-                        setManualPromotionSquare(undefined);
-                    } else {
-                        doMove({
-                            from,
-                            to,
-                            // Include piece only if promoting
-                            promotion: isPromoting ? piece : undefined,
-                        });
+                    if (isLegalMove(from, to)) {
+                        if (manualPromotionSquare !== undefined) {
+                            doMove({
+                                // `from` is undefined in manual promotion flow
+                                from: lastClickedSquare!,
+                                // `to: manualPromotionSquare` is also valid
+                                to,
+                                promotion: piece,
+                            });
+                            setManualPromotionSquare(undefined);
+                        } else {
+                            doMove({
+                                from,
+                                to,
+                                // Include piece only if promoting
+                                promotion: isPromoting ? piece : undefined,
+                            });
+                        }
+                        // Reset state
+                        setIsPromoting(false);
+                        return true;
                     }
-                    // Reset state
-                    setIsPromoting(false);
-                    return true;
+                    return false;
                 }}
-                onPieceDragBegin={(_piece, square: Square) => {
+                onPieceDragBegin={(_, square: Square) => {
                     if (square !== lastClickedSquare) {
                         setLastClickedSquare(undefined);
                     }
@@ -139,8 +142,16 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     return piece[0] === side;
                 }}
                 arePremovesAllowed={false}
-                customSquare={getCustomSquareRenderer(legalSquares, chess)}
+                customSquare={customSquareRenderer}
             />
-        </BoardContainer>
+        );
+    }
+
+    return (
+        <CustomSquareContext.Provider value={{ legalSquares, chess }}>
+            <BoardContainer onWidthChange={setWidth}>
+                {chessboard}
+            </BoardContainer>
+        </CustomSquareContext.Provider>
     );
 }
