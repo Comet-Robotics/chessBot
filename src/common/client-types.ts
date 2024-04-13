@@ -16,3 +16,11 @@ export enum Difficulty {
     INTERMEDIATE = 2,
     ADVANCED = 3,
 }
+
+/**
+ * Opponent options for the game.
+ */
+export enum GameType {
+    COMPUTER = "computer",
+    HUMAN = "human",
+}

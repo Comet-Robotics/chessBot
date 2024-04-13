@@ -3,7 +3,7 @@ import { SetupBase } from "./setup-base";
 import { Dispatch, useState } from "react";
 import { SetupGame } from "./setup-game";
 import { useNavigate } from "react-router-dom";
-import { GameType } from "../../common/game-types";
+import { GameType } from "../../common/client-types";
 
 enum SetupType {
     MAIN = "main",
