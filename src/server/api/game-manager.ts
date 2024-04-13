@@ -107,6 +107,9 @@ export class HumanGameManager extends GameManager {
 }
 
 export class ComputerGameManager extends GameManager {
+    // The minimum amount of time to wait responding with a move.
+    MINIMUM_DELAY = 500;
+
     constructor(
         chess: ChessEngine,
         socketManager: SocketManager,
@@ -128,8 +131,14 @@ export class ComputerGameManager extends GameManager {
                 return;
             }
 
+            // Ensure MINIMUM_DELAY before responding
+            const startTime = Date.now();
             const move = this.chess.makeAiMove(this.difficulty);
-            this.socketManager.sendToSocket(id, new MoveMessage(move));
+            const elapsedTime = Date.now() - startTime;
+            // If elapsed time is less than minimum delay, timeout is set to 1ms
+            setTimeout(() => {
+                this.socketManager.sendToSocket(id, new MoveMessage(move));
+            }, this.MINIMUM_DELAY - elapsedTime);
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             // Reflect end game reason back to client
