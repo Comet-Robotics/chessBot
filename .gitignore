@@ -27,3 +27,5 @@ dist-ssr
 *.wsuo
 site/
 !site/CNAME
+
+*/.env
