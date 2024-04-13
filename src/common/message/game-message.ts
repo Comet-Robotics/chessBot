@@ -2,18 +2,6 @@ import { Message, MessageType } from "./message";
 import { Move } from "../game-types";
 import { GameInterruptedReason } from "../game-end-reasons";
 
-export class PositionMessage extends Message {
-    constructor(public readonly pgn: string) {
-        super();
-    }
-
-    protected type = MessageType.POSITION;
-
-    protected toObj(): object {
-        return { ...super.toObj(), pgn: this.pgn };
-    }
-}
-
 export class MoveMessage extends Message {
     constructor(public readonly move: Move) {
         super();

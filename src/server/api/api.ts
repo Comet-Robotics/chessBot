@@ -6,7 +6,7 @@ import {
     GameInterruptedMessage,
     MoveMessage,
 } from "../../common/message/game-message";
-import { DriveRobotMessage } from "../../common/message/drive-robot-message";
+import { DriveRobotMessage } from "../../common/message/robot-message";
 
 import { TCPServer } from "./tcp-interface";
 import { Difficulty } from "../../common/client-types";

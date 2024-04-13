@@ -1,7 +1,6 @@
 import { Message, MessageType, RegisterWebsocketMessage } from "./message";
-import { DriveRobotMessage } from "./drive-robot-message";
+import { DriveRobotMessage, SetRobotVariableMessage } from "./robot-message";
 import {
-    PositionMessage,
     MoveMessage,
     GameInterruptedMessage,
     GameStartedMessage,
@@ -23,8 +22,6 @@ export function parseMessage(text: string): Message {
             return new GameStartedMessage();
         case MessageType.GAME_INTERRUPTED:
             return new GameInterruptedMessage(obj.reason);
-        case MessageType.POSITION:
-            return new PositionMessage(obj.pgn);
         case MessageType.MOVE:
             return new MoveMessage(obj.move);
         case MessageType.DRIVE_ROBOT:
@@ -32,6 +29,12 @@ export function parseMessage(text: string): Message {
                 obj.id,
                 parseFloat(obj.leftPower),
                 parseFloat(obj.rightPower),
+            );
+        case MessageType.SET_ROBOT_VARIABLE:
+            return new SetRobotVariableMessage(
+                obj.id,
+                obj.variableName,
+                parseFloat(obj.variableValue),
             );
     }
     throw new Error("Failed to parse message.");
