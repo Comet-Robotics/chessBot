@@ -131,17 +131,14 @@ export class ComputerGameManager extends GameManager {
                 return;
             }
 
-            // Goal is to ensure MINIMUM_DELAY before responding
+            // Ensure MINIMUM_DELAY before responding
             const startTime = Date.now();
             const move = this.chess.makeAiMove(this.difficulty);
             const elapsedTime = Date.now() - startTime;
-            if (elapsedTime > this.MINIMUM_DELAY) {
+            // If elapsed time is less than minimum delay, timeout is set to 1ms
+            setTimeout(() => {
                 this.socketManager.sendToSocket(id, new MoveMessage(move));
-            } else {
-                setTimeout(() => {
-                    this.socketManager.sendToSocket(id, new MoveMessage(move));
-                }, this.MINIMUM_DELAY - elapsedTime);
-            }
+            }, this.MINIMUM_DELAY - elapsedTime);
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             // Reflect end game reason back to client
