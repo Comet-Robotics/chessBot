@@ -15,11 +15,12 @@ export function useEffectQuery(
     queryFn: () => Promise<any>,
     retry?: boolean | number,
 ) {
+    // id guarantees query is the same every time
     const id = useId();
     return useQuery({
         queryKey: [queryKey, id],
         queryFn,
-        // Prevents query from refetching
+        // Prevents query from refetching in the background
         staleTime: Infinity,
         retry: retry ?? 1,
     });
@@ -89,7 +90,13 @@ export async function post(
             mode: "cors",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
-        }).then((response) => response.json());
+        }).then((response) => {
+            if (!response.ok) {
+                // switch to catch flow
+                throw new Error("Invalid response");
+            }
+            return response.json();
+        });
     } catch (error) {
         return Promise.reject(error);
     }
@@ -112,8 +119,8 @@ export async function get(
             mode: "cors",
             headers: { "Content-Type": "application/json" },
         }).then((response) => {
-            if (response.status !== 200) {
-                // Throw an error to switch to the .catch flow
+            if (!response.ok) {
+                // switch to catch flow
                 throw new Error("Invalid response");
             }
             return response.json();
