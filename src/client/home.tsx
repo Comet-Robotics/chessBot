@@ -1,5 +1,7 @@
-import { Navigate, useSearchParams } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { ClientType } from "../common/client-types";
+import { get, useEffectQuery } from "./api";
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 
 /**
  * The home route.
@@ -7,15 +9,24 @@ import { ClientType } from "../common/client-types";
  * Redirects to /setup or /lobby automatically based on a route query parameter.
  */
 export function Home() {
-    const params = useSearchParams()[0];
-    let clientType: ClientType | undefined = undefined;
-    if (params.has("client-type")) {
-        clientType = params.get("client-type") as ClientType;
-        localStorage.setItem("client-type", clientType!);
-    } else {
-        clientType = localStorage.getItem("client-type") as ClientType;
-    }
-    return (
-        <Navigate to={clientType === ClientType.HOST ? "/setup" : "/lobby"} />
+    const { isPending, data } = useEffectQuery("client-information", () =>
+        get("/client-information"),
     );
+
+    if (isPending) {
+        return (
+            <NonIdealState
+                icon={<Spinner intent="primary" />}
+                title="Loading..."
+            />
+        );
+    }
+
+    let to: string;
+    if (data.isGameActive) {
+        to = "/game";
+    } else {
+        to = data.clientType === ClientType.HOST ? "/setup" : "/lobby";
+    }
+    return <Navigate to={to} />;
 }

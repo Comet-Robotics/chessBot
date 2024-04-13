@@ -1,6 +1,6 @@
 import { Chessboard } from "react-chessboard";
 import { Square } from "chess.js";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
@@ -22,13 +22,13 @@ interface ChessboardWrapperProps {
     onMove: (move: Move) => void;
 }
 
-export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
+export function ChessboardWrapper(props: ChessboardWrapperProps): ReactNode {
     const { chess, side, onMove } = props;
 
     /**
      * The width of the chessboard in pixels.
      */
-    const [width, setWidth] = useState<number>(50); // Can't be 0 to avoid bug
+    const [width, setWidth] = useState<number | undefined>();
 
     const [lastClickedSquare, setLastClickedSquare] = useState<
         Square | undefined
@@ -58,8 +58,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         setLastClickedSquare(undefined);
     };
 
-    return (
-        <BoardContainer onWidthChange={setWidth}>
+    // Don't render while width isn't set
+    let chessboard: ReactNode = null;
+    if (width !== undefined) {
+        chessboard = (
             <Chessboard
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
@@ -141,6 +143,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 arePremovesAllowed={false}
                 customSquare={getCustomSquareRenderer(legalSquares, chess)}
             />
-        </BoardContainer>
+        );
+    }
+
+    return (
+        <BoardContainer onWidthChange={setWidth}>{chessboard}</BoardContainer>
     );
 }

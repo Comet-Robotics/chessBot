@@ -2,7 +2,13 @@
     "npm.packageManager": "yarn",
     "task.allowAutomaticTasks": "off",
     "task.autoDetect": "off",
-    "cSpell.words": ["blueprintjs", "Chessbots", "Premoves"],
+    "cSpell.words": [
+        "blueprintjs",
+        "Chessbots",
+        "Premoves",
+        "runtypes",
+        "tanstack"
+    ],
     "cSpell.enableFiletypes": ["properties"],
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[typescriptreact]": {
