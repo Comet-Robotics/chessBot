@@ -1,9 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { ClientType } from "../common/client-types";
-import { get } from "./api";
-import { useQuery } from "@tanstack/react-query";
+import { get, useEffectQuery } from "./api";
 import { NonIdealState, Spinner } from "@blueprintjs/core";
-import { useId } from "react";
 
 /**
  * The home route.
@@ -11,12 +9,9 @@ import { useId } from "react";
  * Redirects to /setup or /lobby automatically based on a route query parameter.
  */
 export function Home() {
-    const id = useId();
-    const { isPending, data } = useQuery({
-        queryKey: ["client-information" + id],
-        queryFn: () => get("/client-information"),
-        staleTime: Infinity,
-    });
+    const { isPending, data } = useEffectQuery("client-information", () =>
+        get("/client-information"),
+    );
 
     if (isPending) {
         return (
