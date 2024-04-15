@@ -1,3 +1,4 @@
+// message.ts
 /**
  * Defines messages sent across web sockets between the server and the client (and/or the client and the server).
  *
@@ -23,9 +24,13 @@ export enum MessageType {
      */
     MOVE = "move",
     /**
-     * A client-server message used to indicate the start of a game.
+     * A client-server message indicating the start of a human game.
      */
-    GAME_START = "game-start",
+    HUMAN_GAME_START = "human-game-start",
+    /**
+     * A client-server message indicating the start of a computer game.
+     */
+    COMPUTER_GAME_START = "computer-game-start",
     /**
      * A two-way message indicating a game has been interrupted.
      *
@@ -36,6 +41,7 @@ export enum MessageType {
      * A client-server message containing instructions for manually driving a robot.
      */
     DRIVE_ROBOT = "drive-robot",
+    GAME_START = "GAME_START",
 }
 
 export abstract class Message {
@@ -59,6 +65,48 @@ export abstract class Message {
 
 export class RegisterWebsocketMessage extends Message {
     protected type = MessageType.REGISTER_WEBSOCKET;
+}
+
+// Abstract class for starting a game
+export abstract class GameStartMessage extends Message {
+    constructor(
+        public readonly gameType: string,
+        public readonly side: string,
+    ) {
+        super();
+    }
+
+    protected toObj(): object {
+        return {
+            ...super.toObj(),
+            gameType: this.gameType,
+            side: this.side,
+        };
+    }
+}
+
+// Message for starting a human game
+export class HumanGameStartMessage extends GameStartMessage {
+    protected type = MessageType.HUMAN_GAME_START;
+}
+
+// Message for starting a computer game
+export class ComputerGameStartMessage extends GameStartMessage {
+    public readonly difficulty: string;
+
+    constructor(gameType: string, side: string, difficulty: string) {
+        super(gameType, side);
+        this.difficulty = difficulty;
+    }
+
+    protected type = MessageType.COMPUTER_GAME_START;
+
+    protected toObj(): object {
+        return {
+            ...super.toObj(),
+            difficulty: this.difficulty,
+        };
+    }
 }
 
 /**
