@@ -50,8 +50,7 @@ void robotThread(void* robotPtr)
             } else if (varType == "float") {
                 setConfig<float>(key, json["val"].as<float>());
             }
-        }
-        else if (type == "QUERY_VAR") {
+        } else if (type == "QUERY_VAR") {
             ConfigKey key = (ConfigKey)json["var_id"].as<int>();
             auto varType = json["var_type"];
 
@@ -74,11 +73,9 @@ void robotThread(void* robotPtr)
             }
 
             bot.client->send(std::string_view(varBuf, sz));
-        }
-        else if (type == "SERVER_HELLO") {
+        } else if (type == "SERVER_HELLO") {
             uint32_t version = json["protocol"];
-            if (version != currentFirmwareVersion)
-            {
+            if (version != currentFirmwareVersion) {
                 ESP_LOGE("", "Firmware version doesn't match");
             }
         }

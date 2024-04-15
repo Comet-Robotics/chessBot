@@ -208,7 +208,7 @@ public:
 
 void startNetThread();
 
-TcpClient* addTcpClient(const char* targetIp, uint16_t port);
+TcpClient* addTcpClient(uint32_t targetIp, uint16_t port);
 }; // namespace chessbot
 
 #endif // ifndef CHESSBOT_NET_H

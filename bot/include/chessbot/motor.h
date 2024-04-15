@@ -37,10 +37,10 @@ public:
 class Motor {
 public:
     Encoder* encoder;
-    PwmPin powerPin;
+    // PwmPin powerPin;
 
-    gpio_num_t channelA;
-    gpio_num_t channelB;
+    PwmPin channelA;
+    PwmPin channelB;
 
     float driveMultiplier;
 

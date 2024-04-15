@@ -55,13 +55,12 @@ Motor::Motor(gpio_num_t motorChannelA_,
     float driveMultiplier_)
     //: encoder(new Encoder(encoderChannelA_, encoderChannelB_))
     : encoder(nullptr)
-    , powerPin(motorChannelA_)
     , channelA(motorChannelA_)
     , channelB(motorChannelB_)
     , driveMultiplier(driveMultiplier_)
 {
-    gpio_set_direction(motorChannelB_, GPIO_MODE_OUTPUT);
-    gpio_set_level(motorChannelB_, 0);
+    // gpio_set_direction(motorChannelB_, GPIO_MODE_OUTPUT);
+    // gpio_set_level(motorChannelB_, 0);
 }
 
 int32_t Motor::pos() { return encoder->read(); }
@@ -77,17 +76,18 @@ void Motor::tick(uint64_t us) { encoder->tick(us); }
 // [-1.0, 1.0]
 void Motor::set(float power)
 {
-    bool reverse = power < 0.0;
-
     power *= driveMultiplier;
 
-    if (reverse) {
-        power = 1 - power;
+    if (power > 0.0) {
+        // power = 1 - power;
+        channelA.set(power);
+        channelB.set(0.0);
+    } else {
+        channelA.set(0.0);
+        channelB.set(-power);
     }
 
-    powerPin.set(power);
-
-    gpio_set_level(channelB, reverse);
+    // gpio_set_level(channelB, reverse);
     return;
 }
 }; // namespace chessbot

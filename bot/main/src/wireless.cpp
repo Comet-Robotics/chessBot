@@ -62,7 +62,7 @@ void wifiEventHandler(void* arg, esp_event_base_t eBase,
 
         // Wait for a random duration to avoid hammering the access point
         // todo: should this be shorter?
-        vTaskDelay(randIn(1, 10) * configTICK_RATE_HZ);
+        vTaskDelay(randIn(1, 3) * configTICK_RATE_HZ);
 
         // Never give up, maybe the network will come up at some point
         CHECK(esp_wifi_connect());

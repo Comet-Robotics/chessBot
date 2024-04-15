@@ -106,7 +106,7 @@ void startNetThread()
     printf("Start net thread\n");
 }
 
-TcpClient* addTcpClient(const char* targetIp, uint16_t port)
+TcpClient* addTcpClient(uint32_t targetIp, uint16_t port)
 {
     CHECK(clientsCount < MAX_TCP_SOCKETS);
     TcpClient* c = new TcpClient(targetIp, port);

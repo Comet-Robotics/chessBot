@@ -2,7 +2,10 @@
 #define CHESSBOT_ROBOT_H
 
 #include <array>
+#include <semaphore>
 
+#include "lwip/dns.h"
+#include "lwip/ip4_addr.h"
 #include <esp_sleep.h>
 
 #include <chessbot/button.h>
@@ -16,14 +19,18 @@ namespace chessbot {
 // The state of a chess bot
 class Robot {
 public:
+    enum NOTIFY {
+        ROBOT_NOTIFY_DNS
+    };
+
     Button button0;
 
     Motor left;
     Motor right;
 
-    // DifferentialKinematics kinematics;
+    DifferentialKinematics kinematics;
 
-    // LightSensor frontLeft, frontRight, backLeft, backRight;
+    LightSensor frontLeft, frontRight, backLeft, backRight;
 
     TcpClient* client;
     TaskHandle_t task;
@@ -32,18 +39,41 @@ public:
         : button0(GPIO_NUM_0)
         , left(PINCONFIG(MOTOR_A_PIN1), PINCONFIG(MOTOR_A_PIN2), PINCONFIG(ENCODER_A_PIN1), PINCONFIG(ENCODER_A_PIN2), FCONFIG(MOTOR_A_DRIVE_MULTIPLIER))
         , right(PINCONFIG(MOTOR_B_PIN1), PINCONFIG(MOTOR_B_PIN2), PINCONFIG(ENCODER_B_PIN1), PINCONFIG(ENCODER_B_PIN2), FCONFIG(MOTOR_B_DRIVE_MULTIPLIER))
-    //, kinematics(left, right)
-    //, frontLeft(PINCONFIG(PHOTODIODE_FRONT_LEFT))
-    //, frontRight(PINCONFIG(PHOTODIODE_FRONT_RIGHT))
-    //, backLeft(PINCONFIG(PHOTODIODE_BACK_LEFT))
-    //, backRight(PINCONFIG(PHOTODIODE_BACK_RIGHT))
+        , kinematics(left, right)
+        , frontLeft(PINCONFIG(PHOTODIODE_FRONT_LEFT))
+        , frontRight(PINCONFIG(PHOTODIODE_FRONT_RIGHT))
+        , backLeft(PINCONFIG(PHOTODIODE_BACK_LEFT))
+        , backRight(PINCONFIG(PHOTODIODE_BACK_RIGHT))
     {
         printf("send 1\n");
 
-        auto addr = "192.168.78.139";
+        auto domain = "chess-server.internal";
+
+        printf("Pre DNS\n");
+
+        struct Bundle {
+            TaskHandle_t n;
+            ip_addr_t* ip;
+        };
+
+        ip_addr_t ip = {};
+        auto taskToNotify = xTaskGetCurrentTaskHandle();
+        Bundle b = { xTaskGetCurrentTaskHandle(), &ip };
+        auto er = dns_gethostbyname(domain, &ip, [](const char* name, const ip_addr_t* ipaddr, void* cbArg) {
+                printf("CALLBACK\n");
+                TaskHandle_t taskToNotify = ((Bundle*)(cbArg))->n;
+                *(((Bundle*)(cbArg))->ip) = *ipaddr;
+                xTaskNotifyGiveIndexed(taskToNotify, (UBaseType_t)ROBOT_NOTIFY_DNS); }, (void*)&b);
+
+        printf("Start DNS %d\n", er);
+
+        ulTaskNotifyTakeIndexed((UBaseType_t)ROBOT_NOTIFY_DNS, pdTRUE, portMAX_DELAY);
+
         uint16_t port = 3001;
 
-        client = addTcpClient(addr, port);
+        printf("Got DNS IP %lu\n", ip.u_addr.ip4.addr);
+
+        client = addTcpClient(ip.u_addr.ip4.addr, port);
 
         printf("send 2\n");
 
