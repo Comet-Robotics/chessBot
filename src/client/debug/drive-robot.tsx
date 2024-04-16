@@ -2,6 +2,8 @@ import { Button, useHotkeys, Slider } from "@blueprintjs/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DriveRobotMessage } from "../../common/message/robot-message";
 import { SendMessage } from "../../common/message/message";
+import { Joystick } from "react-joystick-component";
+import type { IJoystickUpdateEvent } from "react-joystick-component/build/lib/Joystick";
 
 interface DriveRobotProps {
     robotId: string;
@@ -181,6 +183,47 @@ export function DriveRobot(props: DriveRobotProps) {
     );
 
     const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys);
+
+    const convertJoystickXYToMotorPowers = useCallback(
+        (x: number, y: number) => {
+            const maxPower = 1;
+            let leftPower = y + x;
+            let rightPower = y - x;
+            // Normalize powers to be within -1 to 1
+            const maxInitialPower = Math.max(
+                Math.abs(leftPower),
+                Math.abs(rightPower),
+            );
+            if (maxInitialPower > maxPower) {
+                leftPower /= maxInitialPower;
+                rightPower /= maxInitialPower;
+            }
+            return { left: leftPower, right: rightPower };
+        },
+        [],
+    );
+    const convertMotorPowersToJoystickXY = useCallback(
+        (left: number, right: number) => {
+            const y = (left + right) / 2;
+            const x = (left - right) / 2;
+            return { x, y };
+        },
+        [],
+    );
+
+    const handleUiJoystickMove = useCallback(
+        (evt: IJoystickUpdateEvent) => {
+            const { x, y } = evt;
+            console.log(`Joystick move event: x=${x}, y=${y}`);
+            if (x === null || y === null) {
+                console.log("Joystick move event missing x or y");
+                return;
+            }
+
+            setPower(convertJoystickXYToMotorPowers(x, y));
+        },
+        [convertJoystickXYToMotorPowers],
+    );
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
             <p>
@@ -213,6 +256,7 @@ export function DriveRobot(props: DriveRobotProps) {
             <Button icon="stop" onClick={handleStopMove}>
                 Stop
             </Button>
+            <div className="motor-power-sliders">
             <Slider
                 min={-1}
                 max={1}
@@ -231,6 +275,13 @@ export function DriveRobot(props: DriveRobotProps) {
                 onChange={handleRightPowerChange}
                 vertical
             />
+            </div>
+            <Joystick
+                size={100}
+                pos={convertMotorPowersToJoystickXY(power.left, power.right)}
+                move={handleUiJoystickMove}
+                stop={handleStopMove}
+            ></Joystick>
         </div>
     );
 }
