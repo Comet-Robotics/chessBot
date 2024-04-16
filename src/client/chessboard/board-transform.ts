@@ -21,15 +21,3 @@ export function computeChessboardTransform(
     const yShift = (canvasHeight - height) / 2;
     return { left: xShift, top: yShift, height, width };
 }
-
-/**
- * An arbitrary transform.
- *
- * Used to prevent a bug with the initial rendering of chessboard-wrapper.
- */
-export const ARBITRARY_TRANSFORM: Transform = {
-    height: 50,
-    width: 50,
-    top: 0,
-    left: 0,
-};

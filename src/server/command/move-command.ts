@@ -22,7 +22,7 @@ export class RelativeRotateCommand
     implements Reversible<RelativeRotateCommand>
 {
     public async execute(): Promise<void> {
-        this.robot.relativeRotate(this.heading);
+        return this.robot.relativeRotate(this.heading);
     }
 
     public reverse(): RelativeRotateCommand {
@@ -35,7 +35,7 @@ export class RelativeRotateCommand
  */
 export class AbsoluteRotateCommand extends RotateCommand {
     public async execute(): Promise<void> {
-        this.robot.absoluteRotate(this.heading);
+        return this.robot.absoluteRotate(this.heading);
     }
 }
 
@@ -44,7 +44,7 @@ export class AbsoluteRotateCommand extends RotateCommand {
  */
 export class RotateToStartCommand extends RobotCommand {
     public async execute(): Promise<void> {
-        this.robot.absoluteRotate(this.robot.startHeading);
+        return this.robot.absoluteRotate(this.robot.startHeading);
     }
 }
 
@@ -72,7 +72,7 @@ export class RelativeMoveCommand
     implements Reversible<RelativeMoveCommand>
 {
     public async execute(): Promise<void> {
-        this.robot.relativeMove(this.position);
+        return this.robot.relativeMove(this.position);
     }
 
     public reverse(): RelativeMoveCommand {
@@ -85,6 +85,6 @@ export class RelativeMoveCommand
  */
 export class AbsoluteMoveCommand extends MoveCommand {
     public async execute(): Promise<void> {
-        this.robot.relativeMove(this.position.sub(this.robot.position));
+        return this.robot.relativeMove(this.position.sub(this.robot.position));
     }
 }

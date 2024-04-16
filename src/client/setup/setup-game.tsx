@@ -3,6 +3,7 @@ import { Dispatch, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Difficulty, GameType } from "../../common/client-types";
 import { Side } from "../../common/game-types";
+import { post } from "../api";
 
 enum DesiredSide {
     WHITE = "white",
@@ -15,7 +16,6 @@ interface SetupGameProps {
 }
 
 export function SetupGame(props: SetupGameProps) {
-    const { gameType } = props;
     const navigate = useNavigate();
     const [difficulty, setDifficulty] = useState(Difficulty.BEGINNER);
     const [desiredSide, setDesiredSide] = useState<DesiredSide>(
@@ -65,13 +65,20 @@ export function SetupGame(props: SetupGameProps) {
                             Side.WHITE
                         :   Side.BLACK;
                 }
-                navigate("/game", {
-                    state: {
-                        gameType,
-                        // TODO: Let user choose side
+
+                let promise: Promise<unknown>;
+                if (props.gameType === GameType.COMPUTER) {
+                    promise = post("/start-computer-game", {
                         side: selectedSide,
-                        difficulty,
-                    },
+                        difficulty: difficulty.toString(),
+                    });
+                } else {
+                    promise = post("/start-human-game", {
+                        side: selectedSide,
+                    });
+                }
+                promise.then(() => {
+                    navigate("/game");
                 });
             }}
         />
@@ -126,6 +133,7 @@ function DifficultySlider(props: DifficultySliderProps) {
         </>
     );
 }
+
 interface SelectSideProps {
     desiredSide: DesiredSide;
     onDesiredSideChange: Dispatch<DesiredSide>;

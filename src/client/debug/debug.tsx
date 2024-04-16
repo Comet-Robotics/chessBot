@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { get, useSocket } from "../api";
 import { SelectRobot } from "./select-robot";
 import { DriveRobot } from "./drive-robot";
+import { SetRobotVariable } from "./set-robot-variable";
 
 /**
  * A debug menu which can be used to manually control individual robots.
@@ -37,10 +38,16 @@ export function Debug() {
                     onRobotIdSelected={setSelectedRobotId}
                 />
                 {selectedRobotId === undefined ? null : (
-                    <DriveRobot
-                        sendMessage={sendMessage}
-                        robotId={selectedRobotId}
-                    />
+                    <>
+                        <SetRobotVariable
+                            sendMessage={sendMessage}
+                            robotId={selectedRobotId}
+                        />
+                        <DriveRobot
+                            sendMessage={sendMessage}
+                            robotId={selectedRobotId}
+                        />
+                    </>
                 )}
             </>
         );

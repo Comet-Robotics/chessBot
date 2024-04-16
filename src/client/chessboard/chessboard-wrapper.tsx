@@ -5,7 +5,8 @@ import { BoardContainer } from "./board-container";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
 import { Side, PieceType } from "../../common/game-types";
-import { getCustomSquareRenderer } from "./custom-square-renderer";
+import { customSquareRenderer } from "./custom-square-renderer";
+import { CustomSquareContext } from "./custom-square-context";
 
 interface ChessboardWrapperProps {
     /**
@@ -28,7 +29,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     /**
      * The width of the chessboard in pixels.
      */
-    const [width, setWidth] = useState<number>(50); // Can't be 0 to avoid bug
+    const [width, setWidth] = useState<number | undefined>();
 
     const [lastClickedSquare, setLastClickedSquare] = useState<
         Square | undefined
@@ -58,8 +59,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         setLastClickedSquare(undefined);
     };
 
-    return (
-        <BoardContainer onWidthChange={setWidth}>
+    // Don't render while width isn't set
+    let chessboard: JSX.Element | null = null;
+    if (width !== undefined) {
+        chessboard = (
             <Chessboard
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
@@ -139,8 +142,16 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     return piece[0] === side;
                 }}
                 arePremovesAllowed={false}
-                customSquare={getCustomSquareRenderer(legalSquares, chess)}
+                customSquare={customSquareRenderer}
             />
+        );
+    }
+
+    return (
+        <BoardContainer onWidthChange={setWidth}>
+            <CustomSquareContext.Provider value={{ legalSquares, chess }}>
+                {chessboard}
+            </CustomSquareContext.Provider>
         </BoardContainer>
     );
 }
