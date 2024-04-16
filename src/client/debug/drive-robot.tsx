@@ -10,6 +10,8 @@ interface DriveRobotProps {
     sendMessage: SendMessage;
 }
 
+const ROBOT_MSG_THROTTLE_MS = 50
+
 const approxeq = (v1: number, v2: number, epsilon = 0.01) =>
     Math.abs(v1 - v2) <= epsilon;
 
@@ -69,7 +71,7 @@ export function DriveRobot(props: DriveRobotProps) {
             }
         };
 
-        const gamepadPollingInterval = setInterval(handleGamepadInput, 50);
+        const gamepadPollingInterval = setInterval(handleGamepadInput, ROBOT_MSG_THROTTLE_MS);
 
         return () => {
             clearInterval(gamepadPollingInterval);
@@ -220,7 +222,7 @@ export function DriveRobot(props: DriveRobotProps) {
                 return;
             }
 
-            setPower(convertJoystickXYToMotorPowers(x, y));
+            setPower(convertJoystickXYToMotorPowers(-x, y));
         },
         [convertJoystickXYToMotorPowers],
     );
@@ -277,7 +279,8 @@ export function DriveRobot(props: DriveRobotProps) {
             />
             </div>
             <Joystick
-                size={100}
+                throttle={ROBOT_MSG_THROTTLE_MS}
+                size={150}
                 pos={convertMotorPowersToJoystickXY(power.left, power.right)}
                 move={handleUiJoystickMove}
                 stop={handleStopMove}
