@@ -96,7 +96,7 @@ void netThread(void*)
             }
         }
 
-        vTaskDelay(10_ms);
+        vTaskDelay(1_ms);
     }
 }
 

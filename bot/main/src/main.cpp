@@ -44,6 +44,9 @@ extern "C" void app_main_alt()
 
     startWifi();
     waitForWifiConnection();
+    launchUpdater();
+
+
     startNetThread();
 
     Robot robot;

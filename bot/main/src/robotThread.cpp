@@ -27,6 +27,7 @@ void robotThread(void* robotPtr)
 
         if (error) {
             printf("deserializeJson() failed: %s\n", error.c_str());
+            continue;
         }
 
         auto type = json["type"];
@@ -80,7 +81,7 @@ void robotThread(void* robotPtr)
             }
         }
 
-        vTaskDelay(10_ms);
+        vTaskDelay(1_ms);
     }
 }
 

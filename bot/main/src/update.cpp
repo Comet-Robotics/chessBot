@@ -28,10 +28,10 @@ char otaHttpResp[OTA_HTTP_RESP_SIZE + 1];
 
 // How often to poll the server for updates in seconds
 // Modified whenever a server returns an info.json with a different checkFreq
-// Defaults to 10 minutes
-int32_t checkFreq = 10 * 60;
+// Defaults to 1 minute
+int32_t checkFreq = 1 * 60;
 
-const char* updateServers[] = { "192.168.1.1" };
+const char* updateServers[] = { "chess-ota.internal" };
 
 esp_err_t httpEventHandler(esp_http_client_event_t* evt)
 {
@@ -131,14 +131,14 @@ void findUpdate()
 
         int32_t version = otaJson["version"];
         const char* url = otaJson["url"];
-        int32_t newCheckFreq = otaJson["checkFreq"];
+        //int32_t newCheckFreq = otaJson["checkFreq"];
 
-        printf("Ver %d, url %s, check %d", (int)version, url, (int)newCheckFreq);
+        //printf("Ver %d, url %s, check %d", (int)version, url, (int)newCheckFreq);
 
-        if (checkFreq != newCheckFreq) {
-            printf("Updating checkFreq from %d to %d\n", (int)checkFreq, (int)newCheckFreq);
-            checkFreq = newCheckFreq;
-        }
+        //if (checkFreq != newCheckFreq) {
+            //printf("Updating checkFreq from %d to %d\n", (int)checkFreq, (int)newCheckFreq);
+            //checkFreq = newCheckFreq;
+        //}
 
         if (version <= currentFirmwareVersion) {
             continue;
@@ -178,6 +178,6 @@ void updater(void* params)
 
 void launchUpdater()
 {
-    xTaskCreate(updater, "updater", configMINIMAL_STACK_SIZE, nullptr, tskIDLE_PRIORITY, nullptr);
+    xTaskCreate(updater, "updater", CONFIG_TINYUSB_TASK_STACK_SIZE, nullptr, tskIDLE_PRIORITY, nullptr);
 }
 }; // namespace chessbot
