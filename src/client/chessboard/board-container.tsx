@@ -1,17 +1,13 @@
 import { ResizeEntry, ResizeSensor } from "@blueprintjs/core";
 import { PropsWithChildren, useState } from "react";
-import {
-    Transform,
-    ARBITRARY_TRANSFORM,
-    computeChessboardTransform,
-} from "./board-transform";
+import { Transform, computeChessboardTransform } from "./board-transform";
 
 interface BoardContainerProps extends PropsWithChildren {
     onWidthChange: (width: number) => void;
 }
 
 export function BoardContainer(props: BoardContainerProps) {
-    const [transform, setTransform] = useState<Transform>(ARBITRARY_TRANSFORM);
+    const [transform, setTransform] = useState<Transform | undefined>();
 
     const handleResize = (entries: ResizeEntry[]) => {
         const { height, width } = entries[0].contentRect;

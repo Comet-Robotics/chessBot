@@ -1,10 +1,9 @@
 import { Message, MessageType, RegisterWebsocketMessage } from "./message";
-import { DriveRobotMessage } from "./drive-robot-message";
+import { DriveRobotMessage, SetRobotVariableMessage } from "./robot-message";
 import {
-    PositionMessage,
     MoveMessage,
-    GameStartMessage,
     GameInterruptedMessage,
+    GameStartedMessage,
 } from "./game-message";
 
 /**
@@ -19,18 +18,10 @@ export function parseMessage(text: string): Message {
     switch (obj.type) {
         case MessageType.REGISTER_WEBSOCKET:
             return new RegisterWebsocketMessage();
-        case MessageType.GAME_START:
-            return new GameStartMessage(
-                obj.gameType,
-                obj.side,
-                obj.difficulty !== undefined ?
-                    parseInt(obj.difficulty)
-                :   undefined,
-            );
+        case MessageType.GAME_STARTED:
+            return new GameStartedMessage();
         case MessageType.GAME_INTERRUPTED:
             return new GameInterruptedMessage(obj.reason);
-        case MessageType.POSITION:
-            return new PositionMessage(obj.pgn);
         case MessageType.MOVE:
             return new MoveMessage(obj.move);
         case MessageType.DRIVE_ROBOT:
@@ -38,6 +29,12 @@ export function parseMessage(text: string): Message {
                 obj.id,
                 parseFloat(obj.leftPower),
                 parseFloat(obj.rightPower),
+            );
+        case MessageType.SET_ROBOT_VARIABLE:
+            return new SetRobotVariableMessage(
+                obj.id,
+                obj.variableName,
+                parseFloat(obj.variableValue),
             );
     }
     throw new Error("Failed to parse message.");

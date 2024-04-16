@@ -14,18 +14,13 @@ export enum MessageType {
      */
     REGISTER_WEBSOCKET = "register-websocket",
     /**
-     * A server-client message defining the current position of a game.
-     * Used to allow clients to reconnect.
-     */
-    POSITION = "position",
-    /**
      * A two-way message containing a single move.
      */
     MOVE = "move",
     /**
-     * A client-server message used to indicate the start of a game.
+     * A server-client message used to tell player two a game has started.
      */
-    GAME_START = "game-start",
+    GAME_STARTED = "game-started",
     /**
      * A two-way message indicating a game has been interrupted.
      *
@@ -36,6 +31,10 @@ export enum MessageType {
      * A client-server message containing instructions for manually driving a robot.
      */
     DRIVE_ROBOT = "drive-robot",
+    /**
+     * A client-server message used to update a variable (like rotations per square) on a robot.
+     */
+    SET_ROBOT_VARIABLE = "set-robot-variable",
 }
 
 export abstract class Message {

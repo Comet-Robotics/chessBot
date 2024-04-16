@@ -1,11 +1,7 @@
 import { Dispatch, useState } from "react";
 
-import {
-    GameInterruptedMessage,
-    GameStartMessage,
-} from "../../common/message/game-message";
+import { GameInterruptedMessage } from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
-import { PositionMessage } from "../../common/message/game-message";
 import {
     GameEndReason,
     GameInterruptedReason,
@@ -13,12 +9,13 @@ import {
 
 import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { NavbarMenu } from "./navbar-menu";
-import { useSocket } from "../api";
+import { get, useEffectQuery, useSocket } from "../api";
 import { MessageHandler } from "../../common/message/message";
 import { GameEndDialog } from "./game-end-dialog";
-import { Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
+import { NonIdealState, Spinner } from "@blueprintjs/core";
 
 /**
  * Creates a MessageHandler function.
@@ -29,9 +26,7 @@ function getMessageHandler(
     setGameInterruptedReason: Dispatch<GameInterruptedReason>,
 ): MessageHandler {
     return (message) => {
-        if (message instanceof PositionMessage) {
-            setChess(new ChessEngine(message.pgn));
-        } else if (message instanceof MoveMessage) {
+        if (message instanceof MoveMessage) {
             // Must be a new instance of ChessEngine to trigger UI redraw
             setChess(chess.copy(message.move));
         } else if (message instanceof GameInterruptedMessage) {
@@ -41,28 +36,52 @@ function getMessageHandler(
 }
 
 export function Game(): JSX.Element {
-    const state = useLocation().state;
-    const { gameType, side, difficulty } = state;
-
     const [chess, setChess] = useState(new ChessEngine());
     const [gameInterruptedReason, setGameInterruptedReason] =
         useState<GameInterruptedReason>();
 
     const sendMessage = useSocket(
         getMessageHandler(chess, setChess, setGameInterruptedReason),
-        () => sendMessage(new GameStartMessage(gameType, side, difficulty)),
     );
 
-    let gameOverReason: GameEndReason | undefined = undefined;
+    const { isPending, data, isError } = useEffectQuery(
+        "game-state",
+        async () => {
+            return get("/game-state").then((gameState) => {
+                setChess(new ChessEngine(gameState.position));
+                if (gameState.gameEndReason !== undefined) {
+                    setGameInterruptedReason(gameState.gameEndReason);
+                }
+                return gameState;
+            });
+        },
+        false,
+    );
+
+    if (isPending) {
+        return (
+            <NonIdealState
+                icon={<Spinner intent="primary" />}
+                title="Loading..."
+            />
+        );
+    } else if (isError) {
+        return <Navigate to="/home" />;
+    }
+
+    const side = data.side;
+
+    let gameEndReason: GameEndReason | undefined = undefined;
     const gameFinishedReason = chess.getGameFinishedReason();
     if (gameFinishedReason !== undefined) {
-        gameOverReason = gameFinishedReason;
+        gameEndReason = gameFinishedReason;
     } else if (gameInterruptedReason !== undefined) {
-        gameOverReason = gameInterruptedReason;
+        gameEndReason = gameInterruptedReason;
     }
+
     const gameEndDialog =
-        gameOverReason !== undefined ?
-            <GameEndDialog reason={gameOverReason} side={side} />
+        gameEndReason !== undefined ?
+            <GameEndDialog reason={gameEndReason} side={side} />
         :   null;
 
     const handleMove = (move: Move): void => {

@@ -1,9 +1,30 @@
 import useWebSocket from "react-use-websocket";
 import { Message, RegisterWebsocketMessage } from "../common/message/message";
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import { parseMessage } from "../common/message/parse-message";
 import { SendMessage } from "../common/message/message";
 import { MessageHandler } from "../common/message/message";
+import { useQuery } from "@tanstack/react-query";
+
+/**
+ * A wrapper around `useQuery` which causes the wrapped query to be trigged once each time the page renders.
+ */
+export function useEffectQuery(
+    queryKey: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    queryFn: () => Promise<any>,
+    retry?: boolean | number,
+) {
+    // id guarantees query is the same every time
+    const id = useId();
+    return useQuery({
+        queryKey: [queryKey, id],
+        queryFn,
+        // Prevents query from refetching in the background
+        staleTime: Infinity,
+        retry: retry ?? 1,
+    });
+}
 
 /**
  * The URL to use for connecting to the websocket backend.
@@ -69,7 +90,13 @@ export async function post(
             mode: "cors",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
-        }).then((response) => response.json());
+        }).then((response) => {
+            if (!response.ok) {
+                // switch to catch flow
+                throw new Error("Invalid response");
+            }
+            return response.json();
+        });
     } catch (error) {
         return Promise.reject(error);
     }
@@ -91,7 +118,13 @@ export async function get(
             method: "GET",
             mode: "cors",
             headers: { "Content-Type": "application/json" },
-        }).then((response) => response.json());
+        }).then((response) => {
+            if (!response.ok) {
+                // switch to catch flow
+                throw new Error("Invalid response");
+            }
+            return response.json();
+        });
     } catch (error) {
         return Promise.reject(error);
     }
