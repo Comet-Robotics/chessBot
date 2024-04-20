@@ -37,10 +37,10 @@ extern "C" void app_main_alt()
     startActivityLed();
 
     // If on USB and debugging
-    for (int i = 0; i < 3; i++) {
-        printf("Starting...");
+    /*for (int i = 0; i < 3; i++) {
+        //printf("Starting...");
         vTaskDelay(1_s);
-    }
+    }*/
 
     startWifi();
     waitForWifiConnection();
