@@ -4,9 +4,10 @@
 #include <array>
 #include <semaphore>
 
-#include "lwip/dns.h"
-#include "lwip/ip4_addr.h"
+#include <esp_mac.h>
 #include <esp_sleep.h>
+#include <lwip/dns.h>
+#include <lwip/ip4_addr.h>
 
 #include <chessbot/button.h>
 #include <chessbot/config.h>
@@ -59,7 +60,8 @@ public:
         ip_addr_t ip = {};
         auto taskToNotify = xTaskGetCurrentTaskHandle();
         Bundle b = { xTaskGetCurrentTaskHandle(), &ip };
-        auto er = dns_gethostbyname(domain, &ip, [](const char* name, const ip_addr_t* ipaddr, void* cbArg) {
+        auto er = dns_gethostbyname(
+            domain, &ip, [](const char* name, const ip_addr_t* ipaddr, void* cbArg) {
                 printf("CALLBACK\n");
                 TaskHandle_t taskToNotify = ((Bundle*)(cbArg))->n;
                 *(((Bundle*)(cbArg))->ip) = *ipaddr;
@@ -85,7 +87,12 @@ public:
 
         printf("send 4\n");
 
-        char helloPacket[] = R"({"type":"CLIENT_HELLO","macAddress":"c0:4e:30:4b:68:76"};)";
+        char helloPacket[58];
+
+        uint8_t mac[6];
+        CHECK(esp_read_mac(mac, ESP_MAC_WIFI_STA));
+        snprintf(helloPacket, sizeof(helloPacket), R"({"type":"CLIENT_HELLO","macAddress":"%02X:%02X:%02X:%02X:%02X:%02X"};)", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
         client->send(helloPacket);
 
         printf("send 5\n");

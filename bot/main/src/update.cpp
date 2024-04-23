@@ -10,17 +10,53 @@
 
 #include <ArduinoJson.h>
 
+#include <chessbot/log.h>
 #include <chessbot/util.h>
 #include <chessbot/wireless.h>
 
 #define TAG "update"
 
 namespace chessbot {
+EventGroupHandle_t otaEvents;
+#define FIRST_OTA_CHECK_DONE BIT0
+
 // Max size of the document describing available updates
 constexpr int32_t OTA_HTTP_RESP_SIZE = 2048;
 
-// Will be filled with the build timestamp at link time
-/*extern*/ uint64_t currentFirmwareVersion = 1;
+void hexStrToBuf(const char* str, uint8_t* buf, int len)
+{
+    for (int i = 0; i < len; i += 2) {
+        *(buf++) = hexCharToInt(str[i]) * 16 + hexCharToInt(str[i + 1]);
+    }
+}
+
+// Checks if hash string is what is in the currently loaded partition
+bool hashMatchesCurrentPartition(const char* hash)
+{
+    uint8_t currentHash[32];
+    CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
+
+    uint8_t checkHash[32];
+    hexStrToBuf(hash, checkHash, 32 * 2);
+
+    printf("Comp with ");
+    for (int i = 0; i < 32; i++) {
+        printf("%02x", currentHash[i]);
+    }
+
+    printf("\nComp with ");
+    for (int i = 0; i < 32; i++) {
+        printf("%02x", checkHash[i]);
+    }
+
+    for (int i = 0; i < 32; i++) {
+        if (currentHash[i] != checkHash[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 // The JSON parsing space for the OTA task
 JsonDocument otaJson;
@@ -129,22 +165,42 @@ void findUpdate()
             continue;
         }
 
-        int32_t version = otaJson["version"];
+        const char* hash = otaJson["hash"];
         const char* url = otaJson["url"];
-        //int32_t newCheckFreq = otaJson["checkFreq"];
 
-        //printf("Ver %d, url %s, check %d", (int)version, url, (int)newCheckFreq);
+        bool matches = hashMatchesCurrentPartition(hash);
 
-        //if (checkFreq != newCheckFreq) {
-            //printf("Updating checkFreq from %d to %d\n", (int)checkFreq, (int)newCheckFreq);
-            //checkFreq = newCheckFreq;
-        //}
+        esp_ota_img_states_t state;
+        CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
 
-        if (version <= currentFirmwareVersion) {
-            continue;
+        if (matches && state == ESP_OTA_IMG_PENDING_VERIFY) {
+            printf("OTA update process finished.\n");
+            esp_ota_mark_app_valid_cancel_rollback();
+
+            xEventGroupSetBits(otaEvents, FIRST_OTA_CHECK_DONE);
+
+            return;
+        } else if (matches) {
+            // No new update, ignore
+
+            xEventGroupSetBits(otaEvents, FIRST_OTA_CHECK_DONE);
+
+            return;
         }
 
-        ESP_LOGI("", "Updating to version %d", (int)version);
+        // There is a new update, but the last one was not successful. Mark it as good anyway to avoid a bad state
+        if (state != ESP_OTA_IMG_VALID) {
+            esp_ota_mark_app_valid_cancel_rollback();
+        }
+
+        printf("Updating to hash %s from hash ", hash);
+        uint8_t currentHash[32];
+        CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
+        for (int i = 0; i < 32; i++) {
+            printf("%02x", currentHash[i]);
+        }
+        printf("\n");
+        
 
         esp_http_client_config_t config = {};
         config.url = url;
@@ -162,6 +218,7 @@ void findUpdate()
             esp_restart();
         } else {
             ESP_LOGE(TAG, "Firmware upgrade failed");
+            esp_restart();
         }
     }
 }
@@ -178,6 +235,10 @@ void updater(void* params)
 
 void launchUpdater()
 {
+    otaEvents = xEventGroupCreate();
+
     xTaskCreate(updater, "updater", CONFIG_TINYUSB_TASK_STACK_SIZE, nullptr, tskIDLE_PRIORITY, nullptr);
+
+    xEventGroupWaitBits(otaEvents, FIRST_OTA_CHECK_DONE, pdFALSE, pdTRUE, portMAX_DELAY);
 }
 }; // namespace chessbot

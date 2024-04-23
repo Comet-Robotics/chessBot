@@ -27,13 +27,26 @@
 
 using namespace chessbot;
 
+void consoleHello()
+{
+    uint8_t currentHash[32];
+    CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
+
+    printf("Start ChessBot https://chessbots.cometrobotics.org\nApp Hash: ");
+
+    for (int i = 0; i < 32; i++) {
+        printf("%02x", currentHash[i]);
+    }
+}
+
 #ifndef TEST
 extern "C" void app_main()
 #else
 extern "C" void app_main_alt()
 #endif
 {
-    printf("Start ChessBot v%d https://chessbots.cometrobotics.org\n", (int)currentFirmwareVersion);
+    consoleHello();
+
     startActivityLed();
 
     // If on USB and debugging
@@ -46,6 +59,11 @@ extern "C" void app_main_alt()
     waitForWifiConnection();
     launchUpdater();
 
+    while (true)
+    {
+        printf("Thing 4\n");
+        vTaskDelay(1000_ms);
+    }
 
     startNetThread();
 

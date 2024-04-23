@@ -10,10 +10,12 @@
     {
       "label": "Deploy OTA Update",
       "type": "shell",
-      "command": "${config:idf.pythonBinPath} support.py ota",
+      "command": "${config:idf.pythonBinPathWin} support.py ota",
       "options": {
         "env": {
-          "PATH": "${env:PATH}:${config:idf.customExtraPaths}"
+          "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
+          "espPythonPath": "${config:idf.pythonBinPathWin}",
+          "espIdfPath": "${config:idf.espIdfPathWin}"
         }
       }
     }

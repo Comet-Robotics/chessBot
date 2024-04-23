@@ -63,6 +63,18 @@ struct TaskPriority {
 
     static constexpr UBaseType_t motor = idle + 3;
 };
+
+inline int hexCharToInt(char input)
+{
+    if (input >= '0' && input <= '9')
+        return input - '0';
+    if (input >= 'A' && input <= 'F')
+        return input - 'A' + 10;
+    if (input >= 'a' && input <= 'f')
+        return input - 'a' + 10;
+
+    return 0;
+}
 }; // namespace chessbot
 
 #endif // ifndef CHESSBOT_UTIL_H

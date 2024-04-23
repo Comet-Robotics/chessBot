@@ -6,8 +6,6 @@
 #include <stdint.h>
 
 namespace chessbot {
-extern uint64_t currentFirmwareVersion;
-
 // Create the low-priority task to occasionally check for OTA updates
 void launchUpdater();
 
