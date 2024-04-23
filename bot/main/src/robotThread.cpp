@@ -76,6 +76,7 @@ void robotThread(void* robotPtr)
             bot.client->send(std::string_view(varBuf, sz));
         } else if (type == "SERVER_HELLO") {
             uint32_t version = json["protocol"];
+            (void)version;
 
             // Ignore it, we should be up to date through OTA already
         }

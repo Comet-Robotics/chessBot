@@ -39,16 +39,6 @@ bool hashMatchesCurrentPartition(const char* hash)
     uint8_t checkHash[32];
     hexStrToBuf(hash, checkHash, 32 * 2);
 
-    printf("Comp with ");
-    for (int i = 0; i < 32; i++) {
-        printf("%02x", currentHash[i]);
-    }
-
-    printf("\nComp with ");
-    for (int i = 0; i < 32; i++) {
-        printf("%02x", checkHash[i]);
-    }
-
     for (int i = 0; i < 32; i++) {
         if (currentHash[i] != checkHash[i]) {
             return false;
@@ -200,7 +190,6 @@ void findUpdate()
             printf("%02x", currentHash[i]);
         }
         printf("\n");
-        
 
         esp_http_client_config_t config = {};
         config.url = url;

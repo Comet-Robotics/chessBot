@@ -4,7 +4,9 @@
 #include <array>
 #include <semaphore>
 
+#include <esp_flash_partitions.h>
 #include <esp_mac.h>
+#include <esp_ota_ops.h>
 #include <esp_sleep.h>
 #include <lwip/dns.h>
 #include <lwip/ip4_addr.h>
@@ -17,6 +19,28 @@
 #include <chessbot/net.h>
 
 namespace chessbot {
+// Put the robot in a known state
+inline void safetyShutdown()
+{
+    esp_ota_img_states_t state;
+    CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
+
+    if (state == ESP_OTA_IMG_PENDING_VERIFY) {
+        // Don't do potentially dangerous GPIO while testing a new update
+        return;
+    } else {
+        gpio_set_level(PINCONFIG(MOTOR_A_PIN1), 0);
+        gpio_set_level(PINCONFIG(MOTOR_A_PIN2), 0);
+        gpio_set_level(PINCONFIG(MOTOR_B_PIN1), 0);
+        gpio_set_level(PINCONFIG(MOTOR_B_PIN2), 0);
+
+        gpio_set_level(PINCONFIG(PHOTODIODE_FRONT_LEFT), 0);
+        gpio_set_level(PINCONFIG(PHOTODIODE_FRONT_RIGHT), 0);
+        gpio_set_level(PINCONFIG(PHOTODIODE_BACK_LEFT), 0);
+        gpio_set_level(PINCONFIG(PHOTODIODE_BACK_RIGHT), 0);
+    }
+}
+
 // The state of a chess bot
 class Robot {
 public:
@@ -46,56 +70,61 @@ public:
         , backLeft(PINCONFIG(PHOTODIODE_BACK_LEFT))
         , backRight(PINCONFIG(PHOTODIODE_BACK_RIGHT))
     {
-        printf("send 1\n");
+        esp_register_shutdown_handler(safetyShutdown);
 
-        auto domain = "chess-server.internal";
-
-        printf("Pre DNS\n");
-
-        struct Bundle {
-            TaskHandle_t n;
-            ip_addr_t* ip;
-        };
-
-        ip_addr_t ip = {};
-        auto taskToNotify = xTaskGetCurrentTaskHandle();
-        Bundle b = { xTaskGetCurrentTaskHandle(), &ip };
-        auto er = dns_gethostbyname(
-            domain, &ip, [](const char* name, const ip_addr_t* ipaddr, void* cbArg) {
-                printf("CALLBACK\n");
-                TaskHandle_t taskToNotify = ((Bundle*)(cbArg))->n;
-                *(((Bundle*)(cbArg))->ip) = *ipaddr;
-                xTaskNotifyGiveIndexed(taskToNotify, (UBaseType_t)ROBOT_NOTIFY_DNS); }, (void*)&b);
-
-        printf("Start DNS %d\n", er);
-
-        ulTaskNotifyTakeIndexed((UBaseType_t)ROBOT_NOTIFY_DNS, pdTRUE, portMAX_DELAY);
+        auto ip = getServerIp();
 
         uint16_t port = 3001;
 
-        printf("Got DNS IP %lu\n", ip.u_addr.ip4.addr);
-
         client = addTcpClient(ip.u_addr.ip4.addr, port);
-
-        printf("send 2\n");
 
         client->waitToConnect();
 
-        printf("send 3\n");
-
         runThread();
 
-        printf("send 4\n");
+        sendHello();
 
+        printf("Sent HELLO to server\n");
+    }
+
+    ip_addr_t getServerIp()
+    {
+        auto domain = "chess-server.internal";
+
+        // Wraps the returning IP and where to notify of its assignment
+        struct Bundle {
+            TaskHandle_t n;
+            ip_addr_t ip;
+        };
+
+        Bundle bundle = { xTaskGetCurrentTaskHandle() };
+
+        auto err = dns_gethostbyname(
+            domain, &bundle.ip, [](const char* name, const ip_addr_t* ipaddr, void* cbArg) {
+                TaskHandle_t taskToNotify = ((Bundle*)(cbArg))->n;
+                ((Bundle*)(cbArg))->ip = *ipaddr;
+                xTaskNotifyGiveIndexed(taskToNotify, (UBaseType_t)ROBOT_NOTIFY_DNS); }, (void*)&bundle);
+
+        if (err != ERR_OK)
+        {
+            printf("DNS resolution error!\n");
+        }
+
+        ulTaskNotifyTakeIndexed((UBaseType_t)ROBOT_NOTIFY_DNS, pdTRUE, portMAX_DELAY);
+
+        printf("Got DNS IP %lu\n", bundle.ip.u_addr.ip4.addr);
+
+        return bundle.ip;
+    }
+
+    void sendHello()
+    {
         char helloPacket[58];
-
         uint8_t mac[6];
         CHECK(esp_read_mac(mac, ESP_MAC_WIFI_STA));
         snprintf(helloPacket, sizeof(helloPacket), R"({"type":"CLIENT_HELLO","macAddress":"%02X:%02X:%02X:%02X:%02X:%02X"};)", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
         client->send(helloPacket);
-
-        printf("send 5\n");
     }
 
     void tick(uint64_t us)

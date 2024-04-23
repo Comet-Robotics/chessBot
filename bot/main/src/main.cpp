@@ -45,6 +45,8 @@ extern "C" void app_main()
 extern "C" void app_main_alt()
 #endif
 {
+    safetyShutdown();
+
     consoleHello();
 
     startActivityLed();
@@ -58,12 +60,6 @@ extern "C" void app_main_alt()
     startWifi();
     waitForWifiConnection();
     launchUpdater();
-
-    while (true)
-    {
-        printf("Thing 4\n");
-        vTaskDelay(1000_ms);
-    }
 
     startNetThread();
 
