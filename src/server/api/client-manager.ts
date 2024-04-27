@@ -1,6 +1,7 @@
 import { WebSocket } from "ws";
 import { SocketManager } from "./socket-manager";
 import { ClientType } from "../../common/client-types";
+import { Message } from "../../common/message/message";
 
 /**
  * A class which maps client ids to their corresponding sockets (if any).
@@ -17,6 +18,22 @@ export class ClientManager {
             return this.socketManager.getSocket(this.hostId);
         }
         return undefined;
+    }
+
+    public sendToHost(message: Message): boolean {
+        const socket = this.getHostSocket();
+        if (socket !== undefined) {
+            socket.send(message.toJson());
+        }
+        return socket !== undefined;
+    }
+
+    public sendToClient(message: Message): boolean {
+        const socket = this.getClientSocket();
+        if (socket !== undefined) {
+            socket.send(message.toJson());
+        }
+        return socket !== undefined;
     }
 
     public getClientSocket(): WebSocket | undefined {

@@ -21,6 +21,7 @@ export function OutsideCorners(props: PieceSquareProps) {
                 style={{
                     position: "relative",
                 }}
+                display="block"
             >
                 <path
                     d="M84.52,0H0v84.52C16.49,46.8,46.8,16.49,84.52,0Z"
@@ -48,7 +49,7 @@ export function OutsideCorners(props: PieceSquareProps) {
  * */
 export function CenterDot() {
     return (
-        <svg>
+        <svg display="block">
             <circle cx="50%" cy="50%" r="15%" fill="green" />
         </svg>
     );

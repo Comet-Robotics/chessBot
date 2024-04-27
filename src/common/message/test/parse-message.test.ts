@@ -1,20 +1,18 @@
 import { GameInterruptedReason } from "../../game-end-reasons";
-import { GameType } from "../../client-types";
-import { PieceType, Side } from "../../game-types";
+import { PieceType } from "../../game-types";
 import { DriveRobotMessage, StopRobotMessage } from "../drive-robot-message";
 import {
     MoveMessage,
     PositionMessage,
-    GameStartMessage,
     GameInterruptedMessage,
+    GameStartedMessage,
 } from "../game-message";
 import { Message } from "../message";
 import { parseMessage } from "../parse-message";
 import { expect, test } from "vitest";
 
 test.each([
-    new GameStartMessage(GameType.COMPUTER, Side.WHITE, 3),
-    new GameStartMessage(GameType.HUMAN, Side.BLACK),
+    new GameStartedMessage(),
     new GameInterruptedMessage(GameInterruptedReason.ABORTED),
     new PositionMessage("aaaaaaaaa"),
     new MoveMessage({ from: "a1", to: "a2" }),
