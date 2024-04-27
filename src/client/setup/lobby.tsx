@@ -2,9 +2,14 @@ import { NonIdealState, Spinner } from "@blueprintjs/core";
 import { SetupBase } from "./setup-base";
 import { useNavigate } from "react-router-dom";
 import { GameStartedMessage } from "../../common/message/game-message";
-import { useSocket } from "../api";
+import { useSocket, useEffectQuery, get } from "../api";
+import { ClientType } from "../../common/client-types";
+import { Navigate } from "react-router-dom";
 
 export function Lobby() {
+    const { isPending, data } = useEffectQuery("client-information", () =>
+        get("/client-information"),
+    );
     const navigate = useNavigate();
 
     useSocket((message) => {
@@ -13,12 +18,25 @@ export function Lobby() {
         }
     });
 
-    return (
-        <SetupBase>
+    if (isPending) {
+        return (
             <NonIdealState
-                title="Waiting For Game to Start"
                 icon={<Spinner intent="primary" />}
+                title="Loading..."
             />
-        </SetupBase>
-    );
+        );
+    }
+
+    if (data.clientType === ClientType.HOST) {
+        return <Navigate to="/setup" />;
+    } else {
+        return (
+            <SetupBase>
+                <NonIdealState
+                    title="Waiting For Game to Start"
+                    icon={<Spinner intent="primary" />}
+                />
+            </SetupBase>
+        );
+    }
 }
