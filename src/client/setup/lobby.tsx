@@ -20,10 +20,12 @@ export function Lobby() {
 
     if (isPending) {
         return (
-            <NonIdealState
-                icon={<Spinner intent="primary" />}
-                title="Loading..."
-            />
+            <SetupBase>
+                <NonIdealState
+                    icon={<Spinner intent="primary" />}
+                    title="Loading..."
+                />
+            </SetupBase>
         );
     }
 
