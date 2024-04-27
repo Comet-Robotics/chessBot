@@ -1,7 +1,8 @@
-import { Button, useHotkeys, Slider } from "@blueprintjs/core";
+import { Button, useHotkeys } from "@blueprintjs/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DriveRobotMessage } from "../../common/message/drive-robot-message";
 import { SendMessage } from "../../common/message/message";
+import { DriveSlider } from "./drive-slider";
 
 interface DriveRobotProps {
     robotId: string;
@@ -265,15 +266,9 @@ export function DriveRobot(props: DriveRobotProps) {
                         left: 25,
                     }}
                 >
-                    <Slider
-                        disabled
-                        min={-1}
-                        max={1}
-                        stepSize={0.01}
-                        value={power.left}
-                        initialValue={0}
+                    <DriveSlider
+                        power={power.left}
                         onChange={handleLeftPowerChange}
-                        vertical
                     />
                 </div>
                 <div
@@ -284,15 +279,9 @@ export function DriveRobot(props: DriveRobotProps) {
                         right: 25,
                     }}
                 >
-                    <Slider
-                        disabled
-                        min={-1}
-                        max={1}
-                        stepSize={0.01}
-                        value={power.right}
-                        initialValue={0}
+                    <DriveSlider
+                        power={power.right}
                         onChange={handleRightPowerChange}
-                        vertical
                     />
                 </div>
             </div>
