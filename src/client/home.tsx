@@ -1,5 +1,4 @@
 import { Navigate } from "react-router-dom";
-// import { ClientType } from "../common/client-types";
 import { get, useEffectQuery } from "./api";
 import { NonIdealState, Spinner } from "@blueprintjs/core";
 
@@ -22,11 +21,5 @@ export function Home() {
         );
     }
 
-    let to: string;
-    if (data.isGameActive) {
-        to = "/game";
-    } else {
-        to = "/lobby";
-    }
-    return <Navigate to={to} />;
+    return <Navigate to={data.isGameActive ? "/game" : "/lobby"} />;
 }
