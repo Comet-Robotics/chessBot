@@ -1,5 +1,5 @@
 import { Dialog, DialogBody, Spinner } from "@blueprintjs/core";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { get, useSocket } from "../api";
 import { SelectRobot } from "./select-robot";
@@ -25,7 +25,7 @@ export function Debug() {
         fetchIds();
     }, [setRobotIds]);
 
-    let body;
+    let body: ReactNode;
     if (robotIds === undefined) {
         body = <Spinner intent="primary" />;
     } else {
@@ -37,10 +37,12 @@ export function Debug() {
                     onRobotIdSelected={setSelectedRobotId}
                 />
                 {selectedRobotId === undefined ? null : (
-                    <DriveRobot
-                        sendMessage={sendMessage}
-                        robotId={selectedRobotId}
-                    />
+                    <div>
+                        <DriveRobot
+                            sendMessage={sendMessage}
+                            robotId={selectedRobotId}
+                        />
+                    </div>
                 )}
             </>
         );
