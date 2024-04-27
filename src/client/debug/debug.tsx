@@ -37,7 +37,7 @@ export function Debug() {
                     onRobotIdSelected={setSelectedRobotId}
                 />
                 {selectedRobotId === undefined ? null : (
-                    <div style={{ height: "35vh" }}>
+                    <div>
                         <DriveRobot
                             sendMessage={sendMessage}
                             robotId={selectedRobotId}
