@@ -191,94 +191,69 @@ export function DriveRobot(props: DriveRobotProps) {
                 a connected gamepad. If arrow keys are not working, make sure
                 controls are in focus.
             </p>
-            <div style={{ position: "relative" }}>
-                <div
-                    style={{
-                        position: "absolute",
-                        float: "left",
-                        bottom: -63,
-                        right: 225,
-                    }}
-                >
-                    <Button
-                        icon="arrow-up"
-                        onMouseUp={handleStopMove}
-                        onMouseDown={handleDriveForward}
-                    />
-                </div>
-                <div
-                    style={{
-                        position: "absolute",
-                        float: "left",
-                        bottom: -75,
-                        right: 255,
-                    }}
-                >
-                    <Button
-                        icon="arrow-left"
-                        onMouseUp={handleStopMove}
-                        onMouseDown={handleTurnLeft}
-                    />
-                </div>
-                <div
-                    style={{
-                        position: "absolute",
-                        float: "left",
-                        bottom: -75,
-                        right: 225,
-                    }}
-                >
-                    <Button
-                        icon="arrow-down"
-                        onMouseUp={handleStopMove}
-                        onMouseDown={handleDriveBackward}
-                    />
-                </div>
-                <div
-                    style={{
-                        position: "absolute",
-                        float: "left",
-                        bottom: -75,
-                        right: 195,
-                    }}
-                >
-                    <Button
-                        icon="arrow-right"
-                        onMouseUp={handleStopMove}
-                        onMouseDown={handleTurnRight}
-                    />
-                </div>
-                <div
-                    style={{
-                        position: "absolute",
-                        float: "left",
-                        bottom: -90,
-                        right: 204,
-                    }}
-                >
-                    <Button icon="stop" onClick={handleStopMove} title="Stop" />
-                </div>
-                <div
-                    style={{
-                        position: "absolute",
-                        float: "left",
-                        bottom: -150,
-                        left: 25,
-                    }}
-                >
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "95%",
+                }}
+            >
+                <div>
                     <DriveSlider
                         power={power.left}
                         onChange={handleLeftPowerChange}
                     />
                 </div>
-                <div
-                    style={{
-                        position: "absolute",
-                        float: "left",
-                        bottom: -150,
-                        right: 25,
-                    }}
-                >
+                <div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Button
+                            icon="arrow-up"
+                            onMouseUp={handleStopMove}
+                            onMouseDown={handleDriveForward}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Button
+                            icon="arrow-left"
+                            onMouseUp={handleStopMove}
+                            onMouseDown={handleTurnLeft}
+                        />
+                        <Button
+                            icon="arrow-down"
+                            onMouseUp={handleStopMove}
+                            onMouseDown={handleDriveBackward}
+                        />
+                        <Button
+                            icon="arrow-right"
+                            onMouseUp={handleStopMove}
+                            onMouseDown={handleTurnRight}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Button
+                            icon="stop"
+                            onClick={handleStopMove}
+                            title="Stop"
+                        />
+                    </div>
+                </div>
+                <div>
                     <DriveSlider
                         power={power.right}
                         onChange={handleRightPowerChange}
