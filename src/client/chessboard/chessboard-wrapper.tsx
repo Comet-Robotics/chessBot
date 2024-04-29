@@ -21,10 +21,14 @@ interface ChessboardWrapperProps {
      * A callback function this component invokes whenever a move is made.
      */
     onMove: (move: Move) => void;
+    /**
+     * The move that the previous player made
+     */
+    lastMove?: Move;
 }
 
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
-    const { chess, side, onMove } = props;
+    const { chess, side, onMove, lastMove } = props;
 
     /**
      * The width of the chessboard in pixels.
@@ -149,7 +153,9 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
 
     return (
         <BoardContainer onWidthChange={setWidth}>
-            <CustomSquareContext.Provider value={{ legalSquares, chess }}>
+            <CustomSquareContext.Provider
+                value={{ legalSquares, chess, lastMove }}
+            >
                 {chessboard}
             </CustomSquareContext.Provider>
         </BoardContainer>
