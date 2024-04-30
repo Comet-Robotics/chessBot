@@ -54,7 +54,7 @@ elif task == 'ota':
         newUrl = info['url'].replace(str(urlIndex), str(urlIndex + 1))
     except:
         urlIndex = time.time_ns() // 1_000_000
-        newUrl = 'chess-server.internal/update/chessbot/firmware' + str(urlIndex) + '.bin'
+        newUrl = 'chess-ota.internal/update/chessbot/firmware' + str(urlIndex) + '.bin'
 
     newInfo = {
         'hash': hash,

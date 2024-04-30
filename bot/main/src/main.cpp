@@ -62,14 +62,14 @@ extern "C" void app_main_alt()
     waitForWifiConnection();
     launchUpdater();
 
-    setWifiSleepPolicy(SLEEP_MODE::MAX_MODEM_SLEEP);
+    //setWifiSleepPolicy(SLEEP_MODE::MAX_MODEM_SLEEP);
 
     esp_pm_config_t pm_config = {
         .max_freq_mhz = 160,
         .min_freq_mhz = 40,
         .light_sleep_enable = true
     };
-    CHECK(esp_pm_configure(&pm_config));
+    //CHECK(esp_pm_configure(&pm_config));
 
     startNetThread();
 
@@ -103,6 +103,9 @@ extern "C" void app_main_alt()
         // robot.left.channelB.set(1.0);
         // robot.right.channelA.set(1.0);
         // robot.right.channelB.set(1.0);
+
+        auto l = robot.lightLevels();
+        printf("Light Sensors: %d %d %d %d\n", l[0], l[1], l[2], l[3]);
 
         vTaskDelay(1_s);
     }

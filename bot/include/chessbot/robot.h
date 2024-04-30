@@ -140,8 +140,7 @@ public:
 
     IVec2 displacements()
     {
-        return { 0, 0 };
-        // return { left.pos(), right.pos() };
+        return { left.pos(), right.pos() };
     }
 
     void estop()
@@ -157,8 +156,7 @@ public:
 
     std::array<int, 4> lightLevels()
     {
-        // return { frontLeft.read(), frontRight.read(), backLeft.read(), backRight.read() };
-        return { 0, 0, 0, 0 };
+        return { frontLeft.read(), frontRight.read(), backLeft.read(), backRight.read() };
     }
 
     void runThread();
