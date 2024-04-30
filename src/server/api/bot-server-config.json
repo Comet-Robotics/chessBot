@@ -8,5 +8,11 @@
         "robot-15": {
             "leftMotorK": "0"
         }
+    },
+    "botHomePositions": {
+        "15": {
+            "x": "0",
+            "y": "0"
+        }
     }
 }

@@ -96,6 +96,7 @@ export class HumanGameManager extends GameManager {
 
         if (message instanceof MoveMessage) {
             this.chess.makeMove(message.move);
+            
             sendToOpponent(message);
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
