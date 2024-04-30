@@ -79,3 +79,25 @@ export function SquareHighlight(props: PieceSquareProps) {
         </div>
     );
 }
+
+export function ClickedPiece(props: PieceSquareProps) {
+    return (
+        <div
+            style={{
+                ...props,
+                position: "absolute",
+            }}
+        >
+            <svg height={props.height} width={props.width}>
+                <rect
+                    x="0"
+                    y="0"
+                    width={Math.ceil(props.width as number)}
+                    height={Math.ceil(props.height as number)}
+                    fill="#499c61"
+                    opacity="60%"
+                />
+            </svg>
+        </div>
+    );
+}

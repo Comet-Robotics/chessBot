@@ -57,6 +57,11 @@ export class ChessEngine {
         }
     }
 
+    hasPiece(square: Square)
+    {
+        return this.getPiece(square) !== undefined;
+    }
+
     getLegalMoves(square?: Square) {
         return this.chess.moves({
             square,
