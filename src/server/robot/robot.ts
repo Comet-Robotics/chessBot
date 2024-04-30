@@ -57,7 +57,7 @@ export class Robot {
     }
 
     /**
-     * @param deltaHeading - A relative heading to turn by.
+     * @param deltaHeading - A relative heading to turn by.n
      */
     public async relativeRotate(deltaHeading: number): Promise<void> {
         this.heading = clampHeading(this.heading + deltaHeading);
