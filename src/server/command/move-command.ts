@@ -1,16 +1,16 @@
 import { RobotCommand, Reversible } from "./command";
-import { Robot } from "../robot/robot";
 import { Position } from "../robot/position";
+import { robotManager } from "../api/managers";
 
 /**
  * Represents a rotation.
  */
 export abstract class RotateCommand extends RobotCommand {
     constructor(
-        robot: Robot,
+        robotId: string,
         public heading: number,
     ) {
-        super(robot);
+        super(robotId);
     }
 }
 
@@ -22,11 +22,12 @@ export class RelativeRotateCommand
     implements Reversible<RelativeRotateCommand>
 {
     public async execute(): Promise<void> {
-        return this.robot.relativeRotate(this.heading);
+        const robot = robotManager.getRobot(this.robotId);
+        return robot.relativeRotate(this.heading);
     }
 
     public reverse(): RelativeRotateCommand {
-        return new RelativeRotateCommand(this.robot, -this.heading);
+        return new RelativeRotateCommand(this.robotId, -this.heading);
     }
 }
 
@@ -35,7 +36,39 @@ export class RelativeRotateCommand
  */
 export class AbsoluteRotateCommand extends RotateCommand {
     public async execute(): Promise<void> {
-        return this.robot.absoluteRotate(this.heading);
+        const robot = robotManager.getRobot(this.robotId);
+        return robot.absoluteRotate(this.heading);
+    }
+}
+
+/**
+ * Rotates a robot to a given heading. Implements Reversible through a
+ * heading supplier to return to the previous heading.
+ */
+export class ReversibleAbsoluteRotateCommand
+    extends RobotCommand
+    implements Reversible<ReversibleAbsoluteRotateCommand>
+{
+    private previousHeading: number | undefined;
+
+    constructor(
+        robotId: string,
+        protected headingSupplier: () => number,
+    ) {
+        super(robotId);
+    }
+
+    public async execute(): Promise<void> {
+        const robot = robotManager.getRobot(this.robotId);
+        this.previousHeading = robot.heading;
+        return robot.absoluteRotate(this.headingSupplier());
+    }
+
+    public reverse(): ReversibleAbsoluteRotateCommand {
+        return new ReversibleAbsoluteRotateCommand(
+            this.robotId,
+            (() => this.previousHeading!).bind(this),
+        );
     }
 }
 
@@ -44,7 +77,8 @@ export class AbsoluteRotateCommand extends RotateCommand {
  */
 export class RotateToStartCommand extends RobotCommand {
     public async execute(): Promise<void> {
-        return this.robot.absoluteRotate(this.robot.startHeading);
+        const robot = robotManager.getRobot(this.robotId);
+        return robot.absoluteRotate(robot.startHeading);
     }
 }
 
@@ -56,10 +90,10 @@ export class RotateToStartCommand extends RobotCommand {
  */
 export abstract class MoveCommand extends RobotCommand {
     constructor(
-        robot: Robot,
+        robotId: string,
         protected position: Position,
     ) {
-        super(robot);
+        super(robotId);
     }
 }
 
@@ -72,11 +106,12 @@ export class RelativeMoveCommand
     implements Reversible<RelativeMoveCommand>
 {
     public async execute(): Promise<void> {
-        return this.robot.relativeMove(this.position);
+        const robot = robotManager.getRobot(this.robotId);
+        return robot.relativeMove(this.position);
     }
 
     public reverse(): RelativeMoveCommand {
-        return new RelativeMoveCommand(this.robot, this.position.neg());
+        return new RelativeMoveCommand(this.robotId, this.position.neg());
     }
 }
 
@@ -85,6 +120,38 @@ export class RelativeMoveCommand
  */
 export class AbsoluteMoveCommand extends MoveCommand {
     public async execute(): Promise<void> {
-        return this.robot.relativeMove(this.position.sub(this.robot.position));
+        const robot = robotManager.getRobot(this.robotId);
+        return robot.relativeMove(this.position.sub(robot.position));
+    }
+}
+
+/**
+ * Moves a robot to a global location. Implements Reversible through a
+ * position supplier to return to the previous position.
+ */
+export class ReversibleAbsoluteMoveCommand
+    extends RobotCommand
+    implements Reversible<ReversibleAbsoluteMoveCommand>
+{
+    private previousPosition: Position | undefined;
+
+    constructor(
+        robotId: string,
+        protected positionSupplier: () => Position,
+    ) {
+        super(robotId);
+    }
+
+    public async execute(): Promise<void> {
+        const robot = robotManager.getRobot(this.robotId);
+        this.previousPosition = robot.position;
+        return robot.relativeMove(this.positionSupplier().sub(robot.position));
+    }
+
+    public reverse(): ReversibleAbsoluteMoveCommand {
+        return new ReversibleAbsoluteMoveCommand(
+            this.robotId,
+            (() => this.previousPosition!).bind(this),
+        );
     }
 }

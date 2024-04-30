@@ -4,3 +4,4 @@ yarn.lock
 .prettierignore
 .gitattributes
 site
+LICENSE

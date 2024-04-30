@@ -1,4 +1,4 @@
-import { Robot } from "../robot/robot";
+import { robotManager } from "../api/managers";
 
 /**
  * An command which operates on one or more robots.
@@ -60,8 +60,10 @@ export abstract class CommandBase implements Command {
  * Note this class redirects the execute implementation to executeRobot.
  */
 export abstract class RobotCommand extends CommandBase {
-    constructor(public readonly robot: Robot) {
+    constructor(public readonly robotId: string) {
         super();
+        // TO DISCUSS: idk if its possible for a robot object to change between adding it as a requrement and executing the command but if it is, adding the robot object as a requirement semi defeats the purpose of using robot ids everywhere
+        const robot = robotManager.getRobot(robotId);
         this.addRequirements([robot]);
     }
 }
