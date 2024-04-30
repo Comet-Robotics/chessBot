@@ -24,13 +24,11 @@ function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
     setGameInterruptedReason: Dispatch<GameInterruptedReason>,
-    setLastMove: Dispatch<Move>,
 ): MessageHandler {
     return (message) => {
         if (message instanceof MoveMessage) {
             // Must be a new instance of ChessEngine to trigger UI redraw
             setChess(chess.copy(message.move));
-            setLastMove(message.move);
         } else if (message instanceof GameInterruptedMessage) {
             setGameInterruptedReason(message.reason);
         }
@@ -39,17 +37,11 @@ function getMessageHandler(
 
 export function Game(): JSX.Element {
     const [chess, setChess] = useState(new ChessEngine());
-    const [lastMove, setLastMove] = useState<Move | undefined>(undefined);
     const [gameInterruptedReason, setGameInterruptedReason] =
         useState<GameInterruptedReason>();
 
     const sendMessage = useSocket(
-        getMessageHandler(
-            chess,
-            setChess,
-            setGameInterruptedReason,
-            setLastMove,
-        ),
+        getMessageHandler(chess, setChess, setGameInterruptedReason),
     );
 
     const { isPending, data, isError } = useEffectQuery(
@@ -95,8 +87,6 @@ export function Game(): JSX.Element {
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
         sendMessage(new MoveMessage(move));
-
-        setLastMove(move);
     };
 
     return (
@@ -107,7 +97,6 @@ export function Game(): JSX.Element {
                     side={side}
                     chess={chess}
                     onMove={handleMove}
-                    lastMove={lastMove}
                 />
                 {gameEndDialog}
                 <Outlet />

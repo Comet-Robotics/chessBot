@@ -42,6 +42,11 @@ export class ChessEngine {
         this.chess.loadPgn(pgn);
     }
 
+    getLastMove() {
+        const moves = this.chess.history({ verbose: true });
+        return moves.length > 0 ? moves[moves.length - 1] : undefined;
+    }
+
     //returns the PieceType of the of the piece on the square or undefined
     getPiece(square: Square): PieceType | undefined {
         const piece = this.chess.get(square);

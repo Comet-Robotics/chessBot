@@ -7,11 +7,12 @@ export const customSquareRenderer = forwardRef<
     HTMLDivElement,
     CustomSquareProps
 >((props, ref) => {
-    const { legalSquares, chess, lastMove } = useContext(CustomSquareContext);
+    const { legalSquares, chess } = useContext(CustomSquareContext);
 
     let selectElement: ReactElement | null = null;
     let lastMoveHighlight: ReactElement | null = null;
 
+    const lastMove = chess.getLastMove();
     if (
         lastMove !== undefined &&
         (lastMove.from === props.square || lastMove.to === props.square)
