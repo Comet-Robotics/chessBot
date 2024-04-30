@@ -57,8 +57,7 @@ export class ChessEngine {
         }
     }
 
-    hasPiece(square: Square)
-    {
+    hasPiece(square: Square) {
         return this.getPiece(square) !== undefined;
     }
 

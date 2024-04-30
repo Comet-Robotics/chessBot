@@ -1,17 +1,23 @@
 import { CustomSquareProps } from "react-chessboard/dist/chessboard/types";
 import { ReactElement, forwardRef, useContext } from "react";
-import { OutsideCorners, CenterDot, SquareHighlight, ClickedPiece } from "./svg-components";
+import {
+    OutsideCorners,
+    CenterDot,
+    SquareHighlight,
+    ClickedPiece,
+} from "./svg-components";
 import { CustomSquareContext } from "./custom-square-context";
 
 export const customSquareRenderer = forwardRef<
     HTMLDivElement,
     CustomSquareProps
 >((props, ref) => {
-    const { legalSquares, chess, lastClickedSquare } = useContext(CustomSquareContext);
+    const { legalSquares, chess, lastClickedSquare } =
+        useContext(CustomSquareContext);
 
     let selectElement: ReactElement | null = null;
     let lastMoveHighlight: ReactElement | null = null;
-    let clickedPieceHighlight : ReactElement | null = null;
+    let clickedPieceHighlight: ReactElement | null = null;
 
     const lastMove = chess.getLastMove();
     if (
@@ -26,16 +32,18 @@ export const customSquareRenderer = forwardRef<
         );
     }
 
-
-    if (lastClickedSquare !== undefined && lastClickedSquare === props.square && chess.hasPiece(props.square))
-        {
-            clickedPieceHighlight = (
-                <ClickedPiece 
+    if (
+        lastClickedSquare !== undefined &&
+        lastClickedSquare === props.square &&
+        chess.hasPiece(props.square)
+    ) {
+        clickedPieceHighlight = (
+            <ClickedPiece
                 height={props.style.height}
                 width={props.style.width}
-                />
-            );
-        }
+            />
+        );
+    }
 
     if (legalSquares.includes(props.square)) {
         // Square should be highlighted
