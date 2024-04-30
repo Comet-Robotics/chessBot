@@ -57,7 +57,7 @@ char otaHttpResp[OTA_HTTP_RESP_SIZE + 1];
 // Defaults to 1 minute
 int32_t checkFreq = 1 * 60;
 
-const char* updateServers[] = { "chess-ota.internal" };
+const char* updateServer = "chess-ota.internal";
 
 esp_err_t httpEventHandler(esp_http_client_event_t* evt)
 {
@@ -147,68 +147,73 @@ esp_err_t getJsonFromHost(const char* host)
 
 void findUpdate()
 {
-    for (const char* i : updateServers) {
-        printf("Seeking json from host %s\n", i);
-        auto err = getJsonFromHost(i);
+    printf("Seeking json from host %s\n", updateServer);
+    auto err = getJsonFromHost(updateServer);
 
-        if (err != ESP_OK) {
-            continue;
-        }
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Firmware upgrade failed");
+        esp_restart();
+    }
 
-        const char* hash = otaJson["hash"];
-        const char* url = otaJson["url"];
+    if (otaJson.containsKey("disabled")) {
+        ESP_LOGI(TAG, "Firmware upgrade disabled");
+        xEventGroupSetBits(otaEvents, FIRST_OTA_CHECK_DONE);
+        return;
+    }
 
-        bool matches = hashMatchesCurrentPartition(hash);
+    const char* hash = otaJson["hash"];
+    const char* url = otaJson["url"];
 
-        esp_ota_img_states_t state;
-        CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
+    bool matches = hashMatchesCurrentPartition(hash);
 
-        if (matches && state == ESP_OTA_IMG_PENDING_VERIFY) {
-            printf("OTA update process finished.\n");
-            esp_ota_mark_app_valid_cancel_rollback();
+    esp_ota_img_states_t state;
+    CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
 
-            xEventGroupSetBits(otaEvents, FIRST_OTA_CHECK_DONE);
+    if (matches && state == ESP_OTA_IMG_PENDING_VERIFY) {
+        printf("OTA update process finished.\n");
+        esp_ota_mark_app_valid_cancel_rollback();
 
-            return;
-        } else if (matches) {
-            // No new update, ignore
+        xEventGroupSetBits(otaEvents, FIRST_OTA_CHECK_DONE);
 
-            xEventGroupSetBits(otaEvents, FIRST_OTA_CHECK_DONE);
+        return;
+    } else if (matches) {
+        // No new update, ignore
 
-            return;
-        }
+        xEventGroupSetBits(otaEvents, FIRST_OTA_CHECK_DONE);
 
-        // There is a new update, but the last one was not successful. Mark it as good anyway to avoid a bad state
-        if (state != ESP_OTA_IMG_VALID) {
-            esp_ota_mark_app_valid_cancel_rollback();
-        }
+        return;
+    }
 
-        printf("Updating to hash %s from hash ", hash);
-        uint8_t currentHash[32];
-        CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
-        for (int i = 0; i < 32; i++) {
-            printf("%02x", currentHash[i]);
-        }
-        printf("\n");
+    // There is a new update, but the last one was not successful. Mark it as good anyway to avoid a bad state
+    if (state != ESP_OTA_IMG_VALID) {
+        esp_ota_mark_app_valid_cancel_rollback();
+    }
 
-        esp_http_client_config_t config = {};
-        config.url = url;
-        config.event_handler = httpEventHandler;
-        config.keep_alive_enable = true;
+    printf("Updating to hash %s from hash ", hash);
+    uint8_t currentHash[32];
+    CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
+    for (int i = 0; i < 32; i++) {
+        printf("%02x", currentHash[i]);
+    }
+    printf("\n");
 
-        esp_https_ota_config_t otaConfig = {};
-        otaConfig.http_config = &config;
+    esp_http_client_config_t config = {};
+    config.url = url;
+    config.event_handler = httpEventHandler;
+    config.keep_alive_enable = true;
 
-        memset(otaHttpResp, 0, sizeof(otaHttpResp));
-        err = esp_https_ota(&otaConfig);
-        if (err == ESP_OK) {
-            // todo: wait for end of operation
-            ESP_LOGI(TAG, "OTA Succeed, Rebooting...");
-            esp_restart();
-        } else {
-            ESP_LOGE(TAG, "Firmware upgrade failed");
-            esp_restart();
-        }
+    esp_https_ota_config_t otaConfig = {};
+    otaConfig.http_config = &config;
+
+    memset(otaHttpResp, 0, sizeof(otaHttpResp));
+    err = esp_https_ota(&otaConfig);
+    if (err == ESP_OK) {
+        // todo: wait for end of operation
+        ESP_LOGI(TAG, "OTA Succeed, Rebooting...");
+        esp_restart();
+    } else {
+        ESP_LOGE(TAG, "Firmware upgrade failed");
+        esp_restart();
     }
 }
 

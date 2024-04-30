@@ -105,8 +105,7 @@ public:
                 ((Bundle*)(cbArg))->ip = *ipaddr;
                 xTaskNotifyGiveIndexed(taskToNotify, (UBaseType_t)ROBOT_NOTIFY_DNS); }, (void*)&bundle);
 
-        if (err != ERR_OK)
-        {
+        if (err != ERR_OK) {
             printf("DNS resolution error!\n");
         }
 

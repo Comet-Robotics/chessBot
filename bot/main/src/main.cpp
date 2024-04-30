@@ -3,6 +3,7 @@
 #include <driver/gpio.h>
 #include <esp_log.h>
 #include <esp_ota_ops.h>
+#include <esp_pm.h>
 #include <freertos/task.h>
 #include <hal/cpu_hal.h>
 #include <sdkconfig.h>
@@ -60,6 +61,15 @@ extern "C" void app_main_alt()
     startWifi();
     waitForWifiConnection();
     launchUpdater();
+
+    setWifiSleepPolicy(SLEEP_MODE::MAX_MODEM_SLEEP);
+
+    esp_pm_config_t pm_config = {
+        .max_freq_mhz = 160,
+        .min_freq_mhz = 40,
+        .light_sleep_enable = true
+    };
+    CHECK(esp_pm_configure(&pm_config));
 
     startNetThread();
 

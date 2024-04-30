@@ -22,9 +22,12 @@ EventGroupHandle_t wifiEvents;
 #include "../../env.h"
 #else
 
-#warning "Wifi will not work without an SSID and password"
+#ifndef WIFI_NOT_NEEDED
+#warning "env.h not populated"
+#else
 const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
+#endif
 #endif
 
 bool isWifiConnected()
@@ -127,6 +130,7 @@ void startWifi()
         &ipEventHandlerInstance));
 
     wifi_config_t wifiConfig = {};
+    // wifiConfig.sta.listen_interval =
     strcpy((char*)wifiConfig.sta.ssid, WIFI_SSID);
     strcpy((char*)wifiConfig.sta.password, WIFI_PASSWORD);
     wifiConfig.sta.scan_method = WIFI_ALL_CHANNEL_SCAN; // Scan all channels, must be enabled to retry a single station multiple times
@@ -138,5 +142,15 @@ void startWifi()
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "wifi_init_sta finished");
+}
+
+void setWifiSleepPolicy(SLEEP_MODE mode)
+{
+    if (mode == SLEEP_MODE::MAX_MODEM_SLEEP) {
+        esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
+    } else if (mode == SLEEP_MODE::ACTIVE) {
+        // upclock?
+        esp_wifi_set_ps(WIFI_PS_NONE);
+    }
 }
 }; // namespace chessbot

@@ -8,9 +8,33 @@
       "problemMatcher": []
     },
     {
+      "label": "Disable OTA Updates",
+      "type": "shell",
+      "command": "${config:idf.pythonBinPathWin} support.py ota-disable",
+      "options": {
+        "env": {
+          "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
+          "espPythonPath": "${config:idf.pythonBinPathWin}",
+          "espIdfPath": "${config:idf.espIdfPathWin}"
+        }
+      }
+    },
+    {
       "label": "Deploy OTA Update",
       "type": "shell",
       "command": "${config:idf.pythonBinPathWin} support.py ota",
+      "options": {
+        "env": {
+          "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
+          "espPythonPath": "${config:idf.pythonBinPathWin}",
+          "espIdfPath": "${config:idf.espIdfPathWin}"
+        }
+      }
+    },
+    {
+      "label": "Update DNS Entry",
+      "type": "shell",
+      "command": "${config:idf.pythonBinPathWin} support.py dns",
       "options": {
         "env": {
           "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
