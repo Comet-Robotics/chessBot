@@ -145,9 +145,7 @@ export class ReversibleAbsoluteMoveCommand
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
         this.previousPosition = robot.position;
-        return robot.relativeMove(
-            this.positionSupplier().sub(robot.position),
-        );
+        return robot.relativeMove(this.positionSupplier().sub(robot.position));
     }
 
     public reverse(): ReversibleAbsoluteMoveCommand {
