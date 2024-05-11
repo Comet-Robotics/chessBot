@@ -47,8 +47,43 @@ export class ChessEngine {
         return moves.length > 0 ? moves[moves.length - 1] : undefined;
     }
 
+    isKingSideCastling(move: Move) {
+        if (this.getPieceTypeFromSquare(move.from) !== PieceType.KING) {
+            return false;
+        } else if (this.chess.get(move.from).color === Side.WHITE) {
+            return move.from === "e1" && move.to === "g1";
+        } else {
+            return move.from === "e8" && move.to === "g8";
+        }
+    }
+
+    isEnPassant(move: Move) {
+        if (
+            move.from[0] !== move.to[0] &&
+            this.getPieceTypeFromSquare(move.from) === PieceType.PAWN
+        ) {
+            return !this.hasPiece(move.to);
+        } else {
+            return false;
+        }
+    }
+
+    isCapture(move: Move) {
+        return this.hasPiece(move.to);
+    }
+
+    isQueenSideCastling(move: Move) {
+        if (this.getPieceTypeFromSquare(move.from) !== PieceType.KING) {
+            return false;
+        } else if (this.chess.get(move.from).color === Side.WHITE) {
+            return move.from === "e1" && move.to === "c1";
+        } else {
+            return move.from === "e8" && move.to === "c8";
+        }
+    }
+
     //returns the PieceType of the of the piece on the square or undefined
-    getPieceType(square: Square): PieceType | undefined {
+    getPieceTypeFromSquare(square: Square): PieceType | undefined {
         const piece = this.chess.get(square);
         if (piece !== null) {
             return piece.type as PieceType;
@@ -66,7 +101,15 @@ export class ChessEngine {
     }
 
     hasPiece(square: Square) {
-        return this.getPieceType(square) !== undefined;
+        return this.getPieceTypeFromSquare(square) !== undefined;
+    }
+
+    /**
+     * Takes a move argument and returns the piece that is moving as a PieceType enum
+     *
+     */
+    getPieceTypeFromMove(move: Move) {
+        return this.getPieceTypeFromSquare(move.from) as PieceType;
     }
 
     getLegalMoves(square?: Square) {
@@ -93,7 +136,7 @@ export class ChessEngine {
      * Returns true if a move is a promotion, and false otherwise.
      */
     checkPromotion(from: Square, to: Square): boolean {
-        if (this.getPieceType(from) !== PieceType.PAWN) {
+        if (this.getPieceTypeFromSquare(from) !== PieceType.PAWN) {
             return false;
         } else if (this.chess.get(from).color === Side.WHITE) {
             return from[1] === "7" && to[1] === "8";
