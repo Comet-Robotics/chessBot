@@ -47,6 +47,11 @@ export class ChessEngine {
         return moves.length > 0 ? moves[moves.length - 1] : undefined;
     }
 
+    /**
+     * Takes a move argument and determines if the move is a King Side Castle.
+     * Assumes that chess hasn't been updated yet
+     * @returns true if the move is a King Side Castle
+     */
     isKingSideCastling(move: Move) {
         if (this.getPieceTypeFromSquare(move.from) !== PieceType.KING) {
             return false;
@@ -57,6 +62,11 @@ export class ChessEngine {
         }
     }
 
+    /**
+     * Takes a move argument and determines if the move is an En Passant Capture.
+     * Assumes that chess hasn't been updated yet
+     * @returns true if the move is an En Passant Capture
+     */
     isEnPassant(move: Move) {
         if (
             move.from[0] !== move.to[0] &&
@@ -68,10 +78,20 @@ export class ChessEngine {
         }
     }
 
+    /**
+     * Takes a move argument and determines if the move results in a capture
+     * Assumes that chess hasn't been updated yet
+     * @returns true if the move is a Capture
+     */
     isCapture(move: Move) {
         return this.hasPiece(move.to);
     }
 
+    /**
+     * Takes a move argument and determines if the move is a Queen Side Castle.
+     * Assumes that chess hasn't been updated yet
+     * @returns true if the move is a Queen Side Castle
+     */
     isQueenSideCastling(move: Move) {
         if (this.getPieceTypeFromSquare(move.from) !== PieceType.KING) {
             return false;
@@ -82,7 +102,10 @@ export class ChessEngine {
         }
     }
 
-    //returns the PieceType of the of the piece on the square or undefined
+    /**
+     * Takes in a Square argument and returns the piece on the square or undefined
+     * @returns The current piece on the square as a PieceType enum or undefined if there is no piece
+     */
     getPieceTypeFromSquare(square: Square): PieceType | undefined {
         const piece = this.chess.get(square);
         if (piece !== null) {
@@ -91,7 +114,11 @@ export class ChessEngine {
             return undefined;
         }
     }
-    //returns the side of the piece if there is a piece on the square
+
+    /**
+     * Takes in a Square argument and returns the side of the piece on the square or undefined
+     * @returns The current side of the piece on the square or undefined if there is no piece on the square
+     */
     getPieceSide(square: Square): Side | undefined {
         const piece = this.chess.get(square);
         if (piece !== null) {
@@ -101,13 +128,17 @@ export class ChessEngine {
         }
     }
 
+    /**
+     * Takes in a Square argument and returns if the square has a piece on it.
+     * @returns true if the square has a piece on it.
+     */
     hasPiece(square: Square) {
         return this.getPieceTypeFromSquare(square) !== undefined;
     }
 
     /**
-     * Takes a move argument and returns the piece that is moving as a PieceType enum
-     *
+     * Takes in a Move argument and returns the piece on the square
+     * @returns The current piece on the square as a PieceType enum
      */
     getPieceTypeFromMove(move: Move) {
         return this.getPieceTypeFromSquare(move.from) as PieceType;
@@ -135,6 +166,7 @@ export class ChessEngine {
 
     /**
      * Returns true if a move is a promotion, and false otherwise.
+     * Assumes that chess hasn't been updated yet
      */
     checkPromotion(from: Square, to: Square): boolean {
         if (this.getPieceTypeFromSquare(from) !== PieceType.PAWN) {
