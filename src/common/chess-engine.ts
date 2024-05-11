@@ -94,10 +94,9 @@ export class ChessEngine {
 
     /**
      * Takes a move argument and returns the piece that is moving as a PieceType enum
-     * 
+     *
      */
-    getPieceType(move: Move)
-    {
+    getPieceType(move: Move) {
         return this.getPiece(move.from) as PieceType;
     }
 
