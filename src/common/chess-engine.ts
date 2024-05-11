@@ -42,6 +42,46 @@ export class ChessEngine {
         this.chess.loadPgn(pgn);
     }
 
+    getLastMove() {
+        const moves = this.chess.history({ verbose: true });
+        return moves.length > 0 ? moves[moves.length - 1] : undefined;
+    }
+
+    isKingSideCastling(move: Move) {
+        if (this.getPiece(move.from) !== PieceType.KING) {
+            return false;
+        } else if (this.chess.get(move.from).color === Side.WHITE) {
+            return move.from === "e1" && move.to === "g1";
+        } else {
+            return move.from === "e8" && move.to === "g8";
+        }
+    }
+
+    isEnPassant(move: Move) {
+        if (
+            move.from[0] !== move.to[0] &&
+            this.getPiece(move.from) === PieceType.PAWN
+        ) {
+            return !this.hasPiece(move.to);
+        } else {
+            return false;
+        }
+    }
+
+    isCapture(move: Move) {
+        return this.hasPiece(move.to);
+    }
+
+    isQueenSideCastling(move: Move) {
+        if (this.getPiece(move.from) !== PieceType.KING) {
+            return false;
+        } else if (this.chess.get(move.from).color === Side.WHITE) {
+            return move.from === "e1" && move.to === "c1";
+        } else {
+            return move.from === "e8" && move.to === "c8";
+        }
+    }
+
     //returns the PieceType of the of the piece on the square or undefined
     getPiece(square: Square): PieceType | undefined {
         const piece = this.chess.get(square);
@@ -50,6 +90,19 @@ export class ChessEngine {
         } else {
             return undefined;
         }
+    }
+
+    /**
+     * Takes a move argument and returns the piece that is moving as a PieceType enum
+     * 
+     */
+    getPieceType(move: Move)
+    {
+        return this.getPiece(move.from) as PieceType;
+    }
+
+    hasPiece(square: Square) {
+        return this.getPiece(square) !== undefined;
     }
 
     getLegalMoves(square?: Square) {
