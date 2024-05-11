@@ -42,14 +42,31 @@ export class ChessEngine {
         this.chess.loadPgn(pgn);
     }
 
+    getLastMove() {
+        const moves = this.chess.history({ verbose: true });
+        return moves.length > 0 ? moves[moves.length - 1] : undefined;
+    }
+
     //returns the PieceType of the of the piece on the square or undefined
-    getPiece(square: Square): PieceType | undefined {
+    getPieceType(square: Square): PieceType | undefined {
         const piece = this.chess.get(square);
         if (piece !== null) {
             return piece.type as PieceType;
         } else {
             return undefined;
         }
+    }
+    getPieceSide(square: Square): Side | undefined {
+        const piece = this.chess.get(square);
+        if (piece !== null) {
+            return piece.color as Side;
+        } else {
+            return undefined;
+        }
+    }
+
+    hasPiece(square: Square) {
+        return this.getPieceType(square) !== undefined;
     }
 
     getLegalMoves(square?: Square) {
@@ -76,7 +93,7 @@ export class ChessEngine {
      * Returns true if a move is a promotion, and false otherwise.
      */
     checkPromotion(from: Square, to: Square): boolean {
-        if (this.getPiece(from) !== PieceType.PAWN) {
+        if (this.getPieceType(from) !== PieceType.PAWN) {
             return false;
         } else if (this.chess.get(from).color === Side.WHITE) {
             return from[1] === "7" && to[1] === "8";
