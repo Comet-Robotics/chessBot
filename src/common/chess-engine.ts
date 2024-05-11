@@ -112,6 +112,11 @@ export class ChessEngine {
         return this.getPieceTypeFromSquare(move.from) as PieceType;
     }
 
+    /**
+     * Takes a move argument and returns the piece that is moving as a PieceType enum
+     *
+     */
+
     getLegalMoves(square?: Square) {
         return this.chess.moves({
             square,
