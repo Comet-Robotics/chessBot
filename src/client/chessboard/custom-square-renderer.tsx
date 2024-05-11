@@ -12,7 +12,7 @@ export const customSquareRenderer = forwardRef<
     HTMLDivElement,
     CustomSquareProps
 >((props, ref) => {
-    const { legalSquares, chess, lastClickedSquare } =
+    const { legalSquares, chess, lastClickedSquare, side } =
         useContext(CustomSquareContext);
 
     let selectElement: ReactElement | null = null;
@@ -35,7 +35,8 @@ export const customSquareRenderer = forwardRef<
     if (
         lastClickedSquare !== undefined &&
         lastClickedSquare === props.square &&
-        chess.hasPiece(props.square)
+        chess.hasPiece(props.square) &&
+        chess.getPieceSide(props.square) === side
     ) {
         clickedPieceHighlight = (
             <ClickedPiece
