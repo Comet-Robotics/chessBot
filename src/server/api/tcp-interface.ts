@@ -7,12 +7,13 @@ import {
     packetToJson,
 } from "../utils/tcp-packet";
 import EventEmitter from "node:events";
+import { randomUUID } from "node:crypto";
 
 export class BotTunnel {
     connected: boolean = false;
     dataBuffer: Buffer | undefined;
     address: string | undefined;
-    id: number | undefined;
+    id: string | undefined;
     emitter: EventEmitter;
 
     constructor(
@@ -194,20 +195,20 @@ export class TCPServer {
             socket,
             ((mac: string) => {
                 console.log("Adding robot with mac", mac, "to arr");
-                let id: number;
+                let id: string;
                 if (!(mac in config["bots"])) {
-                    id = Math.floor(Math.random() * 900) + 100;
+                    id = `unknown-robot-${randomUUID()}`;
                     console.log(
                         "Address not found in config! Assigning random ID: " +
-                            id.toString(),
+                            id,
                     );
                 } else {
-                    id = parseInt(config["bots"][mac]);
-                    console.log("Found address ID: " + id.toString());
+                    id = config["bots"][mac];
+                    console.log("Found address ID: " + id);
                 }
                 tunnel.id = id;
                 tunnel.address = mac;
-                this.connections[id.toString()] = tunnel;
+                this.connections[id] = tunnel;
             }).bind(this),
         );
 
