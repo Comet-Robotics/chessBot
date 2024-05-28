@@ -1,20 +1,56 @@
 import { CustomSquareProps } from "react-chessboard/dist/chessboard/types";
 import { ReactElement, forwardRef, useContext } from "react";
-import { OutsideCorners, CenterDot } from "./svg-components";
+import {
+    OutsideCorners,
+    CenterDot,
+    SquareHighlight,
+    ClickedPiece,
+} from "./svg-components";
 import { CustomSquareContext } from "./custom-square-context";
 
 export const customSquareRenderer = forwardRef<
     HTMLDivElement,
     CustomSquareProps
 >((props, ref) => {
-    const { legalSquares, chess } = useContext(CustomSquareContext);
-    let selectedElement: ReactElement | null = null;
+    const { legalSquares, chess, lastClickedSquare, side } =
+        useContext(CustomSquareContext);
+
+    let selectElement: ReactElement | null = null;
+    let lastMoveHighlight: ReactElement | null = null;
+    let clickedPieceHighlight: ReactElement | null = null;
+
+    const lastMove = chess.getLastMove();
+    if (
+        lastMove !== undefined &&
+        (lastMove.from === props.square || lastMove.to === props.square)
+    ) {
+        lastMoveHighlight = (
+            <SquareHighlight
+                height={props.style.height}
+                width={props.style.width}
+            />
+        );
+    }
+
+    if (
+        lastClickedSquare !== undefined &&
+        lastClickedSquare === props.square &&
+        chess.hasPiece(props.square) &&
+        chess.getPieceSide(props.square) === side
+    ) {
+        clickedPieceHighlight = (
+            <ClickedPiece
+                height={props.style.height}
+                width={props.style.width}
+            />
+        );
+    }
 
     if (legalSquares.includes(props.square)) {
         // Square should be highlighted
-        if (chess.getPiece(props.square) !== undefined) {
+        if (chess.hasPiece(props.square)) {
             // Square has a piece on it
-            selectedElement = (
+            selectElement = (
                 <OutsideCorners
                     height={props.style.height}
                     width={props.style.width}
@@ -22,13 +58,15 @@ export const customSquareRenderer = forwardRef<
             );
         } else {
             //Square is empty
-            selectedElement = <CenterDot />;
+            selectElement = <CenterDot />;
         }
     }
 
     return (
         <div style={props.style} ref={ref}>
-            {selectedElement}
+            {clickedPieceHighlight}
+            {lastMoveHighlight}
+            {selectElement}
             {props.children}
         </div>
     );
