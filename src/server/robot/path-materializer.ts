@@ -1,4 +1,6 @@
+import { robotManager } from "../api/managers";
 import { Move } from "../../common/game-types";
+import { gameManager } from "../api/api";
 import {
     Command,
     ParallelCommandGroup,
@@ -33,7 +35,9 @@ function constructFinalCommand(
     rotateCommands: RelativeRotateCommand[],
 ): MovePiece {}
 
-function generateCommands(move: Move) {
+// Takes in a move, and generates the commands required to get the main piece to it's destination
+// If there are pieces in the way, it shimmy's them out, and move them back after main piece passes
+function moveMainPiece(move: Move) {
     const moveCommands: AbsoluteMoveCommand[] = [];
     const rotateCommands: RelativeRotateCommand[] = [];
     const collisions: string[] = detectCollisions(move);
@@ -46,31 +50,161 @@ function generateCommands(move: Move) {
     return constructFinalCommand(move, moveCommands, rotateCommands);
 }
 
-function returnToHome(): Move {
-    const captureFrom: Square = ;
-    const captureTo: Square = ;
-    //val[0].toLowerCase() as Square;
-    return { from: captureFrom, to: captureTo };
+function getDistance(x1: number, y1: number, x2: number, y2: number): number {
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
 
+//step1 find the empty row out
+function returnToHome(from: Square, id: string): SequentialCommandGroup {
+    let flagAbove = false;
+    let flagBelow = false;
+    let flagRight = false;
+    let flagLeft = false;
+    let flagPassedMiddle = false;
+
+    const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
+    const home: GridIndices = robotManager.getRobot(id).homeIndices;
+
+    for (let y = 2; y < 11; y++) {
+        const checkedSquare: GridIndices = new GridIndices(capturedPiece.i, y);
+
+        flagPassedMiddle =
+            checkedSquare === capturedPiece ? true : flagPassedMiddle;
+        const hasPiece =
+            robotManager.indicesToIds.get(checkedSquare) !== undefined;
+
+        flagAbove = !flagAbove ? true : hasPiece && !flagPassedMiddle;
+        flagBelow = !flagBelow ? true : hasPiece && flagPassedMiddle;
+    }
+
+    flagPassedMiddle = false;
+
+    for (let x = 2; x < 11; x++) {
+        const checkedSquare: GridIndices = new GridIndices(x, capturedPiece.j);
+
+        flagPassedMiddle =
+            checkedSquare === capturedPiece ? true : flagPassedMiddle;
+        const hasPiece =
+            robotManager.indicesToIds.get(checkedSquare) !== undefined;
+
+        flagLeft = !flagLeft ? true : hasPiece && !flagPassedMiddle;
+        flagRight = !flagRight ? true : hasPiece && flagPassedMiddle;
+    }
+
+    if (flagAbove && flagBelow && flagRight && flagLeft) {
+        //need to shimmy
+    } else {
+        //find shortest path to home
+        //straight line to the padding, calc the shortest way
+        let first = true;
+        let shortestDistance = 0;
+        let direction = 0;
+
+        if (!flagAbove) {
+            if (first) {
+                shortestDistance = getDistance(
+                    capturedPiece.i,
+                    1,
+                    home.i,
+                    home.j,
+                );
+                first = false;
+                direction = 1;
+            } else {
+                let d = getDistance(capturedPiece.i, 1, home.i, home.j);
+                if (d < shortestDistance) {
+                    shortestDistance = d;
+                    direction = 1;
+                }
+            }
+        }
+        if (!flagBelow) {
+            if (first) {
+                shortestDistance = getDistance(
+                    capturedPiece.i,
+                    10,
+                    home.i,
+                    home.j,
+                );
+                first = false;
+                direction = 2;
+            } else {
+                let d = getDistance(capturedPiece.i, 10, home.i, home.j);
+                if (d < shortestDistance) {
+                    shortestDistance = d;
+                    direction = 2;
+                }
+            }
+        }
+        if (!flagLeft) {
+            if (first) {
+                shortestDistance = getDistance(
+                    1,
+                    capturedPiece.j,
+                    home.i,
+                    home.j,
+                );
+                first = false;
+                direction = 3;
+            } else {
+                let d = getDistance(1, capturedPiece.j, home.i, home.j);
+                if (d < shortestDistance) {
+                    shortestDistance = d;
+                    direction = 3;
+                }
+            }
+        }
+        if (!flagRight) {
+            if (first) {
+                shortestDistance = getDistance(
+                    11,
+                    capturedPiece.j,
+                    home.i,
+                    home.j,
+                );
+                first = false;
+                direction = 4;
+            } else {
+                let d = getDistance(11, capturedPiece.j, home.i, home.j);
+                if (d < shortestDistance) {
+                    shortestDistance = d;
+                    direction = 4;
+                }
+            }
+        }
+
+
+    }
+
+    const goHome: SequentialCommandGroup = new SequentialCommandGroup([]);
+    return goHome;
+}
 
 // Command structure
-// No Capture: Sequential[ Parallel[turn], MovePiece[shimmys, main], Parallel[turn to start] ]
-// Capture: Sequential[ No_Capture[capture piece], No_Capture[main piece] ]
+// No Capture: Sequential[ Parallel[Turn[all]], MovePiece[shimmys, main], Parallel[TurnToStart[all]] ]
+
+// Home with shimmy: Sequential[ No_Capture[capture piece], Turn[capture piece], Move[capture piece], ... ]
+// Home without shimmy: Sequential[ Turn[capture piece], Move[capture piece], ... ]
+// Capture: Sequential[ Home with/without shimmy[capture piece], No_Capture[main piece] ]
 export function materializePath(move: Move): Command {
-    const to: GridIndices = GridIndices.squareToGrid(move.to);
-    // Change to use chess engine instead
-    if (RobotManager.isRobotAtIndices(to)) {
-        let captureCommand: MovePiece;
-        let mainCommand: MovePiece;
-        const capturePiece = RobotManager.indicesToIds.get(to);
-        captureCommand = generateCommands(move);
-        mainCommand = generateCommands(move);
-        const command: SequentialCommandGroup = new SequentialCommandGroup([captureCommand, mainCommand]);
-        return command;
+    if (gameManager?.chess.isEnPassant(move)) {
+    } else if (gameManager?.chess.isRegularCapture(move)) {
+        const capturePiece = gameManager?.chess.getCapturedPieceId(move);
+        if (capturePiece !== undefined) {
+            const captureCommand: SequentialCommandGroup = returnToHome(
+                move.to,
+                capturePiece
+            );
+            const mainCommand: MovePiece = moveMainPiece(move);
+            const command: SequentialCommandGroup = new SequentialCommandGroup([
+                captureCommand,
+                mainCommand
+            ]);
+            return command;
+        }
+    } else if (gameManager?.chess.isQueenSideCastling(move)) {
+    } else if (gameManager?.chess.isKingSideCastling(move)) {
     } else {
-        let command: MovePiece;
-        command = generateCommands(move);
-        return command;
+        return moveMainPiece(move);
     }
 }

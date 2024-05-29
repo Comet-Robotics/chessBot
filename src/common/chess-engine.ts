@@ -3,6 +3,8 @@ import { aiMove } from "js-chess-engine";
 import { GameFinishedReason } from "./game-end-reasons";
 import { Difficulty } from "./client-types";
 import { Move, PieceType, Side } from "./game-types";
+import { GridIndices } from "../server/robot/grid-indices";
+import { robotManager } from "../server/api/managers";
 
 export class ChessEngine {
     private chess: Chess;
@@ -48,8 +50,9 @@ export class ChessEngine {
     }
 
     /**
-     * Takes a move argument and determines if the move is a King Side Castle.
+     * Determines if a move is a King Side Castle.
      * Assumes that chess hasn't been updated yet
+     * @param move - The Move to analyze.
      * @returns true if the move is a King Side Castle
      */
     isKingSideCastling(move: Move) {
@@ -63,8 +66,9 @@ export class ChessEngine {
     }
 
     /**
-     * Takes a move argument and determines if the move is an En Passant Capture.
+     * Determines if a move is an En Passant Capture.
      * Assumes that chess hasn't been updated yet
+     * @param move - The Move to analyze.
      * @returns true if the move is an En Passant Capture
      */
     isEnPassant(move: Move) {
@@ -79,17 +83,20 @@ export class ChessEngine {
     }
 
     /**
-     * Takes a move argument and determines if the move results in a capture
+     * Determines if a move results in a capture
+     * with no special shenanigans. 
      * Assumes that chess hasn't been updated yet
+     * @param move - The Move to analyze.
      * @returns true if the move is a Capture
      */
-    isCapture(move: Move) {
+    isRegularCapture(move: Move) {
         return this.hasPiece(move.to);
     }
 
     /**
-     * Takes a move argument and determines if the move is a Queen Side Castle.
+     * Determines if a move is a Queen Side Castle. 
      * Assumes that chess hasn't been updated yet
+     * @param move - The Move to analyze.
      * @returns true if the move is a Queen Side Castle
      */
     isQueenSideCastling(move: Move) {
@@ -103,7 +110,38 @@ export class ChessEngine {
     }
 
     /**
-     * Takes in a Square argument and returns the piece on the square or undefined
+     * Returns the robot id of the moving piece in a Move.
+     * Assumes that chess hasn't been updated yet
+     * @param move - The Move to check.
+     * @returns The current piece on the square as a it's robot id as a string
+     */
+    getCapturedPieceId(move: Move): string | undefined {
+        if (this.isEnPassant(move)) {
+            const y = GridIndices.squareToGrid(move.from).j;
+            if (y > 6) {
+                return robotManager.indicesToIds.get(
+                    new GridIndices(
+                        GridIndices.squareToGrid(move.from).i,
+                        y + 1,
+                    ),
+                );
+            } else {
+                return robotManager.indicesToIds.get(
+                    new GridIndices(
+                        GridIndices.squareToGrid(move.from).i,
+                        y - 1,
+                    ),
+                );
+            }
+        } else if (this.isRegularCapture(move)) {
+            const to: GridIndices = GridIndices.squareToGrid(move.to);
+            return robotManager.indicesToIds.get(to);
+        }
+    }
+
+    /**
+     * Returns the piece on a square or undefined
+     * @param square - The Square to check.
      * @returns The current piece on the square as a PieceType enum or undefined if there is no piece
      */
     getPieceTypeFromSquare(square: Square): PieceType | undefined {
@@ -116,7 +154,8 @@ export class ChessEngine {
     }
 
     /**
-     * Takes in a Square argument and returns the side of the piece on the square or undefined
+     * Returns the side of the piece on a square or undefined
+     * @param square - The Square to check.
      * @returns The current side of the piece on the square or undefined if there is no piece on the square
      */
     getPieceSide(square: Square): Side | undefined {
@@ -129,7 +168,8 @@ export class ChessEngine {
     }
 
     /**
-     * Takes in a Square argument and returns if the square has a piece on it.
+     * Returns if a square has a piece on it.
+     * @param square - The Square to check.
      * @returns true if the square has a piece on it.
      */
     hasPiece(square: Square) {
@@ -138,6 +178,7 @@ export class ChessEngine {
 
     /**
      * Takes in a Move argument and returns the piece on the square
+     * @param move - The Move to check.
      * @returns The current piece on the square as a PieceType enum
      */
     getPieceTypeFromMove(move: Move) {

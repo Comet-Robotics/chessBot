@@ -19,7 +19,7 @@ export abstract class GameManager {
         undefined;
 
     constructor(
-        protected chess: ChessEngine,
+        public chess: ChessEngine,
         protected socketManager: SocketManager,
         /**
          * The side the host is playing.
@@ -95,8 +95,10 @@ export class HumanGameManager extends GameManager {
         }
 
         if (message instanceof MoveMessage) {
+            // Call path materializer and send to bots
+
             this.chess.makeMove(message.move);
-            
+
             sendToOpponent(message);
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
