@@ -17,7 +17,7 @@ import { Square } from "chess.js";
 
 function calcCollisionType(move: Move): number {
     const from: GridIndices = GridIndices.squareToGrid(move.from);
-    const to: GridIndices = GridIndices.squareToGrid(move.from);
+    const to: GridIndices = GridIndices.squareToGrid(move.to);
 
     // Horizontal or Vertical (No collisions except potential capture piece)
     if (from.i === to.i || from.j === to.j) {
@@ -49,12 +49,14 @@ function detectCollisions(move: Move, collisionType: number): string[] {
             // Normalized to 1 or -1 to get direction (dividing by absolute value of self)
             const nx = dx / distance;
             const ny = dy / distance;
+
             // Loop through the tiles along the diagonal excluding beginning and end
             // (Beginning is the moving piece, and end is capture piece. Capture handled separately)
             for (let off = 1; off < distance; off++) {
                 // Finds the current coords of the diagonal tile that the loop is on
                 const midx = from.i + off * nx;
                 const midy = from.j + off * ny;
+
                 // Above or below the tile, depends on direction
                 const square1 = new GridIndices(midx, midy + ny);
                 const piece1 = robotManager.indicesToIds.get(square1);
@@ -133,11 +135,7 @@ function moveMainPiece(move: Move): MovePiece {
     const collisions: string[] = detectCollisions(move, collisionType);
     for (let i = 0; i < collisions.length; i++) {
         const pieceId = collisions[i];
-        const location: Position = findShimmyLocation(
-            pieceId,
-            move,
-            collisionType,
-        );
+        const location = findShimmyLocation(pieceId, move, collisionType);
         moveCommands.push(constructMoveCommand(pieceId, location));
         rotateCommands.push(constructRotateCommand(pieceId, location));
     }
@@ -283,12 +281,9 @@ export function materializePath(move: Move): Command {
     } else if (gameManager?.chess.isRegularCapture(move)) {
         const capturePiece = gameManager?.chess.getCapturedPieceId(move);
         if (capturePiece !== undefined) {
-            const captureCommand: SequentialCommandGroup = returnToHome(
-                move.to,
-                capturePiece,
-            );
-            const mainCommand: MovePiece = moveMainPiece(move);
-            const command: SequentialCommandGroup = new SequentialCommandGroup([
+            const captureCommand = returnToHome(move.to, capturePiece);
+            const mainCommand = moveMainPiece(move);
+            const command = new SequentialCommandGroup([
                 captureCommand,
                 mainCommand,
             ]);
