@@ -15,9 +15,98 @@ import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
 import { Square } from "chess.js";
 
-function detectCollisions(move: Move): string[] {}
+function calcCollisionType(move: Move): number {
+    const from: GridIndices = GridIndices.squareToGrid(move.from);
+    const to: GridIndices = GridIndices.squareToGrid(move.from);
 
-function findShimmyLocation(pieceId: string, move: Move): Position {}
+    // Horizontal or Vertical (No collisions except potential capture piece)
+    if (from.i === to.i || from.j === to.j) {
+        return 0;
+    } else {
+        // Diagonal
+        if (Math.abs(from.i - to.i) === Math.abs(from.j - to.j)) {
+            return 1;
+            // Horse
+        } else {
+            return 2;
+        }
+    }
+}
+
+function detectCollisions(move: Move, collisionType: number): string[] {
+    const from: GridIndices = GridIndices.squareToGrid(move.from);
+    const to: GridIndices = GridIndices.squareToGrid(move.from);
+    const collisions: string[] = [];
+    switch (collisionType) {
+        // Diagonal
+        case 1: {
+            // Will be either positive or negative depending on direction
+            const dx = to.i - from.i;
+            const dy = to.j - from.j;
+            // For diagonal, x and y offset by the same amount (not including signs)
+            // thus, absolute value of either will be the same
+            const distance = Math.abs(dx);
+            // Normalized to 1 or -1 to get direction (dividing by absolute value of self)
+            const nx = dx / distance;
+            const ny = dy / distance;
+            // Loop through the tiles along the diagonal excluding beginning and end
+            // (Beginning is the moving piece, and end is capture piece. Capture handled separately)
+            for (let off = 1; off < distance; off++) {
+                // Finds the current coords of the diagonal tile that the loop is on
+                const midx = from.i + off * nx;
+                const midy = from.j + off * ny;
+                // Above or below the tile, depends on direction
+                const square1 = new GridIndices(midx, midy + ny);
+                const piece1 = robotManager.indicesToIds.get(square1);
+                if (piece1 !== undefined) {
+                    collisions.push(piece1);
+                }
+                // Left or right of tile, depends on direction
+                const square2 = new GridIndices(midx + nx, midy);
+                const piece2 = robotManager.indicesToIds.get(square2);
+                if (piece2 !== undefined) {
+                    collisions.push(piece2);
+                }
+            }
+            break;
+        }
+        // Horse
+        case 2: {
+            // Will be either positive or negative depending on direction
+            const dx = to.i - from.i;
+            const dy = to.j - from.j;
+            // Normalized to 1 or -1 (can also be directly used to get first piece)
+            const nx = dx / Math.abs(dx);
+            const ny = dy / Math.abs(dy);
+            // Shifted to get second piece, shift direction based on sign
+            const sx = dx - nx;
+            const sy = dy - ny;
+
+            // Same sign horse moves share this square. Will always be 1 diagonal
+            // of moving piece
+            const square1 = new GridIndices(from.i + nx, from.j + ny);
+            const piece1 = robotManager.indicesToIds.get(square1);
+            if (piece1 !== undefined) {
+                collisions.push(piece1);
+            }
+            // Same initial direction horse moves share this square. Will be directly
+            // adjacent to moving piece.
+            const square2 = new GridIndices(from.i + sx, from.j + sy);
+            const piece2 = robotManager.indicesToIds.get(square2);
+            if (piece2 !== undefined) {
+                collisions.push(piece2);
+            }
+            break;
+        }
+    }
+    return collisions;
+}
+
+function findShimmyLocation(
+    pieceId: string,
+    move: Move,
+    collisionType: number,
+): Position {}
 
 function constructMoveCommand(
     pieceId: string,
@@ -37,13 +126,18 @@ function constructFinalCommand(
 
 // Takes in a move, and generates the commands required to get the main piece to it's destination
 // If there are pieces in the way, it shimmy's them out, and move them back after main piece passes
-function moveMainPiece(move: Move) {
+function moveMainPiece(move: Move): MovePiece {
     const moveCommands: AbsoluteMoveCommand[] = [];
     const rotateCommands: RelativeRotateCommand[] = [];
-    const collisions: string[] = detectCollisions(move);
+    const collisionType = calcCollisionType(move);
+    const collisions: string[] = detectCollisions(move, collisionType);
     for (let i = 0; i < collisions.length; i++) {
         const pieceId = collisions[i];
-        const location: Position = findShimmyLocation(pieceId, move);
+        const location: Position = findShimmyLocation(
+            pieceId,
+            move,
+            collisionType,
+        );
         moveCommands.push(constructMoveCommand(pieceId, location));
         rotateCommands.push(constructRotateCommand(pieceId, location));
     }
@@ -172,8 +266,6 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
                 }
             }
         }
-
-
     }
 
     const goHome: SequentialCommandGroup = new SequentialCommandGroup([]);
@@ -193,12 +285,12 @@ export function materializePath(move: Move): Command {
         if (capturePiece !== undefined) {
             const captureCommand: SequentialCommandGroup = returnToHome(
                 move.to,
-                capturePiece
+                capturePiece,
             );
             const mainCommand: MovePiece = moveMainPiece(move);
             const command: SequentialCommandGroup = new SequentialCommandGroup([
                 captureCommand,
-                mainCommand
+                mainCommand,
             ]);
             return command;
         }
