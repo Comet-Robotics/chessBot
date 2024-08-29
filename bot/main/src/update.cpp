@@ -152,7 +152,8 @@ void findUpdate()
 
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Firmware upgrade failed");
-        esp_restart();
+        //esp_restart();
+        return;
     }
 
     if (otaJson.containsKey("disabled")) {
@@ -212,7 +213,7 @@ void findUpdate()
         ESP_LOGI(TAG, "OTA Succeed, Rebooting...");
         esp_restart();
     } else {
-        ESP_LOGE(TAG, "Firmware upgrade failed");
+        ESP_LOGE(TAG, "Firmware upgrade failed to apply");
         esp_restart();
     }
 }
@@ -233,6 +234,7 @@ void launchUpdater()
 
     xTaskCreate(updater, "updater", CONFIG_TINYUSB_TASK_STACK_SIZE, nullptr, tskIDLE_PRIORITY, nullptr);
 
-    xEventGroupWaitBits(otaEvents, FIRST_OTA_CHECK_DONE, pdFALSE, pdTRUE, portMAX_DELAY);
+    // Wait on update to run
+    //xEventGroupWaitBits(otaEvents, FIRST_OTA_CHECK_DONE, pdFALSE, pdTRUE, portMAX_DELAY);
 }
 }; // namespace chessbot

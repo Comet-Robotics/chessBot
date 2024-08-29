@@ -1,0 +1,5 @@
+[wokwi]
+version = 1
+gdbServerPort = 3333
+elf = "build/chessbot.elf"
+firmware = 'build/flasher_args.json'

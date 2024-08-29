@@ -1,0 +1,25 @@
+{
+    "version": 1,
+    "editor": "wokwi",
+    "author": "Nicholas Karr <nick@karrmedia.com>",
+    "parts": [
+        {
+            "type": "board-esp32-s2-devkitm-1",
+            "id": "esp",
+            "top": 0.59,
+            "left": 0.67,
+            "attrs": {
+                "flashSize": "4",
+                "builder": "esp-idf"
+            }
+        }
+    ],
+    "connections": [
+        [ "esp:TX", "$serialMonitor:RX", "", [] ],
+        [ "esp:RX", "$serialMonitor:TX", "", [] ]
+    ],
+    "serialMonitor": {
+        "display": "terminal",
+        "convertEol": true
+    }
+}
