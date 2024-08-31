@@ -11,6 +11,7 @@
 namespace chessbot {
 // The config is a large array stored in flash that may be modified at will
 // Members can be added but never subtracted so that persisting earlier configs works
+// Each cell is 4 bytes
 
 enum class ConfigKey : uint32_t {
     MOTOR_A_PIN1 = 0,
@@ -37,9 +38,6 @@ enum class ConfigKey : uint32_t {
     // Accounts for both ticks per revolution and encoder direction
     // Example: -1 / 12000 for a 12kcpr encoder
     ENCODER_MULTIPLIER,
-
-    SERVER_IP,
-    SERVER_PORT,
 
     CONFIG_SIZE
 };

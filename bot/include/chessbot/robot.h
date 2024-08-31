@@ -20,12 +20,12 @@
 
 namespace chessbot {
 // Put the robot in a known state
-inline void safetyShutdown()
+inline void setGpioOff()
 {
     esp_ota_img_states_t state;
-    CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
+    //CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
 
-    if (state == ESP_OTA_IMG_PENDING_VERIFY) {
+    if (false) { //(state == ESP_OTA_IMG_PENDING_VERIFY) {
         // Don't do potentially dangerous GPIO while testing a new update
         return;
     } else {
@@ -39,6 +39,11 @@ inline void safetyShutdown()
         gpio_set_level(PINCONFIG(PHOTODIODE_BACK_LEFT), 0);
         gpio_set_level(PINCONFIG(PHOTODIODE_BACK_RIGHT), 0);
     }
+}
+
+// Emergency shutdown handler
+inline void safetyShutdown() {
+    setGpioOff();
 }
 
 // The state of a chess bot

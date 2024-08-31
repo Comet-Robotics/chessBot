@@ -129,6 +129,10 @@ void startWifi()
         NULL,
         &ipEventHandlerInstance));
 
+    // Wokwi
+    //wifi_config_t wifiConfig = {};
+    //strcpy((char*)wifiConfig.sta.ssid, "Wokwi-GUEST");
+
     wifi_config_t wifiConfig = {};
     // wifiConfig.sta.listen_interval =
     strcpy((char*)wifiConfig.sta.ssid, WIFI_SSID);
