@@ -41,7 +41,8 @@
           "espPythonPath": "${config:idf.pythonBinPathWin}",
           "espIdfPath": "${config:idf.espIdfPathWin}"
         }
-      }
+      },
+      "problemMatcher": []
     }
   ]
 }
