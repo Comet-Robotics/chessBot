@@ -2,7 +2,10 @@
     "name": "utd-chess-bots",
     "private": true,
     "version": "0.0.0",
-    "workspaces": ["src/client", "src/server"],
+    "workspaces": [
+        "src/client",
+        "src/server"
+    ],
     "scripts": {
         "dev": "nodemon src/server/main.ts",
         "start": "NODE_ENV=production ts-node ./src/server/main.ts",
@@ -36,5 +39,8 @@
         "typedoc": "^0.23.0",
         "vite": "^4.5.3",
         "vitest": "^1.5.0"
+    },
+    "optionalDependencies": {
+        "bufferutil": "^4.0.8"
     }
 }

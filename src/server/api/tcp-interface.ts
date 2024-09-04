@@ -190,6 +190,8 @@ export class TCPServer {
         const remoteAddress = socket.remoteAddress + ":" + socket.remotePort;
         console.log("New client connection from %s", remoteAddress);
 
+        socket.setNoDelay(true);
+
         const tunnel = new BotTunnel(
             socket,
             ((mac: string) => {

@@ -17,7 +17,8 @@
           "espPythonPath": "${config:idf.pythonBinPathWin}",
           "espIdfPath": "${config:idf.espIdfPathWin}"
         }
-      }
+      },
+      "problemMatcher": []
     },
     {
       "label": "Deploy OTA Update",
@@ -29,7 +30,8 @@
           "espPythonPath": "${config:idf.pythonBinPathWin}",
           "espIdfPath": "${config:idf.espIdfPathWin}"
         }
-      }
+      },
+      "problemMatcher": []
     },
     {
       "label": "Update DNS Entry",
@@ -43,6 +45,19 @@
         }
       },
       "problemMatcher": []
-    }
+    },
+    {
+      "label": "Deploy Serial Update",
+      "type": "shell",
+      "command": "${config:idf.pythonBinPathWin} support.py deploy",
+      "options": {
+        "env": {
+          "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
+          "espPythonPath": "${config:idf.pythonBinPathWin}",
+          "espIdfPath": "${config:idf.espIdfPathWin}"
+        }
+      },
+      "problemMatcher": []
+    },
   ]
 }
