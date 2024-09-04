@@ -1,12 +1,108 @@
 {
     "tcpServerPort": 3001,
     "bots": {
-        "48:27:e2:5d:c6:e8": "15",
-        "c0:4e:30:4b:68:76": "11"
+        "80:65:99:4A:87:FA": "15",
+        "C0:4E:30:4B:68:76": "11"
     },
-    "botAttributes": {
+    "botConfig": {
         "15": {
             "leftMotorK": "0"
         }
-    }
+    },
+    "possibleBotConfig": [
+        {
+            "name": "MOTOR_A_PIN1",
+            "type": "gpio",
+            "default_value": 33
+        },
+        {
+            "name": "MOTOR_A_PIN2",
+            "type": "gpio",
+            "default_value": 38
+        },
+        {
+            "name": "MOTOR_B_PIN1",
+            "type": "gpio",
+            "default_value": 39
+        },
+        {
+            "name": "MOTOR_B_PIN2",
+            "type": "gpio",
+            "default_value": 40
+        },
+
+        {
+            "name": "ENCODER_A_PIN1",
+            "type": "gpio",
+            "default_value": 32
+        },
+        {
+            "name": "ENCODER_A_PIN2",
+            "type": "gpio",
+            "default_value": 31
+        },
+        {
+            "name": "ENCODER_B_PIN1",
+            "type": "gpio",
+            "default_value": 18
+        },
+        {
+            "name": "ENCODER_B_PIN2",
+            "type": "gpio",
+            "default_value": 34
+        },
+
+        {
+            "name": "RELAY_IR_LED",
+            "type": "gpio",
+            "default_value": 15
+        },
+        {
+            "name": "PHOTODIODE_FRONT_LEFT",
+            "type": "gpio",
+            "default_value": 0,
+            "comment": "GPIO 1"
+        },
+        {
+            "name": "PHOTODIODE_FRONT_RIGHT",
+            "type": "gpio",
+            "default_value": 1,
+            "comment": "GPIO 2"
+        },
+        {
+            "name": "PHOTODIODE_BACK_LEFT",
+            "type": "gpio",
+            "default_value": 3,
+            "comment": "GPIO 4"
+        },
+        {
+            "name": "PHOTODIODE_BACK_RIGHT",
+            "type": "gpio",
+            "default_value": 5,
+            "comment": "GPIO 5"
+        },
+
+        {
+            "name": "WHEEL_DIAMETER_INCHES",
+            "type": "float",
+            "default_value": 4.375
+        },
+
+        {
+            "name": "MOTOR_A_DRIVE_MULTIPLIER",
+            "type": "float",
+            "default_value": -1.0
+        },
+        {
+            "name": "MOTOR_B_DRIVE_MULTIPLIER",
+            "type": "float",
+            "default_value": 1.0
+        },
+
+        {
+            "name": "ENCODER_MULTIPLIER",
+            "type": "float",
+            "default_value": -12000.0
+        }
+    ]
 }

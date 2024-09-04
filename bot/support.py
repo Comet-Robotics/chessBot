@@ -13,11 +13,31 @@ import time
 task = sys.argv[1]
 print('Doing task: ' + task)
 
-esptool = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'\components\esptool_py\esptool\esptool.py'
-idf = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'\tools\idf.py'
+esptool: str = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'\components\esptool_py\esptool\esptool.py'
+idf: str = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'\tools\idf.py'
 
 host = "root@192.168.3.1"
 webdir = "/opt/www"
+
+doBuild = True
+user: str | None = None
+password: str | None = None
+binaryLocation: str | None = None
+serialPort: str | None = None
+
+with open('./env.h', 'r') as f:
+    contents = f.read()
+    doBuild = re.search(r'do\-build=(.+)\n', contents).groups()[0] == 'true'
+    user = re.search(r'ota\-ssh\-user=(.+)\n', contents).groups()[0]
+    password = re.search(r'ota\-ssh\-password=(.+)\n', contents).groups()[0]
+    binaryLocation = re.search(r'binary\-location=(.+)\n', contents).groups()[0]
+    serialPort = re.search(r'esp32\-serial=(.+)\n', contents).groups()[0]
+
+if binaryLocation == None:
+    binaryLocation = '/build'
+
+if serialPort == None:
+    serialPort = '/dev/ttyUSB0'
 
 if task == 'ota-disable':
     # Upload new info.json
@@ -103,6 +123,16 @@ elif task == 'dns':
     signal = "killall -SIGHUP dnsmasq"
 
     os.system(f'ssh {host} -t "{sed};{signal}"')
+
+elif task == 'deploy':
+    command = (esptool + f" -p {serialPort} --chip esp32s2 write_flash --flash_size 4MB "
+        + f"0x1000 {binaryLocation}/bootloader/bootloader.bin "
+        + f"0x8000 {binaryLocation}/partition_table/partition-table.bin "
+        + f"0xd000 {binaryLocation}/ota_data_initial.bin "
+        + f"0x10000 {binaryLocation}/chessbot.bin")
+    
+    os.system(command)
+    
 
 else:
     print('Unsupported task!')
