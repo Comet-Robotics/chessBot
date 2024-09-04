@@ -114,7 +114,7 @@ void robotThread(void* robotPtr)
 
 void Robot::runThread()
 {
-    CHECK(xTaskCreate(robotThread, "robotThread", CONFIG_TINYUSB_TASK_STACK_SIZE, (void*)this, tskIDLE_PRIORITY + 1, &this->task) == pdPASS);
+    CHECK(xTaskCreate(robotThread, "robotThread", TaskStackSize::LARGE, (void*)this, TaskPriority::ROBOT, &this->task) == pdPASS);
 }
 
 }; // namespace chessbot

@@ -102,7 +102,7 @@ void netThread(void*)
 
 void startNetThread()
 {
-    xTaskCreate(netThread, "net", CONFIG_TINYUSB_TASK_STACK_SIZE, nullptr, TaskPriority::net, nullptr);
+    xTaskCreate(netThread, "net", TaskStackSize::LARGE, nullptr, TaskPriority::NET, nullptr);
     printf("Start net thread\n");
 }
 

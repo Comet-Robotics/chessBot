@@ -8,17 +8,14 @@
 #include <driver/gpio.h>
 
 #include <chessbot/unit.h>
+#include <chessbot/allocation.h>
 
 #define ONBOARD_LED GPIO_NUM_15
 
 namespace chessbot {
+bool activityLedIsOta = false;
+bool activityLedIsConnected = false;
 
-// Activity LED meanings:
-// 1000ms:  Disconnected
-// 50ms:    OTA Update
-// 5000ms:  Connected
-
-TickType_t activityLedDelay = 1000_ms;
 TaskHandle_t activityLedTask = nullptr;
 
 void run(void*)
@@ -27,7 +24,16 @@ void run(void*)
 
     while (true) {
         gpio_set_level(ONBOARD_LED, status = !status);
-        vTaskDelay(activityLedDelay);
+
+        if (activityLedIsOta) {
+            vTaskDelay(ACTIVITY_LED_DELAY_OTA);
+        }
+        else if (activityLedIsConnected) {
+            vTaskDelay(ACTIVITY_LED_DELAY_CONNECTED);
+        }
+        else {
+            vTaskDelay(ACTIVITY_LED_DELAY_DISCONNECTED);
+        }
     }
 }
 
@@ -37,7 +43,7 @@ void startActivityLed()
     gpio_set_direction(ONBOARD_LED, GPIO_MODE_OUTPUT);
     gpio_set_level(ONBOARD_LED, false);
 
-    xTaskCreate(run, "activityLed", configMINIMAL_STACK_SIZE, nullptr, tskIDLE_PRIORITY, &activityLedTask);
+    xTaskCreate(run, "activityLed", TaskStackSize::SMALL, nullptr, TaskPriority::LED, &activityLedTask);
 }
 
 void stopActivityLed()

@@ -5,6 +5,8 @@
 
 #include <driver/ledc.h>
 
+#include <chessbot/allocation.h>
+
 namespace chessbot {
 // Works on any GPIO pin through LEDC
 class PwmPin {

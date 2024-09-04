@@ -9,6 +9,7 @@
 #include <cstring>
 
 #include <chessbot/unit.h>
+#include <chessbot/allocation.h>
 
 #ifndef MIN
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -52,17 +53,6 @@ inline float frand()
 {
     return ((double)esp_random() / (RAND_MAX)) * 2 - 1;
 }
-
-struct TaskPriority {
-    static constexpr UBaseType_t idle = tskIDLE_PRIORITY;
-    static constexpr UBaseType_t update = idle;
-
-    static constexpr UBaseType_t net = idle + 1;
-
-    static constexpr UBaseType_t robot = idle + 2;
-
-    static constexpr UBaseType_t motor = idle + 3;
-};
 
 inline int hexCharToInt(char input)
 {

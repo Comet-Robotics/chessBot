@@ -10,9 +10,6 @@ namespace chessbot {
 // The ESP32-S2 only supports low speed mode (software emulation)
 #define LEDC_MODE LEDC_LOW_SPEED_MODE
 
-// We reserve the first LEDC timer for PWM
-#define LEDC_PWM_TIMER LEDC_TIMER_0
-
 #define LEDC_DUTY_RES LEDC_TIMER_13_BIT
 
 PwmPin::PwmPin(gpio_num_t pin)
@@ -26,7 +23,7 @@ PwmPin::PwmPin(gpio_num_t pin)
         // Prepare and then apply the LEDC PWM timer configuration
         ledc_timer_config_t timerConfig = {};
         timerConfig.speed_mode = LEDC_MODE;
-        timerConfig.timer_num = LEDC_PWM_TIMER;
+        timerConfig.timer_num = LedcMapping::PWM;
         timerConfig.duty_resolution = LEDC_DUTY_RES;
         timerConfig.freq_hz = 5000; // Set output frequency at 5 kHz
         timerConfig.clk_cfg = LEDC_AUTO_CLK;
@@ -37,7 +34,7 @@ PwmPin::PwmPin(gpio_num_t pin)
     ledc_channel_config_t channelConfig = {};
     channelConfig.speed_mode = LEDC_MODE;
     channelConfig.channel = this->channel;
-    channelConfig.timer_sel = LEDC_PWM_TIMER;
+    channelConfig.timer_sel = LedcMapping::PWM;
     channelConfig.intr_type = LEDC_INTR_DISABLE;
     channelConfig.gpio_num = pin;
     channelConfig.duty = 0; // Set duty to 0%

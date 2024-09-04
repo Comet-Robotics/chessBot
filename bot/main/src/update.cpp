@@ -13,6 +13,7 @@
 #include <chessbot/log.h>
 #include <chessbot/util.h>
 #include <chessbot/wireless.h>
+#include <chessbot/activityLed.h>
 
 #define TAG "update"
 
@@ -189,6 +190,8 @@ void doUpdateUpgrade()
         esp_ota_mark_app_valid_cancel_rollback();
     }
 
+    activityLedIsOta = true;
+
     printf("Updating to hash %s from hash ", hash);
     uint8_t currentHash[32];
     CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
@@ -207,6 +210,9 @@ void doUpdateUpgrade()
 
     memset(otaHttpResp, 0, sizeof(otaHttpResp));
     err = esp_https_ota(&otaConfig);
+
+    activityLedIsOta = false;
+
     if (err == ESP_OK) {
         // todo: wait for end of operation
         ESP_LOGI(TAG, "OTA Succeed, Rebooting...");
@@ -231,7 +237,7 @@ void launchUpdater()
 {
     otaEvents = xEventGroupCreate();
 
-    xTaskCreate(updater, "updater", CONFIG_TINYUSB_TASK_STACK_SIZE, nullptr, tskIDLE_PRIORITY, nullptr);
+    xTaskCreate(updater, "updater", TaskStackSize::LARGE, nullptr, TaskPriority::UPDATE, nullptr);
 
     // Wait on update to run
     xEventGroupWaitBits(otaEvents, FIRST_OTA_CHECK_DONE, pdFALSE, pdTRUE, portMAX_DELAY);
