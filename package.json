@@ -7,7 +7,7 @@
         "src/server"
     ],
     "scripts": {
-        "dev": "nodemon src/server/main.ts",
+        "dev": "nodemon -i . src/server/main.ts",
         "start": "NODE_ENV=production ts-node ./src/server/main.ts",
         "build": "vite build",
         "docs:build": "typedoc",
