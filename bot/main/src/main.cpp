@@ -10,6 +10,7 @@
 #include <soc/periph_defs.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <tusb.h>
 
 #include <chessbot/activityLed.h>
 #include <chessbot/adc.h>
@@ -19,6 +20,16 @@
 #include <chessbot/unit.h>
 #include <chessbot/update.h>
 #include <chessbot/wireless.h>
+
+#define MAX_FREQ    (CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ)
+
+#if CONFIG_XTAL_FREQ_40
+#define MIN_FREQ    10
+#elif CONFIG_XTAL_FREQ_32
+#define MIN_FREQ    8
+#elif CONFIG_XTAL_FREQ_26
+#define MIN_FREQ    13
+#endif
 
 // #define TEST
 
@@ -38,6 +49,15 @@ void consoleHello()
     for (int i = 0; i < 32; i++) {
         printf("%02x", currentHash[i]);
     }
+
+    // Check for USB serial
+    // As USB serial takes some time to attach, let it attach before any crashes
+    if (tud_cdc_connected()) {
+        for (int i = 0; i < 3; i++) {
+            printf("Starting...\n");
+            vTaskDelay(1_s);
+        }
+    }
 }
 
 #ifndef TEST
@@ -46,30 +66,28 @@ extern "C" void app_main()
 extern "C" void app_main_alt()
 #endif
 {
-    safetyShutdown();
+    // Turn off motors in case they were left on
+    setGpioOff();
 
-    consoleHello();
-
+    // Start at 1Hz for startup
     startActivityLed();
 
-    // If on USB and debugging
-    /*for (int i = 0; i < 3; i++) {
-        //printf("Starting...");
-        vTaskDelay(1_s);
-    }*/
+    consoleHello();
 
     startWifi();
     waitForWifiConnection();
     launchUpdater();
 
-    //setWifiSleepPolicy(SLEEP_MODE::MAX_MODEM_SLEEP);
+    setWifiSleepPolicy(SLEEP_MODE::LIGHT_SLEEP);
 
     esp_pm_config_t pm_config = {
         .max_freq_mhz = 160,
-        .min_freq_mhz = 40,
+        .min_freq_mhz = MIN_FREQ,
+#if CONFIG_FREERTOS_USE_TICKLESS_IDLE
         .light_sleep_enable = true
+#endif
     };
-    //CHECK(esp_pm_configure(&pm_config));
+    CHECK(esp_pm_configure(&pm_config));
 
     startNetThread();
 
@@ -79,33 +97,12 @@ extern "C" void app_main_alt()
     gpio_set_direction(PINCONFIG(RELAY_IR_LED), GPIO_MODE_OUTPUT);
     gpio_set_level(PINCONFIG(RELAY_IR_LED), false);
 
-    // gpio_set_level(PINCONFIG(RELAY_IR_LED), false);
-
-    // adcInitPin(ADC_CHANNEL_0);
-    // adcInitPin(ADC_CHANNEL_1);
-    // adcInitPin(ADC_CHANNEL_3);
-    // adcInitPin(ADC_CHANNEL_5);
-
-    // Robot robot; //(GPIO_NUM_38, GPIO_NUM_33);
-
     while (true) {
-        // printf("Hello world! %d %d %d %d\n", adcRead(ADC_CHANNEL_0), adcRead(ADC_CHANNEL_1),
-        // adcRead(ADC_CHANNEL_3), adcRead(ADC_CHANNEL_5));
         bool button = !gpio_get_level(GPIO_NUM_0);
         gpio_set_level(PINCONFIG(RELAY_IR_LED), button);
 
-        // robot.right.set(button ? 0 : frand());
-        // robot.left.set(button ? 0 : frand());
-
-        // std::cout << "setting high" << std::endl;
-
-        // robot.left.channelA.set(1.0);
-        // robot.left.channelB.set(1.0);
-        // robot.right.channelA.set(1.0);
-        // robot.right.channelB.set(1.0);
-
-        auto l = robot.lightLevels();
-        printf("Light Sensors: %d %d %d %d\n", l[0], l[1], l[2], l[3]);
+        //auto l = robot.lightLevels();
+        //printf("Light Sensors: %d %d %d %d\n", l[0], l[1], l[2], l[3]);
 
         vTaskDelay(1_s);
     }

@@ -12,6 +12,12 @@
 #define ONBOARD_LED GPIO_NUM_15
 
 namespace chessbot {
+
+// Activity LED meanings:
+// 1000ms:  Disconnected
+// 50ms:    OTA Update
+// 5000ms:  Connected
+
 TickType_t activityLedDelay = 1000_ms;
 TaskHandle_t activityLedTask = nullptr;
 
@@ -22,8 +28,6 @@ void run(void*)
     while (true) {
         gpio_set_level(ONBOARD_LED, status = !status);
         vTaskDelay(activityLedDelay);
-        // printf("Run\n");
-        // ESP_LOGD("", "running");
     }
 }
 

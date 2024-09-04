@@ -145,14 +145,13 @@ esp_err_t getJsonFromHost(const char* host)
     return ESP_OK;
 }
 
-void findUpdate()
+void doUpdateUpgrade()
 {
     printf("Seeking json from host %s\n", updateServer);
     auto err = getJsonFromHost(updateServer);
 
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Firmware upgrade failed");
-        //esp_restart();
         return;
     }
 
@@ -223,7 +222,7 @@ void updater(void* params)
     waitForWifiConnection();
 
     while (true) {
-        findUpdate();
+        doUpdateUpgrade();
         vTaskDelay(pdMS_TO_TICKS(checkFreq * 1000));
     }
 }
@@ -235,6 +234,6 @@ void launchUpdater()
     xTaskCreate(updater, "updater", CONFIG_TINYUSB_TASK_STACK_SIZE, nullptr, tskIDLE_PRIORITY, nullptr);
 
     // Wait on update to run
-    //xEventGroupWaitBits(otaEvents, FIRST_OTA_CHECK_DONE, pdFALSE, pdTRUE, portMAX_DELAY);
+    xEventGroupWaitBits(otaEvents, FIRST_OTA_CHECK_DONE, pdFALSE, pdTRUE, portMAX_DELAY);
 }
 }; // namespace chessbot

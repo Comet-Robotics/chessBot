@@ -48,16 +48,18 @@ template <typename ValT = uint32_t>
 ValT getConfig(ConfigKey key)
 {
     CHECK(key < ConfigKey::CONFIG_SIZE);
-
     int32_t ikey = (int32_t)key;
+
     return bitcast<ValT>(configStore[ikey]);
 }
 
 template <typename ValT = uint32_t>
 void setConfig(ConfigKey key, ValT val)
 {
-    // this is considerably less simple to implement
-    FAIL();
+    CHECK(key < ConfigKey::CONFIG_SIZE);
+    int32_t ikey = (int32_t)key;
+
+    configStore[ikey] = bitcast<uint32_t>(val);
 }
 
 #define PINCONFIG(target) (getConfig<gpio_num_t>(ConfigKey::target))

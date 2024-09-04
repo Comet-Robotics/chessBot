@@ -94,7 +94,7 @@ void ipEventHandler(void* arg, esp_event_base_t eBase,
 void startWifi()
 {
     wifiEvents = xEventGroupCreate();
-
+    
     // Initialize NVS
     // Variables such as the used SSID will be stored automatically, but they will be overwritten since
     // the SSID is currently fixed in the source code at boot
@@ -140,6 +140,8 @@ void startWifi()
     wifiConfig.sta.scan_method = WIFI_ALL_CHANNEL_SCAN; // Scan all channels, must be enabled to retry a single station multiple times
     wifiConfig.sta.rm_enabled = 1; // Collect stats, maybe?
     wifiConfig.sta.failure_retry_cnt = 10;
+    wifiConfig.sta.listen_interval = 50; // In max modem sleep, connect every 5s (100ms * 50)
+    
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifiConfig));
@@ -150,11 +152,19 @@ void startWifi()
 
 void setWifiSleepPolicy(SLEEP_MODE mode)
 {
-    if (mode == SLEEP_MODE::MAX_MODEM_SLEEP) {
-        esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
-    } else if (mode == SLEEP_MODE::ACTIVE) {
-        // upclock?
+    if (mode == SLEEP_MODE::ACTIVE) {
         esp_wifi_set_ps(WIFI_PS_NONE);
+    }
+    else if (mode == SLEEP_MODE::LIGHT_SLEEP) {
+        esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
+    }
+    else if (mode == SLEEP_MODE::LIGHT_SLEEP) {
+        esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
+    }
+    else if (mode == SLEEP_MODE::LIGHT_SLEEP) {
+        esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
+
+        // downclock and light-sleep
     }
 }
 }; // namespace chessbot

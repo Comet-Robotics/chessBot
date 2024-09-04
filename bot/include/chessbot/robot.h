@@ -23,9 +23,9 @@ namespace chessbot {
 inline void setGpioOff()
 {
     esp_ota_img_states_t state;
-    //CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
+    CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
 
-    if (false) { //(state == ESP_OTA_IMG_PENDING_VERIFY) {
+    if (state == ESP_OTA_IMG_PENDING_VERIFY) {
         // Don't do potentially dangerous GPIO while testing a new update
         return;
     } else {

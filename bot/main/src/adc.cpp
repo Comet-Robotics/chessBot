@@ -71,7 +71,7 @@ void adcInitPin(adc_channel_t channel, adc_atten_t atten)
     CHECK(adc_oneshot_config_channel(adcHandle, channel, &config));
 
     adc1_cali_chan0_handle = NULL;
-    bool do_calibration1_chan0 = example_adc_calibration_init(ADC_UNIT_1, channel, atten, &adc1_cali_chan0_handle);
+    CHECK(example_adc_calibration_init(ADC_UNIT_1, channel, atten, &adc1_cali_chan0_handle));
 }
 
 int adcRead(adc_channel_t channel)

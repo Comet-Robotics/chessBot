@@ -2,6 +2,7 @@
 
 #include <esp_log.h>
 
+#include <charconv>
 #include <ArduinoJson.h>
 
 #include <chessbot/robot.h>
@@ -78,7 +79,33 @@ void robotThread(void* robotPtr)
             uint32_t version = json["protocol"];
             (void)version;
 
-            // Ignore it, we should be up to date through OTA already
+            JsonArray config = json["config"];
+
+            ConfigKey key = ConfigKey(0);
+            for (JsonVariantConst i : config) {
+                std::string_view type = i[0];
+                std::string_view value = i[1];
+
+                if (type == "gpio" || type == "int32") {
+                    int val = -1;
+                    auto [ptr, ec] = std::from_chars(value.begin(), value.end() - 1, val);
+                    CHECK(ec == std::errc());
+                    
+                    setConfig(key, val);
+                }
+                else if (type == "float") {
+                    float val = -1;
+                    auto [ptr, ec] = std::from_chars(value.begin(), value.end() - 1, val);
+                    CHECK(ec == std::errc());
+                    
+                    setConfig(key, val);
+                }
+                else {
+                    CHECK(false);
+                }
+
+                key = ConfigKey(int(key) + 1);
+            }
         }
 
         vTaskDelay(1_ms);
