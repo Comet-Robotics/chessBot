@@ -15,9 +15,21 @@ import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
 import { Square } from "chess.js";
 
-function calcCollisionType(move: Move): number {
-    const from: GridIndices = GridIndices.squareToGrid(move.from);
-    const to: GridIndices = GridIndices.squareToGrid(move.to);
+export interface GridMove {
+    from: GridIndices;
+    to: GridIndices;
+}
+
+function moveToGridMove(move: Move): GridMove {
+    return {
+        from: GridIndices.squareToGrid(move.from),
+        to: GridIndices.squareToGrid(move.to),
+    };
+}
+
+function calcCollisionType(gridMove: GridMove): number {
+    const from = gridMove.from;
+    const to = gridMove.to;
 
     // Horizontal
     if (from.i === to.i) {
@@ -36,9 +48,9 @@ function calcCollisionType(move: Move): number {
     }
 }
 
-function detectCollisions(move: Move, collisionType: number): string[] {
-    const from: GridIndices = GridIndices.squareToGrid(move.from);
-    const to: GridIndices = GridIndices.squareToGrid(move.from);
+function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
+    const from = gridMove.from;
+    const to = gridMove.to;
     const collisions: string[] = [];
     switch (collisionType) {
         // Horizontal
@@ -184,8 +196,11 @@ function constructFinalCommand(
 function moveMainPiece(move: Move): MovePiece {
     const moveCommands: AbsoluteMoveCommand[] = [];
     const rotateCommands: RelativeRotateCommand[] = [];
-    const collisionType = calcCollisionType(move);
-    const collisions: string[] = detectCollisions(move, collisionType);
+    const collisionType = calcCollisionType(moveToGridMove(move));
+    const collisions: string[] = detectCollisions(
+        moveToGridMove(move),
+        collisionType,
+    );
     for (let i = 0; i < collisions.length; i++) {
         const pieceId = collisions[i];
         const location = findShimmyLocation(pieceId, move, collisionType);
@@ -256,7 +271,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
                 first = false;
                 direction = 1;
             } else {
-                let d = getDistance(capturedPiece.i, 1, home.i, home.j);
+                const d = getDistance(capturedPiece.i, 1, home.i, home.j);
                 if (d < shortestDistance) {
                     shortestDistance = d;
                     direction = 1;
@@ -274,7 +289,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
                 first = false;
                 direction = 2;
             } else {
-                let d = getDistance(capturedPiece.i, 10, home.i, home.j);
+                const d = getDistance(capturedPiece.i, 10, home.i, home.j);
                 if (d < shortestDistance) {
                     shortestDistance = d;
                     direction = 2;
@@ -292,7 +307,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
                 first = false;
                 direction = 3;
             } else {
-                let d = getDistance(1, capturedPiece.j, home.i, home.j);
+                const d = getDistance(1, capturedPiece.j, home.i, home.j);
                 if (d < shortestDistance) {
                     shortestDistance = d;
                     direction = 3;
@@ -310,7 +325,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
                 first = false;
                 direction = 4;
             } else {
-                let d = getDistance(11, capturedPiece.j, home.i, home.j);
+                const d = getDistance(11, capturedPiece.j, home.i, home.j);
                 if (d < shortestDistance) {
                     shortestDistance = d;
                     direction = 4;

@@ -84,7 +84,7 @@ export class ChessEngine {
 
     /**
      * Determines if a move results in a capture
-     * with no special shenanigans. 
+     * with no special shenanigans.
      * Assumes that chess hasn't been updated yet
      * @param move - The Move to analyze.
      * @returns true if the move is a Capture
@@ -94,7 +94,7 @@ export class ChessEngine {
     }
 
     /**
-     * Determines if a move is a Queen Side Castle. 
+     * Determines if a move is a Queen Side Castle.
      * Assumes that chess hasn't been updated yet
      * @param move - The Move to analyze.
      * @returns true if the move is a Queen Side Castle
