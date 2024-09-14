@@ -42,9 +42,9 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                     intent="danger"
                     onClick={async () => {
                         props.sendMessage(
-                            new StopGameMessage(
-                                StopGameReason.ABORTED,
-                            ).toJson(),
+                            new GameInterruptedMessage(
+                                GameInterruptedReason.ABORTED, // TODO change to either WHITE_RESIGNED or BLACK_RESIGNED
+                            ),
                         );
                     }}
                 />
