@@ -19,16 +19,19 @@ function calcCollisionType(move: Move): number {
     const from: GridIndices = GridIndices.squareToGrid(move.from);
     const to: GridIndices = GridIndices.squareToGrid(move.to);
 
-    // Horizontal or Vertical (No collisions except potential capture piece)
-    if (from.i === to.i || from.j === to.j) {
+    // Horizontal
+    if (from.i === to.i) {
         return 0;
+        // Vertical
+    } else if (from.j === to.j) {
+        return 1;
     } else {
         // Diagonal
         if (Math.abs(from.i - to.i) === Math.abs(from.j - to.j)) {
-            return 1;
+            return 2;
             // Horse
         } else {
-            return 2;
+            return 3;
         }
     }
 }
@@ -38,8 +41,50 @@ function detectCollisions(move: Move, collisionType: number): string[] {
     const to: GridIndices = GridIndices.squareToGrid(move.from);
     const collisions: string[] = [];
     switch (collisionType) {
-        // Diagonal
+        // Horizontal
+        case 0: {
+            if (to.i < from.i) {
+                for (let i = from.i; i > to.i; i--) {
+                    const square = new GridIndices(i, from.j);
+                    const piece = robotManager.indicesToIds.get(square);
+                    if (piece !== undefined) {
+                        collisions.push(piece);
+                    }
+                }
+            } else {
+                for (let i = from.i; i < to.i; i++) {
+                    const square = new GridIndices(i, from.j);
+                    const piece = robotManager.indicesToIds.get(square);
+                    if (piece !== undefined) {
+                        collisions.push(piece);
+                    }
+                }
+            }
+            break;
+        }
+        // Vertical
         case 1: {
+            if (to.j < from.j) {
+                for (let j = from.j; j > to.j; j--) {
+                    const square = new GridIndices(from.i, j);
+                    const piece = robotManager.indicesToIds.get(square);
+                    if (piece !== undefined) {
+                        collisions.push(piece);
+                    }
+                }
+            } else {
+                for (let j = from.j; j < to.j; j++) {
+                    const square = new GridIndices(from.i, j);
+                    const piece = robotManager.indicesToIds.get(square);
+                    if (piece !== undefined) {
+                        collisions.push(piece);
+                    }
+                }
+            }
+            break;
+        }
+        // Diagonal
+        case 2: {
             // Will be either positive or negative depending on direction
             const dx = to.i - from.i;
             const dy = to.j - from.j;
@@ -73,7 +118,7 @@ function detectCollisions(move: Move, collisionType: number): string[] {
             break;
         }
         // Horse
-        case 2: {
+        case 3: {
             // Will be either positive or negative depending on direction
             const dx = to.i - from.i;
             const dy = to.j - from.j;
