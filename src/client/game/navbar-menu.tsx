@@ -35,6 +35,19 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                         );
                     }}
                 />
+                <Button
+                    icon="flag"
+                    minimal
+                    text="Resign"
+                    intent="danger"
+                    onClick={async () => {
+                        props.sendMessage(
+                            new StopGameMessage(
+                                StopGameReason.ABORTED,
+                            ).toJson(),
+                        );
+                    }}
+                />
             </NavbarGroup>
             <NavbarGroup align="right">
                 <Button icon="cog" minimal onClick={() => navigate("/debug")} />
