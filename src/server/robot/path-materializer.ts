@@ -158,12 +158,20 @@ function findShimmyLocation(
 function constructMoveCommand(
     pieceId: string,
     location: Position,
-): AbsoluteMoveCommand {}
+): AbsoluteMoveCommand {
+    return new AbsoluteMoveCommand(pieceId, location);
+}
 
 function constructRotateCommand(
     pieceId: string,
     location: Position,
-): RelativeRotateCommand {}
+): RelativeRotateCommand {
+    const robot = robotManager.getRobot(pieceId);
+    const x = location.x - robot.position.x;
+    const y = location.y - robot.position.y;
+    const angle = Math.atan2(x, y);
+    return new RelativeRotateCommand(pieceId, angle);
+}
 
 function constructFinalCommand(
     move: Move,
