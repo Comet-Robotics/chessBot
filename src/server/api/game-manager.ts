@@ -158,6 +158,9 @@ export class ComputerGameManager extends GameManager {
             setTimeout(() => {
                 this.socketManager.sendToSocket(id, new MoveMessage(move));
             }, this.MINIMUM_DELAY - elapsedTime);
+            if (this.isGameEnded()) {
+                SaveManager.endGame(id, "ai");
+            }
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             SaveManager.endGame(id, "ai");
