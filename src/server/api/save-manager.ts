@@ -10,10 +10,14 @@
  * Modified: 9/20/24
  */
 
+import { Side } from "../../common/game-types";
+
 //Save files contain a date in ms and pgn string
 export interface iSave {
     date: number;
-    pgn: string;
+    hostWhite: boolean;
+    aiDifficulty: number;
+    game: string;
 }
 
 export class SaveManager {
@@ -27,10 +31,42 @@ export class SaveManager {
      * Input: host id, client id, game pgn
      * Output: boolean competed
      */
-    public static saveGame(hostId: string, clientID: string, pgn: string) {
-        const date = new Date().getTime();
-        const saveContents = { date, pgn } as iSave;
-        FileManager.writeFile(hostId + "+" + clientID, saveContents);
+    public static saveGame(
+        hostId: string,
+        clientID: string,
+        hostSide: Side,
+        aiDiff: number,
+        pgn: string,
+    ) {
+        const day = new Date().getTime();
+        const side = hostSide === Side.WHITE ? true : false;
+        const saveContents = {
+            date: day,
+            hostWhite: side,
+            aiDifficulty: aiDiff,
+            game: pgn,
+        };
+        return FileManager.writeFile(hostId + "+" + clientID, saveContents);
+    }
+
+    /*
+     * Find Game
+     *
+     * takes a single id and searches for the save file
+     *
+     * Input: id, game pgn
+     * Ouput: string file name
+     */
+    public static findGame(id: string): string {
+        const entryNames = FileManager.getFileNames();
+        let entryFound;
+        for (const e of entryNames) {
+            if (e.indexOf(id) !== -1) {
+                entryFound = e;
+                break;
+            }
+        }
+        return entryFound;
     }
 
     /*
@@ -39,22 +75,22 @@ export class SaveManager {
      * Locates and returns save based on id
      *
      * Input: id
-     * Output: pgn
+     * Output: iSave
      */
-    public static loadGame(id: string): string {
+    public static loadGame(id: string): undefined | iSave {
         const entryNames = FileManager.getFileNames();
         let entryFound;
         for (const e of entryNames) {
-            if (e.includes(id)) {
+            if (e.indexOf(id) !== -1) {
                 entryFound = e;
                 break;
             }
         }
-        const save = FileManager.loadFile(entryFound);
-        if (entryFound && save.pgn) {
-            return save.pgn;
+        if (entryFound) {
+            const save = FileManager.loadFile(entryFound);
+            return save;
         }
-        return "";
+        return;
     }
 
     /*
@@ -99,7 +135,7 @@ export class SaveManager {
  *
  */
 export class FileManager {
-    private static FilePath = "../saves";
+    private static FilePath = "src/server/saves";
     private static fs = require("fs");
 
     /*
@@ -114,13 +150,18 @@ export class FileManager {
      */
     public static writeFile(saveName: string, saveContents: iSave) {
         try {
-            this.fs.writeFileSync(saveName, saveContents, { flag: "w" });
+            this.fs.writeFileSync(
+                this.FilePath + "/" + saveName,
+                JSON.stringify(saveContents),
+                { flag: "w" },
+            );
             return true;
-        } catch {
+        } catch (e) {
+            console.log(e);
             return false;
         }
     }
-
+    "";
     /*
      * loadFile
      *
@@ -130,9 +171,8 @@ export class FileManager {
      * Output: iSave
      */
     public static loadFile(fileName: string): iSave {
-        this.fs.readFile(this.FilePath + "/" + fileName, (err, input) => {
-            return JSON.parse(input.toString());
-        });
+        const a = this.fs.readFileSync(this.FilePath + "/" + fileName);
+        if (a) return JSON.parse(a);
         return {} as iSave;
     }
 
@@ -145,11 +185,12 @@ export class FileManager {
      */
     public static getFileNames(): string[] {
         const fileNames: string[] = [];
-        this.fs.readdir(this.FilePath, (err, files) => {
-            files.array.forEach((file) => {
-                fileNames.push(file);
-            });
+        const files = this.fs.readdirSync(this.FilePath);
+
+        files.forEach((file) => {
+            fileNames.push(file);
         });
+
         return fileNames;
     }
 

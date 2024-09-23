@@ -20,6 +20,7 @@ import {
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
 import { IS_DEVELOPMENT } from "../utils/env";
+import { SaveManager } from "./save-manager";
 
 const tcpServer = new TCPServer();
 
@@ -57,6 +58,25 @@ export const apiRouter = Router();
 
 apiRouter.get("/client-information", (req, res) => {
     const clientType = clientManager.getClientType(req.cookies.id);
+    //loading saves from file if found
+    const oldSave = SaveManager.loadGame(req.cookies.id);
+    if (oldSave) {
+        if (oldSave.aiDifficulty !== -1) {
+            gameManager = new ComputerGameManager(
+                new ChessEngine(oldSave.game),
+                socketManager,
+                oldSave.hostWhite ? Side.WHITE : Side.BLACK,
+                oldSave.aiDifficulty,
+            );
+        } else {
+            gameManager = new HumanGameManager(
+                new ChessEngine(oldSave.game),
+                socketManager,
+                oldSave.hostWhite ? Side.WHITE : Side.BLACK,
+                clientManager,
+            );
+        }
+    }
     /**
      * Note the client currently redirects to home from the game over screen
      * So removing the isGameEnded check here results in an infinite loop
