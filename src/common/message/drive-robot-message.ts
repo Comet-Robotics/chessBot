@@ -1,5 +1,8 @@
 import { Message, MessageType } from "./message";
 
+/**
+ * A message including left and right motor power
+ */
 export class DriveRobotMessage extends Message {
     constructor(
         public readonly id: string,

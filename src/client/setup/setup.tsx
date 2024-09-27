@@ -11,13 +11,11 @@ enum SetupType {
     HUMAN = "human",
     PUZZLE = "puzzle",
 }
-/*
- * The setup route
- *
- * Shows the host choices on what type of game to play
- * Includes, computer, human, and puzzles
- * Also includes the debug button forwarding to /debug
- *
+
+/**
+ * Lets the host choose a game type and includes the debug button
+ * 
+ * @returns - A setup base with the proper setup dialog
  */
 export function Setup(): JSX.Element {
     const [setupType, setSetupType] = useState(SetupType.MAIN);

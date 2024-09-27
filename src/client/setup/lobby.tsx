@@ -6,12 +6,10 @@ import { useSocket, useEffectQuery, get } from "../api";
 import { ClientType } from "../../common/client-types";
 import { Navigate } from "react-router-dom";
 
-/** 
- * The lobby route
- *
- * @remarks
- * If a game is active, go to the game
- * If there is no active game, either create one or wait for one to be created
+/**
+ * check for an active game and waits for one or forwards to setup
+ * 
+ * @returns - a setup base with the loading screen or a redirect to /game
  */
 export function Lobby() {
     const { isPending, data } = useEffectQuery("client-information", () =>

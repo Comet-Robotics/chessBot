@@ -16,11 +16,10 @@ interface SetupGameProps {
 }
 
 /**
- * Creates the buttons for the difficulty slider and side selection
+ * Creates the dialog for setting up human and computer games
  * 
- * Forwards the host's choices to /start-{computer|human}-game
- * 
- * Navigates to /game after the game has been chosen
+ * @param props - the chosen game type
+ * @returns - setup dialog
  */
 export function SetupGame(props: SetupGameProps) {
     const navigate = useNavigate();
@@ -56,12 +55,14 @@ export function SetupGame(props: SetupGameProps) {
             "Play Against the Computer"
         :   "Setup Game";
 
+    //handles passing user choices to the api
     const submit = (
         <Button
             text="Play"
             icon="arrow-right"
             intent="primary"
             onClick={async () => {
+                //convert the side selected to the side enum
                 let selectedSide: Side;
                 if (desiredSide === DesiredSide.RANDOM) {
                     selectedSide =
@@ -73,6 +74,7 @@ export function SetupGame(props: SetupGameProps) {
                         :   Side.BLACK;
                 }
 
+                //pass the user choice to api
                 let promise: Promise<unknown>;
                 if (props.gameType === GameType.COMPUTER) {
                     promise = post("/start-computer-game", {
@@ -113,6 +115,12 @@ interface DifficultySliderProps {
     onDifficultyChange: Dispatch<Difficulty>;
 }
 
+/**
+ * Creates a difficulty slider from 0 to 3
+ * 
+ * @param props - difficulty change handler
+ * @returns - slider
+ */
 function DifficultySlider(props: DifficultySliderProps) {
     return (
         <>

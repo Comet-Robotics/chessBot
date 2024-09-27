@@ -28,9 +28,22 @@ export function oppositeSide(side: Side) {
     return side === Side.WHITE ? Side.BLACK : Side.WHITE;
 }
 
+/**
+ * I assume this is for orienting the board
+ * 
+ * That being said, it instead assigns a degree value to the current side and probably breaks things
+ * There is no references to this function within the code, so it may have been deprecated
+ * 
+ * @param side the current side
+ * @returns 
+ */
 export function getStartHeading(side: Side) {
     return side === Side.WHITE ? 90 * DEGREE : 270 * DEGREE;
 }
+
+/**
+ * holds the piece side, type, robot, and square
+ */
 export class Piece {
     constructor(
         public readonly side: Side,
@@ -40,6 +53,9 @@ export class Piece {
     ) {}
 }
 
+/**
+ * the movement shown as FROM one square TO another, and if it is a promotion
+ */
 export interface Move {
     from: Square;
     to: Square;
