@@ -4,269 +4,390 @@
         "48:27:e2:5d:c6:e8": "robot-15",
         "c0:4e:30:4b:68:76": "robot-11"
     },
-    "botAttributes": {
-        "robot-15": {
-            "leftMotorK": "0"
+
+    "robot-1": {
+        "attributes": {},
+        "homePosition": {
+            "x": "2",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "2",
+            "y": "2"
         }
     },
-    "botDefaultPositions": {
-        "robot-1": {
-            "x": "2",
-            "y": "2"
+
+    "robot-2": {
+        "attributes": {},
+        "homePosition": {
+            "x": "3",
+            "y": "0"
         },
-        "robot-2": {
+        "defaultPosition": {
             "x": "3",
             "y": "2"
-        },
-        "robot-3": {
-            "x": "4",
-            "y": "2"
-        },
-        "robot-4": {
-            "x": "5",
-            "y": "2"
-        },
-        "robot-5": {
-            "x": "6",
-            "y": "2"
-        },
-        "robot-6": {
-            "x": "7",
-            "y": "2"
-        },
-        "robot-7": {
-            "x": "8",
-            "y": "2"
-        },
-        "robot-8": {
-            "x": "9",
-            "y": "2"
-        },
-        "robot-9": {
-            "x": "2",
-            "y": "3"
-        },
-        "robot-10": {
-            "x": "3",
-            "y": "3"
-        },
-        "robot-11": {
-            "x": "4",
-            "y": "3"
-        },
-        "robot-12": {
-            "x": "5",
-            "y": "3"
-        },
-        "robot-13": {
-            "x": "6",
-            "y": "3"
-        },
-        "robot-14": {
-            "x": "7",
-            "y": "3"
-        },
-        "robot-15": {
-            "x": "8",
-            "y": "3"
-        },
-        "robot-16": {
-            "x": "9",
-            "y": "3"
-        },
-        "robot-17": {
-            "x": "2",
-            "y": "8"
-        },
-        "robot-18": {
-            "x": "3",
-            "y": "8"
-        },
-        "robot-19": {
-            "x": "4",
-            "y": "8"
-        },
-        "robot-20": {
-            "x": "5",
-            "y": "8"
-        },
-        "robot-21": {
-            "x": "6",
-            "y": "8"
-        },
-        "robot-22": {
-            "x": "7",
-            "y": "8"
-        },
-        "robot-23": {
-            "x": "8",
-            "y": "8"
-        },
-        "robot-24": {
-            "x": "9",
-            "y": "8"
-        },
-        "robot-25": {
-            "x": "2",
-            "y": "9"
-        },
-        "robot-26": {
-            "x": "3",
-            "y": "9"
-        },
-        "robot-27": {
-            "x": "4",
-            "y": "9"
-        },
-        "robot-28": {
-            "x": "5",
-            "y": "9"
-        },
-        "robot-29": {
-            "x": "6",
-            "y": "9"
-        },
-        "robot-30": {
-            "x": "7",
-            "y": "9"
-        },
-        "robot-31": {
-            "x": "8",
-            "y": "9"
-        },
-        "robot-32": {
-            "x": "9",
-            "y": "9"
         }
     },
-    "botHomePositions": {
-        "robot-1": {
-            "x": "2",
-            "y": "0"
-        },
-        "robot-2": {
-            "x": "3",
-            "y": "0"
-        },
-        "robot-3": {
+
+    "robot-3": {
+        "attributes": {},
+        "homePosition": {
             "x": "4",
             "y": "0"
         },
-        "robot-4": {
+        "defaultPosition": {
+            "x": "4",
+            "y": "2"
+        }
+    },
+
+    "robot-4": {
+        "attributes": {},
+        "homePosition": {
             "x": "5",
             "y": "0"
         },
-        "robot-5": {
+        "defaultPosition": {
+            "x": "5",
+            "y": "2"
+        }
+    },
+
+    "robot-5": {
+        "attributes": {},
+        "homePosition": {
             "x": "6",
             "y": "0"
         },
-        "robot-6": {
+        "defaultPosition": {
+            "x": "6",
+            "y": "2"
+        }
+    },
+
+    "robot-6": {
+        "attributes": {},
+        "homePosition": {
             "x": "7",
             "y": "0"
         },
-        "robot-7": {
+        "defaultPosition": {
+            "x": "7",
+            "y": "2"
+        }
+    },
+
+    "robot-7": {
+        "attributes": {},
+        "homePosition": {
             "x": "8",
             "y": "0"
         },
-        "robot-8": {
+        "defaultPosition": {
+            "x": "8",
+            "y": "2"
+        }
+    },
+
+    "robot-8": {
+        "attributes": {},
+        "homePosition": {
             "x": "9",
             "y": "0"
         },
-        "robot-9": {
+        "defaultPosition": {
+            "x": "9",
+            "y": "2"
+        }
+    },
+
+    "robot-9": {
+        "attributes": {},
+        "homePosition": {
             "x": "0",
             "y": "2"
         },
-        "robot-10": {
+        "defaultPosition": {
+            "x": "2",
+            "y": "3"
+        }
+    },
+
+    "robot-10": {
+        "attributes": {},
+        "homePosition": {
             "x": "0",
             "y": "3"
         },
-        "robot-11": {
+        "defaultPosition": {
+            "x": "3",
+            "y": "3"
+        }
+    },
+
+    "robot-11": {
+        "attributes": {},
+        "homePosition": {
             "x": "0",
             "y": "4"
         },
-        "robot-12": {
+        "defaultPosition": {
+            "x": "4",
+            "y": "3"
+        }
+    },
+
+    "robot-12": {
+        "attributes": {},
+        "homePosition": {
             "x": "0",
             "y": "5"
         },
-        "robot-13": {
+        "defaultPosition": {
+            "x": "5",
+            "y": "3"
+        }
+    },
+
+    "robot-13": {
+        "attributes": {},
+        "homePosition": {
             "x": "11",
             "y": "5"
         },
-        "robot-14": {
+        "defaultPosition": {
+            "x": "11",
+            "y": "4"
+        }
+    },
+
+    "robot-14": {
+        "attributes": {},
+        "homePosition": {
             "x": "11",
             "y": "4"
         },
-        "robot-15": {
+        "defaultPosition": {
+            "x": "7",
+            "y": "3"
+        }
+    },
+
+    "robot-15": {
+        "attributes": {"leftMotorK": "0"},
+        "homePosition": {
             "x": "11",
             "y": "3"
         },
-        "robot-16": {
+        "defaultPosition": {
+            "x": "8",
+            "y": "3"
+        }
+    },
+
+    "robot-16": {
+        "attributes": {},
+        "homePosition": {
             "x": "11",
             "y": "2"
         },
-        "robot-17": {
+        "defaultPosition": {
+            "x": "9",
+            "y": "3"
+        }
+    },
+
+    "robot-17": {
+        "attributes": {},
+        "homePosition": {
             "x": "0",
             "y": "9"
         },
-        "robot-18": {
+        "defaultPosition": {
+            "x": "2",
+            "y": "8"
+        }
+    },
+
+    "robot-18": {
+        "attributes": {},
+        "homePosition": {
             "x": "0",
             "y": "8"
         },
-        "robot-19": {
+        "defaultPosition": {
+            "x": "3",
+            "y": "8"
+        }
+    },
+
+    "robot-19": {
+        "attributes": {},
+        "homePosition": {
             "x": "0",
             "y": "7"
         },
-        "robot-20": {
+        "defaultPosition": {
+            "x": "4",
+            "y": "8"
+        }
+    },
+
+    "robot-20": {
+        "attributes": {},
+        "homePosition": {
             "x": "0",
             "y": "6"
         },
-        "robot-21": {
+        "defaultPosition": {
+            "x": "5",
+            "y": "8"
+        }
+    },
+
+    "robot-21": {
+        "attributes": {},
+        "homePosition": {
             "x": "11",
             "y": "6"
         },
-        "robot-22": {
+        "defaultPosition": {
+            "x": "6",
+            "y": "8"
+        }
+    },
+
+    "robot-22": {
+        "attributes": {},
+        "homePosition": {
             "x": "11",
             "y": "7"
         },
-        "robot-23": {
+        "defaultPosition": {
+            "x": "7",
+            "y": "8"
+        }
+    },
+
+    "robot-23": {
+        "attributes": {},
+        "homePosition": {
             "x": "11",
             "y": "8"
         },
-        "robot-24": {
+        "defaultPosition": {
+            "x": "8",
+            "y": "8"
+        }
+    },
+
+    "robot-24": {
+        "attributes": {},
+        "homePosition": {
             "x": "11",
             "y": "9"
         },
-        "robot-25": {
+        "defaultPosition": {
+            "x": "9",
+            "y": "8"
+        }
+    },
+
+    "robot-25": {
+        "attributes": {},
+        "homePosition": {
             "x": "2",
             "y": "11"
         },
-        "robot-26": {
+        "defaultPosition": {
+            "x": "2",
+            "y": "9"
+        }
+    },
+
+    "robot-26": {
+        "attributes": {},
+        "homePosition": {
             "x": "3",
             "y": "11"
         },
-        "robot-27": {
+        "defaultPosition": {
+            "x": "3",
+            "y": "9"
+        }
+    },
+
+    "robot-27": {
+        "attributes": {},
+        "homePosition": {
             "x": "4",
             "y": "11"
         },
-        "robot-28": {
+        "defaultPosition": {
+            "x": "4",
+            "y": "9"
+        }
+    },
+
+    "robot-28": {
+        "attributes": {},
+        "homePosition": {
             "x": "5",
             "y": "11"
         },
-        "robot-29": {
+        "defaultPosition": {
+            "x": "5",
+            "y": "9"
+        }
+    },
+
+    "robot-29": {
+        "attributes": {},
+        "homePosition": {
             "x": "6",
             "y": "11"
         },
-        "robot-30": {
+        "defaultPosition": {
+            "x": "6",
+            "y": "9"
+        }
+    },
+
+    "robot-30": {
+        "attributes": {},
+        "homePosition": {
             "x": "7",
             "y": "11"
         },
-        "robot-31": {
+        "defaultPosition": {
+            "x": "7",
+            "y": "9"
+        }
+    },
+
+    "robot-31": {
+        "attributes": {},
+        "homePosition": {
             "x": "8",
             "y": "11"
         },
-        "robot-32": {
+        "defaultPosition": {
+            "x": "8",
+            "y": "9"
+        }
+    },
+
+    "robot-32": {
+        "attributes": {},
+        "homePosition": {
             "x": "9",
             "y": "11"
+        },
+        "defaultPosition": {
+            "x": "9",
+            "y": "9"
         }
-    }
+    } 
 }
+
+
