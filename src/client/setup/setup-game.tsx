@@ -15,6 +15,13 @@ interface SetupGameProps {
     gameType: GameType;
 }
 
+/**
+ * Creates the buttons for the difficulty slider and side selection
+ * 
+ * Forwards the host's choices to /start-{computer|human}-game
+ * 
+ * Navigates to /game after the game has been chosen
+ */
 export function SetupGame(props: SetupGameProps) {
     const navigate = useNavigate();
     const [difficulty, setDifficulty] = useState(Difficulty.BEGINNER);

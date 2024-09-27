@@ -55,6 +55,13 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
 export const apiRouter = Router();
 
+/**
+ * client information endpoint
+ * 
+ * finds the client type and checks if the game is active
+ * used when a client connects to the server
+ */
+
 apiRouter.get("/client-information", (req, res) => {
     const clientType = clientManager.getClientType(req.cookies.id);
     /**
@@ -68,6 +75,12 @@ apiRouter.get("/client-information", (req, res) => {
     });
 });
 
+/**
+ * game state endpoint
+ *
+ * gets the game state from the game manager
+ * returns an object with the side, game pgn, and the game end reason
+ */
 apiRouter.get("/game-state", (req, res) => {
     if (gameManager === null) {
         console.warn("Invalid attempt to fetch game state");
@@ -77,6 +90,12 @@ apiRouter.get("/game-state", (req, res) => {
     return res.send(gameManager.getGameState(clientType));
 });
 
+/**
+ * start computer game endpoint
+ *
+ * creates a new computer game manager based on the requests's side and difficulty
+ * returns a success message
+ */
 apiRouter.post("/start-computer-game", (req, res) => {
     const side = req.query.side as Side;
     const difficulty = parseInt(req.query.difficulty as string) as Difficulty;
@@ -89,6 +108,13 @@ apiRouter.post("/start-computer-game", (req, res) => {
     return res.send({ message: "success" });
 });
 
+/**
+ * start human game endpoint
+ * 
+ * creates a new human game engine based on the request's side
+ * 
+ * returns a success message
+ */
 apiRouter.post("/start-human-game", (req, res) => {
     const side = req.query.side as Side;
     gameManager = new HumanGameManager(

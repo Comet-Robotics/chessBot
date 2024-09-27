@@ -18,7 +18,7 @@ import { Move } from "../../common/game-types";
 import { NonIdealState, Spinner } from "@blueprintjs/core";
 
 /**
- * Creates a MessageHandler function.
+ * Creates a MessageHandler function to handle move messages and game interruptions.
  */
 function getMessageHandler(
     chess: ChessEngine,
@@ -34,7 +34,11 @@ function getMessageHandler(
         }
     };
 }
-
+/**
+ * Creates required message, game, and move handling functions before inserting them into a chessboard wrapper
+ * 
+ * @returns - chessboard wrapper with current side and message handler
+ */
 export function Game(): JSX.Element {
     const [chess, setChess] = useState(new ChessEngine());
     const [gameInterruptedReason, setGameInterruptedReason] =
@@ -44,6 +48,7 @@ export function Game(): JSX.Element {
         getMessageHandler(chess, setChess, setGameInterruptedReason),
     );
 
+    //checks if a game is currently active
     const { isPending, data, isError } = useEffectQuery(
         "game-state",
         async () => {
@@ -58,6 +63,7 @@ export function Game(): JSX.Element {
         false,
     );
 
+    //if a game is pending, show a loading screen while waiting
     if (isPending) {
         return (
             <NonIdealState
@@ -65,12 +71,14 @@ export function Game(): JSX.Element {
                 title="Loading..."
             />
         );
+    //go home if error
     } else if (isError) {
         return <Navigate to="/home" />;
     }
 
     const side = data.side;
 
+    //check if the game has ended or been interrupted
     let gameEndReason: GameEndReason | undefined = undefined;
     const gameFinishedReason = chess.getGameFinishedReason();
     if (gameFinishedReason !== undefined) {
@@ -79,16 +87,19 @@ export function Game(): JSX.Element {
         gameEndReason = gameInterruptedReason;
     }
 
+    //create a game end dialog with the game end reason
     const gameEndDialog =
         gameEndReason !== undefined ?
             <GameEndDialog reason={gameEndReason} side={side} />
         :   null;
 
+    //make moves by making a copy of the chessboard and sending the move message
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
         sendMessage(new MoveMessage(move));
     };
 
+    //return the chessboard wrapper, navbar, and potential end dialog
     return (
         <>
             <NavbarMenu sendMessage={sendMessage} />

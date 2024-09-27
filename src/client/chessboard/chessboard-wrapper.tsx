@@ -8,6 +8,9 @@ import { Side, PieceType } from "../../common/game-types";
 import { customSquareRenderer } from "./custom-square-renderer";
 import { CustomSquareContext } from "./custom-square-context";
 
+/**
+ * an interface of relevant properties for chessboard
+ */
 interface ChessboardWrapperProps {
     /**
      * The chess.js instance displayed by this class.
@@ -23,6 +26,11 @@ interface ChessboardWrapperProps {
     onMove: (move: Move) => void;
 }
 
+/**
+ *
+ * @param props - chess(ChessEngine), side, onMove
+ * @returns
+ */
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const { chess, side, onMove } = props;
 
@@ -51,7 +59,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
      * Returns true if a move is legal, and false otherwise.
      */
     const isLegalMove = (from: Square, to: Square): boolean => {
-        return chess.getLegalSquares(from).includes(to);
+        return (
+            chess.getLegalSquares(from).includes(to) &&
+            chess.getPieceSide(from) === side
+        );
     };
 
     const doMove = (move: Move): void => {
@@ -64,9 +75,11 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     if (width !== undefined) {
         chessboard = (
             <Chessboard
+                //set up the board
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
                 position={chess.fen}
+                //do a promotion check
                 onPromotionCheck={(from: Square, to: Square) => {
                     const promoting = chess.checkPromotion(from, to);
                     setIsPromoting(promoting);
@@ -116,7 +129,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     // Protects the type of lastClickedSquare, and is true when the clicked square is legal
                     const isSquareLegalMove =
                         lastClickedSquare !== undefined &&
-                        legalSquares.includes(square);
+                        isLegalMove(lastClickedSquare, square);
 
                     if (isSquareLegalMove) {
                         if (chess.checkPromotion(lastClickedSquare, square)) {

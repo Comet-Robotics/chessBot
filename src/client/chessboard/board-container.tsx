@@ -6,6 +6,11 @@ interface BoardContainerProps extends PropsWithChildren {
     onWidthChange: (width: number) => void;
 }
 
+/**
+ * A container to deal with chessboard resizing
+ * @param props - width handler and inner elements
+ * @returns 
+ */
 export function BoardContainer(props: BoardContainerProps) {
     const [transform, setTransform] = useState<Transform | undefined>();
 

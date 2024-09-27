@@ -11,7 +11,14 @@ enum SetupType {
     HUMAN = "human",
     PUZZLE = "puzzle",
 }
-
+/*
+ * The setup route
+ *
+ * Shows the host choices on what type of game to play
+ * Includes, computer, human, and puzzles
+ * Also includes the debug button forwarding to /debug
+ *
+ */
 export function Setup(): JSX.Element {
     const [setupType, setSetupType] = useState(SetupType.MAIN);
 
@@ -33,10 +40,19 @@ export function Setup(): JSX.Element {
     );
 }
 
+/**
+ * Triggers a state change in setup type
+ */
 interface SetupMainProps {
     onPageChange: Dispatch<SetupType>;
 }
 
+/**
+ * The initial buttons for choosing game types
+ * 
+ * @param props - the hook for changing setup type
+ * @returns - Setup buttons and debug button
+ */
 function SetupMain(props: SetupMainProps) {
     const navigate = useNavigate();
     const debugButton = (

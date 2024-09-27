@@ -5,7 +5,7 @@ import { NonIdealState, Spinner } from "@blueprintjs/core";
 /**
  * The home route.
  *
- * Redirects to /game or /lobby automatically based on a route query parameter.
+ * Redirects to /game or /lobby automatically based on whether there is an active game.
  */
 export function Home() {
     const { isPending, data } = useEffectQuery("client-information", () =>
