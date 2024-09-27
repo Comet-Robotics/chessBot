@@ -87,6 +87,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 }}
                 showPromotionDialog={manualPromotionSquare !== undefined}
                 promotionToSquare={manualPromotionSquare}
+                //handle dragging and dropping pieces
                 onPieceDrop={(
                     from: Square,
                     to: Square,
@@ -123,6 +124,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         setLastClickedSquare(undefined);
                     }
                 }}
+                //handle square clicking
                 onSquareClick={(square: Square) => {
                     setManualPromotionSquare(undefined);
 
@@ -160,6 +162,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         );
     }
 
+    //return the created chessboard inside the board container
     return (
         <BoardContainer onWidthChange={setWidth}>
             <CustomSquareContext.Provider

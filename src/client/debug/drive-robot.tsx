@@ -36,6 +36,7 @@ export function DriveRobot(props: DriveRobotProps) {
         setPrev({ left: power.left, right: power.right });
     }, [props, power.left, power.right, prev]);
 
+    //allow use of a gamepad
     useEffect(() => {
         if (!navigator.getGamepads) {
             console.log("Gamepad API not supported");
@@ -76,6 +77,7 @@ export function DriveRobot(props: DriveRobotProps) {
         };
     }, [props, prevPad]);
 
+    //the move types and corresponding motor powers
     const handleStopMove = useCallback(() => {
         setPower({ left: 0, right: 0 });
     }, []);
@@ -106,6 +108,7 @@ export function DriveRobot(props: DriveRobotProps) {
         [power.left],
     );
 
+    //use wasd and arrows to control robots
     const hotkeys = useMemo(
         () => [
             {
@@ -182,6 +185,7 @@ export function DriveRobot(props: DriveRobotProps) {
         ],
     );
 
+    //show instructions and on screen buttons
     const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys);
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>

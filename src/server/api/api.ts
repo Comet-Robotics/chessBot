@@ -57,7 +57,7 @@ export const apiRouter = Router();
 
 /**
  * client information endpoint
- * 
+ *
  * finds the client type and checks if the game is active
  * used when a client connects to the server
  */
@@ -110,9 +110,9 @@ apiRouter.post("/start-computer-game", (req, res) => {
 
 /**
  * start human game endpoint
- * 
+ *
  * creates a new human game engine based on the request's side
- * 
+ *
  * returns a success message
  */
 apiRouter.post("/start-human-game", (req, res) => {
@@ -126,6 +126,9 @@ apiRouter.post("/start-human-game", (req, res) => {
     return res.send({ message: "success" });
 });
 
+/**
+ * Returns all registered robot ids
+ */
 apiRouter.get("/get-ids", (_, res) => {
     const ids = tcpServer.getConnectedIds();
     if (IS_DEVELOPMENT) {
