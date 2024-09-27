@@ -8,7 +8,7 @@ import { Navigate } from "react-router-dom";
 
 /**
  * check for an active game and waits for one or forwards to setup
- * 
+ *
  * @returns - a setup base with the loading screen or a redirect to /game
  */
 export function Lobby() {

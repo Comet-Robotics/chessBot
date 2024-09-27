@@ -13,7 +13,7 @@ export function Debug() {
     const [selectedRobotId, setSelectedRobotId] = useState<
         string | undefined
     >();
-    
+
     //helper functions
     const navigate = useNavigate();
     const sendMessage = useSocket();

@@ -22,9 +22,9 @@ interface GameEndDialogProps {
 }
 /**
  * creates the game ending dialog with a continue button
- * 
+ *
  * @param props - the game end reason and side
- * @returns 
+ * @returns
  */
 export function GameEndDialog(props: GameEndDialogProps) {
     const [isOpen, setIsOpen] = useState(true);
@@ -60,10 +60,10 @@ export function GameEndDialog(props: GameEndDialogProps) {
 
 /**
  * returns the appropriate game over icon based on the reason and side
- * 
+ *
  * @param reason - the reason the game ended
  * @param side - the side who lost
- * @returns 
+ * @returns
  */
 function gameOverIcon(reason: GameEndReason, side: Side) {
     const whiteWon =
@@ -105,7 +105,7 @@ function gameOverIcon(reason: GameEndReason, side: Side) {
 
 /**
  * returns the game over reason message string
- * 
+ *
  * @param reason - the game end reason
  * @returns - the game end message string
  */

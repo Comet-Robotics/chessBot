@@ -6,7 +6,7 @@ import { Move, PieceType, Side } from "./game-types";
 
 /**
  * Creates the engine to manage chess game
- * 
+ *
  * includes movement, ai moves, castling, en passant, and game finished
  */
 export class ChessEngine {

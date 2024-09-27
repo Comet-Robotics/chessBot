@@ -36,7 +36,7 @@ function getMessageHandler(
 }
 /**
  * Creates required message, game, and move handling functions before inserting them into a chessboard wrapper
- * 
+ *
  * @returns - chessboard wrapper with current side and message handler
  */
 export function Game(): JSX.Element {
@@ -71,7 +71,7 @@ export function Game(): JSX.Element {
                 title="Loading..."
             />
         );
-    //go home if error
+        //go home if error
     } else if (isError) {
         return <Navigate to="/home" />;
     }

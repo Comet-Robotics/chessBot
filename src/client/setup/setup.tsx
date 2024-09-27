@@ -14,7 +14,7 @@ enum SetupType {
 
 /**
  * Lets the host choose a game type and includes the debug button
- * 
+ *
  * @returns - A setup base with the proper setup dialog
  */
 export function Setup(): JSX.Element {
@@ -47,7 +47,7 @@ interface SetupMainProps {
 
 /**
  * The initial buttons for choosing game types
- * 
+ *
  * @param props - the hook for changing setup type
  * @returns - Setup buttons and debug button
  */
