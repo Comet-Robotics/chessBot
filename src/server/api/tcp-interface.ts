@@ -119,6 +119,7 @@ export class BotTunnel {
 
         str = str.substring(0, terminator);
 
+        //check if the buffer is the correct length based on where the terminator is
         if (this.dataBuffer.length > terminator) {
             this.dataBuffer = this.dataBuffer.subarray(terminator + 1);
         } else {
@@ -140,14 +141,17 @@ export class BotTunnel {
                     this.connected = true;
                     break;
                 }
+                //respond to pings
                 case "PING_SEND": {
                     this.send({ type: "PING_RESPONSE" });
                     break;
                 }
+                //emit a action complete for further processing
                 case "ACTION_SUCCESS": {
                     this.emitter.emit("actionComplete", { success: true });
                     break;
                 }
+                //emit a action fail for further processing
                 case "ACTION_FAIL": {
                     this.emitter.emit("actionComplete", {
                         success: false,
@@ -173,6 +177,7 @@ export class BotTunnel {
         const str = packetToJson(packet);
         const msg = str + ";";
 
+        //If the 
         if (!this.isActive()) {
             console.error(
                 "Connection to",
