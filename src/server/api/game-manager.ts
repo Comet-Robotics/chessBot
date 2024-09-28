@@ -14,6 +14,9 @@ import {
     GameEndReason as GameInterruptedReason,
 } from "../../common/game-end-reasons";
 
+/**
+ * The manager for game communication
+ */
 export abstract class GameManager {
     protected gameInterruptedReason: GameInterruptedReason | undefined =
         undefined;
@@ -62,6 +65,9 @@ export abstract class GameManager {
     ): void;
 }
 
+/**
+ * game manager for handling human communications
+ */
 export class HumanGameManager extends GameManager {
     constructor(
         chess: ChessEngine,
@@ -106,6 +112,9 @@ export class HumanGameManager extends GameManager {
     }
 }
 
+/**
+ * game manager for making and sending ai moves
+ */
 export class ComputerGameManager extends GameManager {
     // The minimum amount of time to wait responding with a move.
     MINIMUM_DELAY = 500;

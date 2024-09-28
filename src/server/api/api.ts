@@ -157,6 +157,12 @@ apiRouter.get("/get-puzzles", (_, res) => {
     });
 });
 
+/**
+ * sends a drive message through the tcp connection
+ * 
+ * @param message - the robot id and left/right motor powers
+ * @returns - boolean if successful
+ */
 function doDriveRobot(message: DriveRobotMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(

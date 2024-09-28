@@ -9,6 +9,9 @@ import {
 import EventEmitter from "node:events";
 import { randomUUID } from "node:crypto";
 
+/**
+ * The tunnel for handling communications to the robots
+ */
 export class BotTunnel {
     connected: boolean = false;
     dataBuffer: Buffer | undefined;
@@ -16,6 +19,12 @@ export class BotTunnel {
     id: string | undefined;
     emitter: EventEmitter;
 
+    /**
+     * take the robot socket and creates an emitter to notify dependencies
+     * 
+     * @param socket - socket of the incoming connections
+     * @param onHandshake - handshake handler
+     */
     constructor(
         private socket: net.Socket,
         private onHandshake: (packetContent: string) => void,
@@ -27,6 +36,11 @@ export class BotTunnel {
         return this.socket.readyState === "open";
     }
 
+    /**
+     * get the most relevant identifier possible
+     * 
+     * @returns - a robot identifier
+     */
     getIdentifier(): string {
         if (this.id !== undefined) {
             return "ID: " + this.id;
@@ -62,6 +76,11 @@ export class BotTunnel {
         this.connected = false;
     }
 
+    /**
+     * Sets up the data buffer for it to be handled by the queue
+     * 
+     * @param data - data to be handled
+     */
     handleData(data: Buffer) {
         if (this.dataBuffer !== undefined) {
             this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
@@ -72,6 +91,13 @@ export class BotTunnel {
         this.handleQueue();
     }
 
+    /**
+     * handles the incoming data and check if it is valid
+     * 
+     * emits result for further handling
+     *
+     * @returns - nothing if nothing happened and nothing if something happened
+     */
     handleQueue() {
         if (this.dataBuffer === undefined || this.dataBuffer.length < 3) {
             this.dataBuffer = undefined;
@@ -104,6 +130,7 @@ export class BotTunnel {
 
             // Parse packet based on type
             switch (packet.type) {
+                //register new robot
                 case "CLIENT_HELLO": {
                     this.onHandshake(packet.macAddress);
                     this.send({
@@ -176,6 +203,13 @@ export class BotTunnel {
 export class TCPServer {
     private server: net.Server;
 
+    /**
+     * creates a tcp server on port from server config and registers passed in ids with their corresponding bot tunnels
+     * 
+     * when a robot connects, bind it to the server
+     * 
+     * @param connections - bot connections in a id:BotTunnel array
+     */
     constructor(private connections: { [id: string]: BotTunnel } = {}) {
         this.server = net.createServer();
         this.server.on("connection", this.handleConnection.bind(this));
@@ -187,6 +221,13 @@ export class TCPServer {
         });
     }
 
+    /**
+     * When a robot connects, add the tunnel to the robot connections at its id
+     *
+     * assign a random id to new robots
+     *
+     * @param socket - the incoming connection socket information
+     */
     private handleConnection(socket: net.Socket) {
         const remoteAddress = socket.remoteAddress + ":" + socket.remotePort;
         console.log("New client connection from %s", remoteAddress);
