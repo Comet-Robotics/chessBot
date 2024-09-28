@@ -32,7 +32,7 @@ struct TaskPriority {
     // OTA Updating
     static constexpr UBaseType_t UPDATE = IDLE;
 
-    // Packet reception
+    // Socket opening, 
     static constexpr UBaseType_t NET = IDLE + 1;
 
     // Packet parsing activities

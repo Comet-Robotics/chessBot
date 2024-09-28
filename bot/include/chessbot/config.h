@@ -39,15 +39,15 @@ enum class ConfigKey : uint32_t {
     // Example: -1 / 12000 for a 12kcpr encoder
     ENCODER_MULTIPLIER,
 
-    CONFIG_SIZE
+    CONFIG_COUNT
 };
 
-extern uint32_t configStore[(size_t)ConfigKey::CONFIG_SIZE];
+extern uint32_t configStore[(size_t)ConfigKey::CONFIG_COUNT];
 
 template <typename ValT = uint32_t>
 ValT getConfig(ConfigKey key)
 {
-    CHECK(key < ConfigKey::CONFIG_SIZE);
+    CHECK(key < ConfigKey::CONFIG_COUNT);
     int32_t ikey = (int32_t)key;
 
     return bitcast<ValT>(configStore[ikey]);
@@ -56,7 +56,7 @@ ValT getConfig(ConfigKey key)
 template <typename ValT = uint32_t>
 void setConfig(ConfigKey key, ValT val)
 {
-    CHECK(key < ConfigKey::CONFIG_SIZE);
+    CHECK(key < ConfigKey::CONFIG_COUNT);
     int32_t ikey = (int32_t)key;
 
     configStore[ikey] = bitcast<uint32_t>(val);

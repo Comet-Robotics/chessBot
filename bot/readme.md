@@ -1,11 +1,20 @@
-# chessBots Embedded Code
+# RL^2 Soccer Bot Embedded Code
 
 ## First Time Setup
-1. Open the `./bot` folder in Visual Studio Code.
+1. Open this folder in Visual Studio Code.
 2. Create a file `env.h` and initialize it with the environment-specific information using this template:
 ```
-const char* WIFI_SSID = "";
-const char* WIFI_PASSWORD = "";
+#define OTA_UPDATE_OPTIONAL
+
+// #define WOKWI_COMPAT
+
+#ifdef WOKWI_COMPAT
+#define WIFI_SSID "Wokwi-GUEST"
+#define WIFI_PASSWORD ""
+#else
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
+#endif
 ```
 3. Open the extensions tab on the left (4 squares).
 4. Install the ESP-IDF and Serial Monitor extensions. 
@@ -19,9 +28,3 @@ const char* WIFI_PASSWORD = "";
 12. Press the RST button on the S2 Mini to reboot into your new firmware.
 13. Open the "SERIAL MONITOR" tab in the terminal modal in the bottom right.
 14. Select the serial port for the S2 Mini and "Start Monitoring".
-
-## OTA Update Guide
-1. Run the command "ESP-IDF: Build your project"
-2. Publish ./build/chessbot.bin to the /update/chessbot folder of the web server
-3. Edit /update/chessbot/info.json to point to the new update's timestamp and path
-4. The bot will automatically pick it up within 5 minutes of uploading and reboot.
