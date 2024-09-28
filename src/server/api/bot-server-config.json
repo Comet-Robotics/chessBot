@@ -174,7 +174,7 @@
     },
 
     "robot-15": {
-        "attributes": {},
+        "attributes": { "leftMotorK": "0" },
         "homePosition": {
             "x": "11",
             "y": "3"
@@ -387,7 +387,5 @@
             "x": "9",
             "y": "9"
         }
-    } 
+    }
 }
-
-
