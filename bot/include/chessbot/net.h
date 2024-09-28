@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <lwip/sockets.h>
 #include <sys/socket.h>
+#include <esp_mac.h>
 
 #include <freertos/event_groups.h>
 #include <freertos/stream_buffer.h>
@@ -20,35 +21,58 @@ public:
     constexpr static int TCP_MSG_SIZE_MAX = 1024;
     constexpr static std::pair<TickType_t, TickType_t> TCP_RETRY_FREQUENCY = { 3_s, 10_s };
 
-    constexpr static int OPEN = BIT1; // Normal
-    constexpr static int CONNECTING = BIT2; // Normal
+    constexpr static int STATUS_OPEN = BIT1; // Normal
+    constexpr static int STATUS_CONNECTING = BIT2; // Normal
 
     sockaddr_in destAddr = {};
     int sock = -1;
     EventGroupHandle_t status;
     TickType_t lastRetry = 0;
+    bool reconnectOnFail = false;
 
     char rxBuf[TCP_BUF_SIZE] = {};
     StreamBufferHandle_t rxStream = nullptr;
 
+    // Create a TCP connection by connecting to a remote socket
     TcpClient(uint32_t targetIp, uint16_t port)
     {
-        status = xEventGroupCreate();
-        rxStream = xStreamBufferCreate(TCP_BUF_SIZE, 1);
+        makeBufs();
 
         destAddr.sin_family = AF_INET;
         destAddr.sin_addr.s_addr = targetIp;
         destAddr.sin_port = htons(port);
+
+        reconnectOnFail = true;
     }
 
+    // Create a TCP connection by connecting to a remote socket
     TcpClient(const char* targetIp, uint16_t port)
     {
-        status = xEventGroupCreate();
-        rxStream = xStreamBufferCreate(TCP_BUF_SIZE, 1);
+        makeBufs();
 
         destAddr.sin_family = AF_INET;
         inet_pton(AF_INET, targetIp, &destAddr.sin_addr);
         destAddr.sin_port = htons(port);
+
+        reconnectOnFail = true;
+    }
+
+    // Create from a socket that already exists
+    TcpClient(int fd)
+    {
+        sock = fd;
+
+        makeBufs();
+
+        reconnectOnFail = false;
+
+        xEventGroupSetBits(status, STATUS_OPEN);
+    }
+
+    void makeBufs()
+    {
+        status = xEventGroupCreate();
+        rxStream = xStreamBufferCreate(TCP_BUF_SIZE, 1);
     }
 
     void invalidate()
@@ -56,10 +80,15 @@ public:
         printf("Invalidating socket\n");
 
         sock = -1;
-        xEventGroupClearBits(status, OPEN);
+        xEventGroupClearBits(status, STATUS_OPEN);
 
         // Note: if a task is waiting on this stream, this call will silently fail
         xStreamBufferReset(rxStream);
+
+        if (reconnectOnFail) 
+        {
+            connect();
+        }
     }
 
     void connect()
@@ -70,7 +99,7 @@ public:
             return;
         }
 
-        xEventGroupSetBits(status, CONNECTING);
+        xEventGroupSetBits(status, STATUS_CONNECTING);
 
         printf("Start connect\n");
 
@@ -108,8 +137,8 @@ public:
         flags |= O_NONBLOCK;
         CHECK(fcntl(sock, F_SETFL, flags));
 
-        xEventGroupClearBits(status, CONNECTING);
-        xEventGroupSetBits(status, OPEN);
+        xEventGroupClearBits(status, STATUS_CONNECTING);
+        xEventGroupSetBits(status, STATUS_OPEN);
     }
 
     bool isOpen()
@@ -133,7 +162,7 @@ public:
 
     void waitToConnect()
     {
-        xEventGroupWaitBits(status, OPEN, pdFALSE, pdFALSE, portMAX_DELAY);
+        xEventGroupWaitBits(status, STATUS_OPEN, pdFALSE, pdFALSE, portMAX_DELAY);
     }
 
     void send(std::string_view msg)
@@ -198,6 +227,16 @@ public:
         }
     }
 
+    void sendHello()
+    {
+        char helloPacket[58];
+        uint8_t mac[6];
+        CHECK(esp_read_mac(mac, ESP_MAC_WIFI_STA));
+        snprintf(helloPacket, sizeof(helloPacket), R"({"type":"CLIENT_HELLO","macAddress":"%02X:%02X:%02X:%02X:%02X:%02X"};)", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+        send(helloPacket);
+    }
+
     ~TcpClient()
     {
         // todo: this
@@ -209,6 +248,13 @@ public:
 void startNetThread();
 
 TcpClient* addTcpClient(uint32_t targetIp, uint16_t port);
+
+constexpr int MAX_TCP_SOCKETS = 10;
+constexpr int MAX_TCP_ACCEPT_SOCKETS = 1;
+constexpr int TOTAL_DESCRIPTORS = MAX_TCP_SOCKETS + MAX_TCP_ACCEPT_SOCKETS;
+
+extern TcpClient* clients[MAX_TCP_SOCKETS];
+extern int clientsCount;
 }; // namespace chessbot
 
 #endif // ifndef CHESSBOT_NET_H

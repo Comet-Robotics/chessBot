@@ -3,12 +3,13 @@
 
 #include <array>
 #include <semaphore>
+#include <optional>
 
 #include <esp_flash_partitions.h>
-#include <esp_mac.h>
 #include <esp_ota_ops.h>
 #include <esp_sleep.h>
 #include <lwip/dns.h>
+#include <lwip/netdb.h>
 #include <lwip/ip4_addr.h>
 
 #include <chessbot/button.h>
@@ -22,23 +23,26 @@ namespace chessbot {
 // Put the robot in a known state
 inline void setGpioOff()
 {
+    #ifdef OTA_ENABLED
     esp_ota_img_states_t state;
+
     CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
 
     if (state == ESP_OTA_IMG_PENDING_VERIFY) {
         // Don't do potentially dangerous GPIO while testing a new update
         return;
-    } else {
-        gpio_set_level(PINCONFIG(MOTOR_A_PIN1), 0);
-        gpio_set_level(PINCONFIG(MOTOR_A_PIN2), 0);
-        gpio_set_level(PINCONFIG(MOTOR_B_PIN1), 0);
-        gpio_set_level(PINCONFIG(MOTOR_B_PIN2), 0);
-
-        gpio_set_level(PINCONFIG(PHOTODIODE_FRONT_LEFT), 0);
-        gpio_set_level(PINCONFIG(PHOTODIODE_FRONT_RIGHT), 0);
-        gpio_set_level(PINCONFIG(PHOTODIODE_BACK_LEFT), 0);
-        gpio_set_level(PINCONFIG(PHOTODIODE_BACK_RIGHT), 0);
     }
+    #endif
+
+    gpio_set_level(PINCONFIG(MOTOR_A_PIN1), 0);
+    gpio_set_level(PINCONFIG(MOTOR_A_PIN2), 0);
+    gpio_set_level(PINCONFIG(MOTOR_B_PIN1), 0);
+    gpio_set_level(PINCONFIG(MOTOR_B_PIN2), 0);
+
+    gpio_set_level(PINCONFIG(PHOTODIODE_FRONT_LEFT), 0);
+    gpio_set_level(PINCONFIG(PHOTODIODE_FRONT_RIGHT), 0);
+    gpio_set_level(PINCONFIG(PHOTODIODE_BACK_LEFT), 0);
+    gpio_set_level(PINCONFIG(PHOTODIODE_BACK_RIGHT), 0);
 }
 
 // Emergency shutdown handler
@@ -77,58 +81,52 @@ public:
     {
         esp_register_shutdown_handler(safetyShutdown);
 
-        auto ip = getServerIp();
-
-        uint16_t port = 3001;
-
-        client = addTcpClient(ip.u_addr.ip4.addr, port);
-
-        client->waitToConnect();
-
+        printf("p1\n");
         runThread();
 
-        sendHello();
+printf("p2\n");
+        auto ip = getServerIp();
 
-        printf("Sent HELLO to server\n");
+        if (ip) {
+            uint16_t port = 3001;
+
+            client = addTcpClient(ip->u_addr.ip4.addr, port);
+    printf("p3\n");
+            client->waitToConnect();
+    printf("p4\n");
+            client->sendHello();
+
+            printf("Sent HELLO to server\n");
+        }
+        else {
+            printf("Choosing not to connect to server.\n");
+        }
     }
 
-    ip_addr_t getServerIp()
+    std::optional<ip_addr_t> getServerIp()
     {
         auto domain = "chess-server.internal";
 
-        // Wraps the returning IP and where to notify of its assignment
-        struct Bundle {
-            TaskHandle_t n;
-            ip_addr_t ip;
-        };
+        addrinfo* serverAddr;
 
-        Bundle bundle = { xTaskGetCurrentTaskHandle() };
+        addrinfo hints = {};
+        hints.ai_family = PF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM;
+        hints.ai_flags |= AI_CANONNAME;
 
-        auto err = dns_gethostbyname(
-            domain, &bundle.ip, [](const char* name, const ip_addr_t* ipaddr, void* cbArg) {
-                TaskHandle_t taskToNotify = ((Bundle*)(cbArg))->n;
-                ((Bundle*)(cbArg))->ip = *ipaddr;
-                xTaskNotifyGiveIndexed(taskToNotify, (UBaseType_t)ROBOT_NOTIFY_DNS); }, (void*)&bundle);
-
-        if (err != ERR_OK) {
-            printf("DNS resolution error!\n");
+        auto res = getaddrinfo(domain, NULL, &hints, &serverAddr);
+        if (res != 0) {
+            printf("Failed to resolve server IP!\n");
+            return {};
         }
 
-        ulTaskNotifyTakeIndexed((UBaseType_t)ROBOT_NOTIFY_DNS, pdTRUE, portMAX_DELAY);
+        freeaddrinfo(serverAddr);
 
-        printf("Got DNS IP %lu\n", bundle.ip.u_addr.ip4.addr);
-
-        return bundle.ip;
-    }
-
-    void sendHello()
-    {
-        char helloPacket[58];
-        uint8_t mac[6];
-        CHECK(esp_read_mac(mac, ESP_MAC_WIFI_STA));
-        snprintf(helloPacket, sizeof(helloPacket), R"({"type":"CLIENT_HELLO","macAddress":"%02X:%02X:%02X:%02X:%02X:%02X"};)", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-
-        client->send(helloPacket);
+        in_addr ip = ((sockaddr_in*)serverAddr->ai_addr)->sin_addr;
+        ip_addr_t structure;
+        structure.u_addr.ip4.addr = ip.s_addr;
+        structure.type = IPADDR_TYPE_V4;
+        return structure;
     }
 
     void tick(uint64_t us)

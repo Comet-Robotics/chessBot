@@ -18,18 +18,6 @@ namespace chessbot {
 EventGroupHandle_t wifiEvents;
 #define WIFI_CONNECTED_BIT BIT0
 
-#if __has_include("../../env.h")
-#include "../../env.h"
-#else
-
-#ifndef WIFI_NOT_NEEDED
-#warning "env.h not populated"
-#else
-const char* WIFI_SSID = "";
-const char* WIFI_PASSWORD = "";
-#endif
-#endif
-
 bool isWifiConnected()
 {
     return !!(xEventGroupGetBits(wifiEvents) & WIFI_CONNECTED_BIT);
@@ -98,6 +86,7 @@ void startWifi()
     // Initialize NVS
     // Variables such as the used SSID will be stored automatically, but they will be overwritten since
     // the SSID is currently fixed in the source code at boot
+    // Calibration data will be stored.
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -129,10 +118,7 @@ void startWifi()
         NULL,
         &ipEventHandlerInstance));
 
-    // Wokwi
-    //wifi_config_t wifiConfig = {};
-    //strcpy((char*)wifiConfig.sta.ssid, "Wokwi-GUEST");
-
+#ifndef WOKWI_COMPAT
     wifi_config_t wifiConfig = {};
     // wifiConfig.sta.listen_interval =
     strcpy((char*)wifiConfig.sta.ssid, WIFI_SSID);
@@ -141,7 +127,10 @@ void startWifi()
     wifiConfig.sta.rm_enabled = 1; // Collect stats, maybe?
     wifiConfig.sta.failure_retry_cnt = 10;
     wifiConfig.sta.listen_interval = 50; // In max modem sleep, connect every 5s (100ms * 50)
-    
+#else
+    wifi_config_t wifiConfig = {};
+    strcpy((char*)wifiConfig.sta.ssid, "Wokwi-GUEST");
+#endif
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifiConfig));

@@ -20,6 +20,8 @@
 #include <chessbot/unit.h>
 #include <chessbot/update.h>
 #include <chessbot/wireless.h>
+#include <chessbot/desc.h>
+#include <chessbot/mdns.h>
 
 #define MAX_FREQ    (CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ)
 
@@ -31,16 +33,11 @@
 #define MIN_FREQ    13
 #endif
 
-// #define TEST
-
-#ifdef TEST
-#include <chessbot/test.h>
-#endif
-
 using namespace chessbot;
 
 void consoleHello()
 {
+    // Get and print hash of current firmware
     uint8_t currentHash[32];
     CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
 
@@ -49,10 +46,11 @@ void consoleHello()
     for (int i = 0; i < 32; i++) {
         printf("%02x", currentHash[i]);
     }
+    printf("\n");
 
     // Check for USB serial
     // As USB serial takes some time to attach, let it attach before any crashes
-    if (tud_cdc_connected()) {
+    if (true) { //tud_cdc_connected()) {
         for (int i = 0; i < 3; i++) {
             printf("Starting...\n");
             vTaskDelay(1_s);
@@ -60,25 +58,26 @@ void consoleHello()
     }
 }
 
-#ifndef TEST
-extern "C" void app_main()
-#else
-extern "C" void app_main_alt()
+#ifdef WOKWI_COMPAT
+//extern "C" void esp_clk_init() {}
 #endif
+
+extern "C" void app_main()
 {
     // Turn off motors in case they were left on
     setGpioOff();
 
-    // Start at 1Hz for startup
+    // Set at 1Hz for startup
     startActivityLed();
 
     consoleHello();
 
     startWifi();
     waitForWifiConnection();
+    
     launchUpdater();
 
-    setWifiSleepPolicy(SLEEP_MODE::LIGHT_SLEEP);
+    /*setWifiSleepPolicy(SLEEP_MODE::LIGHT_SLEEP);
 
     esp_pm_config_t pm_config = {
         .max_freq_mhz = 160,
@@ -87,22 +86,14 @@ extern "C" void app_main_alt()
         .light_sleep_enable = true
 #endif
     };
-    CHECK(esp_pm_configure(&pm_config));
+    CHECK(esp_pm_configure(&pm_config));*/
 
     startNetThread();
 
     Robot robot;
 
-    gpio_reset_pin(PINCONFIG(RELAY_IR_LED));
-    gpio_set_direction(PINCONFIG(RELAY_IR_LED), GPIO_MODE_OUTPUT);
-    gpio_set_level(PINCONFIG(RELAY_IR_LED), false);
-
     while (true) {
-        bool button = !gpio_get_level(GPIO_NUM_0);
-        gpio_set_level(PINCONFIG(RELAY_IR_LED), button);
-
-        //auto l = robot.lightLevels();
-        //printf("Light Sensors: %d %d %d %d\n", l[0], l[1], l[2], l[3]);
+        printf("still running\n");
 
         vTaskDelay(1_s);
     }

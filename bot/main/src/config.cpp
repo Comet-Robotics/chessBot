@@ -5,5 +5,5 @@
 #include <chessbot/config.h>
 
 namespace chessbot {
-uint32_t configStore[(size_t)ConfigKey::CONFIG_SIZE] = {};
+uint32_t configStore[(size_t)ConfigKey::CONFIG_COUNT] = {};
 }; // namespace chessbot

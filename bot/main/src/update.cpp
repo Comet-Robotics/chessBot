@@ -239,7 +239,10 @@ void launchUpdater()
 
     xTaskCreate(updater, "updater", TaskStackSize::LARGE, nullptr, TaskPriority::UPDATE, nullptr);
 
-    // Wait on update to run
-    xEventGroupWaitBits(otaEvents, FIRST_OTA_CHECK_DONE, pdFALSE, pdTRUE, portMAX_DELAY);
+    #ifndef OTA_UPDATE_OPTIONAL
+    #error "what"
+    // Wait on the first update check to finish
+    xEventGroupWaitBits(otaEvents, FIRST_OTA_CHECK_DONE, false, true, portMAX_DELAY);
+    #endif
 }
 }; // namespace chessbot

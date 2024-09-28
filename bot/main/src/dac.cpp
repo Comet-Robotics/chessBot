@@ -7,10 +7,6 @@
 #include <chessbot/log.h>
 
 namespace chessbot {
-// The ESP32-S2 only supports low speed mode (software emulation)
-#define LEDC_MODE LEDC_LOW_SPEED_MODE
-
-#define LEDC_DUTY_RES LEDC_TIMER_13_BIT
 
 PwmPin::PwmPin(gpio_num_t pin)
 {
@@ -25,7 +21,7 @@ PwmPin::PwmPin(gpio_num_t pin)
         timerConfig.speed_mode = LEDC_MODE;
         timerConfig.timer_num = LedcMapping::PWM;
         timerConfig.duty_resolution = LEDC_DUTY_RES;
-        timerConfig.freq_hz = 5000; // Set output frequency at 5 kHz
+        timerConfig.freq_hz = 50; //476 * 2; //5000; // Set output frequency at 5 kHz
         timerConfig.clk_cfg = LEDC_AUTO_CLK;
         CHECK(ledc_timer_config(&timerConfig));
     }
@@ -37,7 +33,7 @@ PwmPin::PwmPin(gpio_num_t pin)
     channelConfig.timer_sel = LedcMapping::PWM;
     channelConfig.intr_type = LEDC_INTR_DISABLE;
     channelConfig.gpio_num = pin;
-    channelConfig.duty = 0; // Set duty to 0%
+    channelConfig.duty = 0;
     channelConfig.hpoint = 0;
     CHECK(ledc_channel_config(&channelConfig));
 }
@@ -46,6 +42,11 @@ PwmPin::~PwmPin()
 {
     CHECK(ledc_stop(LEDC_MODE, this->channel, 0));
     this->freeLedcChannel(this->channel);
+}
+
+void PwmPin::setDuty(uint32_t duty) {
+    CHECK(ledc_set_duty(LEDC_MODE, this->channel, duty));
+    CHECK(ledc_update_duty(LEDC_MODE, this->channel));
 }
 
 void PwmPin::set(float val)
@@ -57,8 +58,7 @@ void PwmPin::set(float val)
 
     printf("Calculated duty cycle %d from %f\n", (int)duty, val);
 
-    CHECK(ledc_set_duty(LEDC_MODE, this->channel, duty));
-    CHECK(ledc_update_duty(LEDC_MODE, this->channel));
+    this->setDuty(duty);
 }
 
 // [0,LEDC_CHANNEL_MAX=8)

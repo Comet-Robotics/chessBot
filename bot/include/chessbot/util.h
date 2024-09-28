@@ -7,6 +7,17 @@
 #include <esp_random.h>
 
 #include <cstring>
+#include <cmath>
+
+#if __has_include("../../env.h")
+#include "../../env.h"
+#else
+
+#ifndef WIFI_NOT_NEEDED
+#error "env.h not populated"
+#endif
+
+#endif
 
 #include <chessbot/unit.h>
 #include <chessbot/allocation.h>
@@ -65,6 +76,20 @@ inline int hexCharToInt(char input)
 
     return 0;
 }
+
+// Map number in [inMin, inMax] to [outMin, outMax]
+template <typename T>
+inline T map(T val, T inMin, T inMax, T outMin, T outMax) {
+    T slope = (outMax - outMin) / (inMax - inMin);
+    return outMin + slope * (val - inMin);
+}
+
+inline float fmap(float val, float inMin, float inMax, float outMin, float outMax) {
+    return map<float>(val, inMin, inMax, outMin, outMax);
+}
+
+//#define OTA_ENABLED
+
 }; // namespace chessbot
 
 #endif // ifndef CHESSBOT_UTIL_H
