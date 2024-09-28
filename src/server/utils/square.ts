@@ -5,7 +5,7 @@ const FILE_LOOKUP = "abcdefgh";
 
 /**
  * convert physical position to pgn square
- * 
+ *
  * @param position - physical position
  * @returns - pgn square
  */
@@ -17,7 +17,7 @@ export function positionToSquare(position: Position): Square {
 
 /**
  * convert pgn square to physical position
- * 
+ *
  * @param position - pgn square
  * @returns - physical position
  */

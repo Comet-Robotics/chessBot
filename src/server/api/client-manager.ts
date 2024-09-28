@@ -5,7 +5,7 @@ import { Message } from "../../common/message/message";
 
 /**
  * A class which maps client ids to their corresponding sockets (if any).
- * 
+ *
  * gets, sends, and assigns client information
  */
 export class ClientManager {

@@ -21,7 +21,7 @@ export class BotTunnel {
 
     /**
      * take the robot socket and creates an emitter to notify dependencies
-     * 
+     *
      * @param socket - socket of the incoming connections
      * @param onHandshake - handshake handler
      */
@@ -38,7 +38,7 @@ export class BotTunnel {
 
     /**
      * get the most relevant identifier possible
-     * 
+     *
      * @returns - a robot identifier
      */
     getIdentifier(): string {
@@ -78,7 +78,7 @@ export class BotTunnel {
 
     /**
      * Sets up the data buffer for it to be handled by the queue
-     * 
+     *
      * @param data - data to be handled
      */
     handleData(data: Buffer) {
@@ -93,7 +93,7 @@ export class BotTunnel {
 
     /**
      * handles the incoming data and check if it is valid
-     * 
+     *
      * emits result for further handling
      *
      * @returns - nothing if nothing happened and nothing if something happened
@@ -205,9 +205,9 @@ export class TCPServer {
 
     /**
      * creates a tcp server on port from server config and registers passed in ids with their corresponding bot tunnels
-     * 
+     *
      * when a robot connects, bind it to the server
-     * 
+     *
      * @param connections - bot connections in a id:BotTunnel array
      */
     constructor(private connections: { [id: string]: BotTunnel } = {}) {
