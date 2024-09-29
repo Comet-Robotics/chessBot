@@ -18,7 +18,7 @@ void robotThread(void* robotPtr)
     Robot& bot = *(Robot*)(robotPtr);
     JsonDocument json;
 
-    printf("j1\n");
+    ESP_LOGI("", "j1");
 
     while (true) {
         vTaskDelay(100_s);
@@ -26,16 +26,16 @@ void robotThread(void* robotPtr)
 
     while (true) {
         for (int i = 0; i < clientsCount; i++) {
-            printf("j3\n");
+            ESP_LOGI("", "j3");
             TcpClient* client = clients[i];
 
             if (client == nullptr) {
                 continue;
             }
 
-            printf("j4\n");
+            ESP_LOGI("", "j4");
             int read = client->readUntilTerminator(buf, sizeof(buf), ';');
-            printf("j5\n");
+            ESP_LOGI("", "j5");
 
             std::string_view str(buf, read);
 
@@ -43,7 +43,7 @@ void robotThread(void* robotPtr)
             DeserializationError error = deserializeJson(json, str);
 
             if (error) {
-                printf("deserializeJson() failed: %s\n", error.c_str());
+                ESP_LOGE("", "deserializeJson() failed: %s", error.c_str());
                 continue;
             }
 
@@ -51,7 +51,7 @@ void robotThread(void* robotPtr)
             if (type == "DRIVE_TANK") {
                 float left = json["left"].as<float>();
                 float right = json["right"].as<float>();
-                printf("Driving that tank! %f %f\n", left, right);
+                ESP_LOGI("", "Driving that tank! %f %f", left, right);
                 bot.left.set(left);
                 bot.right.set(right);
             } else if (type == "PING_SEND") {

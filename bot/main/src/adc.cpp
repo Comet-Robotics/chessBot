@@ -25,7 +25,7 @@ bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_at
     bool calibrated = false;
 
     if (!calibrated) {
-        printf("calibration scheme version is %s", "Line Fitting");
+        ESP_LOGI("", "calibration scheme version is %s", "Line Fitting");
         adc_cali_line_fitting_config_t cali_config = {};
         cali_config.unit_id = unit;
         cali_config.atten = atten;
@@ -38,11 +38,11 @@ bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_at
 
     *out_handle = handle;
     if (ret == ESP_OK) {
-        printf("Calibration Success");
+        ESP_LOGI("", "Calibration Success");
     } else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated) {
-        printf("eFuse not burnt, skip software calibration");
+        ESP_LOGI("", "eFuse not burnt, skip software calibration");
     } else {
-        printf("Invalid arg or no memory");
+        ESP_LOGI("", "Invalid arg or no memory");
     }
 
     return calibrated;
@@ -50,7 +50,7 @@ bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_at
 
 void example_adc_calibration_deinit(adc_cali_handle_t handle)
 {
-    printf("deregister %s calibration scheme", "Line Fitting");
+    ESP_LOGI("", "deregister %s calibration scheme", "Line Fitting");
     CHECK(adc_cali_delete_scheme_line_fitting(handle));
 }
 

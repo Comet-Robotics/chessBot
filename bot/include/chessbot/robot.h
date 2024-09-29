@@ -81,25 +81,25 @@ public:
     {
         esp_register_shutdown_handler(safetyShutdown);
 
-        printf("p1\n");
+        ESP_LOGI("", "p1");
         runThread();
 
-printf("p2\n");
+        ESP_LOGI("", "p2");
         auto ip = getServerIp();
 
         if (ip) {
             uint16_t port = 3001;
 
             client = addTcpClient(ip->u_addr.ip4.addr, port);
-    printf("p3\n");
+            ESP_LOGI("", "p3");
             client->waitToConnect();
-    printf("p4\n");
+            ESP_LOGI("", "p4");
             client->sendHello();
 
-            printf("Sent HELLO to server\n");
+            ESP_LOGI("", "Sent HELLO to server");
         }
         else {
-            printf("Choosing not to connect to server.\n");
+            ESP_LOGE("", "Choosing not to connect to server.");
         }
     }
 
@@ -116,7 +116,7 @@ printf("p2\n");
 
         auto res = getaddrinfo(domain, NULL, &hints, &serverAddr);
         if (res != 0) {
-            printf("Failed to resolve server IP!\n");
+            ESP_LOGE("", "Failed to resolve server IP!");
             return {};
         }
 

@@ -41,7 +41,7 @@ void consoleHello()
     uint8_t currentHash[32];
     CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
 
-    printf("Start ChessBot https://chessbots.cometrobotics.org\nApp Hash: ");
+    ESP_LOGI("", "Start ChessBot https://chessbots.cometrobotics.org\nApp Hash: ");
 
     for (int i = 0; i < 32; i++) {
         printf("%02x", currentHash[i]);
@@ -52,7 +52,7 @@ void consoleHello()
     // As USB serial takes some time to attach, let it attach before any crashes
     if (true) { //tud_cdc_connected()) {
         for (int i = 0; i < 3; i++) {
-            printf("Starting...\n");
+            ESP_LOGI("", "Starting...");
             vTaskDelay(1_s);
         }
     }
@@ -93,7 +93,7 @@ extern "C" void app_main()
     Robot robot;
 
     while (true) {
-        printf("still running\n");
+        ESP_LOGI("", "still running");
 
         vTaskDelay(1_s);
     }

@@ -58,9 +58,11 @@ public:
     }
 
     // Create from a socket that already exists
-    TcpClient(int fd)
+    TcpClient(int fd, sockaddr_in* addr)
     {
+        ESP_LOGI("rnet", "Construct TcpClient directly with FD %d", fd);
         sock = fd;
+        memcpy(&this->destAddr, &addr, sizeof(addr));
 
         makeBufs();
 
@@ -75,9 +77,11 @@ public:
         rxStream = xStreamBufferCreate(TCP_BUF_SIZE, 1);
     }
 
-    void invalidate()
+    // Acts on a socket that is no longer usable
+    // Returns whether to destroy the object
+    bool invalidate()
     {
-        printf("Invalidating socket\n");
+        ESP_LOGI("rnet", "Invalidating socket");
 
         sock = -1;
         xEventGroupClearBits(status, STATUS_OPEN);
@@ -87,21 +91,27 @@ public:
 
         if (reconnectOnFail) 
         {
+            ESP_LOGI("rnet", "Reconnecting due to reconnectOnFail with FD %d", sock);
             connect();
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
     void connect()
     {
         if (sock != -1) {
-            printf("Tried to connect on full socket\n");
+            ESP_LOGE("rnet", "Tried to connect on full socket");
             // Already connected
             return;
         }
 
         xEventGroupSetBits(status, STATUS_CONNECTING);
 
-        printf("Start connect\n");
+        ESP_LOGI("rnet", "Start connect");
 
         // Backoff
         TickType_t now = xTaskGetTickCount();
@@ -111,7 +121,7 @@ public:
             lastRetry = now;
         }
 
-        printf("Start connect 2\n");
+        ESP_LOGI("rnet", "Start connect 2");
 
         sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (sock < 0) {
@@ -122,7 +132,7 @@ public:
         // CHECK(::ioctl(sock, O_NONBLOCK, 0) >= 0);
         // CHECK(esp_tls_set_socket_non_blocking(sock, true));
 
-        printf("Socket created, connecting\n");
+        ESP_LOGI("rnet", "Socket created, connecting");
 
         int err = ::connect(sock, (sockaddr*)&destAddr, sizeof(destAddr));
         if (err != 0) {
@@ -130,7 +140,7 @@ public:
             invalidate();
             return;
         }
-        printf("Successfully connected");
+        ESP_LOGI("rnet", "Successfully connected");
 
         int flags = fcntl(sock, F_GETFL, NULL);
         CHECK(flags >= 0);
@@ -143,19 +153,21 @@ public:
 
     bool isOpen()
     {
-        if (sock == -1) {
+        if (sock < 0) {
+            ESP_LOGE("rnet", "Invalidating for isOpen 1");
             invalidate();
             return false;
         }
 
-        int error = 0;
+        /*int error = 0;
         socklen_t errorsz = sizeof(error);
         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, &error, &errorsz);
 
         if (ret != 0 || error != 0) {
+            ESP_LOGI("rnet", "Invalidating for isOpen 2");
             invalidate();
             return false;
-        }
+        }*/
 
         return true;
     }
@@ -169,14 +181,14 @@ public:
     {
         int err = ::send(sock, msg.data(), msg.size(), 0);
         if (err < 0) {
-            perror("Hey:");
-            printf("Error occurred during sending: errno %d\n", errno);
+            perror("Error occurred during sending:");
         }
     }
 
     void recv()
     {
         if (!isOpen()) {
+            ESP_LOGE("rnet", "Socket was not open for recv!");
             connect();
             return;
         }
@@ -189,12 +201,12 @@ public:
                 // Just skip it for now
             } else {
                 // Error occurred during receiving, or socket closed
-                perror("recv failed\n");
+                perror("recv failed");
                 invalidate();
             }
         } else {
             // Data received
-            printf("Received %d bytes\n", len);
+            ESP_LOGI("rnet", "Received %d bytes", len);
 
             size_t sent = xStreamBufferSend(rxStream, (void*)rxBuf, len, portMAX_DELAY);
             CHECK(sent == len);
@@ -203,14 +215,14 @@ public:
 
     int readUntilTerminator(char* buf, int max, char terminator)
     {
-        printf("Start read\n");
+        ESP_LOGI("rnet", "Start read");
         char* i = buf;
         do {
             // Read a character out of the TCP stream
             int read = xStreamBufferReceive(rxStream, i, max, portMAX_DELAY);
 
             if (read < 0) {
-                printf("Stream buffer got bad msg %d\n", read);
+                ESP_LOGE("rnet", "Stream buffer got bad msg %d", read);
                 return -1;
             }
 
@@ -219,7 +231,7 @@ public:
 
         if (i == buf + max) {
             // Packet was too big, abort
-            printf("packet was too big\n");
+            ESP_LOGE("rnet", "packet was too big");
             invalidate();
             return 0;
         } else {
@@ -239,6 +251,8 @@ public:
 
     ~TcpClient()
     {
+        ESP_LOGI("rnet", "Removing TcpClient");
+
         // todo: this
         shutdown(sock, 0);
         close(sock);
@@ -250,7 +264,7 @@ void startNetThread();
 TcpClient* addTcpClient(uint32_t targetIp, uint16_t port);
 
 constexpr int MAX_TCP_SOCKETS = 10;
-constexpr int MAX_TCP_ACCEPT_SOCKETS = 1;
+constexpr int MAX_TCP_ACCEPT_SOCKETS = 0;
 constexpr int TOTAL_DESCRIPTORS = MAX_TCP_SOCKETS + MAX_TCP_ACCEPT_SOCKETS;
 
 extern TcpClient* clients[MAX_TCP_SOCKETS];

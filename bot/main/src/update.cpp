@@ -15,7 +15,7 @@
 #include <chessbot/wireless.h>
 #include <chessbot/activityLed.h>
 
-#define TAG "update"
+#define TAG "ota"
 
 namespace chessbot {
 EventGroupHandle_t otaEvents;
@@ -126,18 +126,18 @@ esp_err_t getJsonFromHost(const char* host)
     esp_err_t err = esp_http_client_perform(client);
 
     if (err == ESP_OK) {
-        printf("Successful HTTP request to %s, status %d, length %d\n", host, esp_http_client_get_status_code(client), (int)esp_http_client_get_content_length(client));
+        ESP_LOGI(TAG, "Successful HTTP request to %s, status %d, length %d", host, esp_http_client_get_status_code(client), (int)esp_http_client_get_content_length(client));
     } else {
-        printf("Failed HTTP request to %s\n", host);
+        ESP_LOGE(TAG, "Failed HTTP request to %s", host);
         esp_http_client_cleanup(client);
         return err;
     }
 
-    printf("Parsing JSON %s\n", otaHttpResp);
+    ESP_LOGI(TAG, "Parsing JSON %s", otaHttpResp);
     DeserializationError jerr = deserializeJson(otaJson, otaHttpResp);
 
     if (jerr) {
-        printf("Failed deserializing json from %s because %s\n", host, "");
+        ESP_LOGE(TAG, "Failed deserializing json from %s because %s", host, "");
         esp_http_client_cleanup(client);
         return ESP_FAIL;
     }
@@ -148,7 +148,7 @@ esp_err_t getJsonFromHost(const char* host)
 
 void doUpdateUpgrade()
 {
-    printf("Seeking json from host %s\n", updateServer);
+    ESP_LOGI(TAG, "Seeking json from host %s", updateServer);
     auto err = getJsonFromHost(updateServer);
 
     if (err != ESP_OK) {
@@ -171,7 +171,7 @@ void doUpdateUpgrade()
     CHECK(esp_ota_get_state_partition(esp_ota_get_running_partition(), &state));
 
     if (matches && state == ESP_OTA_IMG_PENDING_VERIFY) {
-        printf("OTA update process finished.\n");
+        ESP_LOGI(TAG, "OTA update process finished.");
         esp_ota_mark_app_valid_cancel_rollback();
 
         xEventGroupSetBits(otaEvents, FIRST_OTA_CHECK_DONE);
@@ -192,7 +192,7 @@ void doUpdateUpgrade()
 
     activityLedIsOta = true;
 
-    printf("Updating to hash %s from hash ", hash);
+    ESP_LOGI(TAG, "Updating to hash %s from hash ", hash);
     uint8_t currentHash[32];
     CHECK(esp_partition_get_sha256(esp_ota_get_running_partition(), currentHash));
     for (int i = 0; i < 32; i++) {

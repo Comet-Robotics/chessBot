@@ -45,7 +45,7 @@ void DifferentialKinematics::tick(uint32_t delta)
     leftMotor->set(leftOut);
     rightMotor->set(rightOut);
 
-    printf("PID in %f %f out %f %f\n", leftIn, rightIn, leftOut, rightOut);
+    ESP_LOGI("", "PID in %f %f out %f %f", leftIn, rightIn, leftOut, rightOut);
 }
 
 // Map inches of driving to encoder ticks

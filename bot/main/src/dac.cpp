@@ -56,7 +56,7 @@ void PwmPin::set(float val)
     // val is [0.0,1.0]
     int32_t duty = /*((1 << LEDC_DUTY_RES) - 1) - */ int32_t(maxDuty * val);
 
-    printf("Calculated duty cycle %d from %f\n", (int)duty, val);
+    ESP_LOGI("", "Calculated duty cycle %d from %f", (int)duty, val);
 
     this->setDuty(duty);
 }

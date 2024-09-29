@@ -34,7 +34,26 @@ void printBits(size_t const size, void const * const ptr)
             printf("%u", byte);
         }
     }
-    puts("");
+    puts("\n");
+}
+
+void invalidateClient(TcpClient* client) {
+    bool remove = client->invalidate();
+
+    if (remove) {
+        bool found = false;
+        for (int i = 0; i < clientsCount; i++) {
+            if (!found && clients[i] == client) {
+                found = true;
+            }
+            
+            if (found) {
+                clients[i] = clients[i + 1];
+            }
+        }
+
+        clientsCount--;
+    }
 }
 
 // Puts TCP socket output into strings, re-establishes closed/crashed sockets
@@ -43,7 +62,7 @@ void netThread(void*)
     while (true) {
         int rc = poll(pollDescriptors, clientsCount, 500);
         if (rc < 0) {
-            printf("Poll failed!\n");
+            ESP_LOGI("", "Poll failed!");
             FAIL();
         }
         else if (rc == 0) {
@@ -59,10 +78,12 @@ void netThread(void*)
                     clients[i]->recv();
                 } else if (revents & POLLNVAL) {
                     // Was never valid
-                    clients[i]->invalidate();
+                    ESP_LOGI("", "Invalidating for netThread 1");
+                    invalidateClient(clients[i]);
                 } else if (revents & (POLLHUP | POLLERR)) {
                     // Got closed
-                    clients[i]->invalidate();
+                    ESP_LOGI("", "Invalidating for netThread 2");
+                    invalidateClient(clients[i]);
                 }
             }
 
@@ -71,22 +92,22 @@ void netThread(void*)
                 int revents = pollDescriptors[i].revents;
 
                 if (revents != 0) {
-                    printf("TCP IN REVENTS ");
+                    ESP_LOGI("", "TCP IN REVENTS ");
                     printBits(2, &revents);
-                    printf("\n");
+                    ESP_LOGI("", "");
                 }
 
                 // This is designed so that remaining data is read first, then an invalid state is handled
                 if (revents & POLLIN) {
-                    printf("Accept POLLIN\n");
+                    ESP_LOGI("", "Accept POLLIN");
                     acceptTcpServer(pollDescriptors[i].fd);
                 } else if (revents & POLLNVAL) {
                     // Was never valid
-                    printf("Accept POLLNVAL\n");
+                    ESP_LOGI("", "Accept POLLNVAL");
                     CHECK(false);
                 } else if (revents & (POLLHUP | POLLERR)) {
                     // Got closed
-                    printf("Reopening accepting TCP socket?\n");
+                    ESP_LOGI("", "Reopening accepting TCP socket?");
                     startTcpServer();
                 }
             }
@@ -95,50 +116,7 @@ void netThread(void*)
     }
 }
 
-void startNetThread()
-{   
-    for (int i = 0; i < TOTAL_DESCRIPTORS; i++) {
-        pollDescriptors[i].fd = -1;
-    }
-
-    startTcpServer();
-
-    xTaskCreate(netThread, "net", TaskStackSize::LARGE, nullptr, TaskPriority::NET, nullptr);
-
-    printf("Started net thread\n");
-}
-
-TcpClient* addTcpClient(uint32_t targetIp, uint16_t port)
-{
-    CHECK(clientsCount < MAX_TCP_SOCKETS);
-    TcpClient* c = new TcpClient(targetIp, port);
-    clients[clientsCount] = c;
-    c->connect();
-
-    pollDescriptors[clientsCount] = {
-        .fd = c->sock,
-        .events = POLLERR | POLLHUP | POLLIN
-    };
-
-    return clients[clientsCount++];
-}
-
-// Add a client to poll from an already created socket
-TcpClient* addTcpClient(int fd)
-{
-    CHECK(clientsCount < MAX_TCP_SOCKETS);
-    TcpClient* c = new TcpClient(fd);
-    clients[clientsCount] = c;
-
-    pollDescriptors[clientsCount] = {
-        .fd = c->sock,
-        .events = POLLERR | POLLHUP | POLLIN
-    };
-
-    return clients[clientsCount++];
-}
-
-void startTcpServer()
+void acceptThread(void*)
 {
     addrinfo hints = {};
     hints.ai_family = AF_INET;
@@ -170,74 +148,98 @@ void startTcpServer()
 
     CHECK(listen(sock, 5) == 0);
 
-    CHECK(fcntl(sock, F_SETFD, O_NONBLOCK) == 0);
+    while (true)
+    {
+        acceptTcpServer(sock);
+    }
+}
 
-    pollDescriptors[0] = {
-        .fd = sock,
+void startNetThread()
+{   
+    for (int i = 0; i < TOTAL_DESCRIPTORS; i++) {
+        pollDescriptors[i].fd = -1;
+    }
+
+    xTaskCreate(netThread, "net", TaskStackSize::LARGE, nullptr, TaskPriority::NET, nullptr);
+    xTaskCreate(acceptThread, "accept", TaskStackSize::LARGE, nullptr, TaskPriority::NET, nullptr);
+
+    ESP_LOGI("", "Started net thread");
+}
+
+TcpClient* addTcpClient(uint32_t targetIp, uint16_t port)
+{
+    ESP_LOGI("", "Adding client to slot %d", clientsCount);
+
+    CHECK(clientsCount < MAX_TCP_SOCKETS);
+    TcpClient* c = new TcpClient(targetIp, port);
+    clients[clientsCount] = c;
+    c->connect();
+
+    pollDescriptors[clientsCount] = {
+        .fd = c->sock,
         .events = POLLERR | POLLHUP | POLLIN
     };
 
-    return;
+    return clients[clientsCount++];
+}
 
-/*
+// Add a client to poll from an already created socket
+TcpClient* addTcpClient(int fd, sockaddr_in* addr)
+{
+    ESP_LOGI("", "Adding client to slot %d", clientsCount);
 
-    sockaddr_in destAddr = {};
+    CHECK(clientsCount < MAX_TCP_SOCKETS);
+    TcpClient* c = new TcpClient(fd, addr);
+    clients[clientsCount] = c;
 
-    destAddr.sin_family = AF_INET;
-    destAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    destAddr.sin_port = htons(80);
-
-    // Open a TCP socket on port 80
-    int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    CHECK(sock >= 0);
-
-    int yes = 1;
-
-    // Allow sock to be reused 
-    CHECK(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == 0);;
-
-    // Set socket to be nonblocking, which will be inherited by children
-    CHECK(ioctl(sock, FIONBIO, &yes) == 0);
-
-    int flags = fcntl(sock, F_GETFL, NULL);
-    CHECK(flags >= 0);
-    flags |= O_NONBLOCK;
-    CHECK(fcntl(sock, F_SETFL, flags) != -1);
-
-    CHECK(bind(sock, (sockaddr*)&destAddr, sizeof(destAddr)) == 0);
-
-    CHECK(listen(sock, 5) == 0);
-
-    pollDescriptors[0] = {
-        .fd = sock,
+    pollDescriptors[clientsCount] = {
+        .fd = c->sock,
         .events = POLLERR | POLLHUP | POLLIN
     };
-    */
+
+    return clients[clientsCount++];
 }
 
 void acceptTcpServer(int acceptSock)
 {
-    struct sockaddr sourceAddr;
+    sockaddr sourceAddr;
     socklen_t addrLen = sizeof(sourceAddr);
-    printf("preAccept\n");
+    ESP_LOGI("", "preAccept");
     int sock = accept(acceptSock, (struct sockaddr*)&sourceAddr, &addrLen);
     if (sock < 0) {
-        printf("Unable to accept connection: errno %d\n", errno);
+        ESP_LOGI("", "Unable to accept connection: errno %d", errno);
         return;
     }
-    printf("postAccept 2\n");
+    ESP_LOGI("", "postAccept 2");
 
-    //setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &keepAlive, sizeof(int));
-    //setsockopt(sock, IPPROTO_TCP, TCP_KEEPIDLE, &keepIdle, sizeof(int));
-    //setsockopt(sock, IPPROTO_TCP, TCP_KEEPINTVL, &keepInterval, sizeof(int));
-    //setsockopt(sock, IPPROTO_TCP, TCP_KEEPCNT, &keepCount, sizeof(int));
+    int yes = 1;
+    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(int));
+    
+    int keepIdle = 5; // Time between keepalive probe packets when there is no peer activity
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPIDLE, &keepIdle, sizeof(int));
+
+    int keepInterval = 5;
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPINTVL, &keepInterval, sizeof(int));
+
+    int keepCount = 3; // Number of times to retry keepalive
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPCNT, &keepCount, sizeof(int));
+
+    // Disable Congestion Control / Nagle's Algorithm to prevent waiting for large packets to send
+    setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(int));
+
+    int flags = fcntl(sock, F_GETFL, NULL);
+    CHECK(flags >= 0);
+    flags |= O_NONBLOCK;
+    CHECK(fcntl(sock, F_SETFL, flags));
 
     char addrStr[16];
-    inet_ntoa_r(((struct sockaddr_in *)&sourceAddr)->sin_addr, addrStr, sizeof(addrStr) - 1);
-    printf("Opened socket to %s\n", addrStr);
+    inet_ntoa_r(((sockaddr_in *)&sourceAddr)->sin_addr, addrStr, sizeof(addrStr) - 1);
+    ESP_LOGI("", "Opened socket to %s", addrStr);
 
-    TcpClient* client = addTcpClient(sock);
+    TcpClient* client = addTcpClient(sock, (sockaddr_in*)&sourceAddr);
+    client->waitToConnect();
 
+    ESP_LOGI("", "Sending hello\n");
     client->sendHello();
 }
 

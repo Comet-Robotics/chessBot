@@ -6,6 +6,7 @@
 #include <cstdio>
 
 #include <esp_err.h>
+#include <esp_log.h>
 
 #include <freertos/task.h>
 
@@ -23,7 +24,7 @@ inline void checkImpl(bool val, const char* file, int line)
         // URGENT TODO: STOP ROBOT
 
         while (true) {
-            printf("Function call in %s on line %d failed\n", file, line);
+            ESP_LOGE("", "Function call in %s on line %d failed", file, line);
             vTaskDelay(1_s);
         }
     }
@@ -35,7 +36,7 @@ inline void checkImpl(esp_err_t val, const char* file, int line)
         // URGENT TODO: STOP ROBOT
 
         while (true) {
-            printf("Function call in %s on line %d failed\n", file, line);
+            ESP_LOGE("", "Function call in %s on line %d failed", file, line);
             vTaskDelay(1_s);
         }
     }
@@ -46,7 +47,7 @@ inline void checkImpl(esp_err_t val, const char* file, int line)
     // URGENT TODO: STOP ROBOT
 
     while (true) {
-        printf("Function call in %s on line %d failed\n", file, line);
+        ESP_LOGE("", "Function call in %s on line %d failed", file, line);
         vTaskDelay(1_s);
     }
 }

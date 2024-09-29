@@ -34,20 +34,20 @@ void wifiEventHandler(void* arg, esp_event_base_t eBase,
     assert(eBase == WIFI_EVENT);
 
     if (eId == WIFI_EVENT_WIFI_READY) {
-        ESP_LOGI(TAG, "Wifi ready\n");
+        ESP_LOGI(TAG, "Wifi ready");
     } else if (eId == WIFI_EVENT_SCAN_DONE) {
 
     } else if (eId == WIFI_EVENT_STA_START) {
-        ESP_LOGI(TAG, "Wifi start\n");
+        ESP_LOGI(TAG, "Wifi start");
 
         // When the station is ready for the first time, connect
         CHECK(esp_wifi_connect());
     } else if (eId == WIFI_EVENT_STA_STOP) {
-        ESP_LOGI(TAG, "Wifi stop\n");
+        ESP_LOGE(TAG, "Wifi stop");
     } else if (eId == WIFI_EVENT_STA_CONNECTED) {
-        ESP_LOGI(TAG, "Wifi connected\n");
+        ESP_LOGI(TAG, "Wifi connected");
     } else if (eId == WIFI_EVENT_STA_DISCONNECTED) {
-        ESP_LOGI(TAG, "Wifi disconnected");
+        ESP_LOGE(TAG, "Wifi disconnected");
 
         xEventGroupClearBits(wifiEvents, WIFI_CONNECTED_BIT);
 
