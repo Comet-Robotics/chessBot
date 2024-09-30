@@ -44,6 +44,7 @@ export function Game(): JSX.Element {
     const [gameInterruptedReason, setGameInterruptedReason] =
         useState<GameInterruptedReason>();
 
+    /**send any messages using our defined message handler inside a message socket for handling*/
     const sendMessage = useSocket(
         getMessageHandler(chess, setChess, setGameInterruptedReason),
     );
@@ -87,13 +88,13 @@ export function Game(): JSX.Element {
         gameEndReason = gameInterruptedReason;
     }
 
-    //create a game end dialog with the game end reason
+    /**create a game end dialog with the game end reason, if defined*/
     const gameEndDialog =
         gameEndReason !== undefined ?
             <GameEndDialog reason={gameEndReason} side={side} />
         :   null;
 
-    //make moves by making a copy of the chessboard and sending the move message
+    /**make moves by making a copy of the chessboard and sending the move message*/
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
         sendMessage(new MoveMessage(move));

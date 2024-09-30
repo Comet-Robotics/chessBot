@@ -28,6 +28,9 @@ export function SetupGame(props: SetupGameProps) {
         DesiredSide.WHITE,
     );
 
+    /**
+     * create the difficulty slide if the game type is computer
+     */
     const difficultySlider =
         props.gameType === GameType.COMPUTER ?
             <DifficultySlider
@@ -36,13 +39,14 @@ export function SetupGame(props: SetupGameProps) {
             />
         :   null;
 
+    /**the select side dropdown */
     const selectSide = (
         <SelectSide
             desiredSide={desiredSide}
             onDesiredSideChange={setDesiredSide}
         />
     );
-
+    /** difficulty and side buttons */
     const options = (
         <>
             {difficultySlider}
@@ -50,6 +54,7 @@ export function SetupGame(props: SetupGameProps) {
         </>
     );
 
+    //the title for the dialog
     const title =
         props.gameType === GameType.COMPUTER ?
             "Play Against the Computer"

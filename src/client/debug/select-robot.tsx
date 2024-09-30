@@ -24,6 +24,9 @@ const renderRobotIds: ItemRenderer<string> = (
     );
 };
 
+/**
+ * Id, selected id, and on robot selected function
+ */
 interface SelectRobotProps {
     robotIds: string[];
     selectedRobotId: string | undefined;
@@ -31,12 +34,16 @@ interface SelectRobotProps {
 }
 
 /**
- * Creates a selector for a robot.
+ * Creates the robot selector dialog
+ *
+ * @param props - robot ids and select function
+ * @returns - select dropdown
  */
 export function SelectRobot(props: SelectRobotProps) {
     const hasSelection = props.selectedRobotId !== undefined;
 
     return (
+        //get all the robot ids in the list for selection
         <Select<string>
             items={props.robotIds}
             itemRenderer={renderRobotIds}

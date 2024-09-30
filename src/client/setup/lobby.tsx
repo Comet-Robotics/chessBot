@@ -17,12 +17,14 @@ export function Lobby() {
     );
     const navigate = useNavigate();
 
+    //use a socket to wait for game started
     useSocket((message) => {
         if (message instanceof GameStartedMessage) {
             navigate("/game");
         }
     });
 
+    //show a loading screen if the message is pending
     if (isPending) {
         return (
             <SetupBase>
@@ -34,6 +36,7 @@ export function Lobby() {
         );
     }
 
+    //navigate to setup if the client is a host, or show a loading screen if waiting
     if (data.clientType === ClientType.HOST) {
         return <Navigate to="/setup" />;
     } else {

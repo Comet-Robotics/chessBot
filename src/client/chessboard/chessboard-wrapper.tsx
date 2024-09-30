@@ -151,6 +151,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                             // Manually show promotion dialog
                             setManualPromotionSquare(square);
                         } else {
+                            //make the move normally
                             doMove({
                                 from: lastClickedSquare,
                                 to: square,

@@ -64,6 +64,7 @@ export function DriveRobot(props: DriveRobotProps) {
                     ) {
                         continue;
                     }
+                    //set power based on pad values
                     setPower({ left: padLeftPower, right: padRightPower });
                     setPrevPad({ left: padLeftPower, right: padRightPower });
                 }
@@ -95,6 +96,7 @@ export function DriveRobot(props: DriveRobotProps) {
         setPower({ left: -0.5, right: 0.5 });
     }, []);
 
+    //handle when the left and right powers change
     const handleLeftPowerChange = useCallback(
         (value: number) => {
             setPower({ left: value, right: power.right });
@@ -108,7 +110,7 @@ export function DriveRobot(props: DriveRobotProps) {
         [power.left],
     );
 
-    //use wasd and arrows to control robots
+    /**use wasd and arrows to control robots */
     const hotkeys = useMemo(
         () => [
             {

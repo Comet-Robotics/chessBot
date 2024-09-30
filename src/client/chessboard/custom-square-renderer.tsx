@@ -22,7 +22,7 @@ export const customSquareRenderer = forwardRef<
     let lastMoveHighlight: ReactElement | null = null;
     let clickedPieceHighlight: ReactElement | null = null;
 
-    //highlight the last move made
+    //highlight the last move made 
     const lastMove = chess.getLastMove();
     if (
         lastMove !== undefined &&
@@ -68,6 +68,7 @@ export const customSquareRenderer = forwardRef<
         }
     }
 
+    //return all the highlights inside a div
     return (
         <div style={props.style} ref={ref}>
             {clickedPieceHighlight}

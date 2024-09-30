@@ -62,6 +62,7 @@ function SetupMain(props: SetupMainProps) {
         />
     );
 
+    /** computer, human, and puzzle buttons */
     const actions = (
         <>
             <Button
@@ -88,6 +89,7 @@ function SetupMain(props: SetupMainProps) {
         </>
     );
 
+    //return all the buttons and the title
     return (
         <>
             {debugButton}
