@@ -67,10 +67,9 @@ export function GameEndDialog(props: GameEndDialogProps) {
  *
  * @param reason - the reason the game ended
  * @param side - the current side
- * @returns - game over icon
+ * @returns game over icon
  */
 function gameOverIcon(reason: GameEndReason, side: Side) {
-
     //check which side won
     const whiteWon =
         reason === GameFinishedReason.BLACK_CHECKMATED ||
@@ -116,7 +115,7 @@ function gameOverIcon(reason: GameEndReason, side: Side) {
  * returns the game over reason message string
  *
  * @param reason - the game end reason
- * @returns - the game end message string
+ * @returns the game end message string
  */
 function gameOverMessage(reason: GameEndReason) {
     switch (reason) {

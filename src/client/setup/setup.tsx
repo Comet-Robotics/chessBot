@@ -15,7 +15,7 @@ enum SetupType {
 /**
  * Lets the host choose a game type and includes the debug button
  *
- * @returns - A setup base with the proper setup dialog
+ * @returns A setup base with the proper setup dialog
  */
 export function Setup(): JSX.Element {
     const [setupType, setSetupType] = useState(SetupType.MAIN);
@@ -49,7 +49,7 @@ interface SetupMainProps {
  * The initial buttons for choosing game types
  *
  * @param props - the hook for changing setup type
- * @returns - Setup buttons and debug button
+ * @returns Setup buttons and debug button
  */
 function SetupMain(props: SetupMainProps) {
     const navigate = useNavigate();

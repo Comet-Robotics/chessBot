@@ -42,7 +42,6 @@ export function useSocket(
     onMessage?: MessageHandler,
     onOpen?: () => void,
 ): SendMessage {
-
     //handle sending a message and opening it
     const { sendMessage } = useWebSocket(WEBSOCKET_URL, {
         onOpen: () => {

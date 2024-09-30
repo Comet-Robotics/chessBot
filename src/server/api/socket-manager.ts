@@ -11,10 +11,18 @@ export class SocketManager {
         this.sockets[id] = socket;
     }
 
+    /**
+     * deletes the socket at the provided id
+     * @param id - id to be deleted
+     */
     public handleSocketClosed(id: string): void {
         delete this.sockets[id];
     }
 
+    /**
+     * gets the socket at the provided id
+     * @param id - id of the desired socket
+     */
     public getSocket(id: string): WebSocket {
         return this.sockets[id];
     }

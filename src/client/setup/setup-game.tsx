@@ -19,7 +19,7 @@ interface SetupGameProps {
  * Creates the dialog for setting up human and computer games
  *
  * @param props - the chosen game type
- * @returns - setup dialog
+ * @returns setup dialog
  */
 export function SetupGame(props: SetupGameProps) {
     const navigate = useNavigate();
@@ -124,7 +124,7 @@ interface DifficultySliderProps {
  * Creates a difficulty slider from 0 to 3
  *
  * @param props - difficulty change handler
- * @returns - slider
+ * @returns slider
  */
 function DifficultySlider(props: DifficultySliderProps) {
     return (

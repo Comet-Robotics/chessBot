@@ -30,6 +30,7 @@ export abstract class GameManager {
         protected hostSide: Side,
     ) {}
 
+    /** check if game ended */
     public isGameEnded(): boolean {
         return (
             this.gameInterruptedReason !== undefined ||
@@ -37,6 +38,7 @@ export abstract class GameManager {
         );
     }
 
+    /** get game end reason */
     public getGameEndReason(): GameEndReason | undefined {
         return this.gameInterruptedReason ?? this.chess.getGameFinishedReason();
     }
@@ -80,10 +82,18 @@ export class HumanGameManager extends GameManager {
         clientManager.sendToClient(new GameStartedMessage());
     }
 
+    /**
+     * handles messages between players
+     * @param message - the message to be sent
+     * @param id - id of the sender
+     */
     public handleMessage(message: Message, id: string): void {
+        //check which type the id is
         const clientType = this.clientManager.getClientType(id);
         let sendToPlayer: SendMessage;
         let sendToOpponent: SendMessage;
+
+        //decide whether the host is the player or the opponent
         if (clientType === ClientType.HOST) {
             sendToPlayer = this.clientManager.sendToHost.bind(
                 this.clientManager,
@@ -100,9 +110,12 @@ export class HumanGameManager extends GameManager {
             );
         }
 
+        //update the internal chess object if it is a move massage
         if (message instanceof MoveMessage) {
             this.chess.makeMove(message.move);
             sendToOpponent(message);
+
+            //end the game if it is interrupted
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             // propagate back to both sockets
@@ -131,6 +144,12 @@ export class ComputerGameManager extends GameManager {
         }
     }
 
+    /**
+     * handle messages between the server and the player
+     * @param message - the message to send
+     * @param id - id of the sender
+     * @returns when the game ends
+     */
     public handleMessage(message: Message, id: string): void {
         if (message instanceof MoveMessage) {
             this.chess.makeMove(message.move);

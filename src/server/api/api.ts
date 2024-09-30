@@ -31,10 +31,12 @@ export let gameManager: GameManager | null = null;
  * The websocket is used to stream moves to and from the client.
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
+    //on close, delete the id
     ws.on("close", () => {
         socketManager.handleSocketClosed(req.cookies.id);
     });
 
+    //if there is an actual message, forward it to appropriate handler
     ws.on("message", (data) => {
         const message = parseMessage(data.toString());
         console.log("Received message: " + message.toJson());
@@ -99,6 +101,7 @@ apiRouter.get("/game-state", (req, res) => {
 apiRouter.post("/start-computer-game", (req, res) => {
     const side = req.query.side as Side;
     const difficulty = parseInt(req.query.difficulty as string) as Difficulty;
+    //create a new computer game manager
     gameManager = new ComputerGameManager(
         new ChessEngine(),
         socketManager,
@@ -117,6 +120,7 @@ apiRouter.post("/start-computer-game", (req, res) => {
  */
 apiRouter.post("/start-human-game", (req, res) => {
     const side = req.query.side as Side;
+    //create a new human game manager
     gameManager = new HumanGameManager(
         new ChessEngine(),
         socketManager,
@@ -164,6 +168,7 @@ apiRouter.get("/get-puzzles", (_, res) => {
  * @returns - boolean if successful
  */
 function doDriveRobot(message: DriveRobotMessage): boolean {
+    //check if robot is registered
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(
             "attempted manual move for non-existent robot ID " + message.id,
@@ -171,11 +176,15 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
         return false;
     } else {
         const tunnel = tcpServer.getTunnelFromId(message.id);
+
+        //check if robot is connected
         if (!tunnel.connected) {
             console.warn(
                 "attempted manual move for disconnected robot ID " + message.id,
             );
             return false;
+
+            //send the robot message
         } else {
             tunnel.send({
                 type: "DRIVE_TANK",

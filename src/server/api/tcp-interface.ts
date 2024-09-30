@@ -53,6 +53,10 @@ export class BotTunnel {
         }
     }
 
+    /**
+     * log when data comes in
+     * @param data - the incoming data
+     */
     onData(data: Buffer) {
         console.log(
             "connection data from %s: %j",
@@ -62,6 +66,10 @@ export class BotTunnel {
         this.handleData(data);
     }
 
+    /**
+     * log errors and update connection status
+     * @param err - the error message
+     */
     onError(err: Error) {
         console.error(
             "Connection error from %s: %s",
@@ -104,9 +112,11 @@ export class BotTunnel {
             return;
         }
 
+        //get the data and find the terminator
         let str = this.dataBuffer.toString();
         const terminator = str.indexOf(";");
 
+        //if there is no terminator, wait for it
         if (terminator === -1) {
             if (str.length > 200) {
                 // Invalid state, reset buf
@@ -173,11 +183,15 @@ export class BotTunnel {
         }
     }
 
+    /**
+     * send packets to robot
+     * @param packet - packet to send
+     */
     send(packet: Packet) {
         const str = packetToJson(packet);
         const msg = str + ";";
 
-        //If the 
+        //If the connection isn't active, there is no robot
         if (!this.isActive()) {
             console.error(
                 "Connection to",
@@ -237,9 +251,11 @@ export class TCPServer {
         const remoteAddress = socket.remoteAddress + ":" + socket.remotePort;
         console.log("New client connection from %s", remoteAddress);
 
+        //create a new bot tunnel for the connection
         const tunnel = new BotTunnel(
             socket,
             ((mac: string) => {
+                //add the new robot to the array if it isn't in bots config
                 console.log("Adding robot with mac", mac, "to arr");
                 let id: string;
                 if (!(mac in config["bots"])) {
@@ -258,6 +274,7 @@ export class TCPServer {
             }).bind(this),
         );
 
+        //bind the sockets to the corresponding functions
         socket.on("data", tunnel.onData.bind(tunnel));
         socket.once("close", tunnel.onClose.bind(tunnel));
         socket.on("error", tunnel.onError.bind(tunnel));

@@ -37,7 +37,7 @@ function getMessageHandler(
 /**
  * Creates required message, game, and move handling functions before inserting them into a chessboard wrapper
  *
- * @returns - chessboard wrapper with current side and message handler
+ * @returns chessboard wrapper with current side and message handler
  */
 export function Game(): JSX.Element {
     const [chess, setChess] = useState(new ChessEngine());
