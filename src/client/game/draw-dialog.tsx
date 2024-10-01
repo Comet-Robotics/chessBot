@@ -4,12 +4,17 @@ import {
     DialogBody,
     NonIdealState,
     DialogFooter,
-    } from "@blueprintjs/core";
+} from "@blueprintjs/core";
 import { useState } from "react";
 import { SendMessage } from "../../common/message/message";
-import { GameHoldMessage, GameInterruptedMessage } from "../../common/message/game-message";
-import { GameHoldReason, GameInterruptedReason } from "../../common/game-end-reasons";
-
+import {
+    GameHoldMessage,
+    GameInterruptedMessage,
+} from "../../common/message/game-message";
+import {
+    GameHoldReason,
+    GameInterruptedReason,
+} from "../../common/game-end-reasons";
 
 interface DrawDialogProps {
     sendMessage: SendMessage;
@@ -56,7 +61,7 @@ export function OfferDrawDialog(props: DrawDialogProps) {
     );
 }
 
-export function AcceptDrawDialog(props: DrawDialogProps){
+export function AcceptDrawDialog(props: DrawDialogProps) {
     const [isOpen, setIsOpen] = useState(true);
     const actions = (
         <>
@@ -66,7 +71,9 @@ export function AcceptDrawDialog(props: DrawDialogProps){
                 intent="primary"
                 onClick={() => {
                     props.sendMessage(
-                        new GameInterruptedMessage(GameInterruptedReason.DRAW_ACCEPTED),
+                        new GameInterruptedMessage(
+                            GameInterruptedReason.DRAW_ACCEPTED,
+                        ),
                     );
                 }}
             />
