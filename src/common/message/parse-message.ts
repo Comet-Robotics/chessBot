@@ -5,6 +5,7 @@ import {
     MoveMessage,
     GameInterruptedMessage,
     GameStartedMessage,
+    GameHoldMessage,
 } from "./game-message";
 
 /**
@@ -23,6 +24,8 @@ export function parseMessage(text: string): Message {
             return new GameStartedMessage();
         case MessageType.GAME_INTERRUPTED:
             return new GameInterruptedMessage(obj.reason);
+        case MessageType.GAME_HELD:
+            return new GameHoldMessage(obj.reason);
         case MessageType.POSITION:
             return new PositionMessage(obj.pgn);
         case MessageType.MOVE:
