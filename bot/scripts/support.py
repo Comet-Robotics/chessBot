@@ -13,8 +13,16 @@ import time
 task = sys.argv[1]
 print('Doing task: ' + task)
 
-esptool: str = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'/components/esptool_py/esptool/esptool.py'
-idf: str = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'/tools/idf.py'
+pythonBin = sys.executable
+
+idfPath = None
+if os.name == 'nt':
+    idfPath = os.environ[r'espIdfPathWin']
+else:
+    idfPath = os.environ[r'espIdfPath']
+
+esptool: str = pythonBin + ' ' + idfPath + r'/components/esptool_py/esptool/esptool.py'
+idf: str = pythonBin + ' ' + idfPath + r'/tools/idf.py'
 
 host = "root@192.168.3.1"
 webdir = "/opt/www"
@@ -130,7 +138,6 @@ elif task == 'deploy':
         + f"0x8000 {binaryLocation}/partition_table/partition-table.bin "
         + f"0xd000 {binaryLocation}/ota_data_initial.bin "
         + f"0x10000 {binaryLocation}/chessbot.bin")
-    
     os.system(command)
     
 

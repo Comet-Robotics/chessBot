@@ -10,12 +10,13 @@
     {
       "label": "Disable OTA Updates",
       "type": "shell",
-      "command": "${config:idf.pythonBinPathWin} scripts/support.py ota-disable",
+      "windows": { "command": "${config:idf.pythonBinPath} scripts/support.py ota-disable" },
+      "linux": { "command": "${config:idf.pythonBinPathWin} scripts/support.py ota-disable" },
       "options": {
         "env": {
           "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
-          "espPythonPath": "${config:idf.pythonBinPathWin}",
-          "espIdfPath": "${config:idf.espIdfPathWin}"
+          "espIdfPath": "${config:idf.espIdfPath}",
+          "espIdfPathWin": "${config:idf.espIdfPathWin}"
         }
       },
       "problemMatcher": []
@@ -23,12 +24,13 @@
     {
       "label": "Deploy OTA Update",
       "type": "shell",
-      "command": "${config:idf.pythonBinPathWin} scripts/support.py ota",
+      "windows": { "command": "${config:idf.pythonBinPathWin} scripts/support.py ota" },
+      "linux": { "command": "${config:idf.pythonBinPath} scripts/support.py ota" },
       "options": {
         "env": {
           "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
-          "espPythonPath": "${config:idf.pythonBinPathWin}",
-          "espIdfPath": "${config:idf.espIdfPathWin}"
+          "espIdfPath": "${config:idf.espIdfPath}",
+          "espIdfPathWin": "${config:idf.espIdfPathWin}"
         }
       },
       "problemMatcher": []
@@ -36,12 +38,13 @@
     {
       "label": "Update DNS Entry",
       "type": "shell",
-      "command": "${config:idf.pythonBinPathWin} scripts/support.py dns",
+      "windows": { "command": "${config:idf.pythonBinPathWin} scripts/support.py dns" },
+      "linux": { "command": "${config:idf.pythonBinPath} scripts/support.py dns" },
       "options": {
         "env": {
           "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
-          "espPythonPath": "${config:idf.pythonBinPathWin}",
-          "espIdfPath": "${config:idf.espIdfPathWin}"
+          "espIdfPath": "${config:idf.espIdfPath}",
+          "espIdfPathWin": "${config:idf.espIdfPathWin}"
         }
       },
       "problemMatcher": []
@@ -49,12 +52,13 @@
     {
       "label": "Deploy Serial Update",
       "type": "shell",
-      "command": "${config:idf.pythonBinPathWin} scripts/support.py deploy",
+      "windows": { "command": "${config:idf.pythonBinPathWin} scripts/support.py deploy" },
+      "linux": { "command": "${config:idf.pythonBinPath} scripts/support.py deploy" },
       "options": {
         "env": {
           "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
-          "espPythonPath": "${config:idf.pythonBinPathWin}",
-          "espIdfPath": "${config:idf.espIdfPathWin}"
+          "espIdfPath": "${config:idf.espIdfPath}",
+          "espIdfPathWin": "${config:idf.espIdfPathWin}"
         }
       },
       "problemMatcher": []
@@ -62,12 +66,13 @@
     {
       "label": "Run Admin Interface",
       "type": "shell",
-      "command": "${config:idf.pythonBinPathWin} scripts/admin.py",
+      "windows": { "command": "${config:idf.pythonBinPathWin} scripts/admin.py" },
+      "linux": { "command": "${config:idf.pythonBinPath} scripts/admin.py" },
       "options": {
         "env": {
           "PATH": "${env:PATH}:${config:idf.customExtraPaths}",
-          "espPythonPath": "${config:idf.pythonBinPathWin}",
-          "espIdfPath": "${config:idf.espIdfPathWin}"
+          "espIdfPath": "${config:idf.espIdfPath}",
+          "espIdfPathWin": "${config:idf.espIdfPathWin}"
         }
       },
       "problemMatcher": []
