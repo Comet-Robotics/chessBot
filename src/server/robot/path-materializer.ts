@@ -210,131 +210,71 @@ function moveMainPiece(move: Move): MovePiece {
     return constructFinalCommand(move, moveCommands, rotateCommands);
 }
 
-function getDistance(x1: number, y1: number, x2: number, y2: number): number {
-    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+/**
+ * Te easiest move to get to the dead zone
+ */
+//TODO: Change the move to Grid that way we can move off the board.
+function moveToDeadZone(origin: Square): Move {
+    const aboveMove = moveToGridMove({
+        from: origin,
+        to: (origin[0] + "8") as Square,
+    });
+    const belowMove = moveToGridMove({
+        from: origin,
+        to: (origin[0] + "1") as Square,
+    });
+    const rightMove = moveToGridMove({
+        from: origin,
+        to: ("h" + origin[1]) as Square,
+    });
+    const leftMove = moveToGridMove({
+        from: origin,
+        to: ("a" + origin[1]) as Square,
+    });
+
+    const aboveCollision = detectCollisions(
+        aboveMove,
+        calcCollisionType(aboveMove),
+    );
+    const belowCollision = detectCollisions(
+        belowMove,
+        calcCollisionType(belowMove),
+    );
+    const leftCollision = detectCollisions(
+        leftMove,
+        calcCollisionType(leftMove),
+    );
+    const rightCollision = detectCollisions(
+        rightMove,
+        calcCollisionType(rightMove),
+    );
+
+    const collisionTuple: [Move, string[]][] = [
+        [{ from: origin, to: (origin[0] + "8") as Square }, aboveCollision],
+        [{ from: origin, to: (origin[0] + "1") as Square }, belowCollision],
+        [{ from: origin, to: ("h" + origin[1]) as Square }, rightCollision],
+        [{ from: origin, to: ("a" + origin[1]) as Square }, leftCollision],
+    ];
+
+    collisionTuple.sort((a, b) => a[1].length - b[1].length);
+    return collisionTuple[0][0];
 }
 
-//step1 find the empty row out
+//step1 find the path of least resistance to the dead zone
+//step2 shimmy pieces out of the way
+//step3 move the piece to the dead zone
+//step4 shimmy everything back
+//step5 calculate the move to the home space
+//step6 move the piece to the home space.
 function returnToHome(from: Square, id: string): SequentialCommandGroup {
-    let flagAbove = false;
-    let flagBelow = false;
-    let flagRight = false;
-    let flagLeft = false;
-    let flagPassedMiddle = false;
-
     const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
     const home: GridIndices = robotManager.getRobot(id).homeIndices;
+    const fastestMoveToDeadzone = moveToDeadZone(from);
+    const toDeadzone = moveMainPiece(fastestMoveToDeadzone);
 
-    for (let y = 2; y < 11; y++) {
-        const checkedSquare: GridIndices = new GridIndices(capturedPiece.i, y);
-
-        flagPassedMiddle =
-            checkedSquare === capturedPiece ? true : flagPassedMiddle;
-        const hasPiece =
-            robotManager.indicesToIds.get(checkedSquare) !== undefined;
-
-        flagAbove = !flagAbove ? true : hasPiece && !flagPassedMiddle;
-        flagBelow = !flagBelow ? true : hasPiece && flagPassedMiddle;
-    }
-
-    flagPassedMiddle = false;
-
-    for (let x = 2; x < 11; x++) {
-        const checkedSquare: GridIndices = new GridIndices(x, capturedPiece.j);
-
-        flagPassedMiddle =
-            checkedSquare === capturedPiece ? true : flagPassedMiddle;
-        const hasPiece =
-            robotManager.indicesToIds.get(checkedSquare) !== undefined;
-
-        flagLeft = !flagLeft ? true : hasPiece && !flagPassedMiddle;
-        flagRight = !flagRight ? true : hasPiece && flagPassedMiddle;
-    }
-
-    if (flagAbove && flagBelow && flagRight && flagLeft) {
-        //need to shimmy
-    } else {
-        //find shortest path to home
-        //straight line to the padding, calc the shortest way
-        let first = true;
-        let shortestDistance = 0;
-        let direction = 0;
-
-        if (!flagAbove) {
-            if (first) {
-                shortestDistance = getDistance(
-                    capturedPiece.i,
-                    1,
-                    home.i,
-                    home.j,
-                );
-                first = false;
-                direction = 1;
-            } else {
-                const d = getDistance(capturedPiece.i, 1, home.i, home.j);
-                if (d < shortestDistance) {
-                    shortestDistance = d;
-                    direction = 1;
-                }
-            }
-        }
-        if (!flagBelow) {
-            if (first) {
-                shortestDistance = getDistance(
-                    capturedPiece.i,
-                    10,
-                    home.i,
-                    home.j,
-                );
-                first = false;
-                direction = 2;
-            } else {
-                const d = getDistance(capturedPiece.i, 10, home.i, home.j);
-                if (d < shortestDistance) {
-                    shortestDistance = d;
-                    direction = 2;
-                }
-            }
-        }
-        if (!flagLeft) {
-            if (first) {
-                shortestDistance = getDistance(
-                    1,
-                    capturedPiece.j,
-                    home.i,
-                    home.j,
-                );
-                first = false;
-                direction = 3;
-            } else {
-                const d = getDistance(1, capturedPiece.j, home.i, home.j);
-                if (d < shortestDistance) {
-                    shortestDistance = d;
-                    direction = 3;
-                }
-            }
-        }
-        if (!flagRight) {
-            if (first) {
-                shortestDistance = getDistance(
-                    11,
-                    capturedPiece.j,
-                    home.i,
-                    home.j,
-                );
-                first = false;
-                direction = 4;
-            } else {
-                const d = getDistance(11, capturedPiece.j, home.i, home.j);
-                if (d < shortestDistance) {
-                    shortestDistance = d;
-                    direction = 4;
-                }
-            }
-        }
-    }
-
-    const goHome: SequentialCommandGroup = new SequentialCommandGroup([]);
+    const goHome: SequentialCommandGroup = new SequentialCommandGroup([
+        toDeadzone,
+    ]);
     return goHome;
 }
 
