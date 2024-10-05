@@ -13,8 +13,8 @@ import time
 task = sys.argv[1]
 print('Doing task: ' + task)
 
-esptool: str = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'\components\esptool_py\esptool\esptool.py'
-idf: str = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'\tools\idf.py'
+esptool: str = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'/components/esptool_py/esptool/esptool.py'
+idf: str = os.environ[r'espPythonPath'] + ' ' + os.environ[r'espIdfPath'] + r'/tools/idf.py'
 
 host = "root@192.168.3.1"
 webdir = "/opt/www"
@@ -49,7 +49,7 @@ elif task == 'ota':
     os.system('cd build && ninja')
 
     # Read app image to find hash
-    cmd = esptool + r' --chip esp32s2 image_info --version 2 .\build\chessbot.bin'
+    cmd = esptool + r' --chip esp32s2 image_info --version 2 ./build/chessbot.bin'
 
     imageInfo = subprocess.check_output(cmd)
     imageInfo = str(imageInfo)
