@@ -1,7 +1,7 @@
-# RL^2 Soccer Bot Embedded Code
+# chessBots Embedded Code
 
 ## First Time Setup
-1. Open this folder in Visual Studio Code.
+1. Open the `./bot` folder in Visual Studio Code.
 2. Create a file `env.h` and initialize it with the environment-specific information using this template:
 ```
 // Put your IP here and uncomment if you aren't on the special router
