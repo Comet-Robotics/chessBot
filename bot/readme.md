@@ -42,5 +42,5 @@
 10. Run the command "ESP-IDF: Build, Flash, and start a monitor on your device"
 11. You should see an error about the flash failing. To verify it worked, enter the Terminal tab and it should say the flash reached 100%. If it didn't, you likely picked the wrong serial port or didn't enter the bootloader.
 12. Press the RST button on the S2 Mini to reboot into your new firmware.
-13. Open the "SERIAL MONITOR" tab in the terminal modal in the bottom right.
-14. Select the serial port for the S2 Mini and "Start Monitoring"
+13. Run the ESP-IDF port selection command again and re-select the port with "usb" in it (it may have changed after the reboot).
+14. Run the "ESP-IDF: Monitor Device" command.
