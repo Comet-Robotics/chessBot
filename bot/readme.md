@@ -4,17 +4,32 @@
 1. Open this folder in Visual Studio Code.
 2. Create a file `env.h` and initialize it with the environment-specific information using this template:
 ```
+// Put your IP here and uncomment if you aren't on the special router
+//#define FIXED_SERVER_IP "10.0.0.1"
+
+// Comment this out if you have a working OTA router
 #define OTA_UPDATE_OPTIONAL
 
+// Uncomment this when you are testing your binary image in the emulator
 // #define WOKWI_COMPAT
 
 #ifdef WOKWI_COMPAT
 #define WIFI_SSID "Wokwi-GUEST"
 #define WIFI_PASSWORD ""
 #else
-#define WIFI_SSID ""
+#define WIFI_SSID "ChessBot"
 #define WIFI_PASSWORD ""
 #endif
+
+/*
+router-ssh-user=admin
+router-ssh-password=
+
+binary-location=build
+esp32-serial=
+
+do-build=false
+*/
 ```
 3. Open the extensions tab on the left (4 squares).
 4. Install the ESP-IDF and Serial Monitor extensions. 

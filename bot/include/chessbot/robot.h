@@ -105,6 +105,12 @@ public:
 
     std::optional<ip_addr_t> getServerIp()
     {
+#ifdef FIXED_SERVER_IP
+        ip_addr_t addr = {};
+        ip4addr_aton(FIXED_SERVER_IP, &addr.u_addr.ip4);
+        addr.type = IPADDR_TYPE_V4;
+        return addr;
+#else
         auto domain = "chess-server.internal";
 
         addrinfo* serverAddr;
@@ -123,10 +129,11 @@ public:
         freeaddrinfo(serverAddr);
 
         in_addr ip = ((sockaddr_in*)serverAddr->ai_addr)->sin_addr;
-        ip_addr_t structure;
-        structure.u_addr.ip4.addr = ip.s_addr;
-        structure.type = IPADDR_TYPE_V4;
-        return structure;
+        ip_addr_t addr = {};
+        addr.u_addr.ip4.addr = ip.s_addr;
+        addr.type = IPADDR_TYPE_V4;
+        return addr;
+#endif
     }
 
     void tick(uint64_t us)

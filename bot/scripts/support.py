@@ -31,21 +31,21 @@ doBuild = True
 user: str | None = None
 password: str | None = None
 binaryLocation: str | None = None
-serialPort: str | None = None
+serialPortFlag: str = ""
 
 with open('./env.h', 'r') as f:
     contents = f.read()
     doBuild = re.search(r'do\-build=(.+)\n', contents).groups()[0] == 'true'
-    user = re.search(r'ota\-ssh\-user=(.+)\n', contents).groups()[0]
-    password = re.search(r'ota\-ssh\-password=(.+)\n', contents).groups()[0]
+    user = re.search(r'router\-ssh\-user=(.+)\n', contents).groups()[0]
+    password = re.search(r'router\-ssh\-password=(.+)\n', contents).groups()[0]
     binaryLocation = re.search(r'binary\-location=(.+)\n', contents).groups()[0]
-    serialPort = re.search(r'esp32\-serial=(.+)\n', contents).groups()[0]
+
+    serialPortSearch = re.search(r'esp32\-serial=(.+)\n', contents)
+    if serialPortSearch is not None:
+        serialPortFlag = "-p " + serialPortSearch[0]
 
 if binaryLocation == None:
     binaryLocation = '/build'
-
-if serialPort == None:
-    serialPort = '/dev/ttyUSB0'
 
 if task == 'ota-disable':
     # Upload new info.json
@@ -133,7 +133,7 @@ elif task == 'dns':
     os.system(f'ssh {host} -t "{sed};{signal}"')
 
 elif task == 'deploy':
-    command = (esptool + f" -p {serialPort} --chip esp32s2 write_flash --flash_size 4MB "
+    command = (esptool + f" {serialPortFlag} --chip esp32s2 write_flash --flash_size 4MB "
         + f"0x1000 {binaryLocation}/bootloader/bootloader.bin "
         + f"0x8000 {binaryLocation}/partition_table/partition-table.bin "
         + f"0xd000 {binaryLocation}/ota_data_initial.bin "
