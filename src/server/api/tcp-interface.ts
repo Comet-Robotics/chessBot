@@ -175,7 +175,9 @@ export class BotTunnel {
         const configEntries: [string, string][] = [];
 
         // Where a bot has a specific config changed, like moving a pin
-        const overrides = (config[config.bots[mac]] ?? { "attributes": {} })["attributes"] ?? {};
+        const overrides =
+            (config[config.bots[mac]] ?? { attributes: {} })["attributes"] ??
+            {};
 
         for (const i of config.possibleBotConfig) {
             if (i.name in overrides) {
