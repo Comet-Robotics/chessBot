@@ -7,7 +7,7 @@ import {
     SequentialCommandGroup,
 } from "../command/command";
 import {
-    AbsoluteMoveCommand,
+    RelativeMoveCommand,
     RelativeRotateCommand,
 } from "../command/move-command";
 import { MovePiece } from "../command/move-piece";
@@ -170,8 +170,8 @@ function findShimmyLocation(
 function constructMoveCommand(
     pieceId: string,
     location: Position,
-): AbsoluteMoveCommand {
-    return new AbsoluteMoveCommand(pieceId, location);
+): RelativeMoveCommand {
+    return new RelativeMoveCommand(pieceId, location);
 }
 
 function constructRotateCommand(
@@ -187,14 +187,31 @@ function constructRotateCommand(
 
 function constructFinalCommand(
     move: Move,
-    moveCommands: AbsoluteMoveCommand[],
+    moveCommands: RelativeMoveCommand[],
     rotateCommands: RelativeRotateCommand[],
-): MovePiece {}
+): MovePiece {
+    const from = GridIndices.squareToGrid(move.from);
+    const mainPiece = robotManager.indicesToIds.get(from);
+    if (mainPiece !== undefined) {
+        const to = GridIndices.squareToGrid(move.to);
+        const pos = new Position(to.i + 0.5, to.j + 0.5);
+        const mainMove = constructMoveCommand(mainPiece, pos);
+        const mainTurn = constructRotateCommand(mainPiece, pos);
+        rotateCommands.push(mainTurn);
+        const parallelMove = new ParallelCommandGroup(moveCommands);
+        return new MovePiece(
+            new SequentialCommandGroup([parallelMove, mainMove]),
+            mainMove
+        );
+    } else {
+        return new MovePiece(rotateCommands, new SequentialCommandGroup([]));
+    }
+}
 
 // Takes in a move, and generates the commands required to get the main piece to it's destination
 // If there are pieces in the way, it shimmy's them out, and move them back after main piece passes
 function moveMainPiece(move: Move): MovePiece {
-    const moveCommands: AbsoluteMoveCommand[] = [];
+    const moveCommands: RelativeMoveCommand[] = [];
     const rotateCommands: RelativeRotateCommand[] = [];
     const collisionType = calcCollisionType(moveToGridMove(move));
     const collisions: string[] = detectCollisions(
