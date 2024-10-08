@@ -65,8 +65,14 @@ apiRouter.get("/client-information", (req, res) => {
             gameManager = new ComputerGameManager(
                 new ChessEngine(oldSave.game),
                 socketManager,
-                oldSave.hostWhite ? Side.WHITE : Side.BLACK,
+                oldSave.host === req.cookies.id ?
+                    oldSave.hostWhite ?
+                        Side.WHITE
+                    :   Side.BLACK
+                : oldSave.hostWhite ? Side.BLACK
+                : Side.WHITE,
                 oldSave.aiDifficulty,
+                oldSave.host !== req.cookies.id,
             );
         } else {
             gameManager = new HumanGameManager(
@@ -74,6 +80,7 @@ apiRouter.get("/client-information", (req, res) => {
                 socketManager,
                 oldSave.hostWhite ? Side.WHITE : Side.BLACK,
                 clientManager,
+                oldSave.host !== req.cookies.id,
             );
         }
     }
@@ -105,6 +112,7 @@ apiRouter.post("/start-computer-game", (req, res) => {
         socketManager,
         side,
         difficulty,
+        false,
     );
     return res.send({ message: "success" });
 });
@@ -116,6 +124,7 @@ apiRouter.post("/start-human-game", (req, res) => {
         socketManager,
         side,
         clientManager,
+        false,
     );
     return res.send({ message: "success" });
 });

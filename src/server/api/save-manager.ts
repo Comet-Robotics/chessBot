@@ -14,6 +14,7 @@ import { Side } from "../../common/game-types";
 
 //Save files contain a date in ms and pgn string
 export interface iSave {
+    host: string;
     date: number;
     hostWhite: boolean;
     aiDifficulty: number;
@@ -39,8 +40,9 @@ export class SaveManager {
         pgn: string,
     ) {
         const day = new Date().getTime();
-        const side = hostSide === Side.WHITE ? true : false;
+        const side = hostSide === Side.WHITE;
         const saveContents = {
+            host: hostId,
             date: day,
             hostWhite: side,
             aiDifficulty: aiDiff,
