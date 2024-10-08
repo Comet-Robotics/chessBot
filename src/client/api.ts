@@ -29,7 +29,6 @@ export function useEffectQuery(
 /**
  * The URL to use for connecting to the websocket backend.
  */
-
 const WEBSOCKET_URL = `ws://${new URL(window.location.href).host}/ws`;
 
 /**
