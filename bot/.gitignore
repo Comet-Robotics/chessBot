@@ -1,8 +1,0 @@
-/build/
-/managed_components/
-sdkconfig.old
-.vscode/settings.json
-/*.log
-esp-idf-vscode-generated.gdb
-/dependencies.lock
-env.h
