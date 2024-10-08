@@ -179,7 +179,7 @@ export class BotTunnel {
             (config[config.bots[mac]] ?? { attributes: {} })["attributes"] ??
             {};
 
-        for (const i of config.possibleBotConfig) {
+        for (const i of config.botConfigSchema) {
             if (i.name in overrides) {
                 configEntries.push([i.type, overrides[i.name]]);
             } else {

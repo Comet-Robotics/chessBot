@@ -388,7 +388,7 @@
             "y": "9"
         }
     },
-    "possibleBotConfig": [
+    "botConfigSchema": [
         {
             "name": "MOTOR_A_PIN1",
             "type": "gpio",
