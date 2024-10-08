@@ -14,6 +14,11 @@ export enum MessageType {
      */
     REGISTER_WEBSOCKET = "register-websocket",
     /**
+     * A server-client message defining the current position of a game.
+     * Used to allow clients to reconnect.
+     */
+    POSITION = "position",
+    /**
      * A two-way message containing a single move.
      */
     MOVE = "move",
