@@ -35,10 +35,10 @@ export class CommandExecutor {
      * Executes a command after checking the requirements.
      * @param command - The command to execute.
      */
-    public execute(command: Command) {
+    public async execute(command: Command): Promise<void> {
         this.checkRequirements(command);
         this.runningCommands.push(command);
-        command.execute().finally(() => {
+        return command.execute().finally(() => {
             const index = this.runningCommands.indexOf(command);
             if (index >= 0) {
                 this.runningCommands.splice(index, 1);

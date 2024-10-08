@@ -1,5 +1,5 @@
-import { Button, Card, Code, H1, H2, Spinner } from "@blueprintjs/core";
-import { useEffect, useState } from "react";
+import { Button, Card, Code, Dialog, DialogBody, H1, H2, Spinner } from "@blueprintjs/core";
+import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { get, useSocket } from "../api";
 import { SelectRobot } from "./select-robot";
@@ -27,42 +27,41 @@ export function Debug() {
         fetchIds();
     }, [setRobotIds]);
 
-    let body;
+    let body: ReactNode;
     if (robotIds === undefined) {
         body = <Spinner intent="primary" />;
     } else {
         body = (
             <div className="debug-section">
-            <H2>Select Robot</H2>
+                <H2>Select Robot</H2>
                 <SelectRobot
                     robotIds={robotIds}
                     selectedRobotId={selectedRobotId}
                     onRobotIdSelected={setSelectedRobotId}
-                    />
+                />
                 {selectedRobotId === undefined ? null : (
                     <>
-                    <div className="debug-section">
+                        <div className="debug-section">
                             <H2>Motor Control for <Code>{selectedRobotId}</Code></H2>
-                        <DriveRobot
-                            sendMessage={sendMessage}
-                            robotId={selectedRobotId}
-                        />
+                            <DriveRobot
+                                sendMessage={sendMessage}
+                                robotId={selectedRobotId}
+                            />
                         </div>
                         <div className="debug-section">
-                            
-                    <H2>Configuration for <Code>{selectedRobotId}</Code></H2>
-                        <SetRobotVariable
-                            sendMessage={sendMessage}
-                            robotId={selectedRobotId}
+                            <H2>Configuration for <Code>{selectedRobotId}</Code></H2>
+                            <SetRobotVariable
+                                sendMessage={sendMessage}
+                                robotId={selectedRobotId}
                             />
-                    </div>
+                        </div>
                     </>
                 )}
             </div>
         );
     }
 
-    return <Card >
+    return <Card>
         <Button
             minimal
             style={{ float: "right" }}

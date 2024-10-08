@@ -1,5 +1,3 @@
-// import { SetRobotVariableMessage } from "../../common/message/robot-message";
-
 import { useState } from "react";
 import { SendMessage } from "../../common/message/message";
 import { Button, FormGroup, InputGroup, NumericInput } from "@blueprintjs/core";

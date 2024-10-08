@@ -1,9 +1,10 @@
-import { Button, useHotkeys, Slider } from "@blueprintjs/core";
+import { Button, useHotkeys } from "@blueprintjs/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DriveRobotMessage } from "../../common/message/robot-message";
 import { SendMessage } from "../../common/message/message";
 import { Joystick } from "react-joystick-component";
 import type { IJoystickUpdateEvent } from "react-joystick-component/build/lib/Joystick";
+import { DriveSlider } from "./drive-slider";
 
 interface DriveRobotProps {
     robotId: string;
@@ -12,8 +13,9 @@ interface DriveRobotProps {
 
 const ROBOT_MSG_THROTTLE_MS = 50
 
-const approxeq = (v1: number, v2: number, epsilon = 0.01) =>
-    Math.abs(v1 - v2) <= epsilon;
+function almostEqual(v1: number, v2: number, epsilon: number = 0.01): boolean {
+    return Math.abs(v1 - v2) <= epsilon;
+}
 
 /**
  * A component which can be used to drive an individual robot around.
@@ -27,8 +29,8 @@ export function DriveRobot(props: DriveRobotProps) {
     //useEffect hook to send the power levels to the robot if there is a change in the power levels
     useEffect(() => {
         if (
-            approxeq(prev.left, power.left) &&
-            approxeq(prev.right, power.right)
+            almostEqual(prev.left, power.left) &&
+            almostEqual(prev.right, power.right)
         ) {
             return;
         }
@@ -228,63 +230,95 @@ export function DriveRobot(props: DriveRobotProps) {
     );
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+            <br />
             <p>
                 Control this robot using the buttons below, arrow keys, WASD, or
                 a connected gamepad. If arrow keys are not working, make sure
                 controls are in focus.
             </p>
-            <Button
-                icon="arrow-up"
-                onMouseUp={handleStopMove}
-                onMouseDown={handleDriveForward}
-            />
-            <br />
-            <Button
-                icon="arrow-left"
-                onMouseUp={handleStopMove}
-                onMouseDown={handleTurnLeft}
-            />
-            <Button
-                icon="arrow-down"
-                onMouseUp={handleStopMove}
-                onMouseDown={handleDriveBackward}
-            />
-            <Button
-                icon="arrow-right"
-                onMouseUp={handleStopMove}
-                onMouseDown={handleTurnRight}
-            />
-            <br />
-            <Button icon="stop" onClick={handleStopMove}>
-                Stop
-            </Button>
-            <div className="motor-power-sliders">
-            <Slider
-                min={-1}
-                max={1}
-                stepSize={0.01}
-                value={power.left}
-                initialValue={0}
-                onChange={handleLeftPowerChange}
-                vertical
-            />
-            <Slider
-                min={-1}
-                max={1}
-                stepSize={0.01}
-                value={power.right}
-                initialValue={0}
-                onChange={handleRightPowerChange}
-                vertical
-            />
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "95%",
+                }}
+            >
+                <div>
+                    <DriveSlider
+                        power={power.left}
+                        onChange={handleLeftPowerChange}
+                    />
+                </div>
+                <div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Joystick
+                            throttle={ROBOT_MSG_THROTTLE_MS}
+                            size={150}
+                            pos={convertMotorPowersToJoystickXY(power.left, power.right)}
+                            move={handleUiJoystickMove}
+                            stop={handleStopMove}
+                        ></Joystick>
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Button
+                            icon="arrow-up"
+                            onMouseUp={handleStopMove}
+                            onMouseDown={handleDriveForward}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Button
+                            icon="arrow-left"
+                            onMouseUp={handleStopMove}
+                            onMouseDown={handleTurnLeft}
+                        />
+                        <Button
+                            icon="arrow-down"
+                            onMouseUp={handleStopMove}
+                            onMouseDown={handleDriveBackward}
+                        />
+                        <Button
+                            icon="arrow-right"
+                            onMouseUp={handleStopMove}
+                            onMouseDown={handleTurnRight}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Button
+                            icon="stop"
+                            onClick={handleStopMove}
+                            title="Stop"
+                        />
+                    </div>
+                </div>
+                <div>
+                    <DriveSlider
+                        power={power.right}
+                        onChange={handleRightPowerChange}
+                    />
+                </div>
             </div>
-            <Joystick
-                throttle={ROBOT_MSG_THROTTLE_MS}
-                size={150}
-                pos={convertMotorPowersToJoystickXY(power.left, power.right)}
-                move={handleUiJoystickMove}
-                stop={handleStopMove}
-            ></Joystick>
         </div>
     );
 }

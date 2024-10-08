@@ -25,7 +25,7 @@ export class MovePiece extends SequentialCommandGroup {
                 setupMoves.map((command) =>
                     command
                         .reverse()
-                        .then(new RotateToStartCommand(command.robot)),
+                        .then(new RotateToStartCommand(command.robotId)),
                 ),
             ),
         ]);
