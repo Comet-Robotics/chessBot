@@ -9,7 +9,7 @@
         "js-chess-engine": "^1.0.2",
         "runtypes": "^6.7.0",
         "uuid": "^9.0.1",
-        "ws": "^8.16.0"
+        "ws": "^8.17.1"
     },
     "devDependencies": {
         "@types/cookie-parser": "^1.4.6",
