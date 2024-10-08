@@ -130,11 +130,14 @@ export class ComputerGameManager extends GameManager {
         super(chess, socketManager, hostSide);
         if (this.hostSide === Side.BLACK) {
             this.chess.makeAiMove(this.difficulty);
+        } else if (chess.pgn !== "") {
+            this.chess.makeAiMove(this.difficulty);
         }
     }
 
     public handleMessage(message: Message, id: string): void {
         if (message instanceof MoveMessage) {
+            this.chess.makeMove(message.move);
             SaveManager.saveGame(
                 id,
                 "ai",
@@ -142,7 +145,6 @@ export class ComputerGameManager extends GameManager {
                 this.difficulty,
                 this.chess.pgn,
             );
-            this.chess.makeMove(message.move);
 
             if (this.chess.isGameFinished()) {
                 // Game is naturally finished; we're done
