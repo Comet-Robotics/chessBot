@@ -1,9 +1,13 @@
 import { Dispatch, useState } from "react";
 
-import { GameInterruptedMessage } from "../../common/message/game-message";
+import {
+    GameHoldMessage,
+    GameInterruptedMessage,
+} from "../../common/message/game-message";
 import { MoveMessage } from "../../common/message/game-message";
 import {
     GameEndReason,
+    GameHoldReason,
     GameInterruptedReason,
 } from "../../common/game-end-reasons";
 
@@ -16,6 +20,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
 import { NonIdealState, Spinner } from "@blueprintjs/core";
+import { AcceptDrawDialog, OfferDrawDialog } from "./draw-dialog";
 
 /**
  * Creates a MessageHandler function.
@@ -24,6 +29,7 @@ function getMessageHandler(
     chess: ChessEngine,
     setChess: Dispatch<ChessEngine>,
     setGameInterruptedReason: Dispatch<GameInterruptedReason>,
+    setGameHoldReason: Dispatch<GameHoldReason>,
 ): MessageHandler {
     return (message) => {
         if (message instanceof MoveMessage) {
@@ -31,6 +37,8 @@ function getMessageHandler(
             setChess(chess.copy(message.move));
         } else if (message instanceof GameInterruptedMessage) {
             setGameInterruptedReason(message.reason);
+        } else if (message instanceof GameHoldMessage) {
+            setGameHoldReason(message.reason);
         }
     };
 }
@@ -39,9 +47,15 @@ export function Game(): JSX.Element {
     const [chess, setChess] = useState(new ChessEngine());
     const [gameInterruptedReason, setGameInterruptedReason] =
         useState<GameInterruptedReason>();
+    const [gameHoldReason, setGameHoldReason] = useState<GameHoldReason>();
 
     const sendMessage = useSocket(
-        getMessageHandler(chess, setChess, setGameInterruptedReason),
+        getMessageHandler(
+            chess,
+            setChess,
+            setGameInterruptedReason,
+            setGameHoldReason,
+        ),
     );
 
     const { isPending, data, isError } = useEffectQuery(
@@ -84,6 +98,20 @@ export function Game(): JSX.Element {
             <GameEndDialog reason={gameEndReason} side={side} />
         :   null;
 
+    const gameOfferDialog =
+        gameHoldReason !== undefined ?
+            gameHoldReason === GameHoldReason.DRAW_CONFIRMATION ?
+                <OfferDrawDialog sendMessage={sendMessage} />
+            :   null
+        :   null;
+
+    const gameAcceptDialog =
+        gameHoldReason !== undefined ?
+            gameHoldReason === GameHoldReason.DRAW_OFFERED ?
+                <AcceptDrawDialog sendMessage={sendMessage} />
+            :   null
+        :   null;
+
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
         sendMessage(new MoveMessage(move));
@@ -91,7 +119,7 @@ export function Game(): JSX.Element {
 
     return (
         <>
-            <NavbarMenu sendMessage={sendMessage} />
+            <NavbarMenu sendMessage={sendMessage} side={side} />
             <div id="body-container">
                 <ChessboardWrapper
                     side={side}
@@ -99,6 +127,8 @@ export function Game(): JSX.Element {
                     onMove={handleMove}
                 />
                 {gameEndDialog}
+                {gameOfferDialog}
+                {gameAcceptDialog}
                 <Outlet />
             </div>
         </>

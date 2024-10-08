@@ -6,12 +6,20 @@ import {
     NavbarHeading,
 } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
-import { GameInterruptedMessage } from "../../common/message/game-message";
-import { GameInterruptedReason } from "../../common/game-end-reasons";
+import {
+    GameHoldMessage,
+    GameInterruptedMessage,
+} from "../../common/message/game-message";
+import {
+    GameHoldReason,
+    GameInterruptedReason,
+} from "../../common/game-end-reasons";
 import { SendMessage } from "../../common/message/message";
+import { Side } from "../../common/game-types";
 
 interface NavbarMenuProps {
     sendMessage: SendMessage;
+    side: Side;
 }
 
 export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
@@ -43,7 +51,22 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                     onClick={async () => {
                         props.sendMessage(
                             new GameInterruptedMessage(
-                                GameInterruptedReason.ABORTED, // TODO change to either WHITE_RESIGNED or BLACK_RESIGNED
+                                props.side === Side.WHITE ?
+                                    GameInterruptedReason.WHITE_RESIGNED
+                                :   GameInterruptedReason.BLACK_RESIGNED, // TODO change to either WHITE_RESIGNED or BLACK_RESIGNED
+                            ),
+                        );
+                    }}
+                />
+                <Button
+                    icon="pause"
+                    minimal
+                    text="Draw"
+                    intent="danger"
+                    onClick={async () => {
+                        props.sendMessage(
+                            new GameHoldMessage(
+                                GameHoldReason.DRAW_CONFIRMATION, // TODO change to either WHITE_RESIGNED or BLACK_RESIGNED
                             ),
                         );
                     }}

@@ -33,6 +33,10 @@ export enum MessageType {
      */
     GAME_INTERRUPTED = "game-interrupted",
     /**
+     * Indicates the game is waiting for a user to respond
+     */
+    GAME_HELD = "game-held",
+    /**
      * A client-server message containing instructions for manually driving a robot.
      */
     DRIVE_ROBOT = "drive-robot",
