@@ -1,11 +1,11 @@
-import { Button, Card, Code, Dialog, DialogBody, H1, H2, Spinner } from "@blueprintjs/core";
+import { Button, Card, Code, H1, H2, Spinner } from "@blueprintjs/core";
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { get, useSocket } from "../api";
 import { SelectRobot } from "./select-robot";
 import { DriveRobot } from "./drive-robot";
 import { SetRobotVariable } from "./set-robot-variable";
-import './debug.scss';
+import "./debug.scss";
 
 /**
  * A debug menu which can be used to manually control individual robots.
@@ -42,14 +42,18 @@ export function Debug() {
                 {selectedRobotId === undefined ? null : (
                     <>
                         <div className="debug-section">
-                            <H2>Motor Control for <Code>{selectedRobotId}</Code></H2>
+                            <H2>
+                                Motor Control for <Code>{selectedRobotId}</Code>
+                            </H2>
                             <DriveRobot
                                 sendMessage={sendMessage}
                                 robotId={selectedRobotId}
                             />
                         </div>
                         <div className="debug-section">
-                            <H2>Configuration for <Code>{selectedRobotId}</Code></H2>
+                            <H2>
+                                Configuration for <Code>{selectedRobotId}</Code>
+                            </H2>
                             <SetRobotVariable
                                 sendMessage={sendMessage}
                                 robotId={selectedRobotId}
@@ -61,14 +65,16 @@ export function Debug() {
         );
     }
 
-    return <Card>
-        <Button
-            minimal
-            style={{ float: "right" }}
-            icon="home"
-            onClick={() => navigate("/home")}
+    return (
+        <Card>
+            <Button
+                minimal
+                style={{ float: "right" }}
+                icon="home"
+                onClick={() => navigate("/home")}
             />
             <H1>Debug</H1>
-        {body}
-    </Card>
+            {body}
+        </Card>
+    );
 }
