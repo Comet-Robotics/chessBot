@@ -1,5 +1,5 @@
 import { Message, MessageType, RegisterWebsocketMessage } from "./message";
-import { DriveRobotMessage } from "./drive-robot-message";
+import { DriveRobotMessage, SetRobotVariableMessage } from "./robot-message";
 import {
     PositionMessage,
     MoveMessage,
@@ -32,6 +32,12 @@ export function parseMessage(text: string): Message {
                 obj.id,
                 parseFloat(obj.leftPower),
                 parseFloat(obj.rightPower),
+            );
+        case MessageType.SET_ROBOT_VARIABLE:
+            return new SetRobotVariableMessage(
+                obj.id,
+                obj.variableName,
+                parseFloat(obj.variableValue),
             );
     }
     throw new Error("Failed to parse message.");

@@ -51,7 +51,10 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
      * Returns true if a move is legal, and false otherwise.
      */
     const isLegalMove = (from: Square, to: Square): boolean => {
-        return chess.getLegalSquares(from).includes(to);
+        return (
+            chess.getLegalSquares(from).includes(to) &&
+            chess.getPieceSide(from) === side
+        );
     };
 
     const doMove = (move: Move): void => {
@@ -116,7 +119,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     // Protects the type of lastClickedSquare, and is true when the clicked square is legal
                     const isSquareLegalMove =
                         lastClickedSquare !== undefined &&
-                        legalSquares.includes(square);
+                        isLegalMove(lastClickedSquare, square);
 
                     if (isSquareLegalMove) {
                         if (chess.checkPromotion(lastClickedSquare, square)) {
