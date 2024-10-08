@@ -3,14 +3,13 @@ import { Move } from "../../common/game-types";
 import { gameManager } from "../api/api";
 import {
     Command,
-    ParallelCommandGroup,
     SequentialCommandGroup,
 } from "../command/command";
 import {
     RelativeMoveCommand,
     RelativeRotateCommand,
 } from "../command/move-command";
-import { MovePiece } from "../command/move-piece";
+import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
 import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
 import { Square } from "chess.js";
@@ -198,9 +197,12 @@ function constructFinalCommand(
         const mainMove = constructMoveCommand(mainPiece, pos);
         const mainTurn = constructRotateCommand(mainPiece, pos);
         rotateCommands.push(mainTurn);
-        const parallelMove = new ParallelCommandGroup(moveCommands);
+        //const parallelMove = new ParallelCommandGroup(moveCommands);
+        const setupCommands:ReversibleRobotCommand[] = [];
+        setupCommands.concat(rotateCommands);
+        setupCommands.concat(moveCommands);
         return new MovePiece(
-            new SequentialCommandGroup([parallelMove, mainMove]),
+            setupCommands,
             mainMove
         );
     } else {
@@ -303,6 +305,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
 // Capture: Sequential[ Home with/without shimmy[capture piece], No_Capture[main piece] ]
 export function materializePath(move: Move): Command {
     if (gameManager?.chess.isEnPassant(move)) {
+        null
     } else if (gameManager?.chess.isRegularCapture(move)) {
         const capturePiece = gameManager?.chess.getCapturedPieceId(move);
         if (capturePiece !== undefined) {
@@ -315,8 +318,14 @@ export function materializePath(move: Move): Command {
             return command;
         }
     } else if (gameManager?.chess.isQueenSideCastling(move)) {
+        null
     } else if (gameManager?.chess.isKingSideCastling(move)) {
+        null
     } else {
         return moveMainPiece(move);
     }
+}
+
+export function debugPath(move:Move){
+    return moveMainPiece(move);
 }

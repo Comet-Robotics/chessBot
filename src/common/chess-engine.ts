@@ -44,6 +44,10 @@ export class ChessEngine {
         this.chess.loadPgn(pgn);
     }
 
+    load(fen:string){
+        this.chess.load(fen);
+    }
+
     getLastMove() {
         const moves = this.chess.history({ verbose: true });
         return moves.length > 0 ? moves[moves.length - 1] : undefined;
