@@ -106,10 +106,7 @@ export class BotTunnel {
             switch (packet.type) {
                 case "CLIENT_HELLO": {
                     this.onHandshake(packet.macAddress);
-                    this.send({
-                        type: "SERVER_HELLO",
-                        protocol: SERVER_PROTOCOL_VERSION,
-                    });
+                    this.send(this.makeHello(packet.macAddress));
                     this.connected = true;
                     break;
                 }
@@ -171,6 +168,35 @@ export class BotTunnel {
             });
         });
     }
+
+    makeHello(mac: string): Packet {
+        // Very ordered list of config nodes to send over
+        // t: type, v: value
+        const configEntries: [string, string][] = [];
+
+        // Where a bot has a specific config changed, like moving a pin
+        const overrides =
+            (config[config.bots[mac]] ?? { attributes: {} })["attributes"] ??
+            {};
+
+        for (const i of config.botConfigSchema) {
+            if (i.name in overrides) {
+                configEntries.push([i.type, overrides[i.name]]);
+            } else {
+                configEntries.push([i.type, i.default_value.toString()]);
+            }
+        }
+
+        const ret: Packet = {
+            type: "SERVER_HELLO",
+            protocol: SERVER_PROTOCOL_VERSION,
+            config: configEntries,
+        };
+
+        console.error(JSON.stringify(ret));
+
+        return ret;
+    }
 }
 
 export class TCPServer {
@@ -191,6 +217,8 @@ export class TCPServer {
         const remoteAddress = socket.remoteAddress + ":" + socket.remotePort;
         console.log("New client connection from %s", remoteAddress);
 
+        socket.setNoDelay(true);
+
         const tunnel = new BotTunnel(
             socket,
             ((mac: string) => {
@@ -202,6 +230,7 @@ export class TCPServer {
                         "Address not found in config! Assigning random ID: " +
                             id,
                     );
+                    config["bots"][mac] = id;
                 } else {
                     id = config["bots"][mac];
                     console.log("Found address ID: " + id);

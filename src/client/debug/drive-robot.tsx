@@ -1,6 +1,6 @@
 import { Button, useHotkeys } from "@blueprintjs/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DriveRobotMessage } from "../../common/message/drive-robot-message";
+import { DriveRobotMessage } from "../../common/message/robot-message";
 import { SendMessage } from "../../common/message/message";
 import { DriveSlider } from "./drive-slider";
 

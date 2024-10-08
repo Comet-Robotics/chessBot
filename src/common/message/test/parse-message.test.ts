@@ -1,6 +1,10 @@
 import { GameInterruptedReason } from "../../game-end-reasons";
 import { PieceType } from "../../game-types";
-import { DriveRobotMessage, StopRobotMessage } from "../drive-robot-message";
+import {
+    DriveRobotMessage,
+    SetRobotVariableMessage,
+    StopRobotMessage,
+} from "../robot-message";
 import {
     MoveMessage,
     PositionMessage,
@@ -20,6 +24,7 @@ test.each([
     new MoveMessage({ from: "a1", to: "a4", promotion: PieceType.PAWN }),
     new DriveRobotMessage("robot1", 0.5, 0.5),
     new StopRobotMessage("robot2"),
+    new SetRobotVariableMessage("robot1", "rotationsPerTile", 3.2),
 ])("Message should serialize correctly", (message: Message) => {
     const copy = Object.assign({}, message);
     expect(parseMessage(message.toJson())).toEqual(copy);
