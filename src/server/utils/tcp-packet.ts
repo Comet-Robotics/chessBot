@@ -6,7 +6,7 @@ import {
     Static,
     Literal,
     Array,
-    Tuple
+    Tuple,
 } from "runtypes";
 
 const Float = NumberType.withConstraint((n) => Number.isFinite(n), {
@@ -31,7 +31,7 @@ export const CLIENT_HELLO = Record({
 export const SERVER_HELLO = Record({
     type: Literal("SERVER_HELLO"),
     protocol: Uint32,
-    config: Array(Tuple(String /*type*/, String /*value*/))
+    config: Array(Tuple(String /*type*/, String /*value*/)),
 });
 export const PING_SEND = Record({ type: Literal("PING_SEND") });
 export const PING_RESPONSE = Record({ type: Literal("PING_RESPONSE") });

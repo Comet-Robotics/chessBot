@@ -172,24 +172,23 @@ export class BotTunnel {
     makeHello(mac: string): Packet {
         // Very ordered list of config nodes to send over
         // t: type, v: value
-        let configEntries: [string, string][] = []
+        const configEntries: [string, string][] = [];
 
         // Where a bot has a specific config changed, like moving a pin
-        const overrides = config.botConfig[config.bots[mac]] ?? {}
+        const overrides = (config[config.bots[mac]] ?? { "attributes": {} })["attributes"] ?? {};
 
-        for (let i of config.possibleBotConfig) {
+        for (const i of config.possibleBotConfig) {
             if (i.name in overrides) {
-                configEntries.push([i.type, overrides[i.name]])
-            }
-            else {
-                configEntries.push([i.type, i.default_value.toString()])
+                configEntries.push([i.type, overrides[i.name]]);
+            } else {
+                configEntries.push([i.type, i.default_value.toString()]);
             }
         }
 
         const ret: Packet = {
             type: "SERVER_HELLO",
             protocol: SERVER_PROTOCOL_VERSION,
-            config: configEntries
+            config: configEntries,
         };
 
         console.error(JSON.stringify(ret));
