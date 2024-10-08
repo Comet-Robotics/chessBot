@@ -7,6 +7,7 @@ import {
 } from "../robot-message";
 import {
     MoveMessage,
+    PositionMessage,
     GameInterruptedMessage,
     GameStartedMessage,
 } from "../game-message";
@@ -17,6 +18,7 @@ import { expect, test } from "vitest";
 test.each([
     new GameStartedMessage(),
     new GameInterruptedMessage(GameInterruptedReason.ABORTED),
+    new PositionMessage("aaaaaaaaa"),
     new MoveMessage({ from: "a1", to: "a2" }),
     new MoveMessage({ from: "a1", to: "a3", promotion: PieceType.BISHOP }),
     new MoveMessage({ from: "a1", to: "a4", promotion: PieceType.PAWN }),
