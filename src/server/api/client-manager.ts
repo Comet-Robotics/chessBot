@@ -59,6 +59,14 @@ export class ClientManager {
             this.clientId = id;
         }
     }
+
+    public getIds(): undefined | string[] {
+        if (this.hostId && this.clientId) {
+            return [this.hostId, this.clientId];
+        } else {
+            return;
+        }
+    }
 }
 
 export function makeClientManager(socketManager: SocketManager): ClientManager {
