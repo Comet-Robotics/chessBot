@@ -1,13 +1,17 @@
 import { Button, useHotkeys } from "@blueprintjs/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DriveRobotMessage } from "../../common/message/drive-robot-message";
+import { DriveRobotMessage } from "../../common/message/robot-message";
 import { SendMessage } from "../../common/message/message";
+import { Joystick } from "react-joystick-component";
+import type { IJoystickUpdateEvent } from "react-joystick-component/build/lib/Joystick";
 import { DriveSlider } from "./drive-slider";
 
 interface DriveRobotProps {
     robotId: string;
     sendMessage: SendMessage;
 }
+
+const ROBOT_MSG_THROTTLE_MS = 50;
 
 function almostEqual(v1: number, v2: number, epsilon: number = 0.01): boolean {
     return Math.abs(v1 - v2) <= epsilon;
@@ -69,7 +73,10 @@ export function DriveRobot(props: DriveRobotProps) {
             }
         };
 
-        const gamepadPollingInterval = setInterval(handleGamepadInput, 50);
+        const gamepadPollingInterval = setInterval(
+            handleGamepadInput,
+            ROBOT_MSG_THROTTLE_MS,
+        );
 
         return () => {
             clearInterval(gamepadPollingInterval);
@@ -183,6 +190,47 @@ export function DriveRobot(props: DriveRobotProps) {
     );
 
     const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys);
+
+    const convertJoystickXYToMotorPowers = useCallback(
+        (x: number, y: number) => {
+            const maxPower = 1;
+            let leftPower = y + x;
+            let rightPower = y - x;
+            // Normalize powers to be within -1 to 1
+            const maxInitialPower = Math.max(
+                Math.abs(leftPower),
+                Math.abs(rightPower),
+            );
+            if (maxInitialPower > maxPower) {
+                leftPower /= maxInitialPower;
+                rightPower /= maxInitialPower;
+            }
+            return { left: leftPower, right: rightPower };
+        },
+        [],
+    );
+    const convertMotorPowersToJoystickXY = useCallback(
+        (left: number, right: number) => {
+            const y = (left + right) / 2;
+            const x = (left - right) / 2;
+            return { x, y };
+        },
+        [],
+    );
+
+    const handleUiJoystickMove = useCallback(
+        (evt: IJoystickUpdateEvent) => {
+            const { x, y } = evt;
+            console.log(`Joystick move event: x=${x}, y=${y}`);
+            if (x === null || y === null) {
+                console.log("Joystick move event missing x or y");
+                return;
+            }
+
+            setPower(convertJoystickXYToMotorPowers(-x, y));
+        },
+        [convertJoystickXYToMotorPowers],
+    );
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
             <br />
@@ -206,6 +254,23 @@ export function DriveRobot(props: DriveRobotProps) {
                     />
                 </div>
                 <div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Joystick
+                            throttle={ROBOT_MSG_THROTTLE_MS}
+                            size={150}
+                            pos={convertMotorPowersToJoystickXY(
+                                power.left,
+                                power.right,
+                            )}
+                            move={handleUiJoystickMove}
+                            stop={handleStopMove}
+                        ></Joystick>
+                    </div>
                     <div
                         style={{
                             display: "flex",

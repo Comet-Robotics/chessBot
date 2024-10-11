@@ -7,7 +7,10 @@ import {
     GameInterruptedMessage,
     MoveMessage,
 } from "../../common/message/game-message";
-import { DriveRobotMessage } from "../../common/message/drive-robot-message";
+import {
+    DriveRobotMessage,
+    SetRobotVariableMessage,
+} from "../../common/message/robot-message";
 
 import { TCPServer } from "./tcp-interface";
 import { Difficulty } from "../../common/client-types";
@@ -21,6 +24,7 @@ import {
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
 import { IS_DEVELOPMENT } from "../utils/env";
+import { SaveManager } from "./save-manager";
 
 const tcpServer = new TCPServer();
 
@@ -51,6 +55,8 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             gameManager?.handleMessage(message, req.cookies.id);
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
+        } else if (message instanceof SetRobotVariableMessage) {
+            doSetRobotVariable(message);
         }
     });
 };
@@ -59,6 +65,32 @@ export const apiRouter = Router();
 
 apiRouter.get("/client-information", (req, res) => {
     const clientType = clientManager.getClientType(req.cookies.id);
+    //loading saves from file if found
+    const oldSave = SaveManager.loadGame(req.cookies.id);
+    if (oldSave) {
+        if (oldSave.aiDifficulty !== -1) {
+            gameManager = new ComputerGameManager(
+                new ChessEngine(oldSave.game),
+                socketManager,
+                oldSave.host === req.cookies.id ?
+                    oldSave.hostWhite ?
+                        Side.WHITE
+                    :   Side.BLACK
+                : oldSave.hostWhite ? Side.BLACK
+                : Side.WHITE,
+                oldSave.aiDifficulty,
+                oldSave.host !== req.cookies.id,
+            );
+        } else {
+            gameManager = new HumanGameManager(
+                new ChessEngine(oldSave.game),
+                socketManager,
+                oldSave.hostWhite ? Side.WHITE : Side.BLACK,
+                clientManager,
+                oldSave.host !== req.cookies.id,
+            );
+        }
+    }
     /**
      * Note the client currently redirects to home from the game over screen
      * So removing the isGameEnded check here results in an infinite loop
@@ -87,6 +119,7 @@ apiRouter.post("/start-computer-game", (req, res) => {
         socketManager,
         side,
         difficulty,
+        false,
     );
     return res.send({ message: "success" });
 });
@@ -98,6 +131,7 @@ apiRouter.post("/start-human-game", (req, res) => {
         socketManager,
         side,
         clientManager,
+        false,
     );
     return res.send({ message: "success" });
 });
@@ -148,6 +182,32 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
                 type: "DRIVE_TANK",
                 left: message.leftPower,
                 right: message.rightPower,
+            });
+        }
+    }
+    return true;
+}
+
+function doSetRobotVariable(message: SetRobotVariableMessage): boolean {
+    if (!tcpServer.getConnectedIds().includes(message.id)) {
+        console.warn(
+            "Attempted set variable for non-existent robot ID " + message.id,
+        );
+        return false;
+    } else {
+        const tunnel = tcpServer.getTunnelFromId(message.id);
+        if (!tunnel.connected) {
+            console.warn(
+                "Attempted set robot variable for disconnected robot ID " +
+                    message.id,
+            );
+            return false;
+        } else {
+            tunnel.send({
+                type: "SET_VAR",
+                var_id: parseInt(message.variableName),
+                var_type: "float",
+                var_val: message.variableValue,
             });
         }
     }
