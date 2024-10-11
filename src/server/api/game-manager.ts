@@ -4,6 +4,7 @@ import {
     MoveMessage,
     GameInterruptedMessage,
     GameStartedMessage,
+    GameHoldMessage,
 } from "../../common/message/game-message";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
@@ -11,6 +12,7 @@ import { ClientType } from "../../common/client-types";
 import { Side, oppositeSide } from "../../common/game-types";
 import {
     GameEndReason,
+    GameHoldReason,
     GameEndReason as GameInterruptedReason,
 } from "../../common/game-end-reasons";
 import { SaveManager } from "./save-manager";
@@ -126,6 +128,15 @@ export class HumanGameManager extends GameManager {
             // propagate back to both sockets
             sendToPlayer(message);
             sendToOpponent(message);
+        } else if (message instanceof GameHoldMessage) {
+            if (message.reason === GameHoldReason.DRAW_CONFIRMATION)
+                sendToPlayer(message);
+            else if (message.reason === GameHoldReason.DRAW_OFFERED) {
+                sendToOpponent(message);
+            } else {
+                sendToPlayer(message);
+                sendToOpponent(message);
+            }
             if (ids) {
                 if (currentSave?.host === ids[0])
                     SaveManager.endGame(ids[0], ids[1]);
