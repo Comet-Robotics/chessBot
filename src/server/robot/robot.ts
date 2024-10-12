@@ -70,8 +70,10 @@ export class Robot {
     public async relativeMove(deltaPosition: Position): Promise<void> {
         const offset = deltaPosition.sub(this.position);
         const distance = Math.hypot(offset.x, offset.y);
-        const angle = clampHeading(Math.atan2(-offset.x, offset.y)*RADIAN);
-        const promise = this.absoluteRotate(angle).then(() => this.drive(distance));
+        const angle = clampHeading(Math.atan2(-offset.x, offset.y) * RADIAN);
+        const promise = this.absoluteRotate(angle).then(() =>
+            this.drive(distance),
+        );
         this.position = this.position.add(deltaPosition);
         return promise;
     }

@@ -87,7 +87,10 @@ export class RotateToStartCommand extends RobotCommand {
  *
  * Distance may be negative, indicating the robot drives backwards.
  */
-export class DriveCommand extends RobotCommand implements Reversible<DriveCommand> {
+export class DriveCommand
+    extends RobotCommand
+    implements Reversible<DriveCommand>
+{
     constructor(
         robotId: string,
         public tileDistance: number,
@@ -101,10 +104,7 @@ export class DriveCommand extends RobotCommand implements Reversible<DriveComman
     }
 
     public reverse(): DriveCommand {
-        return new DriveCommand(
-            this.robotId,
-            -this.tileDistance,
-        );
+        return new DriveCommand(this.robotId, -this.tileDistance);
     }
 }
 
