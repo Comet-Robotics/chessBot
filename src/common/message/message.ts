@@ -44,6 +44,7 @@ export enum MessageType {
      * A client-server message used to update a variable (like rotations per square) on a robot.
      */
     SET_ROBOT_VARIABLE = "set-robot-variable",
+    GAME_FINISHED = "game-finished",
 }
 
 export abstract class Message {

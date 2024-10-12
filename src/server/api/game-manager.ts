@@ -5,6 +5,7 @@ import {
     GameInterruptedMessage,
     GameStartedMessage,
     GameHoldMessage,
+    GameFinishedMessage,
 } from "../../common/message/game-message";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
@@ -128,6 +129,20 @@ export class HumanGameManager extends GameManager {
             // propagate back to both sockets
             sendToPlayer(message);
             sendToOpponent(message);
+            if (ids) {
+                if (currentSave?.host === ids[0])
+                    SaveManager.endGame(ids[0], ids[1]);
+                else SaveManager.endGame(ids[1], ids[0]);
+            }
+        } else if (message instanceof GameFinishedMessage) {
+            // propagate back to both sockets
+            //sendToPlayer(message);
+            //sendToOpponent(message);
+            if (ids) {
+                if (currentSave?.host === ids[0])
+                    SaveManager.endGame(ids[0], ids[1]);
+                else SaveManager.endGame(ids[1], ids[0]);
+            }
         } else if (message instanceof GameHoldMessage) {
             if (message.reason === GameHoldReason.DRAW_CONFIRMATION)
                 sendToPlayer(message);
@@ -137,13 +152,12 @@ export class HumanGameManager extends GameManager {
                 sendToPlayer(message);
                 sendToOpponent(message);
             }
+        } else if (this.isGameEnded()) {
             if (ids) {
                 if (currentSave?.host === ids[0])
                     SaveManager.endGame(ids[0], ids[1]);
                 else SaveManager.endGame(ids[1], ids[0]);
             }
-        } else if (this.isGameEnded()) {
-            if (ids) SaveManager.endGame(ids[0], ids[1]);
         }
     }
 }
