@@ -83,6 +83,34 @@ export class RotateToStartCommand extends RobotCommand {
 }
 
 /**
+ * Drives a robot for a distance equal to a number of tiles. Distance
+ * may be negative, indicating the robot drives backwards.
+ *
+ * Does not modify robot's stored position, must be done on the
+ * caller's side.
+ */
+export class DriveCommand
+    extends RobotCommand
+    implements Reversible<DriveCommand>
+{
+    constructor(
+        robotId: string,
+        public tileDistance: number,
+    ) {
+        super(robotId);
+    }
+
+    public async execute(): Promise<void> {
+        const robot = robotManager.getRobot(this.robotId);
+        return robot.drive(this.tileDistance);
+    }
+
+    public reverse(): DriveCommand {
+        return new DriveCommand(this.robotId, -this.tileDistance);
+    }
+}
+
+/**
  * Represents a robot translation in x and y.
  *
  * Note this may involve the robot turning first.

@@ -3,6 +3,7 @@ import { Router } from "express";
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
+    GameHoldMessage,
     GameInterruptedMessage,
     MoveMessage,
 } from "../../common/message/game-message";
@@ -23,8 +24,9 @@ import {
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
 import { IS_DEVELOPMENT } from "../utils/env";
+import { SaveManager } from "./save-manager";
 
-const tcpServer = new TCPServer();
+export const tcpServer = new TCPServer();
 
 export let gameManager: GameManager | null = null;
 
@@ -46,7 +48,8 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             socketManager.registerSocket(req.cookies.id, ws);
         } else if (
             message instanceof GameInterruptedMessage ||
-            message instanceof MoveMessage
+            message instanceof MoveMessage ||
+            message instanceof GameHoldMessage
         ) {
             // TODO: Handle game manager not existing
             gameManager?.handleMessage(message, req.cookies.id);
@@ -62,6 +65,32 @@ export const apiRouter = Router();
 
 apiRouter.get("/client-information", (req, res) => {
     const clientType = clientManager.getClientType(req.cookies.id);
+    //loading saves from file if found
+    const oldSave = SaveManager.loadGame(req.cookies.id);
+    if (oldSave) {
+        if (oldSave.aiDifficulty !== -1) {
+            gameManager = new ComputerGameManager(
+                new ChessEngine(oldSave.game),
+                socketManager,
+                oldSave.host === req.cookies.id ?
+                    oldSave.hostWhite ?
+                        Side.WHITE
+                    :   Side.BLACK
+                : oldSave.hostWhite ? Side.BLACK
+                : Side.WHITE,
+                oldSave.aiDifficulty,
+                oldSave.host !== req.cookies.id,
+            );
+        } else {
+            gameManager = new HumanGameManager(
+                new ChessEngine(oldSave.game),
+                socketManager,
+                oldSave.hostWhite ? Side.WHITE : Side.BLACK,
+                clientManager,
+                oldSave.host !== req.cookies.id,
+            );
+        }
+    }
     /**
      * Note the client currently redirects to home from the game over screen
      * So removing the isGameEnded check here results in an infinite loop
@@ -90,6 +119,7 @@ apiRouter.post("/start-computer-game", (req, res) => {
         socketManager,
         side,
         difficulty,
+        false,
     );
     return res.send({ message: "success" });
 });
@@ -101,6 +131,7 @@ apiRouter.post("/start-human-game", (req, res) => {
         socketManager,
         side,
         clientManager,
+        false,
     );
     return res.send({ message: "success" });
 });
