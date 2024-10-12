@@ -1,10 +1,7 @@
 import { robotManager } from "../api/managers";
 import { Move } from "../../common/game-types";
 import { gameManager } from "../api/api";
-import {
-    Command,
-    SequentialCommandGroup,
-} from "../command/command";
+import { Command, SequentialCommandGroup } from "../command/command";
 import {
     RelativeMoveCommand,
     RelativeRotateCommand,
@@ -198,13 +195,10 @@ function constructFinalCommand(
         const mainTurn = constructRotateCommand(mainPiece, pos);
         rotateCommands.push(mainTurn);
         //const parallelMove = new ParallelCommandGroup(moveCommands);
-        const setupCommands:ReversibleRobotCommand[] = [];
+        const setupCommands: ReversibleRobotCommand[] = [];
         setupCommands.concat(rotateCommands);
         setupCommands.concat(moveCommands);
-        return new MovePiece(
-            setupCommands,
-            mainMove
-        );
+        return new MovePiece(setupCommands, mainMove);
     } else {
         return new MovePiece(rotateCommands, new SequentialCommandGroup([]));
     }
@@ -305,7 +299,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
 // Capture: Sequential[ Home with/without shimmy[capture piece], No_Capture[main piece] ]
 export function materializePath(move: Move): Command {
     if (gameManager?.chess.isEnPassant(move)) {
-        null
+        null;
     } else if (gameManager?.chess.isRegularCapture(move)) {
         const capturePiece = gameManager?.chess.getCapturedPieceId(move);
         if (capturePiece !== undefined) {
@@ -318,14 +312,14 @@ export function materializePath(move: Move): Command {
             return command;
         }
     } else if (gameManager?.chess.isQueenSideCastling(move)) {
-        null
+        null;
     } else if (gameManager?.chess.isKingSideCastling(move)) {
-        null
+        null;
     } else {
         return moveMainPiece(move);
     }
 }
 
-export function debugPath(move:Move){
+export function debugPath(move: Move) {
     return moveMainPiece(move);
 }

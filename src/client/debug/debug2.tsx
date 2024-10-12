@@ -17,7 +17,7 @@ import { ChessEngine } from "../../common/chess-engine";
 import { Move, PieceType, Side } from "../../common/game-types";
 //import { NonIdealState, Spinner } from "@blueprintjs/core";
 import { GameEndDialog } from "../game/game-end-dialog";
-import { debugPath } from "../../server/robot/path-materializer";
+// import { debugPath } from "../../server/robot/path-materializer";
 
 function getMessageHandler(
     chess: ChessEngine,
@@ -67,16 +67,15 @@ export function Debug2(): JSX.Element {
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
         sendMessage(new MoveMessage(move));
-        
-        if(chess.getPieceTypeFromMove(move) === PieceType.QUEEN){
-            
-            //debugPath(move).execute();
+
+        if (chess.getPieceTypeFromMove(move) === PieceType.QUEEN) {
+            // debugPath(move).execute();
         }
     };
 
     return (
         <>
-            <NavbarMenu sendMessage={sendMessage} />
+            <NavbarMenu sendMessage={sendMessage} side={side} />
             <div id="body-container">
                 <ChessboardWrapper
                     side={side}

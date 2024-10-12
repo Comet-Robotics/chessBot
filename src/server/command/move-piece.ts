@@ -6,7 +6,8 @@ import {
 } from "./command";
 import { RotateToStartCommand } from "./move-command";
 
-export type ReversibleRobotCommand = RobotCommand & Reversible<ReversibleRobotCommand>;
+export type ReversibleRobotCommand = RobotCommand &
+    Reversible<ReversibleRobotCommand>;
 
 /**
  * Executes a set of setupMoves in parallel, followed by a mainMove.
