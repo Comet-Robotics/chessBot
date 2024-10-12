@@ -3,7 +3,7 @@ import { Move } from "../../common/game-types";
 import { gameManager } from "../api/api";
 import { Command, SequentialCommandGroup } from "../command/command";
 import {
-    RelativeMoveCommand,
+    DriveCommand,
     RelativeRotateCommand,
 } from "../command/move-command";
 import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
@@ -163,11 +163,14 @@ function findShimmyLocation(
     collisionType: number,
 ): Position {}
 
-function constructMoveCommand(
+function constructDriveCommand(
     pieceId: string,
     location: Position,
-): RelativeMoveCommand {
-    return new RelativeMoveCommand(pieceId, location);
+): DriveCommand {
+    const robot = robotManager.getRobot(pieceId);
+    const offset = location.sub(robot.position);
+    const distance = Math.hypot(offset.x, offset.y);
+    return new DriveCommand(pieceId, distance);
 }
 
 function constructRotateCommand(
@@ -175,15 +178,14 @@ function constructRotateCommand(
     location: Position,
 ): RelativeRotateCommand {
     const robot = robotManager.getRobot(pieceId);
-    const x = location.x - robot.position.x;
-    const y = location.y - robot.position.y;
-    const angle = Math.atan2(x, y);
+    const offset = location.sub(robot.position);
+    const angle = Math.atan2(-offset.x, offset.y);
     return new RelativeRotateCommand(pieceId, angle);
 }
 
 function constructFinalCommand(
     move: Move,
-    moveCommands: RelativeMoveCommand[],
+    driveCommands: DriveCommand[],
     rotateCommands: RelativeRotateCommand[],
 ): MovePiece {
     const from = GridIndices.squareToGrid(move.from);
@@ -191,14 +193,11 @@ function constructFinalCommand(
     if (mainPiece !== undefined) {
         const to = GridIndices.squareToGrid(move.to);
         const pos = new Position(to.i + 0.5, to.j + 0.5);
-        const mainMove = constructMoveCommand(mainPiece, pos);
+        const mainDrive = constructDriveCommand(mainPiece, pos);
         const mainTurn = constructRotateCommand(mainPiece, pos);
-        rotateCommands.push(mainTurn);
-        //const parallelMove = new ParallelCommandGroup(moveCommands);
         const setupCommands: ReversibleRobotCommand[] = [];
-        setupCommands.concat(rotateCommands);
-        setupCommands.concat(moveCommands);
-        return new MovePiece(setupCommands, mainMove);
+        setupCommands.push(...rotateCommands, mainTurn, ...driveCommands);
+        return new MovePiece(setupCommands, mainDrive);
     } else {
         return new MovePiece(rotateCommands, new SequentialCommandGroup([]));
     }
@@ -207,7 +206,7 @@ function constructFinalCommand(
 // Takes in a move, and generates the commands required to get the main piece to it's destination
 // If there are pieces in the way, it shimmy's them out, and move them back after main piece passes
 function moveMainPiece(move: Move): MovePiece {
-    const moveCommands: RelativeMoveCommand[] = [];
+    const driveCommands: DriveCommand[] = [];
     const rotateCommands: RelativeRotateCommand[] = [];
     const collisionType = calcCollisionType(moveToGridMove(move));
     const collisions: string[] = detectCollisions(
@@ -217,10 +216,10 @@ function moveMainPiece(move: Move): MovePiece {
     for (let i = 0; i < collisions.length; i++) {
         const pieceId = collisions[i];
         const location = findShimmyLocation(pieceId, move, collisionType);
-        moveCommands.push(constructMoveCommand(pieceId, location));
+        driveCommands.push(constructDriveCommand(pieceId, location));
         rotateCommands.push(constructRotateCommand(pieceId, location));
     }
-    return constructFinalCommand(move, moveCommands, rotateCommands);
+    return constructFinalCommand(move, driveCommands, rotateCommands);
 }
 
 /**
