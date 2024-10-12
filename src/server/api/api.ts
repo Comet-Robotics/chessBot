@@ -26,7 +26,7 @@ import { Side } from "../../common/game-types";
 import { IS_DEVELOPMENT } from "../utils/env";
 import { SaveManager } from "./save-manager";
 
-const tcpServer = new TCPServer();
+export const tcpServer = new TCPServer();
 
 export let gameManager: GameManager | null = null;
 
