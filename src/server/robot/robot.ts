@@ -1,7 +1,7 @@
-import { RobotSocket } from "./robot-socket";
 import { FULL_ROTATION, clampHeading } from "../utils/units";
 import { Position, ZERO_POSITION } from "./position";
 import { GridIndices } from "./grid-indices";
+import { tcpServer } from "../api/api";
 
 /**
  * Represents a robot.
@@ -11,7 +11,6 @@ export class Robot {
     private _heading: number;
 
     constructor(
-        private readonly socket: RobotSocket,
         public readonly id: string,
         /**
          * The location the robot lives in when its not in use.
@@ -53,7 +52,7 @@ export class Robot {
         const turnAmount =
             Math.abs(delta1) < Math.abs(delta2) ? delta1 : delta2;
         this.heading = heading;
-        return this.socket.turn(turnAmount);
+        return this.turn(turnAmount);
     }
 
     /**
@@ -61,7 +60,7 @@ export class Robot {
      */
     public async relativeRotate(deltaHeading: number): Promise<void> {
         this.heading = clampHeading(this.heading + deltaHeading);
-        return this.socket.turn(deltaHeading);
+        return this.turn(deltaHeading);
     }
 
     /**
@@ -70,9 +69,23 @@ export class Robot {
      */
     public async relativeMove(deltaPosition: Position): Promise<void> {
         // TODO: Compute drive arguments
-        const promise = this.socket.turnAndDrive();
-        this.heading = Math.atan2(deltaPosition.y, deltaPosition.x); // y, x for atan2
+        const xOffset = deltaPosition.x - this.position.x;
+        const yOffset = deltaPosition.y - this.position.y;
+        const distance = Math.sqrt(xOffset * xOffset + yOffset * yOffset);
+        const promise = this.drive(distance);
         this.position = this.position.add(deltaPosition);
         return promise;
+    }
+
+    public async turn(deltaHeading: number): Promise<void> {
+        const tunnel = tcpServer.getTunnelFromId(this.id);
+        tunnel.send({ type: "TURN_BY_ANGLE", deltaHeading });
+        return tunnel.waitForActionResponse();
+    }
+
+    public async drive(tileDistance: number): Promise<void> {
+        const tunnel = tcpServer.getTunnelFromId(this.id);
+        tunnel.send({ type: "DRIVE_TILES", tileDistance });
+        return tunnel.waitForActionResponse();
     }
 }
