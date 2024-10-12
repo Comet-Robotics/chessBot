@@ -1,7 +1,7 @@
 import { FULL_ROTATION, clampHeading } from "../utils/units";
 import { Position, ZERO_POSITION } from "./position";
 import { GridIndices } from "./grid-indices";
-import { tcpServer } from "../api/api"; 
+import { tcpServer } from "../api/api";
 
 /**
  * Represents a robot.
@@ -69,9 +69,9 @@ export class Robot {
      */
     public async relativeMove(deltaPosition: Position): Promise<void> {
         // TODO: Compute drive arguments
-        const xOffset = deltaPosition.x-this.position.x;
-        const yOffset = deltaPosition.y-this.position.y;
-        const distance = Math.sqrt((xOffset*xOffset)+(yOffset*yOffset));
+        const xOffset = deltaPosition.x - this.position.x;
+        const yOffset = deltaPosition.y - this.position.y;
+        const distance = Math.sqrt(xOffset * xOffset + yOffset * yOffset);
         const promise = this.drive(distance);
         this.position = this.position.add(deltaPosition);
         return promise;
