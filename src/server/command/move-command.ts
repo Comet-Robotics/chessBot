@@ -83,9 +83,11 @@ export class RotateToStartCommand extends RobotCommand {
 }
 
 /**
- * Drives a robot for a distance equal to a number of tiles.
+ * Drives a robot for a distance equal to a number of tiles. Distance
+ * may be negative, indicating the robot drives backwards.
  *
- * Distance may be negative, indicating the robot drives backwards.
+ * Does not modify robot's stored position, must be done on the
+ * caller's side.
  */
 export class DriveCommand
     extends RobotCommand
