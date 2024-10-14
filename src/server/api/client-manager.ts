@@ -71,7 +71,7 @@ export class ClientManager {
         } else if (this.clientId === undefined || id === this.clientId) {
             this.clientId = id;
         } else {
-            if(this.spectatorIds.indexOf(id) === -1){
+            if (this.spectatorIds.indexOf(id) === -1) {
                 this.spectatorIds.push(id);
             }
         }

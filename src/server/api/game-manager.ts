@@ -54,8 +54,7 @@ export abstract class GameManager {
             side = this.reverse ? oppositeSide(this.hostSide) : this.hostSide;
         } else if (clientType === ClientType.CLIENT) {
             side = this.reverse ? this.hostSide : oppositeSide(this.hostSide);
-        }
-        else{
+        } else {
             side = Side.SPECTATOR;
         }
         return {
@@ -104,7 +103,9 @@ export class HumanGameManager extends GameManager {
                 this.clientManager,
             );
         }
-        const sendToSpectators = this.clientManager.sendToSpectators.bind(this.clientManager);
+        const sendToSpectators = this.clientManager.sendToSpectators.bind(
+            this.clientManager,
+        );
         const ids = this.clientManager.getIds();
         const currentSave = SaveManager.loadGame(id);
         if (message instanceof MoveMessage) {

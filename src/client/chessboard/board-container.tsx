@@ -4,7 +4,7 @@ import { Transform, computeChessboardTransform } from "./board-transform";
 import { Side } from "../../common/game-types";
 
 interface BoardContainerProps extends PropsWithChildren {
-    side:Side;
+    side: Side;
     onWidthChange: (width: number) => void;
 }
 
@@ -21,7 +21,16 @@ export function BoardContainer(props: BoardContainerProps) {
     return (
         <ResizeSensor onResize={handleResize}>
             <div id="chess-container">
-                <div id="chessboard" style={{ ...transform, transform:props.side===Side.SPECTATOR?'rotate('+Math.random()*360+'deg)':''}}>
+                <div
+                    id="chessboard"
+                    style={{
+                        ...transform,
+                        transform:
+                            props.side === Side.SPECTATOR ?
+                                "rotate(" + Math.random() * 360 + "deg)"
+                            :   "",
+                    }}
+                >
                     {props.children}
                 </div>
             </div>
