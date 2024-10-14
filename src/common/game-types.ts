@@ -22,6 +22,7 @@ export enum PieceType {
 export enum Side {
     WHITE = "w",
     BLACK = "b",
+    SPECTATOR = "s",
 }
 
 export function oppositeSide(side: Side) {

@@ -73,6 +73,7 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                 />
             </NavbarGroup>
             <NavbarGroup align="right">
+                <h3>{props.side}</h3>
                 <Button icon="cog" minimal onClick={() => navigate("/debug")} />
             </NavbarGroup>
         </Navbar>
