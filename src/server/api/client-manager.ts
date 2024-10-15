@@ -40,9 +40,10 @@ export class ClientManager {
     public sendToSpectators(message: Message): boolean {
         if (this.spectatorIds.length !== 0) {
             for (let x = 0; x < this.spectatorIds.length; x++) {
-                this.socketManager
-                    .getSocket(this.spectatorIds[x])
-                    .send(message.toJson());
+                if (this.socketManager.getSocket(this.spectatorIds[x]))
+                    this.socketManager
+                        .getSocket(this.spectatorIds[x])
+                        .send(message.toJson());
             }
             return true;
         }
