@@ -109,7 +109,5 @@ function gameOverMessage(reason: GameEndReason) {
             return "White Resigned - Black Wins";
         case GameInterruptedReason.BLACK_RESIGNED:
             return "Black Resigned - White Wins";
-        case GameInterruptedReason.ABORTED:
-            return "Game Aborted";
     }
 }
