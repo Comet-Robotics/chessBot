@@ -1,5 +1,7 @@
 {
     "tcpServerPort": 3001,
+    "latitude":32.96975, 
+    "longitude":-96.750333,
     "bots": {
         "80:65:99:4a:87:fa": "robot-15",
         "c0:4e:30:4b:68:76": "robot-11"

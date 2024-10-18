@@ -12,7 +12,7 @@ export const customSquareRenderer = forwardRef<
     HTMLDivElement,
     CustomSquareProps
 >((props, ref) => {
-    const { legalSquares, chess, lastClickedSquare, side } =
+    const { legalSquares, chess, lastClickedSquare, side, rotate } =
         useContext(CustomSquareContext);
 
     let selectElement: ReactElement | null = null;
@@ -28,6 +28,7 @@ export const customSquareRenderer = forwardRef<
             <SquareHighlight
                 height={props.style.height}
                 width={props.style.width}
+                rotate={rotate}
             />
         );
     }
@@ -42,6 +43,7 @@ export const customSquareRenderer = forwardRef<
             <ClickedPiece
                 height={props.style.height}
                 width={props.style.width}
+                rotate={rotate}
             />
         );
     }
@@ -54,6 +56,7 @@ export const customSquareRenderer = forwardRef<
                 <OutsideCorners
                     height={props.style.height}
                     width={props.style.width}
+                    rotate={rotate}
                 />
             );
         } else {

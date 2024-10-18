@@ -1,6 +1,7 @@
 interface PieceSquareProps {
     width: string | number;
     height: string | number;
+    rotate: string | number;
 }
 
 /**
@@ -12,6 +13,7 @@ export function OutsideCorners(props: PieceSquareProps) {
             style={{
                 ...props,
                 position: "absolute",
+                rotate:props.rotate+'deg',
             }}
         >
             <svg
@@ -64,6 +66,7 @@ export function SquareHighlight(props: PieceSquareProps) {
             style={{
                 ...props,
                 position: "absolute",
+                rotate:props.rotate+'deg',
             }}
         >
             <svg height={props.height} width={props.width}>
@@ -74,6 +77,7 @@ export function SquareHighlight(props: PieceSquareProps) {
                     height={Math.ceil(props.height as number)}
                     fill="#f5f682"
                     opacity="60%"
+                    rotate={Math.ceil(props.rotate as number)}
                 />
             </svg>
         </div>
@@ -86,6 +90,7 @@ export function ClickedPiece(props: PieceSquareProps) {
             style={{
                 ...props,
                 position: "absolute",
+                rotate:props.rotate+'deg',
             }}
         >
             <svg height={props.height} width={props.width}>

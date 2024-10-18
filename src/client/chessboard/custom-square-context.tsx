@@ -12,4 +12,5 @@ export const CustomSquareContext = createContext({
     chess: new ChessEngine(),
     lastClickedSquare: undefined as Square | undefined,
     side: Side.WHITE as Side,
+    rotate: 0,
 });
