@@ -1,3 +1,3 @@
-export function Puzzle() {
-    return <></>;
+export function Puzzle(): JSX.Element {
+    return <></>
 }

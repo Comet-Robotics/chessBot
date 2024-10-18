@@ -4,6 +4,7 @@ import { Dispatch, useState } from "react";
 import { SetupGame } from "./setup-game";
 import { useNavigate } from "react-router-dom";
 import { GameType } from "../../common/client-types";
+import { SetupPuzzle } from "../puzzle/setup-puzzle";
 
 enum SetupType {
     MAIN = "main",
@@ -28,6 +29,9 @@ export function Setup(): JSX.Element {
                         :   GameType.HUMAN
                     }
                 />
+            :   null}
+            {setupType === SetupType.PUZZLE ?
+                <SetupPuzzle />
             :   null}
         </SetupBase>
     );

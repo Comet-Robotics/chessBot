@@ -146,3 +146,38 @@ export class ComputerGameManager extends GameManager {
         }
     }
 }
+
+export class PuzzleGameManager extends GameManager {
+    private moveNumber:number = 0;
+
+    constructor(
+        chess: ChessEngine,
+        socketManager: SocketManager,
+        fen: string,
+        private moves:string[],
+        protected difficulty: number,
+    ) {
+        super(chess, socketManager, Side.WHITE);
+        chess.load(fen);
+    }
+
+    public handleMessage(message: Message, id: string): void {
+        if (message instanceof MoveMessage) {
+            
+            if (this.moves[this.moveNumber]===message.move.to){
+                this.chess.makeMove(message.move);
+                this.chess.move(this.moves[this.moveNumber+1]);
+                this.moveNumber++;
+            }
+            else{
+                
+            }
+            
+
+        } else if (message instanceof GameInterruptedMessage) {
+            this.gameInterruptedReason = message.reason;
+            // Reflect end game reason back to client
+            this.socketManager.sendToSocket(id, message);
+        }
+    }
+}

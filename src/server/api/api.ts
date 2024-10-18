@@ -16,6 +16,7 @@ import {
     ComputerGameManager,
     GameManager,
     HumanGameManager,
+    PuzzleGameManager,
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
@@ -100,6 +101,20 @@ apiRouter.post("/start-human-game", (req, res) => {
     return res.send({ message: "success" });
 });
 
+apiRouter.post("/start-puzzle-game", (req, res) => {
+    const fen = req.query.fen as string;
+    const moves = req.query.difficulty as string[];
+    const difficulty = parseInt(req.query.difficulty as string);
+    gameManager = new PuzzleGameManager(
+        new ChessEngine(),
+        socketManager,
+        fen,
+        moves,
+        difficulty,
+    );
+    return res.send({ message: "success" });
+});
+
 apiRouter.get("/get-ids", (_, res) => {
     const ids = tcpServer.getConnectedIds();
     if (IS_DEVELOPMENT) {
@@ -108,24 +123,37 @@ apiRouter.get("/get-ids", (_, res) => {
     return res.send({ ids });
 });
 
+export interface PuzzleComponents{
+    fen:string,
+    moves:string[],
+    rating:number
+}
 /**
  * Returns a list of available puzzles to play.
  */
 apiRouter.get("/get-puzzles", (_, res) => {
-    return res.send({
-        puzzles: [
+    const puzzles: Map<string, PuzzleComponents> = 
+    new Map([
+        ["Puzzle 1",
             {
-                name: "Puzzle 1",
-                id: "puzzleId1",
-                rating: "1200",
-            },
+                fen:"8/1p3p1k/8/p1p2Kr1/P2pP3/1P1P4/2P5/8 w HAha - 0 1",
+                moves:["Kxg5"],
+                rating:511
+            }],
+        ["Puzzle 2",
             {
-                name: "Puzzle 2",
-                id: "puzzleId2",
-                rating: "1400",
-            },
-        ],
-    });
+                fen:"5rk1/p5pp/4q3/8/1P1P4/2P4P/P2p1RP1/5RK1 w HAha - 0 1",
+                moves:["Rxf8#"],
+                rating:514
+            }],
+        ["Puzzle 3",
+            {
+                fen:"8/3B4/2P2P2/1P1P1p2/3pP1p1/1pK5/2p4R/2k3r1 w HAha - 0 1",
+                moves:["Rb6+","d6","Rd6#"],
+                rating:1000
+            }],
+    ]);
+    return res.send(puzzles);
 });
 
 function doDriveRobot(message: DriveRobotMessage): boolean {
