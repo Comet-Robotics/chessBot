@@ -1,6 +1,7 @@
 import { Dispatch, useState } from "react";
 
 import {
+    GameFinishedMessage,
     GameHoldMessage,
     GameInterruptedMessage,
 } from "../../common/message/game-message";
@@ -88,6 +89,7 @@ export function Game(): JSX.Element {
     let gameEndReason: GameEndReason | undefined = undefined;
     const gameFinishedReason = chess.getGameFinishedReason();
     if (gameFinishedReason !== undefined) {
+        sendMessage(new GameFinishedMessage(gameFinishedReason));
         gameEndReason = gameFinishedReason;
     } else if (gameInterruptedReason !== undefined) {
         gameEndReason = gameInterruptedReason;

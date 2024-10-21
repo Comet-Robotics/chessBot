@@ -151,7 +151,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     }
 
     return (
-        <BoardContainer onWidthChange={setWidth}>
+        <BoardContainer side={side} onWidthChange={setWidth}>
             <CustomSquareContext.Provider
                 value={{ legalSquares, chess, lastClickedSquare, side }}
             >
