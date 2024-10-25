@@ -35,18 +35,22 @@ export class ChessEngine {
         return copy;
     }
 
+    /** get the board position */
     get fen(): string {
         return this.chess.fen();
     }
 
+    /** get the board history */
     get pgn(): string {
         return this.chess.pgn();
     }
 
+    /** load a board from history */
     loadPgn(pgn: string) {
         this.chess.loadPgn(pgn);
     }
 
+    /** get the last move made */
     getLastMove() {
         const moves = this.chess.history({ verbose: true });
         return moves.length > 0 ? moves[moves.length - 1] : undefined;

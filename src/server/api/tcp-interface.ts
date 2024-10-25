@@ -79,6 +79,9 @@ export class BotTunnel {
         this.connected = false;
     }
 
+    /**
+     * log when a connection is removed or lost
+     */
     onClose() {
         console.log("Lost connection to %s", this.getIdentifier());
         this.connected = false;
@@ -209,6 +212,10 @@ export class BotTunnel {
         this.socket.write(msg);
     }
 
+    /**
+     * Wait for the socket to respond to the sent action
+     * @returns - if the action was completed or rejected
+     */
     async waitForActionResponse(): Promise<void> {
         return new Promise((res, rej) => {
             this.emitter.once("actionComplete", (args) => {
@@ -219,6 +226,9 @@ export class BotTunnel {
     }
 }
 
+/**
+ * Handles tcp tunnels and maintains a list of connections
+ */
 export class TCPServer {
     private server: net.Server;
 
@@ -280,10 +290,19 @@ export class TCPServer {
         socket.on("error", tunnel.onError.bind(tunnel));
     }
 
+    /**
+     * get the robot tunnel based on the robot id string
+     * @param id - id string
+     * @returns - tcp tunnel
+     */
     public getTunnelFromId(id: string): BotTunnel {
         return this.connections[id];
     }
 
+    /**
+     * get a list of connected ids
+     * @returns - list of id keys
+     */
     public getConnectedIds(): string[] {
         return Object.keys(this.connections);
     }

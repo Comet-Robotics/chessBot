@@ -132,6 +132,8 @@ export class ComputerGameManager extends GameManager {
     // The minimum amount of time to wait responding with a move.
     MINIMUM_DELAY = 500;
 
+    //Create the game manager
+    //if the player is black have the computer make the first move
     constructor(
         chess: ChessEngine,
         socketManager: SocketManager,

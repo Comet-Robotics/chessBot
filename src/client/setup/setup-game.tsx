@@ -5,6 +5,7 @@ import { Difficulty, GameType } from "../../common/client-types";
 import { Side } from "../../common/game-types";
 import { post } from "../api";
 
+/**User's desired side, b/w/r*/
 enum DesiredSide {
     WHITE = "white",
     BLACK = "black",
@@ -135,6 +136,7 @@ function DifficultySlider(props: DifficultySliderProps) {
                     intent="primary"
                     value={props.difficulty}
                     onChange={props.onDifficultyChange}
+                    //based on user chosen value
                     labelRenderer={(value) => {
                         if (value === Difficulty.BABY) {
                             return "Baby";
@@ -159,6 +161,11 @@ interface SelectSideProps {
     onDesiredSideChange: Dispatch<DesiredSide>;
 }
 
+/**
+ * Creates a dialog for the user to choose their side
+ * @param props - function for handling user side choice
+ * @returns - user side dialog
+ */
 function SelectSide(props: SelectSideProps) {
     return (
         <>

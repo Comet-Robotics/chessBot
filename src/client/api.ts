@@ -51,6 +51,7 @@ export function useSocket(
                 onOpen();
             }
         },
+        //handle what to do with the message
         onMessage: (msg: MessageEvent) => {
             const message = parseMessage(msg.data.toString());
             console.log("Handle message: " + message.toJson());
