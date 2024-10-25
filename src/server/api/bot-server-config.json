@@ -1,12 +1,487 @@
 {
     "tcpServerPort": 3001,
     "bots": {
-        "48:27:e2:5d:c6:e8": "robot-15",
+        "80:65:99:4a:87:fa": "robot-15",
         "c0:4e:30:4b:68:76": "robot-11"
     },
-    "botAttributes": {
-        "robot-15": {
-            "leftMotorK": "0"
+
+    "robot-1": {
+        "attributes": {},
+        "homePosition": {
+            "x": "2",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "2",
+            "y": "2"
         }
-    }
+    },
+
+    "robot-2": {
+        "attributes": {},
+        "homePosition": {
+            "x": "3",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "3",
+            "y": "2"
+        }
+    },
+
+    "robot-3": {
+        "attributes": {},
+        "homePosition": {
+            "x": "4",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "4",
+            "y": "2"
+        }
+    },
+
+    "robot-4": {
+        "attributes": {},
+        "homePosition": {
+            "x": "5",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "5",
+            "y": "2"
+        }
+    },
+
+    "robot-5": {
+        "attributes": {},
+        "homePosition": {
+            "x": "6",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "6",
+            "y": "2"
+        }
+    },
+
+    "robot-6": {
+        "attributes": {},
+        "homePosition": {
+            "x": "7",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "7",
+            "y": "2"
+        }
+    },
+
+    "robot-7": {
+        "attributes": {},
+        "homePosition": {
+            "x": "8",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "8",
+            "y": "2"
+        }
+    },
+
+    "robot-8": {
+        "attributes": {},
+        "homePosition": {
+            "x": "9",
+            "y": "0"
+        },
+        "defaultPosition": {
+            "x": "9",
+            "y": "2"
+        }
+    },
+
+    "robot-9": {
+        "attributes": {},
+        "homePosition": {
+            "x": "0",
+            "y": "2"
+        },
+        "defaultPosition": {
+            "x": "2",
+            "y": "3"
+        }
+    },
+
+    "robot-10": {
+        "attributes": {},
+        "homePosition": {
+            "x": "0",
+            "y": "3"
+        },
+        "defaultPosition": {
+            "x": "3",
+            "y": "3"
+        }
+    },
+
+    "robot-11": {
+        "attributes": {},
+        "homePosition": {
+            "x": "0",
+            "y": "4"
+        },
+        "defaultPosition": {
+            "x": "4",
+            "y": "3"
+        }
+    },
+
+    "robot-12": {
+        "attributes": {},
+        "homePosition": {
+            "x": "0",
+            "y": "5"
+        },
+        "defaultPosition": {
+            "x": "5",
+            "y": "3"
+        }
+    },
+
+    "robot-13": {
+        "attributes": {},
+        "homePosition": {
+            "x": "11",
+            "y": "5"
+        },
+        "defaultPosition": {
+            "x": "6",
+            "y": "3"
+        }
+    },
+
+    "robot-14": {
+        "attributes": {},
+        "homePosition": {
+            "x": "11",
+            "y": "4"
+        },
+        "defaultPosition": {
+            "x": "7",
+            "y": "3"
+        }
+    },
+
+    "robot-15": {
+        "attributes": { "leftMotorK": "0" },
+        "homePosition": {
+            "x": "11",
+            "y": "3"
+        },
+        "defaultPosition": {
+            "x": "8",
+            "y": "3"
+        }
+    },
+
+    "robot-16": {
+        "attributes": {},
+        "homePosition": {
+            "x": "11",
+            "y": "2"
+        },
+        "defaultPosition": {
+            "x": "9",
+            "y": "3"
+        }
+    },
+
+    "robot-17": {
+        "attributes": {},
+        "homePosition": {
+            "x": "0",
+            "y": "9"
+        },
+        "defaultPosition": {
+            "x": "2",
+            "y": "8"
+        }
+    },
+
+    "robot-18": {
+        "attributes": {},
+        "homePosition": {
+            "x": "0",
+            "y": "8"
+        },
+        "defaultPosition": {
+            "x": "3",
+            "y": "8"
+        }
+    },
+
+    "robot-19": {
+        "attributes": {},
+        "homePosition": {
+            "x": "0",
+            "y": "7"
+        },
+        "defaultPosition": {
+            "x": "4",
+            "y": "8"
+        }
+    },
+
+    "robot-20": {
+        "attributes": {},
+        "homePosition": {
+            "x": "0",
+            "y": "6"
+        },
+        "defaultPosition": {
+            "x": "5",
+            "y": "8"
+        }
+    },
+
+    "robot-21": {
+        "attributes": {},
+        "homePosition": {
+            "x": "11",
+            "y": "6"
+        },
+        "defaultPosition": {
+            "x": "6",
+            "y": "8"
+        }
+    },
+
+    "robot-22": {
+        "attributes": {},
+        "homePosition": {
+            "x": "11",
+            "y": "7"
+        },
+        "defaultPosition": {
+            "x": "7",
+            "y": "8"
+        }
+    },
+
+    "robot-23": {
+        "attributes": {},
+        "homePosition": {
+            "x": "11",
+            "y": "8"
+        },
+        "defaultPosition": {
+            "x": "8",
+            "y": "8"
+        }
+    },
+
+    "robot-24": {
+        "attributes": {},
+        "homePosition": {
+            "x": "11",
+            "y": "9"
+        },
+        "defaultPosition": {
+            "x": "9",
+            "y": "8"
+        }
+    },
+
+    "robot-25": {
+        "attributes": {},
+        "homePosition": {
+            "x": "2",
+            "y": "11"
+        },
+        "defaultPosition": {
+            "x": "2",
+            "y": "9"
+        }
+    },
+
+    "robot-26": {
+        "attributes": {},
+        "homePosition": {
+            "x": "3",
+            "y": "11"
+        },
+        "defaultPosition": {
+            "x": "3",
+            "y": "9"
+        }
+    },
+
+    "robot-27": {
+        "attributes": {},
+        "homePosition": {
+            "x": "4",
+            "y": "11"
+        },
+        "defaultPosition": {
+            "x": "4",
+            "y": "9"
+        }
+    },
+
+    "robot-28": {
+        "attributes": {},
+        "homePosition": {
+            "x": "5",
+            "y": "11"
+        },
+        "defaultPosition": {
+            "x": "5",
+            "y": "9"
+        }
+    },
+
+    "robot-29": {
+        "attributes": {},
+        "homePosition": {
+            "x": "6",
+            "y": "11"
+        },
+        "defaultPosition": {
+            "x": "6",
+            "y": "9"
+        }
+    },
+
+    "robot-30": {
+        "attributes": {},
+        "homePosition": {
+            "x": "7",
+            "y": "11"
+        },
+        "defaultPosition": {
+            "x": "7",
+            "y": "9"
+        }
+    },
+
+    "robot-31": {
+        "attributes": {},
+        "homePosition": {
+            "x": "8",
+            "y": "11"
+        },
+        "defaultPosition": {
+            "x": "8",
+            "y": "9"
+        }
+    },
+
+    "robot-32": {
+        "attributes": {},
+        "homePosition": {
+            "x": "9",
+            "y": "11"
+        },
+        "defaultPosition": {
+            "x": "9",
+            "y": "9"
+        }
+    },
+    "botConfigSchema": [
+        {
+            "name": "MOTOR_A_PIN1",
+            "type": "gpio",
+            "default_value": 33
+        },
+        {
+            "name": "MOTOR_A_PIN2",
+            "type": "gpio",
+            "default_value": 38
+        },
+        {
+            "name": "MOTOR_B_PIN1",
+            "type": "gpio",
+            "default_value": 39
+        },
+        {
+            "name": "MOTOR_B_PIN2",
+            "type": "gpio",
+            "default_value": 40
+        },
+
+        {
+            "name": "ENCODER_A_PIN1",
+            "type": "gpio",
+            "default_value": 32
+        },
+        {
+            "name": "ENCODER_A_PIN2",
+            "type": "gpio",
+            "default_value": 31
+        },
+        {
+            "name": "ENCODER_B_PIN1",
+            "type": "gpio",
+            "default_value": 18
+        },
+        {
+            "name": "ENCODER_B_PIN2",
+            "type": "gpio",
+            "default_value": 34
+        },
+
+        {
+            "name": "RELAY_IR_LED",
+            "type": "gpio",
+            "default_value": 15
+        },
+        {
+            "name": "PHOTODIODE_FRONT_LEFT",
+            "type": "gpio",
+            "default_value": 0,
+            "comment": "GPIO 1"
+        },
+        {
+            "name": "PHOTODIODE_FRONT_RIGHT",
+            "type": "gpio",
+            "default_value": 1,
+            "comment": "GPIO 2"
+        },
+        {
+            "name": "PHOTODIODE_BACK_LEFT",
+            "type": "gpio",
+            "default_value": 3,
+            "comment": "GPIO 4"
+        },
+        {
+            "name": "PHOTODIODE_BACK_RIGHT",
+            "type": "gpio",
+            "default_value": 5,
+            "comment": "GPIO 5"
+        },
+
+        {
+            "name": "WHEEL_DIAMETER_INCHES",
+            "type": "float",
+            "default_value": 4.375
+        },
+
+        {
+            "name": "MOTOR_A_DRIVE_MULTIPLIER",
+            "type": "float",
+            "default_value": -1.0
+        },
+        {
+            "name": "MOTOR_B_DRIVE_MULTIPLIER",
+            "type": "float",
+            "default_value": 1.0
+        },
+
+        {
+            "name": "ENCODER_MULTIPLIER",
+            "type": "float",
+            "default_value": -12000.0
+        }
+    ]
 }

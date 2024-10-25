@@ -36,3 +36,4 @@ export class StopRobotMessage extends DriveRobotMessage {
         super(id, 0, 0);
     }
 }
+

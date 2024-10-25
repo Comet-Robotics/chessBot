@@ -29,3 +29,9 @@ export enum GameInterruptedReason {
     DRAW_ACCEPTED = "draw-accepted",
     ABORTED = "aborted",
 }
+
+export enum GameHoldReason {
+    DRAW_OFFERED = "draw-offered",
+    DRAW_CONFIRMATION = "draw-confirmation",
+    DRAW_DENIED = "draw-denied",
+}
