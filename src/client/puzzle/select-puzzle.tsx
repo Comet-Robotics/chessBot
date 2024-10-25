@@ -13,7 +13,7 @@ const renderPuzzleOptions: ItemRenderer<string> = (
             key={puzzleNumber}
             active={modifiers.active}
             roleStructure="listoption"
-            text={"Puzzle Number " + puzzleNumber}
+            text={puzzleNumber}
             onFocus={handleFocus}
             onClick={handleClick}
         />
@@ -36,37 +36,41 @@ export function SelectPuzzle(props: SelectPuzzleProps) {
             icon="arrow-right"
             intent="primary"
             onClick={async () => {
-                if(props.selectedPuzzle){
+                if (props.selectedPuzzle && props.puzzles) {
+                    //console.log(props.puzzles.get(props.selectedPuzzle));
+                    const puzz = props.puzzles as Map<string, object>;
+                    console.log(puzz[props.selectedPuzzle]);
                     const promise = post("/start-puzzle-game", {
-                        puzzle: props.selectedPuzzle,
+                        puzzle: JSON.stringify(
+                            puzz[props.selectedPuzzle],
+                        ),
                     });
-                    promise.then(()=>{
-                        navigate("/game")
-                    })
+                    promise.then(() => {
+                        navigate("/game");
+                    });
                 }
             }}
         />
     );
-
     return (
         <>
-        <Select<string>
-            items={[...props.puzzles.keys()]}
-            itemRenderer={renderPuzzleOptions}
-            onItemSelect={props.onPuzzleSelected}
-            filterable={false}
-            popoverProps={{ minimal: true }}
-        >
-            <Button
-                text={
-                    hasSelection ?
-                        "Puzzle " + props.selectedPuzzle
-                    :   "Select a puzzle..."
-                }
-                rightIcon="double-caret-vertical"
-            />
-        </Select>
-        {submit}
+            <Select<string>
+                items={[...Object.keys(props.puzzles)]}
+                itemRenderer={renderPuzzleOptions}
+                onItemSelect={props.onPuzzleSelected}
+                filterable={false}
+                popoverProps={{ minimal: true }}
+            >
+                <Button
+                    text={
+                        hasSelection ?
+                            props.selectedPuzzle
+                        :   "Select a puzzle..."
+                    }
+                    rightIcon="double-caret-vertical"
+                />
+            </Select>
+            {submit}
         </>
     );
 }

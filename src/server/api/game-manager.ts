@@ -169,9 +169,7 @@ export class PuzzleGameManager extends GameManager {
                 this.chess.move(this.moves[this.moveNumber+1]);
                 this.moveNumber++;
             }
-            else{
-                
-            }
+            
             
 
         } else if (message instanceof GameInterruptedMessage) {

@@ -102,7 +102,10 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.post("/start-puzzle-game", (req, res) => {
-    const fen = req.query.fen as string;
+    const puzzle = req.query.puzzle as object;
+    console.log(puzzle);
+    const fen = "";
+    console.log(fen);
     const moves = req.query.difficulty as string[];
     const difficulty = parseInt(req.query.difficulty as string);
     gameManager = new PuzzleGameManager(
@@ -153,7 +156,12 @@ apiRouter.get("/get-puzzles", (_, res) => {
                 rating:1000
             }],
     ]);
-    return res.send(puzzles);
+    const obj: { [key: string]: PuzzleComponents } = {};
+    puzzles.forEach((value, key) => {
+        obj[key] = value;
+    });
+    const a: string = JSON.stringify(obj);
+    return res.send(a);
 });
 
 function doDriveRobot(message: DriveRobotMessage): boolean {

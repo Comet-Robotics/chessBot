@@ -30,7 +30,7 @@ export function SetupPuzzle() {
         return <Navigate to="/home" />;
     }
 
-
+    
     if (data === undefined) {
         return <Spinner intent="primary" />;
     } else {
