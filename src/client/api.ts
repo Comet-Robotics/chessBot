@@ -29,7 +29,7 @@ export function useEffectQuery(
 /**
  * The URL to use for connecting to the websocket backend.
  */
-const WEBSOCKET_URL = "ws://localhost:3000/ws";
+const WEBSOCKET_URL = `ws://${new URL(window.location.href).host}/ws`;
 
 /**
  * A custom hook which allows using a websocket to connect to the server.
