@@ -6,9 +6,10 @@ import { get } from "../api";
 type SimulatedRobot = { position: { x: number, y: number }, heading: number }
 
 const size = 65
+const cellCount = 12
 export function Simulator() {
+    // TODO: need to send robot positions in websocket for live refreshes
     const navigate = useNavigate();
-    const cellCount = 12
 
     const [robotState, setRobotState] = useState<{[robotId: string]: SimulatedRobot}>({});
 
@@ -53,12 +54,11 @@ export function Simulator() {
 }
 
 function Robot(props: { pos: SimulatedRobot, robotId: string }) {
-    // TODO: change these colors :p
     return (
-        <div style={{position: "absolute", left: `${(props.pos.position.x * size)}px`, top: `${props.pos.position.y * size}px`,}}>
+        <div style={{position: "absolute", left: `${(props.pos.position.x * size)}px`, bottom: `${props.pos.position.y * size}px`,}}>
             <Tooltip content={`${props.robotId}: ${JSON.stringify(props.pos)}`}>
-                <div style={{ transform: `rotate(${props.pos.heading}rad)`, backgroundColor: "green", borderRadius: "50%", display: 'flex', justifyContent: 'center', alignItems: 'flex-start', width: size, height: size }}>
-                    <div style={{ width: size/4, height: size/4, backgroundColor: "red", borderRadius: "50%" }} />
+                <div style={{ transform: `rotate(${props.pos.heading}rad)`, backgroundColor: "white", borderRadius: "50%", border: "4px solid black", display: 'flex', justifyContent: 'center', alignItems: 'flex-start', width: size, height: size, padding: '2px', boxShadow: "0 0 10px black" }}>
+                    <div style={{ width: size/4, height: size/4, backgroundColor: "black", borderRadius: "50%" }} />
                 </div>
             </Tooltip>
         </div>
