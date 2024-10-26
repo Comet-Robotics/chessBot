@@ -110,7 +110,8 @@ export function Simulator() {
                     })}
                 </div>
                 <div>
-                    <H2>Message Log</H2>
+                    {/* TODO: why does this header shift the robots ... */}
+                    {/* <H2>Message Log</H2> */}
                     <div style={{
                         height: cellCount * size,
                         overflowY: "scroll",

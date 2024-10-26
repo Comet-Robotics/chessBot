@@ -143,10 +143,10 @@ apiRouter.get("/get-ids", (_, res) => {
     return res.send({ ids });
 });
 
-apiRouter.get("/do-smth", (_, res) => {
+apiRouter.get("/do-smth", async (_, res) => {
     const robotsEntries = Array.from(virtualRobots.entries())
     const [, robot] = robotsEntries[Math.floor(Math.random() * robotsEntries.length)]
-    robot.relativeMove(new Position(1, 1))
+    await robot.relativeMove(new Position(1, 1))
 
     res.send({ message: "success" });
 })
