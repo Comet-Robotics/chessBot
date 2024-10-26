@@ -275,6 +275,31 @@ function moveToDeadZone(origin: Square): Move {
     return collisionTuple[0][0];
 }
 
+function directionToEdge(position: GridIndices)
+{
+    let x = 0;
+    let y = 0;
+   
+
+    if(position.i >= 6)
+    {
+        x = -1;
+    }
+    else{
+        x = 1;
+    }
+    if(position.j >= 6)
+    {
+        y = -1;
+    }
+    else{
+        y = 1;
+    }
+    const DirectionTuple: [number, number][] = [[x, y]];
+    return DirectionTuple
+
+}
+
 //step1 find the path of least resistance to the dead zone
 //step2 shimmy pieces out of the way
 //step3 move the piece to the dead zone
@@ -292,6 +317,8 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
     ]);
     return goHome;
 }
+
+
 
 // Command structure
 // No Capture: Sequential[ Parallel[Turn[all]], MovePiece[shimmys, main], Parallel[TurnToStart[all]] ]
