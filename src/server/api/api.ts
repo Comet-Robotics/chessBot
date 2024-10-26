@@ -143,15 +143,19 @@ apiRouter.get("/get-ids", (_, res) => {
     return res.send({ ids });
 });
 
+apiRouter.get("/do-smth", (_, res) => {
+    const robotsEntries = Array.from(virtualRobots.entries())
+    const [, robot] = robotsEntries[Math.floor(Math.random() * robotsEntries.length)]
+    robot.relativeMove(new Position(1, 1))
+
+    res.send({ message: "success" });
+})
+
 apiRouter.get("/get-simulator-robot-state", (_, res) => {
     if (!USE_VIRTUAL_ROBOTS) {
         return res.status(400).send({ message: "Simulator is not enabled." });
     }
     const robotsEntries = Array.from(virtualRobots.entries())
-
-    // TODO: this relative move is for my debugging purposes - I need to remove this before merging
-    const [, robot] = robotsEntries[0]
-    robot.relativeMove(new Position(1, 1))
 
     const robotState = Object.fromEntries(
         robotsEntries.map(([id, robot]) => {

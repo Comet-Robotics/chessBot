@@ -61,6 +61,13 @@ export function Simulator() {
         await fetch(`/__open-in-editor?file=${frame.fileName}&line=${frame.lineNumber}&column=${frame.columnNumber}`);
     }
 
+    const moveRandomBot = async () => {
+        const response = await get("/do-smth");
+        if (!response.ok) {
+            console.warn("Failed to move random bot");
+        }
+    }
+
     return (
         <Card>
             <Button
@@ -76,30 +83,49 @@ export function Simulator() {
                 onClick={() => navigate("/debug")}
             />
             <H1>Robot Simulator</H1>
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(${cellCount}, ${size}px)`, gridTemplateRows: `repeat(${cellCount}, ${size}px)`, position: "relative" }}>
-                {new Array(cellCount * cellCount).fill(undefined).map((_, i) => {
-                    const row = Math.floor(i / cellCount);
-                    const col = i % cellCount;
-                    const isCenterCell = row >= 2 && row < 10 && col >= 2 && col < 10;
-                    return (
-                        <div key={i} style={{ border: "1px solid black", backgroundColor: !isCenterCell ? "lightgray" : "transparent" }}/>
-                    )
-                })}
-                {Object.entries(robotState).map(([robotId, pos]) => {
-                    return <Robot pos={pos} robotId={robotId} key={robotId} />
-                })}
-            </div>
-            <div>
-                <H2>Message Log</H2>
-                {messageLog.map(({message, ts}, i) => {
-                    return <div key={i}>
-                        <div>{ts.toLocaleString()}</div>
-                        <div>{message.robotId}: {JSON.stringify(message.location)}</div>
-                        <div>{message.packet.type}</div>
-                        {/* TODO: add stack trace */}
+            <Button
+                icon="refresh"
+                onClick={fetchRobotState}
+            >
+                Refresh
+            </Button>
+            <Button
+                icon="random"
+                onClick={moveRandomBot}
+            >
+                Move Random Bot
+            </Button>
+            <div style={{display: "flex", gap: "1rem"}}>
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(${cellCount}, ${size}px)`, gridTemplateRows: `repeat(${cellCount}, ${size}px)`, position: "relative" }}>
+                    {new Array(cellCount * cellCount).fill(undefined).map((_, i) => {
+                        const row = Math.floor(i / cellCount);
+                        const col = i % cellCount;
+                        const isCenterCell = row >= 2 && row < 10 && col >= 2 && col < 10;
+                        return (
+                            <div key={i} style={{ border: "1px solid black", backgroundColor: !isCenterCell ? "lightgray" : "transparent" }}/>
+                        )
+                    })}
+                    {Object.entries(robotState).map(([robotId, pos]) => {
+                        return <Robot pos={pos} robotId={robotId} key={robotId} />
+                    })}
+                </div>
+                <div>
+                    <H2>Message Log</H2>
+                    <div style={{
+                        height: cellCount * size,
+                        overflowY: "scroll",
+                    }}>
+                        {messageLog.map(({message, ts}, i) => {
+                            return <div key={i}>
+                                <div>{ts.toLocaleString()}</div>
+                                <div>{message.robotId}: {JSON.stringify(message.location)}</div>
+                                <div>{message.packet.type}</div>
+                                {/* TODO: add stack trace */}
+                            </div>
+                        })}
                     </div>
-                })}
-                
+                    
+                </div>
             </div>
         </Card>
     )
@@ -109,7 +135,7 @@ function Robot(props: { pos: SimulatedRobotLocation, robotId: string }) {
     return (
         <div style={{position: "absolute", left: `${(props.pos.position.x * size)}px`, bottom: `${props.pos.position.y * size}px`,}}>
             <Tooltip content={`${props.robotId}: ${JSON.stringify(props.pos)}`}>
-                <div style={{ transform: `rotate(${props.pos.heading}rad)`, backgroundColor: "white", borderRadius: "50%", border: "4px solid black", display: 'flex', justifyContent: 'center', alignItems: 'flex-start', width: size, height: size, padding: '2px', boxShadow: "0 0 10px black" }}>
+                <div style={{ transform: `rotate(${props.pos.heading}rad)`, backgroundColor: "white", borderRadius: "50%", border: "4px solid black", display: 'flex', justifyContent: 'center', alignItems: 'flex-start', width: size, height: size, padding: '2px', boxShadow: "0 0 3px black" }}>
                     <div style={{ width: size/4, height: size/4, backgroundColor: "black", borderRadius: "50%" }} />
                 </div>
             </Tooltip>
