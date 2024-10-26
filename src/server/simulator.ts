@@ -53,6 +53,11 @@ export class VirtualBotTunnel extends BotTunnel {
     heading = 0;
     position = ZERO_POSITION;
 
+    static messages: {
+        ts: Date,
+        message: SimulatorUpdateMessage
+    }[] = []
+
     constructor(private robotId: string) {
         super(null, (_) => {})
 
@@ -96,6 +101,7 @@ export class VirtualBotTunnel extends BotTunnel {
             position: this.position,
             heading: this.heading
         }, packet, stack);
+        VirtualBotTunnel.messages.push({ts: new Date(), message})
         socketManager.sendToAll(message);
     }
 }

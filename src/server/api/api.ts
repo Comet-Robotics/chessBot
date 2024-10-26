@@ -167,7 +167,7 @@ apiRouter.get("/get-simulator-robot-state", (_, res) => {
             return ([id, { position, heading }])
         })
     );
-    return res.send({ robotState });
+    return res.send({ robotState, messages: Array.from(VirtualBotTunnel.messages) });
 });
 
 /**

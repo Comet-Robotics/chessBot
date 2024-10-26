@@ -43,11 +43,13 @@ export function Simulator() {
         }
     );
 
+    const fetchRobotState = async () => {
+        const { robotState, messages } = await get("/get-simulator-robot-state");
+        dispatch({ type: "SET_ALL_ROBOTS", payload: robotState });
+        setMessageLog(messages);
+    }
+
     useEffect(() => {
-        const fetchRobotState = async () => {
-            const { robotState } = await get("/get-simulator-robot-state");
-            dispatch({ type: "SET_ALL_ROBOTS", payload: robotState });
-        }
         fetchRobotState();
     }, []);
 
