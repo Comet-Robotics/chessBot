@@ -158,7 +158,44 @@ function findShimmyLocation(
     pieceId: string,
     move: GridMove,
     collisionType: number,
-): Position {}
+): Position {
+    const shimmyPos: Position = robotManager.getRobot(pieceId).position;
+    const axisShimmyAmount: number = 1/3;
+    switch (collisionType) {
+        // Horizontal
+        case 0: {
+            const direction: [number, number] = directionToEdge(move.to);
+            const gridY: number = Math.floor(shimmyPos.y);
+            if (gridY === move.to.j) {
+                const augmentY: number = shimmyPos.y + (direction[1] * -axisShimmyAmount);
+                return new Position(shimmyPos.x, augmentY);
+            } else {
+                const augmentY: number = shimmyPos.y + (direction[1] * axisShimmyAmount);
+                return new Position(shimmyPos.x, augmentY);
+            }
+        }
+        // Vertical
+        case 1: {
+            const direction: [number, number] = directionToEdge(move.to);
+            const gridX: number = move.from.i + direction[0];
+            if (gridX === move.to.i) {
+                const augmentX: number = shimmyPos.x + (direction[0] * -axisShimmyAmount);
+                return new Position(augmentX, shimmyPos.y);
+            } else {
+                const augmentX: number = shimmyPos.x + (direction[0] * axisShimmyAmount);
+                return new Position(augmentX, shimmyPos.y);
+            }
+        }
+        // Diagonal
+        case 2: {
+            break;
+        }
+        // Horse
+        case 3: {
+            break;
+        }
+    }
+}
 
 function constructDriveCommand(
     pieceId: string,
@@ -280,7 +317,7 @@ function directionToEdge(position: GridIndices) {
     } else {
         y = 1;
     }
-    const DirectionTuple: [number, number][] = [[x, y]];
+    const DirectionTuple: [number, number] = [x, y];
     return DirectionTuple;
 }
 
@@ -294,7 +331,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
     const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
     const home: GridIndices = robotManager.getRobot(id).homeIndices;
     const fastestMoveToDeadzone = moveToDeadZone(from);
-    const toDeadzone = moveMainPiece(moveToGridMove(fastestMoveToDeadzone));
+    const toDeadzone = moveMainPiece(fastestMoveToDeadzone);
 
     const goHome: SequentialCommandGroup = new SequentialCommandGroup([
         toDeadzone,
