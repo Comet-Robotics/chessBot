@@ -159,7 +159,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
 
 function findShimmyLocation(
     pieceId: string,
-    move: Move,
+    move: GridMove,
     collisionType: number,
 ): Position {}
 
@@ -184,14 +184,14 @@ function constructRotateCommand(
 }
 
 function constructFinalCommand(
-    move: Move,
+    move: GridMove,
     driveCommands: DriveCommand[],
     rotateCommands: RelativeRotateCommand[],
 ): MovePiece {
-    const from = GridIndices.squareToGrid(move.from);
+    const from = move.from;
     const mainPiece = robotManager.indicesToIds.get(from);
     if (mainPiece !== undefined) {
-        const to = GridIndices.squareToGrid(move.to);
+        const to = move.to;
         const pos = new Position(to.i + 0.5, to.j + 0.5);
         const mainDrive = constructDriveCommand(mainPiece, pos);
         const mainTurn = constructRotateCommand(mainPiece, pos);
@@ -205,12 +205,12 @@ function constructFinalCommand(
 
 // Takes in a move, and generates the commands required to get the main piece to it's destination
 // If there are pieces in the way, it shimmy's them out, and move them back after main piece passes
-function moveMainPiece(move: Move): MovePiece {
+function moveMainPiece(move: GridMove): MovePiece {
     const driveCommands: DriveCommand[] = [];
     const rotateCommands: RelativeRotateCommand[] = [];
-    const collisionType = calcCollisionType(moveToGridMove(move));
+    const collisionType = calcCollisionType(move);
     const collisions: string[] = detectCollisions(
-        moveToGridMove(move),
+        move,
         collisionType,
     );
     for (let i = 0; i < collisions.length; i++) {
@@ -221,6 +221,9 @@ function moveMainPiece(move: Move): MovePiece {
     }
     return constructFinalCommand(move, driveCommands, rotateCommands);
 }
+
+
+
 
 /**
  * Te easiest move to get to the dead zone
@@ -282,7 +285,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
     const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
     const home: GridIndices = robotManager.getRobot(id).homeIndices;
     const fastestMoveToDeadzone = moveToDeadZone(from);
-    const toDeadzone = moveMainPiece(fastestMoveToDeadzone);
+    const toDeadzone = moveMainPiece(moveToGridMove(fastestMoveToDeadzone));
 
     const goHome: SequentialCommandGroup = new SequentialCommandGroup([
         toDeadzone,
@@ -303,7 +306,7 @@ export function materializePath(move: Move): Command {
         const capturePiece = gameManager?.chess.getCapturedPieceId(move);
         if (capturePiece !== undefined) {
             const captureCommand = returnToHome(move.to, capturePiece);
-            const mainCommand = moveMainPiece(move);
+            const mainCommand = moveMainPiece(moveToGridMove(move));
             const command = new SequentialCommandGroup([
                 captureCommand,
                 mainCommand,
@@ -315,10 +318,10 @@ export function materializePath(move: Move): Command {
     } else if (gameManager?.chess.isKingSideCastling(move)) {
         null;
     } else {
-        return moveMainPiece(move);
+        return moveMainPiece(moveToGridMove(move));
     }
 }
 
 export function debugPath(move: Move) {
-    return moveMainPiece(move);
+    return moveMainPiece(moveToGridMove(move));
 }
