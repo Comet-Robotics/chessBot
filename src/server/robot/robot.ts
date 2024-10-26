@@ -39,7 +39,7 @@ export class Robot {
     }
 
     /**
-     * @param heading - An absolute heading to turn to, in degrees. 0 is up (from white to black).
+     * @param heading - An absolute heading to turn to, in degrees. 0 is up (from white to black). CW is positive.
      */
     public async absoluteRotate(heading: number): Promise<void> {
         const delta1: number = heading - this.heading;
@@ -52,7 +52,7 @@ export class Robot {
         const turnAmount =
             Math.abs(delta1) < Math.abs(delta2) ? delta1 : delta2;
         this.heading = heading;
-        return this.turn(turnAmount);
+        return this.sendTurnPacket(turnAmount);
     }
 
     /**
@@ -60,7 +60,7 @@ export class Robot {
      */
     public async relativeRotate(deltaHeading: number): Promise<void> {
         this.heading = clampHeading(this.heading + deltaHeading);
-        return this.turn(deltaHeading);
+        return this.sendTurnPacket(deltaHeading);
     }
 
     /**
@@ -72,7 +72,7 @@ export class Robot {
         const distance = Math.hypot(offset.x, offset.y);
         const angle = clampHeading(Math.atan2(-offset.x, offset.y) * RADIAN);
         const promise = this.absoluteRotate(angle).then(() =>
-            this.drive(distance),
+            this.sendDrivePacket(distance),
         );
         this.position = this.position.add(deltaPosition);
         return promise;
@@ -84,8 +84,8 @@ export class Robot {
      *
      * @param deltaHeading - A relative heading to turn by, in radians. May be positive or negative.
      */
-    public async turn(deltaHeading: number): Promise<void> {
         const tunnel = tcpServer.getTunnelFromId(this.id);
+    public async sendTurnPacket(deltaHeading: number): Promise<void> {
         tunnel.send({ type: "TURN_BY_ANGLE", deltaHeading });
         return tunnel.waitForActionResponse();
     }
@@ -96,8 +96,8 @@ export class Robot {
      *
      * @param tileDistance - The distance to drive forward or backwards by. 1 is defined as the length of a tile.
      */
-    public async drive(tileDistance: number): Promise<void> {
         const tunnel = tcpServer.getTunnelFromId(this.id);
+    public async sendDrivePacket(tileDistance: number): Promise<void> {
         tunnel.send({ type: "DRIVE_TILES", tileDistance });
         return tunnel.waitForActionResponse();
     }

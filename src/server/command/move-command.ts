@@ -102,7 +102,7 @@ export class DriveCommand
 
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
-        return robot.drive(this.tileDistance);
+        return robot.sendDrivePacket(this.tileDistance);
     }
 
     public reverse(): DriveCommand {
