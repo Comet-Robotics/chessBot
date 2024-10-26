@@ -2,10 +2,7 @@ import { robotManager } from "../api/managers";
 import { Move } from "../../common/game-types";
 import { gameManager } from "../api/api";
 import { Command, SequentialCommandGroup } from "../command/command";
-import {
-    DriveCommand,
-    RelativeRotateCommand,
-} from "../command/move-command";
+import { DriveCommand, RelativeRotateCommand } from "../command/move-command";
 import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
 import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
@@ -209,10 +206,7 @@ function moveMainPiece(move: GridMove): MovePiece {
     const driveCommands: DriveCommand[] = [];
     const rotateCommands: RelativeRotateCommand[] = [];
     const collisionType = calcCollisionType(move);
-    const collisions: string[] = detectCollisions(
-        move,
-        collisionType,
-    );
+    const collisions: string[] = detectCollisions(move, collisionType);
     for (let i = 0; i < collisions.length; i++) {
         const pieceId = collisions[i];
         const location = findShimmyLocation(pieceId, move, collisionType);
@@ -221,9 +215,6 @@ function moveMainPiece(move: GridMove): MovePiece {
     }
     return constructFinalCommand(move, driveCommands, rotateCommands);
 }
-
-
-
 
 /**
  * Te easiest move to get to the dead zone
@@ -275,29 +266,22 @@ function moveToDeadZone(origin: Square): Move {
     return collisionTuple[0][0];
 }
 
-function directionToEdge(position: GridIndices)
-{
+function directionToEdge(position: GridIndices) {
     let x = 0;
     let y = 0;
-   
 
-    if(position.i >= 6)
-    {
+    if (position.i >= 6) {
         x = -1;
-    }
-    else{
+    } else {
         x = 1;
     }
-    if(position.j >= 6)
-    {
+    if (position.j >= 6) {
         y = -1;
-    }
-    else{
+    } else {
         y = 1;
     }
     const DirectionTuple: [number, number][] = [[x, y]];
-    return DirectionTuple
-
+    return DirectionTuple;
 }
 
 //step1 find the path of least resistance to the dead zone
@@ -317,8 +301,6 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
     ]);
     return goHome;
 }
-
-
 
 // Command structure
 // No Capture: Sequential[ Parallel[Turn[all]], MovePiece[shimmys, main], Parallel[TurnToStart[all]] ]
