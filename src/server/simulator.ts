@@ -77,6 +77,10 @@ export class VirtualBotTunnel extends BotTunnel {
         return "Virtual Bot ID: " + this.id;
     }
 
+    private emitActionComplete() {
+        this.emitter.emit("actionComplete", {success: true});
+    }
+
     send(packet: Packet) {
         const stack = getStack() 
 
@@ -84,13 +88,19 @@ export class VirtualBotTunnel extends BotTunnel {
         switch (packet.type) {
             case "TURN_BY_ANGLE":
                 this.heading += packet.deltaHeading;
+                this.emitActionComplete();
                 break;
             case "DRIVE_TILES": {
                 const distance = packet.tileDistance;
                 const angleInRadians = this.heading * (Math.PI / 180);
                 const deltaX = distance * Math.sin(angleInRadians);
                 const deltaY = distance * Math.cos(angleInRadians);
-                this.position = this.position.add(new Position(deltaX, deltaY));
+                
+                const newPosition = this.position.add(new Position(deltaX, deltaY));
+                console.log(`Robot ${this.robotId} moved to ${newPosition.x}, ${newPosition.y} from ${this.position.x}, ${this.position.y}`)
+                this.position = newPosition;
+
+                this.emitActionComplete();
                 break;
             }
             default:
