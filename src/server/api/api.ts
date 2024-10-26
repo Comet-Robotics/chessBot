@@ -138,12 +138,12 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.post("/start-puzzle-game", (req, res) => {
-    const puzzle = req.query.puzzle as object;
-    console.log(puzzle);
-    const fen = "";
-    console.log(fen);
-    const moves = req.query.difficulty as string[];
-    const difficulty = parseInt(req.query.difficulty as string);
+    const puzzle = JSON.parse(req.query.puzzle as string) as PuzzleComponents;
+    console.log(puzzle.fen);
+    const fen = puzzle.fen;
+    console.log();
+    const moves = puzzle.moves;
+    const difficulty = puzzle.rating;
     gameManager = new PuzzleGameManager(
         new ChessEngine(),
         socketManager,
@@ -162,35 +162,40 @@ apiRouter.get("/get-ids", (_, res) => {
     return res.send({ ids });
 });
 
-export interface PuzzleComponents{
-    fen:string,
-    moves:string[],
-    rating:number
+export interface PuzzleComponents {
+    fen: string;
+    moves: string[];
+    rating: number;
 }
 /**
  * Returns a list of available puzzles to play.
  */
 apiRouter.get("/get-puzzles", (_, res) => {
-    const puzzles: Map<string, PuzzleComponents> = 
-    new Map([
-        ["Puzzle 1",
+    const puzzles: Map<string, PuzzleComponents> = new Map([
+        [
+            "Puzzle 1",
             {
-                fen:"8/1p3p1k/8/p1p2Kr1/P2pP3/1P1P4/2P5/8 w HAha - 0 1",
-                moves:["Kxg5"],
-                rating:511
-            }],
-        ["Puzzle 2",
+                fen: "8/1p3p1k/8/p1p2Kr1/P2pP3/1P1P4/2P5/8 w - - 0 1",
+                moves: ["Kxg5"],
+                rating: 511,
+            },
+        ],
+        [
+            "Puzzle 2",
             {
-                fen:"5rk1/p5pp/4q3/8/1P1P4/2P4P/P2p1RP1/5RK1 w HAha - 0 1",
-                moves:["Rxf8#"],
-                rating:514
-            }],
-        ["Puzzle 3",
+                fen: "5rk1/p5pp/4q3/8/1P1P4/2P4P/P2p1RP1/5RK1 w",
+                moves: ["Rxf8#"],
+                rating: 514,
+            },
+        ],
+        [
+            "Puzzle 3",
             {
-                fen:"8/3B4/2P2P2/1P1P1p2/3pP1p1/1pK5/2p4R/2k3r1 w HAha - 0 1",
-                moves:["Rb6+","d6","Rd6#"],
-                rating:1000
-            }],
+                fen: "8/3B4/2P2P2/1P1P1p2/3pP1p1/1pK5/2p4R/2k3r1 w - - 0 1",
+                moves: ["Rb6+", "d6", "Rd6#"],
+                rating: 1000,
+            },
+        ],
     ]);
     const obj: { [key: string]: PuzzleComponents } = {};
     puzzles.forEach((value, key) => {
