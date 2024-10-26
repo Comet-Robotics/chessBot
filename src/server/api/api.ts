@@ -23,10 +23,11 @@ import {
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
-import { IS_DEVELOPMENT } from "../utils/env";
+import { USE_VIRTUAL_ROBOTS } from "../utils/env";
 import { SaveManager } from "./save-manager";
+import { virtualRobots } from "../simulator/robot";
 
-export const tcpServer = new TCPServer();
+export const tcpServer: TCPServer | null = USE_VIRTUAL_ROBOTS ? null : new TCPServer();
 
 export let gameManager: GameManager | null = null;
 
@@ -137,11 +138,18 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.get("/get-ids", (_, res) => {
-    const ids = tcpServer.getConnectedIds();
-    if (IS_DEVELOPMENT) {
-        ids.push("dummy-id-1", "dummy-id-2");
-    }
+    const ids = USE_VIRTUAL_ROBOTS ? Array.from(virtualRobots.keys()) : tcpServer!.getConnectedIds();
     return res.send({ ids });
+});
+
+apiRouter.get("/get-simulator-robot-state", (_, res) => {
+    if (!USE_VIRTUAL_ROBOTS) {
+        return res.status(400).send({ message: "Simulator is not enabled." });
+    }
+    const robotState = Object.fromEntries(
+        Array.from(virtualRobots.entries()).map(([id, { position, heading }]) => [id, { position, heading }])
+    );
+    return res.send({ robotState });
 });
 
 /**
@@ -165,6 +173,10 @@ apiRouter.get("/get-puzzles", (_, res) => {
 });
 
 function doDriveRobot(message: DriveRobotMessage): boolean {
+    if (!tcpServer) {
+        console.warn("Attempted to drive robot without TCP server.");
+        return false;
+    }
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(
             "attempted manual move for non-existent robot ID " + message.id,
@@ -189,6 +201,10 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
 }
 
 function doSetRobotVariable(message: SetRobotVariableMessage): boolean {
+    if (!tcpServer) {
+        console.warn("Attempted to set robot variable without TCP server.");
+        return false;
+    }
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(
             "Attempted set variable for non-existent robot ID " + message.id,
