@@ -289,8 +289,6 @@ export class TCPServer {
 
         socket.setNoDelay(true);
 
-        
-
         //create a new bot tunnel for the connection
         const tunnel = new BotTunnel(
             socket,

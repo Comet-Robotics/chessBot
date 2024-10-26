@@ -64,6 +64,9 @@ export class GameInterruptedMessage extends Message {
     }
 }
 
+/**
+ * A message that contains why the game is held
+ */
 export class GameHoldMessage extends Message {
     constructor(public readonly reason: GameHoldReason) {
         super();

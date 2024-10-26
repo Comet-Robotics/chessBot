@@ -77,6 +77,7 @@ apiRouter.get("/client-information", (req, res) => {
     //loading saves from file if found
     const oldSave = SaveManager.loadGame(req.cookies.id);
     if (oldSave) {
+        //if the game was an ai game, create a computer game manager with the ai difficulty
         if (oldSave.aiDifficulty !== -1) {
             gameManager = new ComputerGameManager(
                 new ChessEngine(oldSave.game),
@@ -90,6 +91,7 @@ apiRouter.get("/client-information", (req, res) => {
                 oldSave.aiDifficulty,
                 oldSave.host !== req.cookies.id,
             );
+            //create a new human game manger with appropriate clients
         } else {
             gameManager = new HumanGameManager(
                 new ChessEngine(oldSave.game),
@@ -232,6 +234,11 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
     return true;
 }
 
+/**
+ * set a variable on the robot
+ * @param message - the robot id and variable information to change
+ * @returns - boolean completed successfully
+ */
 function doSetRobotVariable(message: SetRobotVariableMessage): boolean {
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(
