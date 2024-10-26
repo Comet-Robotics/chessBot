@@ -1,6 +1,6 @@
 import { Message, MessageType } from "./message";
 import { Move } from "../game-types";
-import { GameInterruptedReason, GameHoldReason } from "../game-end-reasons";
+import { GameInterruptedReason, GameHoldReason, GameEndReason } from "../game-end-reasons";
 
 export class PositionMessage extends Message {
     constructor(public readonly pgn: string) {
@@ -57,6 +57,21 @@ export class GameHoldMessage extends Message {
     }
 
     protected type = MessageType.GAME_HELD;
+
+    protected toObj(): object {
+        return {
+            ...super.toObj(),
+            reason: this.reason,
+        };
+    }
+}
+
+export class GameEndMessage extends Message {
+    constructor(public readonly reason: GameEndReason) {
+        super();
+    }
+
+    protected type = MessageType.GAME_ENDED;
 
     protected toObj(): object {
         return {

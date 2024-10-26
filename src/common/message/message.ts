@@ -37,6 +37,10 @@ export enum MessageType {
      */
     GAME_HELD = "game-held",
     /**
+     * Indicates the game has ended
+     */
+    GAME_ENDED = "game-ended",
+    /**
      * A client-server message containing instructions for manually driving a robot.
      */
     DRIVE_ROBOT = "drive-robot",

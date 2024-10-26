@@ -5,6 +5,7 @@ import {
     GameInterruptedMessage,
     GameStartedMessage,
     GameHoldMessage,
+    GameEndMessage,
 } from "../../common/message/game-message";
 import { SocketManager } from "./socket-manager";
 import { ClientManager } from "./client-manager";
@@ -215,7 +216,7 @@ export class PuzzleGameManager extends GameManager {
         private moves: string[],
         protected difficulty: number,
     ) {
-        super(chess, socketManager, Side.WHITE);
+        super(chess, socketManager, Side.WHITE, false);
         chess.load(fen);
     }
 
@@ -226,15 +227,24 @@ export class PuzzleGameManager extends GameManager {
                 this.chess.move(this.moves[this.moveNumber + 1]);
                 this.moveNumber++;
             }
+            if(this.isGameEnded()){
+                console.log("yay");
+                const gameEnd = this.getGameEndReason()
+                if(gameEnd){
+                    this.socketManager.sendToSocket(id, new GameEndMessage(gameEnd));
+                }
+            }
+
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             // Reflect end game reason back to client
             this.socketManager.sendToSocket(id, message);
         }
+
     }
 
     public isGameEnded(): boolean {
-        return this.moveNumber === this.moves.length || super.isGameEnded();
+        return this.moveNumber === this.moves.length-1 || super.isGameEnded();
     }
 
     public getGameEndReason(): GameEndReason | undefined {
