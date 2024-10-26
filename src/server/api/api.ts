@@ -15,7 +15,7 @@ import {
 import { TCPServer } from "./tcp-interface";
 import { Difficulty } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
-import { clientManager, socketManager } from "./managers";
+import { clientManager, robotManager, socketManager } from "./managers";
 import {
     ComputerGameManager,
     GameManager,
@@ -139,7 +139,7 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.get("/get-ids", (_, res) => {
-    const ids = USE_VIRTUAL_ROBOTS ? Array.from(virtualRobots.keys()) : tcpServer!.getConnectedIds();
+    const ids = robotManager.idsToRobots.keys()
     return res.send({ ids });
 });
 
@@ -147,15 +147,22 @@ apiRouter.get("/get-simulator-robot-state", (_, res) => {
     if (!USE_VIRTUAL_ROBOTS) {
         return res.status(400).send({ message: "Simulator is not enabled." });
     }
+    const robotsEntries = Array.from(virtualRobots.entries())
+
+    // TODO: this relative move is for my debugging purposes - I need to remove this before merging
+    const [, robot] = robotsEntries[0]
+    robot.relativeMove(new Position(1, 1))
+
     const robotState = Object.fromEntries(
-        Array.from(virtualRobots.entries()).map(([id, robot]) => {
+        robotsEntries.map(([id, robot]) => {
             let heading = robot.heading
             let position = new Position(robot.position.x, robot.position.y)
 
             const tunnel = robot.getTunnel()
             if (tunnel instanceof VirtualBotTunnel) {
-                position = position.add(tunnel.deltaPosition)
-                heading += tunnel.deltaHeading
+
+                position = tunnel.position
+                heading = tunnel.heading
             }
             return ([id, { position, heading }])
         })

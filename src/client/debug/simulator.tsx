@@ -1,25 +1,63 @@
-import { Card, Button, H1, Tooltip } from "@blueprintjs/core";
-import { useEffect, useState } from "react";
+import { Card, Button, H1, Tooltip, H2 } from "@blueprintjs/core";
+import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { get } from "../api";
+import { get, useSocket } from "../api";
+import { SimulatedRobotLocation, SimulatorUpdateMessage, StackFrame } from "../../common/message/simulator-message";
 
-type SimulatedRobot = { position: { x: number, y: number }, heading: number }
+
 
 const size = 65
 const cellCount = 12
 export function Simulator() {
-    // TODO: need to send robot positions in websocket for live refreshes
     const navigate = useNavigate();
 
-    const [robotState, setRobotState] = useState<{[robotId: string]: SimulatedRobot}>({});
+    type RobotState = { [robotId: string]: SimulatedRobotLocation };
+
+    type Action =
+        | { type: "SET_ALL_ROBOTS"; payload: RobotState }
+        | { type: "UPDATE_ROBOT"; payload: { robotId: string; state: SimulatedRobotLocation } };
+
+    const robotStateReducer = (state: RobotState, action: Action): RobotState => {
+        switch (action.type) {
+            case "SET_ALL_ROBOTS":
+                return action.payload;
+            case "UPDATE_ROBOT":
+                return {
+                    ...state,
+                    [action.payload.robotId]: action.payload.state,
+                };
+            default:
+                return state;
+        }
+    };
+
+    const [robotState, dispatch] = useReducer(robotStateReducer, {});
+    const [messageLog, setMessageLog] = useState<{message: SimulatorUpdateMessage, ts: Date}[]>([]);
+
+    useSocket(
+        (message) => {
+            if (message instanceof SimulatorUpdateMessage) {
+                dispatch({ type: "UPDATE_ROBOT", payload: { robotId: message.robotId, state: message.location } });
+                setMessageLog((log) => [...log, {message, ts: new Date()}]);
+            }
+        }
+    );
 
     useEffect(() => {
         const fetchRobotState = async () => {
             const { robotState } = await get("/get-simulator-robot-state");
-            setRobotState(robotState);
+            dispatch({ type: "SET_ALL_ROBOTS", payload: robotState });
         }
         fetchRobotState();
     }, []);
+
+    const openInEditor = async (frame: StackFrame) => {
+        if (!frame) {
+            console.warn("No stack frame provided for opening in editor");
+            return
+        }
+        await fetch(`/__open-in-editor?file=${frame.fileName}&line=${frame.lineNumber}&column=${frame.columnNumber}`);
+    }
 
     return (
         <Card>
@@ -49,11 +87,23 @@ export function Simulator() {
                     return <Robot pos={pos} robotId={robotId} key={robotId} />
                 })}
             </div>
+            <div>
+                <H2>Message Log</H2>
+                {messageLog.map(({message, ts}, i) => {
+                    return <div key={i}>
+                        <div>{ts.toLocaleString()}</div>
+                        <div>{message.robotId}: {JSON.stringify(message.location)}</div>
+                        <div>{message.packet.type}</div>
+                        {/* TODO: add stack trace */}
+                    </div>
+                })}
+                
+            </div>
         </Card>
     )
 }
 
-function Robot(props: { pos: SimulatedRobot, robotId: string }) {
+function Robot(props: { pos: SimulatedRobotLocation, robotId: string }) {
     return (
         <div style={{position: "absolute", left: `${(props.pos.position.x * size)}px`, bottom: `${props.pos.position.y * size}px`,}}>
             <Tooltip content={`${props.robotId}: ${JSON.stringify(props.pos)}`}>

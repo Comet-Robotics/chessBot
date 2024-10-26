@@ -4,15 +4,63 @@ import { Robot } from "./robot/robot";
 import config from './api/bot-server-config.json';
 import { Packet } from "./utils/tcp-packet";
 import { Position, ZERO_POSITION } from "./robot/position";
+import path from "path";
+import { SimulatorUpdateMessage, StackFrame } from "../common/message/simulator-message";
+import { socketManager } from "./api/managers";
+
+const srcDir = path.resolve(__dirname, "../");
+
+function getStack(justMyCode = true) {
+    // inspired by https://stackoverflow.com/a/56651526
+    const err = new Error();
+    Error.captureStackTrace(err, getStack);
+
+    const {stack} = err;
+    if (!stack) return
+    const cleanedStack = parseErrorStack(stack);
+
+    if (justMyCode) {
+        const chessBotCodeEndFrame = cleanedStack.findIndex((frame) => !frame.fileName.startsWith(srcDir));
+        if (chessBotCodeEndFrame !== -1) {
+            cleanedStack.splice(chessBotCodeEndFrame + 1);
+        }
+    }
+
+    return cleanedStack;
+}
+
+const parseErrorStack = (stack: string): StackFrame[] => {
+    const lines = stack.split("\n");
+    const frames = lines.slice(1).map((line) => {
+        const match = line.match(/^\s+at (?:(.+) \()?(.+):(\d+):(\d+)\)?$/);
+        if (!match) {
+            throw new Error(`Invalid stack frame: ${line}`);
+        }
+        const [, functionName, fileName, lineNumber, columnNumber] = match;
+        return {
+            fileName,
+            functionName,
+            lineNumber: parseInt(lineNumber),
+            columnNumber: parseInt(columnNumber),
+        };
+    });
+    return frames;
+}
 
 export class VirtualBotTunnel extends BotTunnel {
     connected = true;
 
-    deltaHeading = 0;
-    deltaPosition = ZERO_POSITION;
+    heading = 0;
+    position = ZERO_POSITION;
 
-    constructor() {
+    constructor(private robotId: string) {
         super(null, (_) => {})
+
+        // pulling initial heading and position from robot, then only depending on messages sent to the 'robot' to update the position and heading
+        const robot = virtualRobots.get(robotId)!
+        this.heading = robot.heading
+        this.position = robot.position
+        
         this.emitter = new EventEmitter();
     }
 
@@ -25,25 +73,30 @@ export class VirtualBotTunnel extends BotTunnel {
     }
 
     send(packet: Packet) {
+        const stack = getStack() 
+
         // NOTE: need to ensure that all the packets which are used in the Robot class (src/server/robot/robot.ts) are also provided with a matching virtual implementation here
         switch (packet.type) {
             case "TURN_BY_ANGLE":
-                this.deltaHeading += packet.deltaHeading;
-                //  TODO: send WS message for simulator updates
+                this.heading += packet.deltaHeading;
                 break;
             case "DRIVE_TILES": {
                 const distance = packet.tileDistance;
-                const angleInRadians = this.deltaHeading * (Math.PI / 180);
+                const angleInRadians = this.heading * (Math.PI / 180);
                 const deltaX = distance * Math.sin(angleInRadians);
                 const deltaY = distance * Math.cos(angleInRadians);
-                this.deltaPosition = this.deltaPosition.add(new Position(deltaX, deltaY));
-                
-                //  TODO: send WS message for simulator updates
+                this.position = this.position.add(new Position(deltaX, deltaY));
                 break;
             }
             default:
-                throw new Error("Invalid packet type for virtual bot: " + packet.type)
+                throw new Error("Unhandled packet type for virtual bot: " + packet.type)
         }
+
+        const message = new SimulatorUpdateMessage(this.robotId, {
+            position: this.position,
+            heading: this.heading
+        }, packet, stack);
+        socketManager.sendToAll(message);
     }
 }
 
@@ -56,9 +109,6 @@ export class VirtualRobot extends Robot {
 
 const virtualBotIds = Array(32).fill(undefined).map((_, i) => `virtual-robot-${(i+1).toString()}`)
 
-const virtualBotTunnels = new Map<string, BotTunnel>(
-    virtualBotIds.map((id) => [id, new VirtualBotTunnel()]),
-);
 
 export const virtualRobots = new Map<string, VirtualRobot>(
     virtualBotIds.map((id) => {
@@ -72,5 +122,8 @@ export const virtualRobots = new Map<string, VirtualRobot>(
     }),
 );
 
+const virtualBotTunnels = new Map<string, BotTunnel>(
+    virtualBotIds.map((id) => [id, new VirtualBotTunnel(id)]),
+);
 
 
