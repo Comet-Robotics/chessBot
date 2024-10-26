@@ -29,14 +29,21 @@ export class VirtualBotTunnel extends BotTunnel {
         switch (packet.type) {
             case "TURN_BY_ANGLE":
                 this.deltaHeading += packet.deltaHeading;
+                //  TODO: send WS message for simulator updates
                 break;
-            case "DRIVE_TILES":
-                this.deltaPosition = this.deltaPosition.add(new Position(packet.tileDistance, 0));
+            case "DRIVE_TILES": {
+                const distance = packet.tileDistance;
+                const angleInRadians = this.deltaHeading * (Math.PI / 180);
+                const deltaX = distance * Math.sin(angleInRadians);
+                const deltaY = distance * Math.cos(angleInRadians);
+                this.deltaPosition = this.deltaPosition.add(new Position(deltaX, deltaY));
+                
+                //  TODO: send WS message for simulator updates
                 break;
+            }
             default:
                 throw new Error("Invalid packet type for virtual bot: " + packet.type)
         }
-        //  TODO: send WS messages for simulator updates
     }
 }
 
