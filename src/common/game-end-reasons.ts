@@ -15,6 +15,7 @@ export enum GameFinishedReason {
     FIFTY_MOVES = "fifty-moves",
     // chess.js doesn't support the following:
     // FIVEFOLD_REPETITION,
+    PUZZLE_SOLVED = "puzzle-solved",
 }
 
 /**

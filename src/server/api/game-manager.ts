@@ -11,6 +11,7 @@ import { ClientType } from "../../common/client-types";
 import { Side, oppositeSide } from "../../common/game-types";
 import {
     GameEndReason,
+    GameFinishedReason,
     GameEndReason as GameInterruptedReason,
 } from "../../common/game-end-reasons";
 
@@ -148,13 +149,13 @@ export class ComputerGameManager extends GameManager {
 }
 
 export class PuzzleGameManager extends GameManager {
-    private moveNumber:number = 0;
+    private moveNumber: number = 0;
 
     constructor(
         chess: ChessEngine,
         socketManager: SocketManager,
         fen: string,
-        private moves:string[],
+        private moves: string[],
         protected difficulty: number,
     ) {
         super(chess, socketManager, Side.WHITE);
@@ -163,19 +164,25 @@ export class PuzzleGameManager extends GameManager {
 
     public handleMessage(message: Message, id: string): void {
         if (message instanceof MoveMessage) {
-            
-            if (this.moves[this.moveNumber]===message.move.to){
+            if (this.moves[this.moveNumber] === message.move.to) {
                 this.chess.makeMove(message.move);
-                this.chess.move(this.moves[this.moveNumber+1]);
+                this.chess.move(this.moves[this.moveNumber + 1]);
                 this.moveNumber++;
             }
-            
-            
-
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             // Reflect end game reason back to client
             this.socketManager.sendToSocket(id, message);
+        }
+    }
+
+    public isGameEnded(): boolean {
+        return this.moveNumber === this.moves.length || super.isGameEnded();
+    }
+
+    public getGameEndReason(): GameEndReason | undefined {
+        if (this.moveNumber === this.moves.length) {
+            return GameFinishedReason.PUZZLE_SOLVED;
         }
     }
 }
