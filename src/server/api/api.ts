@@ -25,7 +25,7 @@ import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
 import { USE_VIRTUAL_ROBOTS } from "../utils/env";
 import { SaveManager } from "./save-manager";
-import { virtualRobots } from "../simulator/robot";
+import { virtualRobots } from "../simulator";
 
 export const tcpServer: TCPServer | null = USE_VIRTUAL_ROBOTS ? null : new TCPServer();
 

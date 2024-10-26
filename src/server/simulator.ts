@@ -1,9 +1,9 @@
 import EventEmitter from "node:events";
-import { BotTunnel } from "../api/tcp-interface";
-import { Robot } from "../robot/robot";
-import config from '../api/bot-server-config.json';
-import { Packet } from "../utils/tcp-packet";
-import { Position, ZERO_POSITION } from "../robot/position";
+import { BotTunnel } from "./api/tcp-interface";
+import { Robot } from "./robot/robot";
+import config from './api/bot-server-config.json';
+import { Packet } from "./utils/tcp-packet";
+import { Position, ZERO_POSITION } from "./robot/position";
 
 export class VirtualBotTunnel extends BotTunnel {
     connected = true;
@@ -36,7 +36,7 @@ export class VirtualBotTunnel extends BotTunnel {
             default:
                 throw new Error("Invalid packet type for virtual bot: " + packet.type)
         }
-            
+        //  TODO: send WS messages for simulator updates
     }
 }
 
