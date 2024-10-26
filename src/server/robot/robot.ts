@@ -2,6 +2,7 @@ import { FULL_ROTATION, RADIAN, clampHeading } from "../utils/units";
 import { Position, ZERO_POSITION } from "./position";
 import { GridIndices } from "./grid-indices";
 import { tcpServer } from "../api/api";
+import { BotTunnel } from "../api/tcp-interface";
 
 /**
  * Represents a robot.
@@ -78,14 +79,18 @@ export class Robot {
         return promise;
     }
 
+    protected getTunnel(): BotTunnel {
+        return tcpServer!.getTunnelFromId(this.id);
+    }
+
     /**
      * Send a packet to the robot indicating angle to turn. Returns a promise that finishes when the
      * robot finishes the action.
      *
      * @param deltaHeading - A relative heading to turn by, in radians. May be positive or negative.
      */
-        const tunnel = tcpServer.getTunnelFromId(this.id);
     public async sendTurnPacket(deltaHeading: number): Promise<void> {
+        const tunnel = this.getTunnel();
         tunnel.send({ type: "TURN_BY_ANGLE", deltaHeading });
         return tunnel.waitForActionResponse();
     }
@@ -96,8 +101,8 @@ export class Robot {
      *
      * @param tileDistance - The distance to drive forward or backwards by. 1 is defined as the length of a tile.
      */
-        const tunnel = tcpServer.getTunnelFromId(this.id);
     public async sendDrivePacket(tileDistance: number): Promise<void> {
+        const tunnel = this.getTunnel();
         tunnel.send({ type: "DRIVE_TILES", tileDistance });
         return tunnel.waitForActionResponse();
     }
