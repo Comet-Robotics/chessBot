@@ -220,7 +220,7 @@ function moveMainPiece(move: GridMove): MovePiece {
  * Te easiest move to get to the dead zone
  */
 //TODO: Change the move to Grid that way we can move off the board.
-function moveToDeadZone(origin: Square): Move {
+function moveToDeadZone(origin: Square): GridMove {
     const aboveMove = moveToGridMove({
         from: origin,
         to: (origin[0] + "8") as Square,
@@ -255,11 +255,11 @@ function moveToDeadZone(origin: Square): Move {
         calcCollisionType(rightMove),
     );
 
-    const collisionTuple: [Move, string[]][] = [
-        [{ from: origin, to: (origin[0] + "8") as Square }, aboveCollision],
-        [{ from: origin, to: (origin[0] + "1") as Square }, belowCollision],
-        [{ from: origin, to: ("h" + origin[1]) as Square }, rightCollision],
-        [{ from: origin, to: ("a" + origin[1]) as Square }, leftCollision],
+    const collisionTuple: [GridMove, string[]][] = [
+        [moveToGridMove({  from: origin, to: (origin[0] + "9") as Square }), aboveCollision],
+        [moveToGridMove({ from: origin, to: (origin[0] + "1") as Square }), belowCollision],
+        [moveToGridMove({ from: origin, to: ("9" + origin[1]) as Square }), rightCollision],
+        [moveToGridMove({ from: origin, to: ("1" + origin[1]) as Square }), leftCollision],
     ];
 
     collisionTuple.sort((a, b) => a[1].length - b[1].length);
