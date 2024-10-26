@@ -15,8 +15,8 @@ export function Simulator() {
 
     useEffect(() => {
         const fetchRobotState = async () => {
-            const robotState = await get("/get-simulator-robot-state");
-            setRobotState(robotState.robotState);
+            const { robotState } = await get("/get-simulator-robot-state");
+            setRobotState(robotState);
         }
         fetchRobotState();
     }, []);

@@ -48,7 +48,7 @@ export class VirtualBotTunnel extends BotTunnel {
 }
 
 export class VirtualRobot extends Robot {
-    getTunnel(): BotTunnel {
+    public getTunnel(): BotTunnel {
         return virtualBotTunnels.get(this.id)!;
     }
 
@@ -67,7 +67,7 @@ export const virtualRobots = new Map<string, VirtualRobot>(
             id,
             realRobotConfig.homePosition,
             undefined,
-            realRobotConfig.defaultPosition,
+            new Position(realRobotConfig.defaultPosition.x, realRobotConfig.defaultPosition.y),
         )] as const
     }),
 );

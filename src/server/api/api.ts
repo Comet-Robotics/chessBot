@@ -25,7 +25,8 @@ import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
 import { USE_VIRTUAL_ROBOTS } from "../utils/env";
 import { SaveManager } from "./save-manager";
-import { virtualRobots } from "../simulator";
+import { VirtualBotTunnel, virtualRobots } from "../simulator";
+import { Position } from "../robot/position";
 
 export const tcpServer: TCPServer | null = USE_VIRTUAL_ROBOTS ? null : new TCPServer();
 
@@ -147,7 +148,17 @@ apiRouter.get("/get-simulator-robot-state", (_, res) => {
         return res.status(400).send({ message: "Simulator is not enabled." });
     }
     const robotState = Object.fromEntries(
-        Array.from(virtualRobots.entries()).map(([id, { position, heading }]) => [id, { position, heading }])
+        Array.from(virtualRobots.entries()).map(([id, robot]) => {
+            let heading = robot.heading
+            let position = new Position(robot.position.x, robot.position.y)
+
+            const tunnel = robot.getTunnel()
+            if (tunnel instanceof VirtualBotTunnel) {
+                position = position.add(tunnel.deltaPosition)
+                heading += tunnel.deltaHeading
+            }
+            return ([id, { position, heading }])
+        })
     );
     return res.send({ robotState });
 });
