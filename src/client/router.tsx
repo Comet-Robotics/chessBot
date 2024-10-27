@@ -8,7 +8,6 @@ import { Home } from "./home";
 import { Debug2 } from "./debug/debug2";
 import { Simulator } from "./debug/simulator";
 
-
 export const router = createBrowserRouter([
     {
         path: "/home",

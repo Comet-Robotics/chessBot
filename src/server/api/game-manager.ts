@@ -66,7 +66,7 @@ export abstract class GameManager {
     public abstract handleMessage(
         message: Message,
         clientType: ClientType,
-    ): Promise<void>
+    ): Promise<void>;
 }
 
 export class HumanGameManager extends GameManager {
@@ -106,14 +106,14 @@ export class HumanGameManager extends GameManager {
         if (message instanceof MoveMessage) {
             // Call path materializer and send to bots
             const command = materializePath(message.move);
-            
+
             this.chess.makeMove(message.move);
-            
+
             console.log("running executor");
-            console.log(command)
+            console.log(command);
             await executor.execute(command);
             console.log("executor done");
-            
+
             if (ids) {
                 if (currentSave?.host === ids[0]) {
                     SaveManager.saveGame(

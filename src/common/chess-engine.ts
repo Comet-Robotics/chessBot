@@ -119,7 +119,10 @@ export class ChessEngine {
      * @param move - The Move to check.
      * @returns The current piece on the square as a it's robot id as a string
      */
-    getCapturedPieceId(move: Move, robotManager: RobotManager): string | undefined {
+    getCapturedPieceId(
+        move: Move,
+        robotManager: RobotManager,
+    ): string | undefined {
         if (this.isEnPassant(move)) {
             const y = GridIndices.squareToGrid(move.from).j;
             if (y > 6) {

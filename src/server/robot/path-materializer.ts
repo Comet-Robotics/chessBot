@@ -2,7 +2,12 @@ import { robotManager } from "../api/managers";
 import { Move } from "../../common/game-types";
 import { gameManager } from "../api/api";
 import { Command, SequentialCommandGroup } from "../command/command";
-import { AbsoluteMoveCommand, DriveCommand, MoveCommand, RelativeRotateCommand } from "../command/move-command";
+import {
+    AbsoluteMoveCommand,
+    DriveCommand,
+    MoveCommand,
+    RelativeRotateCommand,
+} from "../command/move-command";
 import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
 import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
@@ -275,7 +280,7 @@ function findShimmyLocation(
                     );
         }
     }
-    return new Position(0, 0)
+    return new Position(0, 0);
 }
 
 function constructDriveCommand(
@@ -304,17 +309,17 @@ function constructFinalCommand(
     rotateCommands: RelativeRotateCommand[],
 ): MovePiece {
     const from = move.from;
-    console.log(from, robotManager.indicesToIds)
+    console.log(from, robotManager.indicesToIds);
 
-    let mainPiece: string | undefined
-    
+    let mainPiece: string | undefined;
+
     for (const [key, value] of robotManager.indicesToIds) {
         if (key.i === from.i && key.j === from.j) {
             mainPiece = value;
             break;
         }
     }
-    
+
     if (mainPiece !== undefined) {
         console.log("main piece");
         const to = move.to;
@@ -426,21 +431,24 @@ function directionToEdge(position: GridIndices) {
     return DirectionTuple;
 }
 
-
 function returnToHome(from: Square, id: string): SequentialCommandGroup {
     //const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
     const home: GridIndices = robotManager.getRobot(id).homeIndices;
     const fastestMoveToDeadzone = moveToDeadZone(from);
     const toDeadzone = moveMainPiece(fastestMoveToDeadzone);
-    
+
     const startInDeadzone = fastestMoveToDeadzone.to;
     let finalDestination;
 
-    const checkDirections = [new GridIndices(0,1), new GridIndices(1,0), new GridIndices(-1,0), new GridIndices(0,-1)];
+    const checkDirections = [
+        new GridIndices(0, 1),
+        new GridIndices(1, 0),
+        new GridIndices(-1, 0),
+        new GridIndices(0, -1),
+    ];
 
     for (const direction of checkDirections) {
-        if (arrayOfDeadzone.includes(home.add(direction)))
-        {
+        if (arrayOfDeadzone.includes(home.add(direction))) {
             finalDestination = home.add(direction);
         }
     }
@@ -449,8 +457,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
     const endInArray = arrayOfDeadzone.indexOf(finalDestination);
     let differenceOfIndex = endInArray - startInArray;
 
-    if(differenceOfIndex < 0 )
-    {
+    if (differenceOfIndex < 0) {
         differenceOfIndex += 36;
     }
 
@@ -458,21 +465,37 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
 
     let i = startInArray;
     const moveCommands: MoveCommand[] = [];
-    while (i != endInArray)
-    {
+    while (i !== endInArray) {
         if (arrayOfCornersIndicies.includes(i)) {
-            moveCommands.push(new AbsoluteMoveCommand(id, new Position(arrayOfDeadzone[i].i + 0.5, arrayOfDeadzone[i].j + 0.5)));
+            moveCommands.push(
+                new AbsoluteMoveCommand(
+                    id,
+                    new Position(
+                        arrayOfDeadzone[i].i + 0.5,
+                        arrayOfDeadzone[i].j + 0.5,
+                    ),
+                ),
+            );
         }
         i += botDirectionToHome;
     }
-    moveCommands.push(new AbsoluteMoveCommand(id, new Position(arrayOfDeadzone[endInArray].i + 0.5, arrayOfDeadzone[endInArray].j + 0.5)));
+    moveCommands.push(
+        new AbsoluteMoveCommand(
+            id,
+            new Position(
+                arrayOfDeadzone[endInArray].i + 0.5,
+                arrayOfDeadzone[endInArray].j + 0.5,
+            ),
+        ),
+    );
 
-    moveCommands.push(new AbsoluteMoveCommand(id, new Position(home.i + 0.5, home.j + 0.5)));
-    
+    moveCommands.push(
+        new AbsoluteMoveCommand(id, new Position(home.i + 0.5, home.j + 0.5)),
+    );
 
     const goHome: SequentialCommandGroup = new SequentialCommandGroup([
         toDeadzone,
-        ...moveCommands
+        ...moveCommands,
     ]);
 
     return goHome;
@@ -488,7 +511,10 @@ export function materializePath(move: Move): Command {
     if (gameManager?.chess.isEnPassant(move)) {
         return new SequentialCommandGroup([]);
     } else if (gameManager?.chess.isRegularCapture(move)) {
-        const capturePiece = gameManager?.chess.getCapturedPieceId(move, robotManager);
+        const capturePiece = gameManager?.chess.getCapturedPieceId(
+            move,
+            robotManager,
+        );
         if (capturePiece !== undefined) {
             const captureCommand = returnToHome(move.to, capturePiece);
             const mainCommand = moveMainPiece(moveToGridMove(move));
