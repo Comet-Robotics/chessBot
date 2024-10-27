@@ -7,8 +7,6 @@ import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
 import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
 import { Square } from "chess.js";
-import { check } from "runtypes";
-import { dir } from "console";
 
 export interface GridMove {
     from: GridIndices;
@@ -277,6 +275,7 @@ function findShimmyLocation(
                     );
         }
     }
+    return new Position(0, 0)
 }
 
 function constructDriveCommand(
@@ -446,7 +445,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
     const botDirectionToHome = differenceOfIndex < 18 ? 1 : -1;
 
     let i = startInArray;
-    let moveCommands: MoveCommand[] = [];
+    const moveCommands: MoveCommand[] = [];
     while (i != endInArray)
     {
         if (arrayOfCornersIndicies.includes(i)) {
@@ -475,7 +474,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
 // Capture: Sequential[ Home with/without shimmy[capture piece], No_Capture[main piece] ]
 export function materializePath(move: Move): Command {
     if (gameManager?.chess.isEnPassant(move)) {
-        null;
+        return new SequentialCommandGroup([]);
     } else if (gameManager?.chess.isRegularCapture(move)) {
         const capturePiece = gameManager?.chess.getCapturedPieceId(move);
         if (capturePiece !== undefined) {
@@ -487,10 +486,11 @@ export function materializePath(move: Move): Command {
             ]);
             return command;
         }
+        return new SequentialCommandGroup([]);
     } else if (gameManager?.chess.isQueenSideCastling(move)) {
-        null;
+        return new SequentialCommandGroup([]);
     } else if (gameManager?.chess.isKingSideCastling(move)) {
-        null;
+        return new SequentialCommandGroup([]);
     } else {
         return moveMainPiece(moveToGridMove(move));
     }
