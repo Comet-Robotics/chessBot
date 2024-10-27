@@ -107,10 +107,13 @@ export class HumanGameManager extends GameManager {
             // Call path materializer and send to bots
             const command = materializePath(message.move);
             
-            await executor.execute(command);
-            
-            
             this.chess.makeMove(message.move);
+            
+            console.log("running executor");
+            console.log(command)
+            await executor.execute(command);
+            console.log("executor done");
+            
             if (ids) {
                 if (currentSave?.host === ids[0]) {
                     SaveManager.saveGame(
