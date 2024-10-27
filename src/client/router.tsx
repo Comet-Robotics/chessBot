@@ -5,11 +5,16 @@ import { Game } from "./game/game";
 import { Puzzle } from "./puzzle/puzzle";
 import { Lobby } from "./setup/lobby";
 import { Home } from "./home";
+import { Simulator } from "./debug/simulator";
 
 export const router = createBrowserRouter([
     {
         path: "/home",
         element: <Home />,
+    },
+    {
+        path: "/debug/simulator",
+        element: <Simulator />,
     },
     {
         path: "/debug",
