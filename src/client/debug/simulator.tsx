@@ -180,6 +180,7 @@ function LogEntry(props: { message: SimulatorUpdateMessage, ts: Date }) {
             {message.stackTrace && (
                 <Collapse isOpen={isOpen}>
                     <pre style={{ display: "flex", flexDirection: "column", gap: "0.25rem", whiteSpace: "pre-wrap",padding: "0 0.75rem" }}>
+                        {JSON.stringify(message.packet, null, 2)}
                         {message.stackTrace.map((frame, index) => {
                             const location = `${frame.fileName}:${frame.lineNumber}:${frame.columnNumber}`
                             const msg = frame.functionName ? `at ${frame.functionName} (${location})` : `at ${location}`
