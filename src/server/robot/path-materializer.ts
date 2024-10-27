@@ -304,8 +304,19 @@ function constructFinalCommand(
     rotateCommands: RelativeRotateCommand[],
 ): MovePiece {
     const from = move.from;
-    const mainPiece = robotManager.indicesToIds.get(from);
+    console.log(from, robotManager.indicesToIds)
+
+    let mainPiece: string | undefined
+    
+    for (const [key, value] of robotManager.indicesToIds) {
+        if (key.i === from.i && key.j === from.j) {
+            mainPiece = value;
+            break;
+        }
+    }
+    
     if (mainPiece !== undefined) {
+        console.log("main piece");
         const to = move.to;
         const pos = new Position(to.i + 0.5, to.j + 0.5);
         const mainDrive = constructDriveCommand(mainPiece, pos);
@@ -314,6 +325,7 @@ function constructFinalCommand(
         setupCommands.push(...rotateCommands, mainTurn, ...driveCommands);
         return new MovePiece(setupCommands, mainDrive);
     } else {
+        console.log("no main piece");
         return new MovePiece(rotateCommands, new SequentialCommandGroup([]));
     }
 }
