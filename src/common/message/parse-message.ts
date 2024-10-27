@@ -48,7 +48,7 @@ export function parseMessage(text: string): Message {
                 obj.robotId,
                 obj.location,
                 obj.packet,
-                obj.stackFrame,
+                obj.stackTrace,
             );
     }
     throw new Error("Failed to parse message.");
