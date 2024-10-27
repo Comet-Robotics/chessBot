@@ -17,14 +17,14 @@ export class BotTunnel {
     emitter: EventEmitter;
 
     constructor(
-        private socket: net.Socket,
+        private socket: net.Socket | null,
         private onHandshake: (packetContent: string) => void,
     ) {
         this.emitter = new EventEmitter();
     }
 
     isActive() {
-        return this.socket.readyState === "open";
+        return this.socket!.readyState === "open";
     }
 
     getIdentifier(): string {
@@ -32,8 +32,8 @@ export class BotTunnel {
             return "ID: " + this.id;
         } else if (this.address !== undefined) {
             return "MAC Address: " + this.address;
-        } else if (this.socket.remoteAddress !== undefined) {
-            return "IP: " + this.socket.remoteAddress;
+        } else if (this.socket!.remoteAddress !== undefined) {
+            return "IP: " + this.socket!.remoteAddress;
         } else {
             return "Unnamed Robot";
         }
@@ -157,7 +157,7 @@ export class BotTunnel {
         }
 
         console.log({ msg });
-        this.socket.write(msg);
+        this.socket!.write(msg);
     }
 
     async waitForActionResponse(): Promise<void> {

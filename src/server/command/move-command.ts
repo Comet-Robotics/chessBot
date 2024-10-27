@@ -8,7 +8,7 @@ import { robotManager } from "../api/managers";
 export abstract class RotateCommand extends RobotCommand {
     constructor(
         robotId: string,
-        public heading: number,
+        public headingRadians: number,
     ) {
         super(robotId);
     }
@@ -23,11 +23,11 @@ export class RelativeRotateCommand
 {
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
-        return robot.relativeRotate(this.heading);
+        return robot.relativeRotate(this.headingRadians);
     }
 
     public reverse(): RelativeRotateCommand {
-        return new RelativeRotateCommand(this.robotId, -this.heading);
+        return new RelativeRotateCommand(this.robotId, -this.headingRadians);
     }
 }
 
@@ -37,7 +37,7 @@ export class RelativeRotateCommand
 export class AbsoluteRotateCommand extends RotateCommand {
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
-        return robot.absoluteRotate(this.heading);
+        return robot.absoluteRotate(this.headingRadians);
     }
 }
 
@@ -49,7 +49,7 @@ export class ReversibleAbsoluteRotateCommand
     extends RobotCommand
     implements Reversible<ReversibleAbsoluteRotateCommand>
 {
-    private previousHeading: number | undefined;
+    private previousHeadingRadians: number | undefined;
 
     constructor(
         robotId: string,
@@ -60,14 +60,14 @@ export class ReversibleAbsoluteRotateCommand
 
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
-        this.previousHeading = robot.heading;
+        this.previousHeadingRadians = robot.headingRadians;
         return robot.absoluteRotate(this.headingSupplier());
     }
 
     public reverse(): ReversibleAbsoluteRotateCommand {
         return new ReversibleAbsoluteRotateCommand(
             this.robotId,
-            (() => this.previousHeading!).bind(this),
+            (() => this.previousHeadingRadians!).bind(this),
         );
     }
 }
@@ -78,7 +78,7 @@ export class ReversibleAbsoluteRotateCommand
 export class RotateToStartCommand extends RobotCommand {
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
-        return robot.absoluteRotate(robot.startHeading);
+        return robot.absoluteRotate(robot.startHeadingRadians);
     }
 }
 
@@ -102,7 +102,7 @@ export class DriveCommand
 
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
-        return robot.drive(this.tileDistance);
+        return robot.sendDrivePacket(this.tileDistance);
     }
 
     public reverse(): DriveCommand {

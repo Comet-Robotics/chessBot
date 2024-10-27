@@ -31,19 +31,6 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                 <NavbarHeading>ChessBot</NavbarHeading>
                 <NavbarDivider />
                 <Button
-                    icon="warning-sign"
-                    minimal
-                    text="Abort Game"
-                    intent="warning"
-                    onClick={async () => {
-                        props.sendMessage(
-                            new GameInterruptedMessage(
-                                GameInterruptedReason.ABORTED,
-                            ),
-                        );
-                    }}
-                />
-                <Button
                     icon="flag"
                     minimal
                     text="Resign"

@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid";
 import { apiRouter, websocketHandler } from "./api/api";
 import expressWebSocket from "express-ws";
 import { clientManager } from "./api/managers";
+import launchEditorMiddleware from "launch-editor-middleware";
 
 const app = expressWebSocket(express()).app;
 
@@ -45,6 +46,8 @@ app.get("/", (_, res) => {
 });
 
 app.ws("/ws", websocketHandler);
+
+app.use("/__open-in-editor", launchEditorMiddleware());
 
 app.use("/api", apiRouter);
 

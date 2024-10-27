@@ -73,6 +73,12 @@ export function Debug() {
                 icon="home"
                 onClick={() => navigate("/home")}
             />
+            <Button
+                minimal
+                style={{ float: "right" }}
+                icon="airplane"
+                onClick={() => navigate("/debug/simulator")}
+            />
             <H1>Debug</H1>
             {body}
         </Card>

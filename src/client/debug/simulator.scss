@@ -1,0 +1,11 @@
+.log-list > *:nth-child(odd) {
+    background-color: rgb(240, 240, 240);
+}
+
+.log-list > *:hover {
+    background-color: rgb(168, 166, 166);
+}
+
+.robot {
+    transition: all 0.75s ease;
+}
