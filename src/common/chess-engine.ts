@@ -4,7 +4,7 @@ import { GameFinishedReason } from "./game-end-reasons";
 import { Difficulty } from "./client-types";
 import { Move, PieceType, Side } from "./game-types";
 import { GridIndices } from "../server/robot/grid-indices";
-import { robotManager } from "../server/api/managers";
+import type { RobotManager } from "../server/robot/robot-manager";
 
 export class ChessEngine {
     private chess: Chess;
@@ -119,7 +119,7 @@ export class ChessEngine {
      * @param move - The Move to check.
      * @returns The current piece on the square as a it's robot id as a string
      */
-    getCapturedPieceId(move: Move): string | undefined {
+    getCapturedPieceId(move: Move, robotManager: RobotManager): string | undefined {
         if (this.isEnPassant(move)) {
             const y = GridIndices.squareToGrid(move.from).j;
             if (y > 6) {
