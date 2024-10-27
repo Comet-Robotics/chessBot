@@ -2,16 +2,58 @@ import { robotManager } from "../api/managers";
 import { Move } from "../../common/game-types";
 import { gameManager } from "../api/api";
 import { Command, SequentialCommandGroup } from "../command/command";
-import { DriveCommand, RelativeRotateCommand } from "../command/move-command";
+import { AbsoluteMoveCommand, DriveCommand, MoveCommand, RelativeRotateCommand } from "../command/move-command";
 import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
 import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
 import { Square } from "chess.js";
+import { check } from "runtypes";
+import { dir } from "console";
 
 export interface GridMove {
     from: GridIndices;
     to: GridIndices;
 }
+const arrayOfCornersIndicies = [0, 9, 18, 27];
+
+const arrayOfDeadzone = [
+    new GridIndices(1, 1),
+    new GridIndices(1, 2),
+    new GridIndices(1, 3),
+    new GridIndices(1, 4),
+    new GridIndices(1, 5),
+    new GridIndices(1, 6),
+    new GridIndices(1, 7),
+    new GridIndices(1, 8),
+    new GridIndices(1, 9),
+    new GridIndices(1, 10),
+    new GridIndices(2, 10),
+    new GridIndices(3, 10),
+    new GridIndices(4, 10),
+    new GridIndices(5, 10),
+    new GridIndices(6, 10),
+    new GridIndices(7, 10),
+    new GridIndices(8, 10),
+    new GridIndices(9, 10),
+    new GridIndices(10, 10),
+    new GridIndices(10, 9),
+    new GridIndices(10, 8),
+    new GridIndices(10, 7),
+    new GridIndices(10, 6),
+    new GridIndices(10, 5),
+    new GridIndices(10, 4),
+    new GridIndices(10, 3),
+    new GridIndices(10, 2),
+    new GridIndices(10, 1),
+    new GridIndices(9, 1),
+    new GridIndices(8, 1),
+    new GridIndices(7, 1),
+    new GridIndices(6, 1),
+    new GridIndices(5, 1),
+    new GridIndices(4, 1),
+    new GridIndices(3, 1),
+    new GridIndices(2, 1),
+];
 
 function moveToGridMove(move: Move): GridMove {
     return {
@@ -160,17 +202,19 @@ function findShimmyLocation(
     collisionType: number,
 ): Position {
     const shimmyPos: Position = robotManager.getRobot(pieceId).position;
-    const axisShimmyAmount: number = 1/3;
+    const axisShimmyAmount: number = 1 / 3;
     switch (collisionType) {
         // Horizontal
         case 0: {
             const direction: [number, number] = directionToEdge(move.to);
             const gridY: number = Math.floor(shimmyPos.y);
             if (gridY === move.to.j) {
-                const augmentY: number = shimmyPos.y + (direction[1] * -axisShimmyAmount);
+                const augmentY: number =
+                    shimmyPos.y + direction[1] * -axisShimmyAmount;
                 return new Position(shimmyPos.x, augmentY);
             } else {
-                const augmentY: number = shimmyPos.y + (direction[1] * axisShimmyAmount);
+                const augmentY: number =
+                    shimmyPos.y + direction[1] * axisShimmyAmount;
                 return new Position(shimmyPos.x, augmentY);
             }
         }
@@ -179,20 +223,58 @@ function findShimmyLocation(
             const direction: [number, number] = directionToEdge(move.to);
             const gridX: number = move.from.i + direction[0];
             if (gridX === move.to.i) {
-                const augmentX: number = shimmyPos.x + (direction[0] * -axisShimmyAmount);
+                const augmentX: number =
+                    shimmyPos.x + direction[0] * -axisShimmyAmount;
                 return new Position(augmentX, shimmyPos.y);
             } else {
-                const augmentX: number = shimmyPos.x + (direction[0] * axisShimmyAmount);
+                const augmentX: number =
+                    shimmyPos.x + direction[0] * axisShimmyAmount;
                 return new Position(augmentX, shimmyPos.y);
             }
         }
-        // Diagonal
-        case 2: {
-            break;
-        }
-        // Horse
+        case 2:
         case 3: {
-            break;
+            const moveDistance: number = 0.5;
+            const signedDistX: number = move.to.i - move.from.i;
+            const signedDistY: number = move.to.j - move.from.j;
+            const normalX: number = signedDistX / Math.abs(signedDistX);
+            const normalY: number = signedDistY / Math.abs(signedDistY);
+            const orth1: number[] = [-normalX, normalY];
+            const orth2: number[] = [normalX, -normalY];
+            const orthPos1: number[] = [
+                move.to.i + orth1[0],
+                move.to.j + orth1[1],
+            ];
+            const orthPos2: number[] = [
+                move.to.i + orth2[0],
+                move.to.j + orth2[1],
+            ];
+
+            // distance calculations :)
+            const val1: number[] = [
+                shimmyPos.x - orthPos1[0],
+                shimmyPos.y - orthPos1[1],
+            ];
+            const val2: number[] = [
+                shimmyPos.x - orthPos2[0],
+                shimmyPos.y - orthPos2[1],
+            ];
+            const dist1: number = Math.sqrt(
+                val1[0] * val1[0] - val1[1] * val1[1],
+            );
+            const dist2: number = Math.sqrt(
+                val2[0] * val2[0] - val2[1] * val2[1],
+            );
+
+            return dist1 < dist2 ?
+                    new Position(
+                        shimmyPos.x + val1[0] * moveDistance,
+                        shimmyPos.y + val1[1] * moveDistance,
+                    )
+                :   new Position(
+                        shimmyPos.x + val2[0] * moveDistance,
+                        shimmyPos.y + val2[1] * moveDistance,
+                    );
         }
     }
 }
@@ -293,10 +375,22 @@ function moveToDeadZone(origin: Square): GridMove {
     );
 
     const collisionTuple: [GridMove, string[]][] = [
-        [moveToGridMove({  from: origin, to: (origin[0] + "9") as Square }), aboveCollision],
-        [moveToGridMove({ from: origin, to: (origin[0] + "1") as Square }), belowCollision],
-        [moveToGridMove({ from: origin, to: ("9" + origin[1]) as Square }), rightCollision],
-        [moveToGridMove({ from: origin, to: ("1" + origin[1]) as Square }), leftCollision],
+        [
+            moveToGridMove({ from: origin, to: (origin[0] + "9") as Square }),
+            aboveCollision,
+        ],
+        [
+            moveToGridMove({ from: origin, to: (origin[0] + "1") as Square }),
+            belowCollision,
+        ],
+        [
+            moveToGridMove({ from: origin, to: ("9" + origin[1]) as Square }),
+            rightCollision,
+        ],
+        [
+            moveToGridMove({ from: origin, to: ("1" + origin[1]) as Square }),
+            leftCollision,
+        ],
     ];
 
     collisionTuple.sort((a, b) => a[1].length - b[1].length);
@@ -321,21 +415,55 @@ function directionToEdge(position: GridIndices) {
     return DirectionTuple;
 }
 
-//step1 find the path of least resistance to the dead zone
-//step2 shimmy pieces out of the way
-//step3 move the piece to the dead zone
-//step4 shimmy everything back
-//step5 calculate the move to the home space
-//step6 move the piece to the home space.
+
 function returnToHome(from: Square, id: string): SequentialCommandGroup {
-    const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
+    //const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
     const home: GridIndices = robotManager.getRobot(id).homeIndices;
     const fastestMoveToDeadzone = moveToDeadZone(from);
     const toDeadzone = moveMainPiece(fastestMoveToDeadzone);
+    
+    const startInDeadzone = fastestMoveToDeadzone.to;
+    let finalDestination;
+
+    const checkDirections = [new GridIndices(0,1), new GridIndices(1,0), new GridIndices(-1,0), new GridIndices(0,-1)];
+
+    for (const direction of checkDirections) {
+        if (arrayOfDeadzone.includes(home.add(direction)))
+        {
+            finalDestination = home.add(direction);
+        }
+    }
+
+    const startInArray = arrayOfDeadzone.indexOf(startInDeadzone);
+    const endInArray = arrayOfDeadzone.indexOf(finalDestination);
+    let differenceOfIndex = endInArray - startInArray;
+
+    if(differenceOfIndex < 0 )
+    {
+        differenceOfIndex += 36;
+    }
+
+    const botDirectionToHome = differenceOfIndex < 18 ? 1 : -1;
+
+    let i = startInArray;
+    let moveCommands: MoveCommand[] = [];
+    while (i != endInArray)
+    {
+        if (arrayOfCornersIndicies.includes(i)) {
+            moveCommands.push(new AbsoluteMoveCommand(id, new Position(arrayOfDeadzone[i].i + 0.5, arrayOfDeadzone[i].j + 0.5)));
+        }
+        i += botDirectionToHome;
+    }
+    moveCommands.push(new AbsoluteMoveCommand(id, new Position(arrayOfDeadzone[endInArray].i + 0.5, arrayOfDeadzone[endInArray].j + 0.5)));
+
+    moveCommands.push(new AbsoluteMoveCommand(id, new Position(home.i + 0.5, home.j + 0.5)));
+    
 
     const goHome: SequentialCommandGroup = new SequentialCommandGroup([
         toDeadzone,
+        ...moveCommands
     ]);
+
     return goHome;
 }
 
