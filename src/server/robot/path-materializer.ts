@@ -476,7 +476,7 @@ export function materializePath(move: Move): Command {
     if (gameManager?.chess.isEnPassant(move)) {
         return new SequentialCommandGroup([]);
     } else if (gameManager?.chess.isRegularCapture(move)) {
-        const capturePiece = gameManager?.chess.getCapturedPieceId(move);
+        const capturePiece = gameManager?.chess.getCapturedPieceId(move, robotManager);
         if (capturePiece !== undefined) {
             const captureCommand = returnToHome(move.to, capturePiece);
             const mainCommand = moveMainPiece(moveToGridMove(move));
