@@ -3,10 +3,13 @@ import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { get, useSocket } from "../api";
 import { SimulatedRobotLocation, SimulatorUpdateMessage, StackFrame } from "../../common/message/simulator-message";
+import { Tag, CompoundTag } from "@blueprintjs/core";
+import './simulator.scss'
 
 
+const tileSize = 65
+const robotSize = tileSize / 2
 
-const size = 65
 const cellCount = 12
 export function Simulator() {
     const navigate = useNavigate();
@@ -46,7 +49,7 @@ export function Simulator() {
     const fetchRobotState = async () => {
         const { robotState, messages } = await get("/get-simulator-robot-state");
         dispatch({ type: "SET_ALL_ROBOTS", payload: robotState });
-        setMessageLog(messages);
+        setMessageLog(messages.map(({message, ts}) => ({message, ts: new Date(ts)})));
     }
 
     useEffect(() => {
@@ -86,6 +89,7 @@ export function Simulator() {
             <Button
                 icon="refresh"
                 onClick={fetchRobotState}
+                style={{marginRight: "1rem"}}
             >
                 Refresh
             </Button>
@@ -95,8 +99,8 @@ export function Simulator() {
             >
                 Move Random Bot
             </Button>
-            <div style={{display: "flex", gap: "1rem"}}>
-                <div style={{ display: "grid", gridTemplateColumns: `repeat(${cellCount}, ${size}px)`, gridTemplateRows: `repeat(${cellCount}, ${size}px)`, position: "relative" }}>
+            <div style={{display: "flex", gap: "1rem", width: "95vw"}}>
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(${cellCount}, ${tileSize}px)`, gridTemplateRows: `repeat(${cellCount}, ${tileSize}px)`, position: "relative" }}>
                     {new Array(cellCount * cellCount).fill(undefined).map((_, i) => {
                         const row = Math.floor(i / cellCount);
                         const col = i % cellCount;
@@ -109,35 +113,58 @@ export function Simulator() {
                         return <Robot pos={pos} robotId={robotId} key={robotId} />
                     })}
                 </div>
-                <div>
-                    {/* TODO: why does this header shift the robots ... */}
-                    {/* <H2>Message Log</H2> */}
+                <div style={{
+                    width: "100%",
+                    height: cellCount * (tileSize - 1),
+                }}>
+                    <H2>Message Log</H2>
                     <div style={{
-                        height: cellCount * size,
+                        height: '100%',
                         overflowY: "scroll",
-                    }}>
-                        {messageLog.map(({message, ts}, i) => {
-                            return <div key={i}>
-                                <div>{ts.toLocaleString()}</div>
-                                <div>{message.robotId}: {JSON.stringify(message.location)}</div>
-                                <div>{message.packet.type}</div>
-                                {/* TODO: add stack trace */}
-                            </div>
+                        display: "flex",
+                        flexDirection: "column"
+                    }} class="log-list">
+                        {messageLog.map(({message, ts}) => {
+                            return <LogEntry message={message} ts={ts} />
                         })}
                     </div>
-                    
                 </div>
             </div>
         </Card>
     )
 }
 
+function LogEntry(props: { message: SimulatorUpdateMessage, ts: Date }) {
+    const {message, ts} = props
+
+    const kv = {
+        "x": message.location.position.x.toFixed(2),
+        "y": message.location.position.y.toFixed(2),
+        "heading": message.location.heading.toFixed(2),
+    }
+    return (
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.1rem",
+            padding: "0.5rem"
+        }}>
+            <div style={{display: "flex", margin: 0, gap: "0.25rem" }}><Tag intent="warning">{ts.getHours()}:{ts.getMinutes()}.{ts.getMilliseconds()}</Tag><Tag intent="primary">{message.robotId}</Tag><Tag intent="success">{message.packet.type}</Tag></div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
+                {Object.entries(kv).map(([key, value]) => {
+                    return <CompoundTag key={key} leftContent={key} minimal>{value}</CompoundTag>
+                })}
+            </div>
+        </div>
+    )
+}
+
 function Robot(props: { pos: SimulatedRobotLocation, robotId: string }) {
     return (
-        <div style={{position: "absolute", left: `${(props.pos.position.x * size)}px`, bottom: `${props.pos.position.y * size}px`,}}>
+        <div style={{position: "absolute", left: `${(props.pos.position.x * tileSize)}px`, bottom: `${props.pos.position.y * tileSize}px`,}}>
             <Tooltip content={`${props.robotId}: ${JSON.stringify(props.pos)}`}>
-                <div style={{ transform: `rotate(${props.pos.heading}rad)`, backgroundColor: "white", borderRadius: "50%", border: "4px solid black", display: 'flex', justifyContent: 'center', alignItems: 'flex-start', width: size, height: size, padding: '2px', boxShadow: "0 0 3px black" }}>
-                    <div style={{ width: size/4, height: size/4, backgroundColor: "black", borderRadius: "50%" }} />
+                <div style={{ transform: `rotate(${props.pos.heading}rad)`, backgroundColor: "white", borderRadius: "50%", border: "4px solid black", display: 'flex', justifyContent: 'center', alignItems: 'flex-start', width: robotSize, height: robotSize, padding: '2px', boxShadow: "0 0 3px black" }}>
+                    <div style={{ width: robotSize/4, height: robotSize/4, backgroundColor: "black", borderRadius: "50%" }} />
                 </div>
             </Tooltip>
         </div>
