@@ -97,9 +97,7 @@ export class VirtualBotTunnel extends BotTunnel {
                 break;
             case "DRIVE_TILES": {
                 const distance = packet.tileDistance;
-                const angleInRadians = (this.heading + 90) * (Math.PI / 180);
-                const deltaX = distance * Math.sin(angleInRadians);
-                const deltaY = distance * Math.cos(angleInRadians);
+                const angleInRadians = this.heading;
                 const deltaX = distance * Math.cos(angleInRadians);
                 const deltaY = distance * Math.sin(angleInRadians);
 
@@ -127,7 +125,7 @@ export class VirtualBotTunnel extends BotTunnel {
                     x: this.position.x,
                     y: this.position.y,
                 },
-                heading: this.heading,
+                headingRadians: this.heading,
             },
             packet,
             stack,

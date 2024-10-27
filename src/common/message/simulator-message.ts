@@ -2,7 +2,7 @@ import { Message, MessageType } from "./message";
 import type { Packet } from "../../server/utils/tcp-packet";
 export type SimulatedRobotLocation = {
     position: { x: number; y: number };
-    heading: number;
+    headingRadians: number;
 };
 
 export type StackFrame = {
@@ -33,7 +33,7 @@ export class SimulatorUpdateMessage extends Message {
                     x: this.location.position.x,
                     y: this.location.position.y,
                 },
-                heading: this.location.heading,
+                headingRadians: this.location.headingRadians,
             },
             packet: this.packet,
             stackTrace: this.stackTrace,

@@ -200,7 +200,7 @@ function LogEntry(props: { message: SimulatorUpdateMessage; ts: Date }) {
     const kv = {
         x: message.location.position.x.toFixed(4),
         y: message.location.position.y.toFixed(4),
-        heading: message.location.heading.toFixed(4),
+        headingRadians: message.location.headingRadians.toFixed(4),
     };
 
     const [isOpen, setIsOpen] = useState(false);
@@ -288,6 +288,7 @@ function Robot(props: {
 }) {
     return (
         <div
+            className="robot"
             style={{
                 position: "absolute",
                 left: `${props.pos.position.x * tileSize}px`,
@@ -297,7 +298,7 @@ function Robot(props: {
             <Tooltip content={`${props.robotId}: ${JSON.stringify(props.pos)}`}>
                 <div
                     style={{
-                        transform: `rotate(-${props.pos.heading}deg)`,
+                        transform: `rotate(-${props.pos.headingRadians}rad)`,
                         backgroundColor: "white",
                         borderRadius: "50%",
                         border: `4px solid ${props.onTopOfRobots.length > 0 ? "red" : "black"}`,

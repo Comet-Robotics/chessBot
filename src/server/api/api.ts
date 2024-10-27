@@ -27,6 +27,7 @@ import { USE_VIRTUAL_ROBOTS } from "../utils/env";
 import { SaveManager } from "./save-manager";
 import { VirtualBotTunnel, virtualRobots } from "../simulator";
 import { Position } from "../robot/position";
+import { DEGREE } from "../utils/units";
 
 export const tcpServer: TCPServer | null =
     USE_VIRTUAL_ROBOTS ? null : new TCPServer();
@@ -149,7 +150,7 @@ apiRouter.get("/do-smth", async (_, res) => {
     const [, robot] =
         robotsEntries[Math.floor(Math.random() * robotsEntries.length)];
     await robot.sendDrivePacket(1);
-    await robot.sendTurnPacket(45);
+    await robot.sendTurnPacket(45 * DEGREE);
 
     res.send({ message: "success" });
 });
