@@ -25,9 +25,10 @@ import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
 import { IS_DEVELOPMENT } from "../utils/env";
 import { SaveManager } from "./save-manager";
+import { CommandExecutor } from "../command/executor";
 
 export const tcpServer = new TCPServer();
-
+export const executor = new CommandExecutor();
 export let gameManager: GameManager | null = null;
 
 /**
@@ -40,7 +41,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         socketManager.handleSocketClosed(req.cookies.id);
     });
 
-    ws.on("message", (data) => {
+    ws.on("message", async (data) => {
         const message = parseMessage(data.toString());
         console.log("Received message: " + message.toJson());
 
@@ -52,7 +53,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             message instanceof GameHoldMessage
         ) {
             // TODO: Handle game manager not existing
-            gameManager?.handleMessage(message, req.cookies.id);
+            await gameManager?.handleMessage(message, req.cookies.id);
         } else if (message instanceof DriveRobotMessage) {
             doDriveRobot(message);
         } else if (message instanceof SetRobotVariableMessage) {

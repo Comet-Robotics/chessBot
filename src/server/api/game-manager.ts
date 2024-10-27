@@ -16,6 +16,8 @@ import {
     GameEndReason as GameInterruptedReason,
 } from "../../common/game-end-reasons";
 import { SaveManager } from "./save-manager";
+import { materializePath } from "../robot/path-materializer";
+import { executor } from "./api";
 
 export abstract class GameManager {
     protected gameInterruptedReason: GameInterruptedReason | undefined =
@@ -64,7 +66,7 @@ export abstract class GameManager {
     public abstract handleMessage(
         message: Message,
         clientType: ClientType,
-    ): void;
+    ): Promise<void>
 }
 
 export class HumanGameManager extends GameManager {
@@ -80,7 +82,7 @@ export class HumanGameManager extends GameManager {
         clientManager.sendToClient(new GameStartedMessage());
     }
 
-    public handleMessage(message: Message, id: string): void {
+    public async handleMessage(message: Message, id: string): Promise<void> {
         const clientType = this.clientManager.getClientType(id);
         let sendToPlayer: SendMessage;
         let sendToOpponent: SendMessage;
@@ -103,7 +105,11 @@ export class HumanGameManager extends GameManager {
         const currentSave = SaveManager.loadGame(id);
         if (message instanceof MoveMessage) {
             // Call path materializer and send to bots
-
+            const command = materializePath(message.move);
+            
+            await executor.execute(command);
+            
+            
             this.chess.makeMove(message.move);
             if (ids) {
                 if (currentSave?.host === ids[0]) {
@@ -169,7 +175,7 @@ export class ComputerGameManager extends GameManager {
         }
     }
 
-    public handleMessage(message: Message, id: string): void {
+    public async handleMessage(message: Message, id: string): Promise<void> {
         if (message instanceof MoveMessage) {
             this.chess.makeMove(message.move);
             SaveManager.saveGame(
