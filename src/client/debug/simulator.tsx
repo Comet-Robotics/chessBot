@@ -1,5 +1,5 @@
-import { Card, Button, H1, Tooltip, H2 } from "@blueprintjs/core";
-import { useEffect, useReducer, useState } from "react";
+import { Card, Button, H1, Tooltip, H2, Collapse } from "@blueprintjs/core";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { get, useSocket } from "../api";
 import { SimulatedRobotLocation, SimulatorUpdateMessage, StackFrame } from "../../common/message/simulator-message";
@@ -7,7 +7,7 @@ import { Tag, CompoundTag } from "@blueprintjs/core";
 import './simulator.scss'
 
 
-const tileSize = 65
+const tileSize = 60
 const robotSize = tileSize / 2
 
 const cellCount = 12
@@ -56,20 +56,19 @@ export function Simulator() {
         fetchRobotState();
     }, []);
 
-    const openInEditor = async (frame: StackFrame) => {
-        if (!frame) {
-            console.warn("No stack frame provided for opening in editor");
-            return
-        }
-        await fetch(`/__open-in-editor?file=${frame.fileName}&line=${frame.lineNumber}&column=${frame.columnNumber}`);
-    }
-
     const moveRandomBot = async () => {
         const response = await get("/do-smth");
         if (!response.ok) {
             console.warn("Failed to move random bot");
         }
     }
+
+    const logListRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (logListRef.current) {
+            logListRef.current.scrollTop = logListRef.current.scrollHeight;
+        }
+    },[messageLog])
 
     return (
         <Card>
@@ -85,20 +84,21 @@ export function Simulator() {
                 icon="cog"
                 onClick={() => navigate("/debug")}
             />
-            <H1>Robot Simulator</H1>
-            <Button
-                icon="refresh"
-                onClick={fetchRobotState}
-                style={{marginRight: "1rem"}}
-            >
-                Refresh
-            </Button>
-            <Button
-                icon="random"
-                onClick={moveRandomBot}
-            >
-                Move Random Bot
-            </Button>
+            <div style={{display: "flex", gap: "1rem", marginBottom: "1rem", alignItems: "center"}}>
+                <H1>Robot Simulator</H1>
+                <Button
+                    icon="refresh"
+                    onClick={fetchRobotState}
+                >
+                    Refresh
+                </Button>
+                <Button
+                    icon="random"
+                    onClick={moveRandomBot}
+                >
+                    Move Random Bot
+                </Button>
+            </div>
             <div style={{display: "flex", gap: "1rem", width: "95vw"}}>
                 <div style={{ display: "grid", gridTemplateColumns: `repeat(${cellCount}, ${tileSize}px)`, gridTemplateRows: `repeat(${cellCount}, ${tileSize}px)`, position: "relative" }}>
                     {new Array(cellCount * cellCount).fill(undefined).map((_, i) => {
@@ -117,13 +117,14 @@ export function Simulator() {
                     width: "100%",
                     height: cellCount * (tileSize - 1),
                 }}>
-                    <H2>Message Log</H2>
-                    <div style={{
+                    <div 
+                    ref={logListRef}
+                    style={{
                         height: '100%',
                         overflowY: "scroll",
                         display: "flex",
-                        flexDirection: "column"
-                    }} class="log-list">
+                        flexDirection: "column",
+                    }} className="log-list">
                         {messageLog.map(({message, ts}) => {
                             return <LogEntry message={message} ts={ts} />
                         })}
@@ -134,27 +135,59 @@ export function Simulator() {
     )
 }
 
+const openInEditor = async (frame: StackFrame) => {
+    if (!frame) {
+        console.warn("No stack frame provided for opening in editor");
+        return
+    }
+    const params = new URLSearchParams({
+        file: frame.fileName,
+        line: frame.lineNumber.toString(),
+        column: frame.columnNumber.toString(),
+    });
+    await fetch(`/__open-in-editor?${params.toString()}`);
+}
+
 function LogEntry(props: { message: SimulatorUpdateMessage, ts: Date }) {
     const {message, ts} = props
 
     const kv = {
-        "x": message.location.position.x.toFixed(2),
-        "y": message.location.position.y.toFixed(2),
-        "heading": message.location.heading.toFixed(2),
+        "x": message.location.position.x.toFixed(4),
+        "y": message.location.position.y.toFixed(4),
+        "heading": message.location.heading.toFixed(4),
     }
+
+    const [isOpen, setIsOpen] = useState(false);
+    const toggleOpen = () => setIsOpen((open)=>!open);
+
     return (
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.1rem",
-            padding: "0.5rem"
-        }}>
-            <div style={{display: "flex", margin: 0, gap: "0.25rem" }}><Tag intent="warning">{ts.getHours()}:{ts.getMinutes()}.{ts.getMilliseconds()}</Tag><Tag intent="primary">{message.robotId}</Tag><Tag intent="success">{message.packet.type}</Tag></div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
-                {Object.entries(kv).map(([key, value]) => {
-                    return <CompoundTag key={key} leftContent={key} minimal>{value}</CompoundTag>
-                })}
+        <div>
+            <div onClick={toggleOpen} style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.1rem",
+                padding: "0.5rem",
+                alignItems: "flex-start",
+                border: 'none'
+            }}>
+                <div style={{display: "flex", margin: 0, gap: "0.25rem" }}><Tag intent="warning">{ts.getHours()}:{ts.getMinutes()}.{ts.getMilliseconds()}</Tag><Tag intent="primary">{message.robotId}</Tag><Tag intent="success">{message.packet.type}</Tag></div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
+                    {Object.entries(kv).map(([key, value]) => {
+                        return <CompoundTag key={key} leftContent={key} minimal>{value}</CompoundTag>
+                    })}
+                </div>
             </div>
+            {message.stackTrace && (
+                <Collapse isOpen={isOpen}>
+                    <pre style={{ display: "flex", flexDirection: "column", gap: "0.25rem", whiteSpace: "pre-wrap",padding: "0 0.75rem" }}>
+                        {message.stackTrace.map((frame, index) => {
+                            const location = `${frame.fileName}:${frame.lineNumber}:${frame.columnNumber}`
+                            const msg = frame.functionName ? `at ${frame.functionName} (${location})` : `at ${location}`
+                            return <a onClick={()=>openInEditor(frame)} key={index} style={{ display: "flex", gap: "0.25rem", textDecoration: "underline" }}>{msg}</a>
+                        })}
+                    </pre>
+                </Collapse>
+            )}
         </div>
     )
 }

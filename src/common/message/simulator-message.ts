@@ -4,7 +4,7 @@ export type SimulatedRobotLocation = { position: { x: number, y: number }, headi
 
 export type StackFrame = {
     fileName: string;
-    functionName: string;
+    functionName?: string;
     lineNumber: number;
     columnNumber: number;
 }

@@ -22,7 +22,7 @@ function getStack(justMyCode = true) {
     if (justMyCode) {
         const chessBotCodeEndFrame = cleanedStack.findIndex((frame) => !frame.fileName.startsWith(srcDir));
         if (chessBotCodeEndFrame !== -1) {
-            cleanedStack.splice(chessBotCodeEndFrame + 1);
+            cleanedStack.splice(chessBotCodeEndFrame);
         }
     }
 
@@ -74,7 +74,7 @@ export class VirtualBotTunnel extends BotTunnel {
     }
 
     getIdentifier(): string {
-        return "Virtual Bot ID: " + this.id;
+        return "Virtual Bot ID: " + this.robotId;
     }
 
     private emitActionComplete() {
@@ -133,7 +133,7 @@ export const virtualRobots = new Map<string, VirtualRobot>(
             id,
             realRobotConfig.homePosition,
             undefined,
-            new Position(realRobotConfig.defaultPosition.x, realRobotConfig.defaultPosition.y),
+            new Position(realRobotConfig.defaultPosition.x + 0.25, realRobotConfig.defaultPosition.y + 0.25),
         )] as const
     }),
 );
