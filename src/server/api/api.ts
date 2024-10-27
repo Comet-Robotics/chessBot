@@ -163,15 +163,15 @@ apiRouter.get("/get-simulator-robot-state", (_, res) => {
 
     const robotState = Object.fromEntries(
         robotsEntries.map(([id, robot]) => {
-            let heading = robot.heading;
+            let headingRadians = robot.headingRadians;
             let position = new Position(robot.position.x, robot.position.y);
 
             const tunnel = robot.getTunnel();
             if (tunnel instanceof VirtualBotTunnel) {
                 position = tunnel.position;
-                heading = tunnel.heading;
+                headingRadians = tunnel.headingRadians;
             }
-            return [id, { position, heading }];
+            return [id, { position, headingRadians: headingRadians }];
         }),
     );
     return res.send({

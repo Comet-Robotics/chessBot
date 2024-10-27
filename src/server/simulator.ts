@@ -55,7 +55,7 @@ const parseErrorStack = (stack: string): StackFrame[] => {
 export class VirtualBotTunnel extends BotTunnel {
     connected = true;
 
-    heading = 0;
+    headingRadians = 0;
     position = ZERO_POSITION;
 
     static messages: {
@@ -68,7 +68,7 @@ export class VirtualBotTunnel extends BotTunnel {
 
         // pulling initial heading and position from robot, then only depending on messages sent to the 'robot' to update the position and heading
         const robot = virtualRobots.get(robotId)!;
-        this.heading = robot.heading;
+        this.headingRadians = robot.headingRadians;
         this.position = robot.position;
 
         this.emitter = new EventEmitter();
@@ -92,14 +92,13 @@ export class VirtualBotTunnel extends BotTunnel {
         // NOTE: need to ensure that all the packets which are used in the Robot class (src/server/robot/robot.ts) are also provided with a matching virtual implementation here
         switch (packet.type) {
             case "TURN_BY_ANGLE":
-                this.heading += packet.deltaHeading;
+                this.headingRadians += packet.deltaHeadingRadians;
                 this.emitActionComplete();
                 break;
             case "DRIVE_TILES": {
                 const distance = packet.tileDistance;
-                const angleInRadians = this.heading;
-                const deltaX = distance * Math.cos(angleInRadians);
-                const deltaY = distance * Math.sin(angleInRadians);
+                const deltaX = distance * Math.cos(this.headingRadians);
+                const deltaY = distance * Math.sin(this.headingRadians);
 
                 const newPosition = this.position.add(
                     new Position(deltaX, deltaY),
@@ -125,7 +124,7 @@ export class VirtualBotTunnel extends BotTunnel {
                     x: this.position.x,
                     y: this.position.y,
                 },
-                headingRadians: this.heading,
+                headingRadians: this.headingRadians,
             },
             packet,
             stack,

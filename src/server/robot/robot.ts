@@ -9,7 +9,7 @@ import { BotTunnel } from "../api/tcp-interface";
  * Includes information about the current location as well as tooling for communication.
  */
 export class Robot {
-    private _heading: number;
+    private _headingRadians: number;
 
     constructor(
         public readonly id: string,
@@ -17,10 +17,10 @@ export class Robot {
          * The location the robot lives in when its not in use.
          */
         public readonly homeIndices: GridIndices,
-        public readonly startHeading: number = 0,
+        public readonly startHeadingRadians: number = 0,
         private _position: Position = ZERO_POSITION,
     ) {
-        this._heading = startHeading;
+        this._headingRadians = startHeadingRadians;
     }
 
     public get position(): Position {
@@ -31,37 +31,39 @@ export class Robot {
         this._position = coords;
     }
 
-    public get heading(): number {
-        return this._heading;
+    public get headingRadians(): number {
+        return this._headingRadians;
     }
 
-    private set heading(heading: number) {
-        this._heading = heading;
+    private set headingRadians(headingRadians: number) {
+        this._headingRadians = headingRadians;
     }
 
     /**
-     * @param heading - An absolute heading to turn to, in degrees. 0 is up (from white to black). CW is positive.
+     * @param headingRadians - An absolute heading to turn to, in radians. 0 is up (from white to black). CW is positive.
      */
-    public async absoluteRotate(heading: number): Promise<void> {
-        const delta1: number = heading - this.heading;
+    public async absoluteRotate(headingRadians: number): Promise<void> {
+        const delta1: number = headingRadians - this.headingRadians;
         let delta2: number;
-        if (this.heading < heading) {
-            delta2 = heading - (this.heading + FULL_ROTATION);
+        if (this.headingRadians < headingRadians) {
+            delta2 = headingRadians - (this.headingRadians + FULL_ROTATION);
         } else {
-            delta2 = heading + FULL_ROTATION - this.heading;
+            delta2 = headingRadians + FULL_ROTATION - this.headingRadians;
         }
         const turnAmount =
             Math.abs(delta1) < Math.abs(delta2) ? delta1 : delta2;
-        this.heading = heading;
+        this.headingRadians = headingRadians;
         return this.sendTurnPacket(turnAmount);
     }
 
     /**
-     * @param deltaHeading - A relative heading to turn by, in degrees.
+     * @param deltaHeadingRadians - A relative heading to turn by, in radians.
      */
-    public async relativeRotate(deltaHeading: number): Promise<void> {
-        this.heading = clampHeading(this.heading + deltaHeading);
-        return this.sendTurnPacket(deltaHeading);
+    public async relativeRotate(deltaHeadingRadians: number): Promise<void> {
+        this.headingRadians = clampHeading(
+            this.headingRadians + deltaHeadingRadians,
+        );
+        return this.sendTurnPacket(deltaHeadingRadians);
     }
 
     /**
@@ -88,12 +90,15 @@ export class Robot {
      * Send a packet to the robot indicating angle to turn. Returns a promise that finishes when the
      * robot finishes the action.
      *
-     * @param deltaHeading - A relative heading to turn by, in radians. May be positive or negative.
+     * @param deltaHeadingRadians - A relative heading to turn by, in radians. May be positive or negative.
      */
-    public async sendTurnPacket(deltaHeading: number): Promise<void> {
+    public async sendTurnPacket(deltaHeadingRadians: number): Promise<void> {
         const tunnel = this.getTunnel();
         const promise = tunnel.waitForActionResponse();
-        tunnel.send({ type: "TURN_BY_ANGLE", deltaHeading });
+        tunnel.send({
+            type: "TURN_BY_ANGLE",
+            deltaHeadingRadians: deltaHeadingRadians,
+        });
         return promise;
     }
 
