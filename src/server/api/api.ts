@@ -148,7 +148,8 @@ apiRouter.get("/do-smth", async (_, res) => {
     const robotsEntries = Array.from(virtualRobots.entries());
     const [, robot] =
         robotsEntries[Math.floor(Math.random() * robotsEntries.length)];
-    await robot.relativeMove(new Position(1, 1));
+    await robot.sendDrivePacket(1);
+    await robot.sendTurnPacket(45);
 
     res.send({ message: "success" });
 });

@@ -145,11 +145,15 @@ export function Simulator() {
                                 />
                             );
                         })}
-                    {Object.entries(robotState).map(([robotId, pos]) => {
-                        return (
-                            <Robot pos={pos} robotId={robotId} key={robotId} />
-                        );
-                    })}
+                    {/* TODO: implement onTopOfRobots */}
+                    {Object.entries(robotState).map(([robotId, pos]) => (
+                        <Robot
+                            pos={pos}
+                            robotId={robotId}
+                            key={robotId}
+                            onTopOfRobots={[]}
+                        />
+                    ))}
                 </div>
                 <div
                     style={{
@@ -277,7 +281,11 @@ function LogEntry(props: { message: SimulatorUpdateMessage; ts: Date }) {
     );
 }
 
-function Robot(props: { pos: SimulatedRobotLocation; robotId: string }) {
+function Robot(props: {
+    pos: SimulatedRobotLocation;
+    robotId: string;
+    onTopOfRobots: string[];
+}) {
     return (
         <div
             style={{
@@ -289,13 +297,13 @@ function Robot(props: { pos: SimulatedRobotLocation; robotId: string }) {
             <Tooltip content={`${props.robotId}: ${JSON.stringify(props.pos)}`}>
                 <div
                     style={{
-                        transform: `rotate(${props.pos.heading}rad)`,
+                        transform: `rotate(-${props.pos.heading}deg)`,
                         backgroundColor: "white",
                         borderRadius: "50%",
-                        border: "4px solid black",
+                        border: `4px solid ${props.onTopOfRobots.length > 0 ? "red" : "black"}`,
                         display: "flex",
-                        justifyContent: "center",
-                        alignItems: "flex-start",
+                        justifyContent: "flex-end",
+                        alignItems: "center",
                         width: robotSize,
                         height: robotSize,
                         padding: "2px",
