@@ -1,4 +1,3 @@
-import { Packet } from "../../server/utils/tcp-packet";
 import { Message, MessageType } from "./message";
 export type SimulatedRobotLocation = {
     position: { x: number; y: number };
@@ -18,7 +17,7 @@ export class SimulatorUpdateMessage extends Message {
     constructor(
         public readonly robotId: string,
         public readonly location: SimulatedRobotLocation,
-        public readonly packet: Packet,
+        public readonly packet: Record<string, unknown>,
         public readonly stackTrace?: StackFrame[],
     ) {
         super();
@@ -29,8 +28,11 @@ export class SimulatorUpdateMessage extends Message {
             ...super.toObj(),
             robotId: this.robotId,
             location: {
-                x: this.location.position.x,
-                y: this.location.position.y,
+                position: {
+                    x: this.location.position.x,
+                    y: this.location.position.y,
+                },
+                heading: this.location.heading,
             },
             packet: this.packet,
             stackTrace: this.stackTrace,

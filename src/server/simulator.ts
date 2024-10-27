@@ -121,7 +121,10 @@ export class VirtualBotTunnel extends BotTunnel {
         const message = new SimulatorUpdateMessage(
             this.robotId,
             {
-                position: this.position,
+                position: {
+                    x: this.position.x,
+                    y: this.position.y,
+                },
                 heading: this.heading,
             },
             packet,
