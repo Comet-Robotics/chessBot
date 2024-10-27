@@ -100,6 +100,8 @@ export class VirtualBotTunnel extends BotTunnel {
                 const angleInRadians = (this.heading + 90) * (Math.PI / 180);
                 const deltaX = distance * Math.sin(angleInRadians);
                 const deltaY = distance * Math.cos(angleInRadians);
+                const deltaX = distance * Math.cos(angleInRadians);
+                const deltaY = distance * Math.sin(angleInRadians);
 
                 const newPosition = this.position.add(
                     new Position(deltaX, deltaY),
