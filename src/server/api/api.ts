@@ -142,6 +142,7 @@ apiRouter.post("/start-human-game", (req, res) => {
 
 apiRouter.get("/get-ids", (_, res) => {
     const ids = Array.from(robotManager.idsToRobots.keys());
+    
     return res.send({ ids });
 });
 
