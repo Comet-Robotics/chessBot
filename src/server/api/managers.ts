@@ -10,4 +10,6 @@ import { USE_VIRTUAL_ROBOTS } from "../utils/env";
 
 export const socketManager = new SocketManager({});
 export const clientManager = new ClientManager(socketManager);
-export const robotManager = new RobotManager(USE_VIRTUAL_ROBOTS ? Array.from(virtualRobots.values()) : []);
+export const robotManager = new RobotManager(
+    USE_VIRTUAL_ROBOTS ? Array.from(virtualRobots.values()) : [],
+);

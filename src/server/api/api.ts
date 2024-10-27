@@ -28,7 +28,8 @@ import { SaveManager } from "./save-manager";
 import { VirtualBotTunnel, virtualRobots } from "../simulator";
 import { Position } from "../robot/position";
 
-export const tcpServer: TCPServer | null = USE_VIRTUAL_ROBOTS ? null : new TCPServer();
+export const tcpServer: TCPServer | null =
+    USE_VIRTUAL_ROBOTS ? null : new TCPServer();
 
 export let gameManager: GameManager | null = null;
 
@@ -139,39 +140,42 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.get("/get-ids", (_, res) => {
-    const ids = Array.from(robotManager.idsToRobots.keys())
+    const ids = Array.from(robotManager.idsToRobots.keys());
     return res.send({ ids });
 });
 
 apiRouter.get("/do-smth", async (_, res) => {
-    const robotsEntries = Array.from(virtualRobots.entries())
-    const [, robot] = robotsEntries[Math.floor(Math.random() * robotsEntries.length)]
-    await robot.relativeMove(new Position(1, 1))
+    const robotsEntries = Array.from(virtualRobots.entries());
+    const [, robot] =
+        robotsEntries[Math.floor(Math.random() * robotsEntries.length)];
+    await robot.relativeMove(new Position(1, 1));
 
     res.send({ message: "success" });
-})
+});
 
 apiRouter.get("/get-simulator-robot-state", (_, res) => {
     if (!USE_VIRTUAL_ROBOTS) {
         return res.status(400).send({ message: "Simulator is not enabled." });
     }
-    const robotsEntries = Array.from(virtualRobots.entries())
+    const robotsEntries = Array.from(virtualRobots.entries());
 
     const robotState = Object.fromEntries(
         robotsEntries.map(([id, robot]) => {
-            let heading = robot.heading
-            let position = new Position(robot.position.x, robot.position.y)
+            let heading = robot.heading;
+            let position = new Position(robot.position.x, robot.position.y);
 
-            const tunnel = robot.getTunnel()
+            const tunnel = robot.getTunnel();
             if (tunnel instanceof VirtualBotTunnel) {
-
-                position = tunnel.position
-                heading = tunnel.heading
+                position = tunnel.position;
+                heading = tunnel.heading;
             }
-            return ([id, { position, heading }])
-        })
+            return [id, { position, heading }];
+        }),
     );
-    return res.send({ robotState, messages: Array.from(VirtualBotTunnel.messages) });
+    return res.send({
+        robotState,
+        messages: Array.from(VirtualBotTunnel.messages),
+    });
 });
 
 /**

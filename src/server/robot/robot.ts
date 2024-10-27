@@ -73,7 +73,7 @@ export class Robot {
         const distance = Math.hypot(offset.x, offset.y);
         const angle = clampHeading(Math.atan2(-offset.x, offset.y) * RADIAN);
         const promise = this.absoluteRotate(angle).then(() => {
-            return this.sendDrivePacket(distance)
+            return this.sendDrivePacket(distance);
         });
         this.position = this.position.add(deltaPosition);
         return promise;
@@ -93,7 +93,7 @@ export class Robot {
         const tunnel = this.getTunnel();
         const promise = tunnel.waitForActionResponse();
         tunnel.send({ type: "TURN_BY_ANGLE", deltaHeading });
-        return promise
+        return promise;
     }
 
     /**
@@ -106,6 +106,6 @@ export class Robot {
         const tunnel = this.getTunnel();
         const promise = tunnel.waitForActionResponse();
         tunnel.send({ type: "DRIVE_TILES", tileDistance });
-        return promise
+        return promise;
     }
 }
