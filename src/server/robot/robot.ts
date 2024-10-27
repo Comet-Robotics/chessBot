@@ -72,11 +72,7 @@ export class Robot {
         const offset = deltaPosition.sub(this.position);
         const distance = Math.hypot(offset.x, offset.y);
         const angle = clampHeading(Math.atan2(-offset.x, offset.y) * RADIAN);
-        // TODO: in sim mode, for some reason the rotate packet gets sent, but we never make it to sending the drive packet.
-        // my best guess is that there's some sort of issue with the actionComplete event 
-        // not being emitted / handled properly?
         const promise = this.absoluteRotate(angle).then(() => {
-            console.log(`notice how this never gets logged... even though the rotate packet is sent`)
             return this.sendDrivePacket(distance)
         });
         this.position = this.position.add(deltaPosition);
