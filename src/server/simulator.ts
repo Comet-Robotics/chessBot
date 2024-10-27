@@ -10,6 +10,8 @@ import {
     StackFrame,
 } from "../common/message/simulator-message";
 import { socketManager } from "./api/managers";
+import { GridIndices } from "./robot/grid-indices";
+import { getStartHeading, Side } from "../common/game-types";
 
 const srcDir = path.resolve(__dirname, "../");
 
@@ -145,17 +147,18 @@ const virtualBotIds = Array(32)
     .map((_, i) => `virtual-robot-${(i + 1).toString()}`);
 
 export const virtualRobots = new Map<string, VirtualRobot>(
-    virtualBotIds.map((id) => {
+    virtualBotIds.map((id, idx) => {
         const realRobotConfig = config[id.replace("virtual-", "")];
         return [
             id,
             new VirtualRobot(
                 id,
-                realRobotConfig.homePosition,
-                undefined,
+                new GridIndices(realRobotConfig.homePosition.x, realRobotConfig.homePosition.y),
+                new GridIndices(realRobotConfig.defaultPosition.x, realRobotConfig.defaultPosition.y),
+                getStartHeading((idx < 16) ? Side.WHITE : Side.BLACK),
                 new Position(
-                    realRobotConfig.defaultPosition.x + 0.25,
-                    realRobotConfig.defaultPosition.y + 0.25,
+                    realRobotConfig.defaultPosition.x + 0.5,
+                    realRobotConfig.defaultPosition.y + 0.5,
                 ),
             ),
         ] as const;

@@ -31,9 +31,14 @@ export class GridIndices extends Pair<GridIndices> {
         return new GridIndices(i, j);
     }
 
+    /**
+     * Converts a square to a grid index in the 0-11 range
+     * @param square - The square to convert
+     * @returns The grid index
+     */
     public static squareToGrid(square: Square): GridIndices {
-        const i = FILE_LOOKUP.indexOf(square.charAt(0));
-        const j = parseInt(square.charAt(1)) - 1;
+        const i = FILE_LOOKUP.indexOf(square.charAt(0)) + 2;
+        const j = parseInt(square.charAt(1)) - 1 + 2;
         return new GridIndices(i, j);
     }
 

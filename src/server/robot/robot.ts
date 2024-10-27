@@ -17,6 +17,7 @@ export class Robot {
          * The location the robot lives in when its not in use.
          */
         public readonly homeIndices: GridIndices,
+        public readonly defaultIndices: GridIndices,
         public readonly startHeadingRadians: number = 0,
         private _position: Position = ZERO_POSITION,
     ) {

@@ -21,7 +21,7 @@ export class RobotManager {
 
     addRobot(robot: Robot) {
         this.idsToRobots.set(robot.id, robot);
-        this.indicesToIds.set(robot.homeIndices, robot.id);
+        this.indicesToIds.set(robot.defaultIndices, robot.id);
     }
 
     /**
