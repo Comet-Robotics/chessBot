@@ -172,7 +172,13 @@ export function Simulator() {
                         className="log-list"
                     >
                         {messageLog.map(({ message, ts }, index) => {
-                            return <LogEntry key={index} message={message} ts={ts} />;
+                            return (
+                                <LogEntry
+                                    key={index}
+                                    message={message}
+                                    ts={ts}
+                                />
+                            );
                         })}
                     </div>
                 </div>
