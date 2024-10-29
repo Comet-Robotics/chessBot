@@ -12,6 +12,7 @@ import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
 import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
 import { Square } from "chess.js";
+import { error } from "console";
 
 export interface GridMove {
     from: GridIndices;
@@ -438,21 +439,26 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
     const toDeadzone = moveMainPiece(fastestMoveToDeadzone);
 
     const startInDeadzone = fastestMoveToDeadzone.to;
-    let finalDestination;
+    let finalDestination: GridIndices | undefined;
 
-    const checkDirections = [
-        new GridIndices(0, 1),
-        new GridIndices(1, 0),
-        new GridIndices(-1, 0),
-        new GridIndices(0, -1),
+    const checkDirections: [number, number][] = [
+        [0, 1],
+        [1, 0],
+        [-1, 0],
+        [0, -1],
     ];
 
     for (const direction of checkDirections) {
-        if (arrayOfDeadzone.includes(home.add(direction))) {
-            finalDestination = home.add(direction);
+        if (arrayOfDeadzone.find((dz) => dz.equals(home.addTuple(direction)))) {
+            finalDestination = home.addTuple(direction);
         }
+        
     }
+    if(!finalDestination)
+    {
+        throw new error("WHERE THE HELL ARE YOU GOING");
 
+    }
     const startInArray = arrayOfDeadzone.indexOf(startInDeadzone);
     const endInArray = arrayOfDeadzone.indexOf(finalDestination);
     let differenceOfIndex = endInArray - startInArray;
@@ -511,7 +517,7 @@ export function materializePath(move: Move): Command {
     if (gameManager?.chess.isEnPassant(move)) {
         return new SequentialCommandGroup([]);
     } else if (gameManager?.chess.isRegularCapture(move)) {
-        const capturePiece = gameManager?.chess.getCapturedPieceId(
+        const capturePiece = gameManager.chess.getCapturedPieceId(
             move,
             robotManager,
         );
