@@ -22,6 +22,7 @@ export enum PieceType {
 export enum Side {
     WHITE = "w",
     BLACK = "b",
+    SPECTATOR = "s",
 }
 
 export function oppositeSide(side: Side) {
@@ -29,7 +30,7 @@ export function oppositeSide(side: Side) {
 }
 
 export function getStartHeading(side: Side) {
-    return side === Side.WHITE ? 90 * DEGREE : 270 * DEGREE;
+    return side === Side.WHITE ? 90 * DEGREE : 90 * DEGREE;
 }
 export class Piece {
     constructor(

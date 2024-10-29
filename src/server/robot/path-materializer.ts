@@ -97,7 +97,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
             if (to.i < from.i) {
                 for (let i = from.i; i > to.i; i--) {
                     const square = new GridIndices(i, from.j);
-                    const piece = robotManager.indicesToIds.get(square);
+                    const piece = robotManager.getRobotAtIndices(square).id;
                     if (piece !== undefined) {
                         collisions.push(piece);
                     }
@@ -105,7 +105,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
             } else {
                 for (let i = from.i; i < to.i; i++) {
                     const square = new GridIndices(i, from.j);
-                    const piece = robotManager.indicesToIds.get(square);
+                    const piece = robotManager.getRobotAtIndices(square).id;
                     if (piece !== undefined) {
                         collisions.push(piece);
                     }
@@ -118,7 +118,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
             if (to.j < from.j) {
                 for (let j = from.j; j > to.j; j--) {
                     const square = new GridIndices(from.i, j);
-                    const piece = robotManager.indicesToIds.get(square);
+                    const piece = robotManager.getRobotAtIndices(square).id;
                     if (piece !== undefined) {
                         collisions.push(piece);
                     }
@@ -126,7 +126,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
             } else {
                 for (let j = from.j; j < to.j; j++) {
                     const square = new GridIndices(from.i, j);
-                    const piece = robotManager.indicesToIds.get(square);
+                    const piece = robotManager.getRobotAtIndices(square).id;
                     if (piece !== undefined) {
                         collisions.push(piece);
                     }
@@ -155,13 +155,13 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
 
                 // Above or below the tile, depends on direction
                 const square1 = new GridIndices(midx, midy + ny);
-                const piece1 = robotManager.indicesToIds.get(square1);
+                const piece1 = robotManager.getRobotAtIndices(square1).id;
                 if (piece1 !== undefined) {
                     collisions.push(piece1);
                 }
                 // Left or right of tile, depends on direction
                 const square2 = new GridIndices(midx + nx, midy);
-                const piece2 = robotManager.indicesToIds.get(square2);
+                const piece2 = robotManager.getRobotAtIndices(square2).id;
                 if (piece2 !== undefined) {
                     collisions.push(piece2);
                 }
@@ -183,14 +183,14 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
             // Same sign horse moves share this square. Will always be 1 diagonal
             // of moving piece
             const square1 = new GridIndices(from.i + nx, from.j + ny);
-            const piece1 = robotManager.indicesToIds.get(square1);
+            const piece1 = robotManager.getRobotAtIndices(square1).id;
             if (piece1 !== undefined) {
                 collisions.push(piece1);
             }
             // Same initial direction horse moves share this square. Will be directly
             // adjacent to moving piece.
             const square2 = new GridIndices(from.i + sx, from.j + sy);
-            const piece2 = robotManager.indicesToIds.get(square2);
+            const piece2 = robotManager.getRobotAtIndices(square2).id;
             if (piece2 !== undefined) {
                 collisions.push(piece2);
             }
@@ -315,7 +315,7 @@ function constructFinalCommand(
     let mainPiece: string | undefined;
 
     for (const [key, value] of robotManager.indicesToIds) {
-        if (key.i === from.i && key.j === from.j) {
+        if (JSON.parse(key).i === from.i && JSON.parse(key).j === from.j) {
             mainPiece = value;
             break;
         }
@@ -485,15 +485,17 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
         }
         i += botDirectionToHome;
     }
-    moveCommands.push(
-        new AbsoluteMoveCommand(
-            id,
-            new Position(
-                arrayOfDeadzone[endInArray].i + 0.5,
-                arrayOfDeadzone[endInArray].j + 0.5,
+    if(arrayOfDeadzone[endInArray]){
+        moveCommands.push(
+            new AbsoluteMoveCommand(
+                id,
+                new Position(
+                    arrayOfDeadzone[endInArray].i + 0.5,
+                    arrayOfDeadzone[endInArray].j + 0.5,
+                ),
             ),
-        ),
-    );
+        );
+    } 
 
     moveCommands.push(
         new AbsoluteMoveCommand(id, new Position(home.i + 0.5, home.j + 0.5)),
@@ -521,6 +523,7 @@ export function materializePath(move: Move): Command {
             move,
             robotManager,
         );
+        console.log("capture " + capturePiece);
         if (capturePiece !== undefined) {
             const captureCommand = returnToHome(move.to, capturePiece);
             const mainCommand = moveMainPiece(moveToGridMove(move));
