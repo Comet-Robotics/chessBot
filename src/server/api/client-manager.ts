@@ -11,7 +11,7 @@ export class ClientManager {
         private socketManager: SocketManager,
         private hostId?: string,
         private clientId?: string,
-        private spectatorIds: string[] = [],
+        private spectatorIds: Set<string> = new Set([]),
     ) {}
 
     public getHostSocket(): WebSocket | undefined {
@@ -38,11 +38,11 @@ export class ClientManager {
     }
 
     public sendToSpectators(message: Message): boolean {
-        if (this.spectatorIds.length !== 0) {
-            for (let x = 0; x < this.spectatorIds.length; x++) {
-                if (this.socketManager.getSocket(this.spectatorIds[x]))
+        if (this.spectatorIds.size !== 0) {
+            for (const item of this.spectatorIds) {
+                if (this.socketManager.getSocket(item))
                     this.socketManager
-                        .getSocket(this.spectatorIds[x])
+                        .getSocket(item)
                         .send(message.toJson());
             }
             return true;
@@ -72,9 +72,7 @@ export class ClientManager {
         } else if (this.clientId === undefined || id === this.clientId) {
             this.clientId = id;
         } else {
-            if (this.spectatorIds.indexOf(id) === -1) {
-                this.spectatorIds.push(id);
-            }
+            this.spectatorIds.add(id);
         }
     }
 

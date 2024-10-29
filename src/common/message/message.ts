@@ -37,6 +37,10 @@ export enum MessageType {
      */
     GAME_HELD = "game-held",
     /**
+     * Indicates the game is finished and should be restarted
+     */
+    GAME_FINISHED = "game-finished",
+    /**
      * A client-server message containing instructions for manually driving a robot.
      */
     DRIVE_ROBOT = "drive-robot",
@@ -44,7 +48,6 @@ export enum MessageType {
      * A client-server message used to update a variable (like rotations per square) on a robot.
      */
     SET_ROBOT_VARIABLE = "set-robot-variable",
-    GAME_FINISHED = "game-finished",
 }
 
 export abstract class Message {
