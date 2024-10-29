@@ -126,23 +126,27 @@ export class ChessEngine {
         if (this.isEnPassant(move)) {
             const y = GridIndices.squareToGrid(move.from).j;
             if (y > 6) {
-                return robotManager.indicesToIds.get(
+                return robotManager.getRobotAtIndices(
                     new GridIndices(
                         GridIndices.squareToGrid(move.from).i,
                         y + 1,
                     ),
-                );
+                ).id;
             } else {
-                return robotManager.indicesToIds.get(
+                return robotManager.getRobotAtIndices(
                     new GridIndices(
                         GridIndices.squareToGrid(move.from).i,
                         y - 1,
                     ),
-                );
+                ).id;
             }
         } else if (this.isRegularCapture(move)) {
             const to: GridIndices = GridIndices.squareToGrid(move.to);
-            return robotManager.indicesToIds.get(to);
+            console.log("herererfdsfa");
+            console.log(to);
+            console.log(robotManager.indicesToIds);
+            console.log(robotManager.isRobotAtIndices(to));
+            return robotManager.getRobotAtIndices(to).id;
         }
     }
 
@@ -209,6 +213,9 @@ export class ChessEngine {
      */
     makeMove(move: Move): Move {
         this.chess.move(move);
+        move.from;
+        //const rob = robotManager.getRobotAtIndices(GridIndices.squareToGrid(move.from));
+        //robotManager.updateRobot(rob)
         return move;
     }
 
