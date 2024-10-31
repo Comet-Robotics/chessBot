@@ -21,26 +21,27 @@ import { Dispatch } from "react";
 interface NavbarMenuProps {
     sendMessage: SendMessage;
     side: Side;
-    setRotation: Dispatch<React.SetStateAction<number>> //set state type
+    setRotation: Dispatch<React.SetStateAction<number>>; //set state type
 }
 
 export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
     // Store react router state for game
     const navigate = useNavigate();
 
-    const rotateButton = props.side===Side.SPECTATOR?
-        <Button 
-            minimal
-            text="Rotate" 
-            intent="primary"
-            onClick={()=>{
-                props.setRotation(
-                    oldRotation=>{
-                        return((oldRotation+90));
-                    }
-                )
-            }} 
-        />:"";
+    /** create navbar rotate button */
+    const rotateButton =
+        props.side === Side.SPECTATOR ?
+            <Button
+                minimal
+                text="Rotate"
+                intent="primary"
+                onClick={() => {
+                    props.setRotation((oldRotation) => {
+                        return oldRotation + 90;
+                    });
+                }}
+            />
+        :   "";
 
     return (
         <Navbar>

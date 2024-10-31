@@ -41,9 +41,7 @@ export class ClientManager {
         if (this.spectatorIds.size !== 0) {
             for (const item of this.spectatorIds) {
                 if (this.socketManager.getSocket(item))
-                    this.socketManager
-                        .getSocket(item)
-                        .send(message.toJson());
+                    this.socketManager.getSocket(item).send(message.toJson());
             }
             return true;
         }

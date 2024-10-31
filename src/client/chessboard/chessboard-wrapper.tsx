@@ -69,28 +69,26 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         setLastClickedSquare(undefined);
     };
 
-    
+    //set the side to their respective colors
     switch (props.side) {
         case Side.WHITE:
-            if(orientation !== "white")
-                setOrientation("white");
+            if (orientation !== "white") setOrientation("white");
             break;
         case Side.BLACK:
-            if(orientation !== "black")
-                setOrientation("black");
+            if (orientation !== "black") setOrientation("black");
             break;
+        //choose spectator side based on which is closer
         default:
-            if ((props.rotation%360) < 180) {
-                if(orientation !== "black"){
+            if (props.rotation % 360 < 180) {
+                if (orientation !== "black") {
                     setOrientation("black");
                 }
             } else {
-                if(orientation !== "white"){
+                if (orientation !== "white") {
                     setOrientation("white");
                 }
             }
     }
-    
 
     // Don't render while width isn't set
     let chessboard: JSX.Element | null = null;

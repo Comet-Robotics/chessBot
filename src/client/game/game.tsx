@@ -122,13 +122,17 @@ export function Game(): JSX.Element {
 
     return (
         <>
-            <NavbarMenu sendMessage={sendMessage} side={side} setRotation={setRotation} />
+            <NavbarMenu
+                sendMessage={sendMessage}
+                side={side}
+                setRotation={setRotation}
+            />
             <div id="body-container">
                 <ChessboardWrapper
                     side={side}
                     chess={chess}
                     onMove={handleMove}
-                    rotation={rotation?rotation:0}
+                    rotation={rotation ? rotation : 0}
                 />
                 {gameEndDialog}
                 {gameOfferDialog}
