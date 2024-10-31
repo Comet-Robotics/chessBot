@@ -6,6 +6,7 @@ import { Side } from "../../common/game-types";
 interface BoardContainerProps extends PropsWithChildren {
     side: Side;
     onWidthChange: (width: number) => void;
+    rotation: number;
 }
 
 export function BoardContainer(props: BoardContainerProps) {
@@ -27,7 +28,7 @@ export function BoardContainer(props: BoardContainerProps) {
                         ...transform,
                         transform:
                             props.side === Side.SPECTATOR ?
-                                "rotate(" + Math.random() * 360 + "deg)"
+                                "rotate(" + (props.rotation%180) + "deg)"
                             :   "",
                     }}
                 >

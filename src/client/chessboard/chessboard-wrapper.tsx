@@ -7,6 +7,7 @@ import { Move } from "../../common/game-types";
 import { Side, PieceType } from "../../common/game-types";
 import { customSquareRenderer } from "./custom-square-renderer";
 import { CustomSquareContext } from "./custom-square-context";
+import { BoardOrientation } from "react-chessboard/dist/chessboard/types";
 
 interface ChessboardWrapperProps {
     /**
@@ -17,6 +18,10 @@ interface ChessboardWrapperProps {
      * The side of the current player.
      */
     side: Side;
+    /**
+     * The rotation of the current player.
+     */
+    rotation: number;
     /**
      * A callback function this component invokes whenever a move is made.
      */
@@ -41,6 +46,8 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         Square | undefined
     >();
 
+    const [orientation, setOrientation] = useState<BoardOrientation>("white");
+
     // Maps squares to style objects
     let legalSquares: string[] = [];
     if (lastClickedSquare !== undefined) {
@@ -62,12 +69,35 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         setLastClickedSquare(undefined);
     };
 
+    
+    switch (props.side) {
+        case Side.WHITE:
+            if(orientation !== "white")
+                setOrientation("white");
+            break;
+        case Side.BLACK:
+            if(orientation !== "black")
+                setOrientation("black");
+            break;
+        default:
+            if ((props.rotation%360) < 180) {
+                if(orientation !== "black"){
+                    setOrientation("black");
+                }
+            } else {
+                if(orientation !== "white"){
+                    setOrientation("white");
+                }
+            }
+    }
+    
+
     // Don't render while width isn't set
     let chessboard: JSX.Element | null = null;
     if (width !== undefined) {
         chessboard = (
             <Chessboard
-                boardOrientation={side === Side.WHITE ? "white" : "black"}
+                boardOrientation={orientation}
                 boardWidth={width}
                 position={chess.fen}
                 onPromotionCheck={(from: Square, to: Square) => {
@@ -151,7 +181,11 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     }
 
     return (
-        <BoardContainer side={side} onWidthChange={setWidth}>
+        <BoardContainer
+            side={side}
+            onWidthChange={setWidth}
+            rotation={props.rotation}
+        >
             <CustomSquareContext.Provider
                 value={{ legalSquares, chess, lastClickedSquare, side }}
             >
