@@ -48,7 +48,7 @@ export class RobotManager {
      * Throws if no robot is found.
      */
     getRobotAtIndices(indices: GridIndices): Robot {
-        const robotId = this.indicesToIds.get(JSON.stringify(indices))
+        const robotId = this.indicesToIds.get(JSON.stringify(indices));
         if (robotId === undefined) {
             throw new Error("Failed to find robot at position " + indices);
         }
@@ -56,9 +56,13 @@ export class RobotManager {
     }
 
     updateRobot(robotId: string, indices: GridIndices) {
-        if (this.indicesToIds.has(JSON.stringify(indices))) {
-            this.indicesToIds.delete(JSON.stringify(indices));
+        // if (this.indicesToIds.has(JSON.stringify(indices))) {
+        //     this.indicesToIds.delete(JSON.stringify(indices));
+        // }
+        for (const [i, r] of this.indicesToIds.entries()) {
+            if (robotId === r) this.indicesToIds.delete(i);
         }
         this.indicesToIds.set(JSON.stringify(indices), robotId);
+        console.log("new indices are: ", indices);
     }
 }

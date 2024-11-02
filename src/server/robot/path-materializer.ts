@@ -530,10 +530,22 @@ export function materializePath(move: Move): Command {
             const mainPiece = robotManager.getRobotAtIndices(
                 GridIndices.squareToGrid(move.from),
             );
+
+            console.log(
+                "robot indices are: ",
+                GridIndices.squareToGrid(move.to),
+            );
             robotManager.updateRobot(
                 mainPiece.id,
                 GridIndices.squareToGrid(move.to),
             );
+
+            console.log(
+                "captured robot indices are: ",
+                Math.floor(robotManager.getRobot(capturePiece).position.x),
+            ),
+                " ,",
+                Math.floor(robotManager.getRobot(capturePiece).position.x);
             robotManager.updateRobot(
                 capturePiece,
                 robotManager.getRobot(capturePiece).homeIndices,
@@ -549,7 +561,8 @@ export function materializePath(move: Move): Command {
         const mainPiece = robotManager.getRobotAtIndices(
             GridIndices.squareToGrid(move.from),
         );
-        
+
+        console.log("robot indices are: ", GridIndices.squareToGrid(move.to));
         robotManager.updateRobot(
             mainPiece.id,
             GridIndices.squareToGrid(move.to),
