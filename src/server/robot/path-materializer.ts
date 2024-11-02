@@ -11,7 +11,6 @@ import {
 import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
 import { Position } from "./position";
 import { GridIndices } from "./grid-indices";
-import { Square } from "chess.js";
 import { error } from "console";
 
 export interface GridMove {
@@ -356,23 +355,23 @@ function moveMainPiece(move: GridMove): MovePiece {
  * Te easiest move to get to the dead zone
  */
 //TODO: Change the move to Grid that way we can move off the board.
-function moveToDeadZone(origin: Square): GridMove {
-    const aboveMove = moveToGridMove({
+function moveToDeadZone(origin: GridIndices): GridMove {
+    const aboveMove = {
         from: origin,
-        to: (origin[0] + "8") as Square,
-    });
-    const belowMove = moveToGridMove({
+        to: new GridIndices(origin[0], 9), //(origin[0] + "8" as unknown as GridIndices),
+    };
+    const belowMove = {
         from: origin,
-        to: (origin[0] + "1") as Square,
-    });
-    const rightMove = moveToGridMove({
+        to: new GridIndices(origin[0], 1), //(origin[0] + "1") as Square,
+    };
+    const rightMove = {
         from: origin,
-        to: ("h" + origin[1]) as Square,
-    });
-    const leftMove = moveToGridMove({
+        to: new GridIndices(9, origin[1]), //("h" + origin[1]) as Square,
+    };
+    const leftMove = {
         from: origin,
-        to: ("a" + origin[1]) as Square,
-    });
+        to: new GridIndices(1, origin[1]), //("a" + origin[1]) as Square,
+    };
 
     const aboveCollision = detectCollisions(
         aboveMove,
@@ -392,22 +391,10 @@ function moveToDeadZone(origin: Square): GridMove {
     );
 
     const collisionTuple: [GridMove, string[]][] = [
-        [
-            moveToGridMove({ from: origin, to: (origin[0] + "9") as Square }),
-            aboveCollision,
-        ],
-        [
-            moveToGridMove({ from: origin, to: (origin[0] + "1") as Square }),
-            belowCollision,
-        ],
-        [
-            moveToGridMove({ from: origin, to: ("9" + origin[1]) as Square }),
-            rightCollision,
-        ],
-        [
-            moveToGridMove({ from: origin, to: ("1" + origin[1]) as Square }),
-            leftCollision,
-        ],
+        [aboveMove, aboveCollision],
+        [belowMove, belowCollision],
+        [rightMove, rightCollision],
+        [leftMove, leftCollision],
     ];
 
     collisionTuple.sort((a, b) => a[1].length - b[1].length);
@@ -432,7 +419,7 @@ function directionToEdge(position: GridIndices) {
     return DirectionTuple;
 }
 
-function returnToHome(from: Square, id: string): SequentialCommandGroup {
+function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
     //const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
     const home: GridIndices = robotManager.getRobot(id).homeIndices;
     const fastestMoveToDeadzone = moveToDeadZone(from);
@@ -452,12 +439,9 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
         if (arrayOfDeadzone.find((dz) => dz.equals(home.addTuple(direction)))) {
             finalDestination = home.addTuple(direction);
         }
-        
     }
-    if(!finalDestination)
-    {
+    if (!finalDestination) {
         throw new error("WHERE THE HELL ARE YOU GOING");
-
     }
     const startInArray = arrayOfDeadzone.indexOf(startInDeadzone);
     const endInArray = arrayOfDeadzone.indexOf(finalDestination);
@@ -485,7 +469,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
         }
         i += botDirectionToHome;
     }
-    if(arrayOfDeadzone[endInArray]){
+    if (arrayOfDeadzone[endInArray]) {
         moveCommands.push(
             new AbsoluteMoveCommand(
                 id,
@@ -495,7 +479,7 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
                 ),
             ),
         );
-    } 
+    }
 
     moveCommands.push(
         new AbsoluteMoveCommand(id, new Position(home.i + 0.5, home.j + 0.5)),
@@ -516,21 +500,44 @@ function returnToHome(from: Square, id: string): SequentialCommandGroup {
 // Home without shimmy: Sequential[ Turn[capture piece], Move[capture piece], ... ]
 // Capture: Sequential[ Home with/without shimmy[capture piece], No_Capture[main piece] ]
 export function materializePath(move: Move): Command {
-    if (gameManager?.chess.isEnPassant(move)) {
-        return new SequentialCommandGroup([]);
-    } else if (gameManager?.chess.isRegularCapture(move)) {
+    if (
+        gameManager?.chess.isRegularCapture(move) ||
+        gameManager?.chess.isEnPassant(move)
+    ) {
         const capturePiece = gameManager.chess.getCapturedPieceId(
             move,
             robotManager,
         );
         console.log("capture " + capturePiece);
         if (capturePiece !== undefined) {
-            const captureCommand = returnToHome(move.to, capturePiece);
+            const captureSquareX = Math.floor(
+                robotManager.getRobot(capturePiece).position.x,
+            );
+            const captureSquareY = Math.floor(
+                robotManager.getRobot(capturePiece).position.y,
+            );
+            const captureSquare = new GridIndices(
+                captureSquareX,
+                captureSquareY,
+            );
+
+            const captureCommand = returnToHome(captureSquare, capturePiece);
             const mainCommand = moveMainPiece(moveToGridMove(move));
             const command = new SequentialCommandGroup([
                 captureCommand,
                 mainCommand,
             ]);
+            const mainPiece = robotManager.getRobotAtIndices(
+                GridIndices.squareToGrid(move.from),
+            );
+            robotManager.updateRobot(
+                mainPiece.id,
+                GridIndices.squareToGrid(move.to),
+            );
+            robotManager.updateRobot(
+                capturePiece,
+                robotManager.getRobot(capturePiece).homeIndices,
+            );
             return command;
         }
         return new SequentialCommandGroup([]);
@@ -539,6 +546,14 @@ export function materializePath(move: Move): Command {
     } else if (gameManager?.chess.isKingSideCastling(move)) {
         return new SequentialCommandGroup([]);
     } else {
+        const mainPiece = robotManager.getRobotAtIndices(
+            GridIndices.squareToGrid(move.from),
+        );
+        
+        robotManager.updateRobot(
+            mainPiece.id,
+            GridIndices.squareToGrid(move.to),
+        );
         return moveMainPiece(moveToGridMove(move));
     }
 }
