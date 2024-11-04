@@ -15,7 +15,6 @@ export class ChessEngine {
         if (pgn !== undefined) {
             this.chess.loadPgn(pgn);
         }
-        
     }
 
     /**
@@ -39,12 +38,12 @@ export class ChessEngine {
         return this.chess.pgn();
     }
 
-    undo(): Move{
+    undo(): Move {
         const undo = this.chess.undo();
-        return {"from":undo?.from, "to":undo?.to} as Move;
-    }   
+        return { from: undo?.from, to: undo?.to } as Move;
+    }
 
-    load(fen: string){
+    load(fen: string) {
         this.chess.load(fen);
     }
 
@@ -178,7 +177,7 @@ export class ChessEngine {
      * Makes a move on the chessboard.
      * @returns the move that was made.
      */
-    move(move:string):string{
+    move(move: string): string {
         this.chess.move(move);
         return move;
     }

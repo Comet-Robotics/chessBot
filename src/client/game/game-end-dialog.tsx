@@ -60,7 +60,7 @@ function gameOverIcon(reason: GameEndReason, side: Side) {
         reason === GameFinishedReason.PUZZLE_SOLVED;
     const blackWon =
         reason === GameFinishedReason.WHITE_CHECKMATED ||
-        reason === GameInterruptedReason.WHITE_RESIGNED || 
+        reason === GameInterruptedReason.WHITE_RESIGNED ||
         reason === GameFinishedReason.PUZZLE_SOLVED;
 
     const won = side === Side.WHITE ? whiteWon : blackWon;
@@ -102,7 +102,7 @@ function gameOverMessage(reason: GameEndReason) {
         case GameFinishedReason.STALEMATE:
             return "Draw - Stalemate";
         case GameFinishedReason.PUZZLE_SOLVED:
-                return "Puzzle Solved";
+            return "Puzzle Solved";
         case GameFinishedReason.THREEFOLD_REPETITION:
             return "Draw - Threefold Repetition";
         case GameFinishedReason.INSUFFICIENT_MATERIAL:

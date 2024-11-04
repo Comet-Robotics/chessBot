@@ -38,12 +38,12 @@ function getMessageHandler(
         if (message instanceof MoveMessage) {
             // Must be a new instance of ChessEngine to trigger UI redraw
             // short wait so the pieces don't teleport into place
-            setTimeout(()=>{
+            setTimeout(() => {
                 setChess(chess.copy(message.move));
-            }, 500)
-        } else if (message instanceof SetChessMessage) { 
-            const fen = message.chess
-            if(fen){
+            }, 500);
+        } else if (message instanceof SetChessMessage) {
+            const fen = message.chess;
+            if (fen) {
                 setTimeout(() => {
                     chess.load(fen);
                     setChess(chess.copy());
@@ -107,8 +107,7 @@ export function Game(): JSX.Element {
     const gameFinishedReason = chess.getGameFinishedReason();
     if (gameEndedReason !== undefined) {
         gameEndReason = gameEndedReason;
-    }
-    else if (gameFinishedReason !== undefined) {
+    } else if (gameFinishedReason !== undefined) {
         gameEndReason = gameFinishedReason;
     } else if (gameInterruptedReason !== undefined) {
         gameEndReason = gameInterruptedReason;

@@ -143,12 +143,12 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.post("/start-puzzle-game", (req, res) => {
+    //get puzzle components
     const puzzle = JSON.parse(req.query.puzzle as string) as PuzzleComponents;
-    console.log(puzzle.fen);
     const fen = puzzle.fen;
-    console.log();
     const moves = puzzle.moves;
     const difficulty = puzzle.rating;
+    //create game manager
     gameManager = new PuzzleGameManager(
         new ChessEngine(),
         socketManager,
@@ -173,10 +173,12 @@ export interface PuzzleComponents {
     rating: number;
 }
 /**
- * Returns a list of available puzzles to play.
+ * Returns a list of available puzzles to play from puzzles.json.
  */
 apiRouter.get("/get-puzzles", (_, res) => {
-    const puzzles: Map<string, PuzzleComponents> = JSON.parse(readFileSync("./src/server/api/puzzles.json",'utf-8'));
+    const puzzles: Map<string, PuzzleComponents> = JSON.parse(
+        readFileSync("./src/server/api/puzzles.json", "utf-8"),
+    );
     const out: string = JSON.stringify(puzzles);
     return res.send(out);
 });

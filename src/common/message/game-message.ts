@@ -1,6 +1,10 @@
 import { Message, MessageType } from "./message";
 import { Move } from "../game-types";
-import { GameInterruptedReason, GameHoldReason, GameEndReason } from "../game-end-reasons";
+import {
+    GameInterruptedReason,
+    GameHoldReason,
+    GameEndReason,
+} from "../game-end-reasons";
 
 export class PositionMessage extends Message {
     constructor(public readonly pgn: string) {

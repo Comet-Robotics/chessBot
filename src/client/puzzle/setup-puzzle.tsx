@@ -8,7 +8,7 @@ import { Navigate } from "react-router-dom";
 export function SetupPuzzle() {
     const [selectedPuzzle, setSelectedPuzzle] = useState<string | undefined>();
 
-    //const puzzles = get("/get-puzzles")
+    //get puzzles from api
     const { isPending, data, isError } = useEffectQuery(
         "get-puzzles",
         async () => {
@@ -30,7 +30,6 @@ export function SetupPuzzle() {
         return <Navigate to="/home" />;
     }
 
-    
     if (data === undefined) {
         return <Spinner intent="primary" />;
     } else {

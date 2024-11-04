@@ -217,45 +217,61 @@ export class PuzzleGameManager extends GameManager {
         private moves: Move[],
         protected difficulty: number,
     ) {
-        super(chess, socketManager, fen.split(" ")[1]==="w"?Side.WHITE:Side.BLACK, false);
+        super(
+            chess,
+            socketManager,
+            fen.split(" ")[1] === "w" ? Side.WHITE : Side.BLACK,
+            false,
+        );
         chess.load(fen);
     }
 
     public handleMessage(message: Message, id: string): void {
         if (message instanceof MoveMessage) {
-
             //if the move is correct
-            if (this.moves[this.moveNumber].from === message.move.from && this.moves[this.moveNumber].to === message.move.to) {
+            if (
+                this.moves[this.moveNumber].from === message.move.from &&
+                this.moves[this.moveNumber].to === message.move.to
+            ) {
                 this.chess.makeMove(message.move);
                 this.moveNumber++;
 
                 //if there is another move, make it
-                if(this.moves[this.moveNumber]){
+                if (this.moves[this.moveNumber]) {
                     this.chess.makeMove(this.moves[this.moveNumber]);
-                    this.socketManager.sendToSocket(id, new MoveMessage(this.moves[this.moveNumber]));
+                    this.socketManager.sendToSocket(
+                        id,
+                        new MoveMessage(this.moves[this.moveNumber]),
+                    );
                 }
                 this.moveNumber++;
             }
 
             //send an undo message
-            else{
-                this.socketManager.sendToSocket(id,new SetChessMessage(this.chess.fen));
+            else {
+                this.socketManager.sendToSocket(
+                    id,
+                    new SetChessMessage(this.chess.fen),
+                );
             }
 
             //send a finished message
-            if(this.isGameEnded()){
-                const gameEnd = this.getGameEndReason()
-                if(gameEnd){
-                    this.socketManager.sendToSocket(id, new GameEndMessage(gameEnd));
+            if (this.isGameEnded()) {
+                const gameEnd = this.getGameEndReason();
+                if (gameEnd) {
+                    this.socketManager.sendToSocket(
+                        id,
+                        new GameEndMessage(gameEnd),
+                    );
                 }
             }
-
-        } else if (message instanceof (GameInterruptedMessage || GameEndMessage)) {
+        } else if (
+            message instanceof (GameInterruptedMessage || GameEndMessage)
+        ) {
             this.gameInterruptedReason = message.reason;
             // Reflect end game reason back to client
             this.socketManager.sendToSocket(id, message);
         }
-
     }
 
     public isGameEnded(): boolean {

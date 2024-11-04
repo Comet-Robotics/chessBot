@@ -37,9 +37,8 @@ export function SelectPuzzle(props: SelectPuzzleProps) {
             intent="primary"
             onClick={async () => {
                 if (props.selectedPuzzle && props.puzzles) {
-                    //console.log(props.puzzles.get(props.selectedPuzzle));
+                    //convert puzzle to map and send to start puzzles
                     const puzzle = props.puzzles as Map<string, object>;
-                    //console.log(puzz[props.selectedPuzzle]);
                     const promise = post("/start-puzzle-game", {
                         puzzle: JSON.stringify(puzzle[props.selectedPuzzle]),
                     });
