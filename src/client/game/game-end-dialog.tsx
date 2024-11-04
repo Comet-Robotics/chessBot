@@ -30,7 +30,7 @@ export function GameEndDialog(props: GameEndDialogProps) {
     const [isOpen, setIsOpen] = useState(true);
     const navigate = useNavigate();
 
-    /**continue button */
+    /** continue button */
     const actions = (
         <Button
             text="Continue"

@@ -27,9 +27,11 @@ interface ChessboardWrapperProps {
 }
 
 /**
+ * Creates a chessboard that uses our custom properties inside a board container
  *
+ * These include width, moves, promotions, piece dragging, square highlighting, and
  * @param props - chess(ChessEngine), side, onMove
- * @returns
+ * @returns JSX.Element chessboard
  */
 export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     const { chess, side, onMove } = props;
@@ -43,7 +45,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         Square | undefined
     >();
 
-    // promotion sets
+    // promotion states
     const [isPromoting, setIsPromoting] = useState(false);
 
     const [manualPromotionSquare, setManualPromotionSquare] = useState<
@@ -126,7 +128,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                     }
                     return false;
                 }}
-                //when you start dragging, unset clicked square
+                // when you start dragging, unset clicked square
                 onPieceDragBegin={(_, square: Square) => {
                     if (square !== lastClickedSquare) {
                         setLastClickedSquare(undefined);

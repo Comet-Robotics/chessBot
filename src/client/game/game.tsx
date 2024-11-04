@@ -53,7 +53,7 @@ export function Game(): JSX.Element {
         useState<GameInterruptedReason>();
     const [gameHoldReason, setGameHoldReason] = useState<GameHoldReason>();
 
-    /**send any messages using our defined message handler inside a message socket for handling*/
+    /** send any messages using our defined message handler inside a message socket for handling */
     const sendMessage = useSocket(
         getMessageHandler(
             chess,
@@ -86,7 +86,7 @@ export function Game(): JSX.Element {
                 title="Loading..."
             />
         );
-        // go home if error
+        // go to /home if error
     } else if (isError) {
         return <Navigate to="/home" />;
     }
@@ -102,7 +102,7 @@ export function Game(): JSX.Element {
         gameEndReason = gameInterruptedReason;
     }
 
-    /**create a game end dialog with the game end reason, if defined*/
+    /** create a game end dialog with the game end reason, if defined */
     const gameEndDialog =
         gameEndReason !== undefined ?
             <GameEndDialog reason={gameEndReason} side={side} />
@@ -122,7 +122,7 @@ export function Game(): JSX.Element {
             :   null
         :   null;
 
-    /**make moves by making a copy of the chessboard and sending the move message*/
+    /** make moves by making a copy of the chessboard and sending the move message */
     const handleMove = (move: Move): void => {
         setChess(chess.copy(move));
         sendMessage(new MoveMessage(move));

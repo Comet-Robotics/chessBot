@@ -2,7 +2,7 @@ import { Button, MenuItem } from "@blueprintjs/core";
 import { ItemRenderer, Select } from "@blueprintjs/select";
 
 /**
- * Creates a robot item
+ * Creates a robot menu item
  *
  * @param robotId - id of the robot
  * @param param1 - handlers for active, focus, and click
@@ -25,7 +25,7 @@ const renderRobotIds: ItemRenderer<string> = (
 };
 
 /**
- * Id, selected id, and on robot selected function
+ * Ids, selected id, and on robot selected function
  */
 interface SelectRobotProps {
     robotIds: string[];

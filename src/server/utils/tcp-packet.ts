@@ -109,7 +109,7 @@ export const DRIVE_TILES = Record({
     type: Literal("DRIVE_TILES"),
     tileDistance: Float,
 });
-/**success message */
+/** success message */
 export const ACTION_SUCCESS = Record({ type: Literal("ACTION_SUCCESS") });
 
 /** error message with reason */

@@ -117,7 +117,7 @@ export function DriveRobot(props: DriveRobotProps) {
         [power.left],
     );
 
-    /**use wasd and arrows to control robots */
+    /** use wasd and arrows to control robots */
     const hotkeys = useMemo(
         () => [
             {

@@ -29,13 +29,9 @@ export function oppositeSide(side: Side) {
 }
 
 /**
- * I assume this is for orienting the board
- *
- * That being said, it instead assigns a degree value to the current side and probably breaks things
- * There is no references to this function within the code, so it may have been deprecated
- *
+ * get the robot's start heading based on the side it is on
  * @param side - the current side
- * @returns
+ * @returns angle in radians
  */
 export function getStartHeading(side: Side) {
     return side === Side.WHITE ? 90 * DEGREE : 270 * DEGREE;

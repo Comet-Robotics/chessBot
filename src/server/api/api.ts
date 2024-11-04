@@ -36,7 +36,7 @@ export let gameManager: GameManager | null = null;
  * The websocket is used to stream moves to and from the client.
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
-    // on close, delete the id
+    // on close, delete the cookie id
     ws.on("close", () => {
         socketManager.handleSocketClosed(req.cookies.id);
     });
