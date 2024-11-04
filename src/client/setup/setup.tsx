@@ -89,7 +89,7 @@ function SetupMain(props: SetupMainProps) {
         </>
     );
 
-    //return all the buttons and the title
+    // return all the buttons and the title
     return (
         <>
             {debugButton}

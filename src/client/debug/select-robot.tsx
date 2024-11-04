@@ -43,7 +43,7 @@ export function SelectRobot(props: SelectRobotProps) {
     const hasSelection = props.selectedRobotId !== undefined;
 
     return (
-        //get all the robot ids in the list for selection
+        // get all the robot ids in the list for selection
         <Select<string>
             items={props.robotIds}
             itemRenderer={renderRobotIds}

@@ -115,11 +115,11 @@ export class BotTunnel {
             return;
         }
 
-        //get the data and find the terminator
+        // get the data and find the terminator
         let str = this.dataBuffer.toString();
         const terminator = str.indexOf(";");
 
-        //if there is no terminator, wait for it
+        // if there is no terminator, wait for it
         if (terminator === -1) {
             if (str.length > 200) {
                 // Invalid state, reset buf
@@ -132,7 +132,7 @@ export class BotTunnel {
 
         str = str.substring(0, terminator);
 
-        //check if the buffer is the correct length based on where the terminator is
+        // check if the buffer is the correct length based on where the terminator is
         if (this.dataBuffer.length > terminator) {
             this.dataBuffer = this.dataBuffer.subarray(terminator + 1);
         } else {
@@ -144,24 +144,24 @@ export class BotTunnel {
 
             // Parse packet based on type
             switch (packet.type) {
-                //register new robot
+                // register new robot
                 case "CLIENT_HELLO": {
                     this.onHandshake(packet.macAddress);
                     this.send(this.makeHello(packet.macAddress));
                     this.connected = true;
                     break;
                 }
-                //respond to pings
+                // respond to pings
                 case "PING_SEND": {
                     this.send({ type: "PING_RESPONSE" });
                     break;
                 }
-                //emit a action complete for further processing
+                // emit a action complete for further processing
                 case "ACTION_SUCCESS": {
                     this.emitter.emit("actionComplete", { success: true });
                     break;
                 }
-                //emit a action fail for further processing
+                // emit a action fail for further processing
                 case "ACTION_FAIL": {
                     this.emitter.emit("actionComplete", {
                         success: false,
@@ -191,7 +191,7 @@ export class BotTunnel {
         const str = packetToJson(packet);
         const msg = str + ";";
 
-        //If the connection isn't active, there is no robot
+        // If the connection isn't active, there is no robot
         if (!this.isActive()) {
             console.error(
                 "Connection to",
@@ -289,11 +289,11 @@ export class TCPServer {
 
         socket.setNoDelay(true);
 
-        //create a new bot tunnel for the connection
+        // create a new bot tunnel for the connection
         const tunnel = new BotTunnel(
             socket,
             ((mac: string) => {
-                //add the new robot to the array if it isn't in bots config
+                // add the new robot to the array if it isn't in bots config
                 console.log("Adding robot with mac", mac, "to arr");
                 let id: string;
                 if (!(mac in config["bots"])) {
@@ -313,7 +313,7 @@ export class TCPServer {
             }).bind(this),
         );
 
-        //bind the sockets to the corresponding functions
+        // bind the sockets to the corresponding functions
         socket.on("data", tunnel.onData.bind(tunnel));
         socket.once("close", tunnel.onClose.bind(tunnel));
         socket.on("error", tunnel.onError.bind(tunnel));

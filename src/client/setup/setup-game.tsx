@@ -55,20 +55,20 @@ export function SetupGame(props: SetupGameProps) {
         </>
     );
 
-    //the title for the dialog
+    // the title for the dialog
     const title =
         props.gameType === GameType.COMPUTER ?
             "Play Against the Computer"
         :   "Setup Game";
 
-    //handles passing user choices to the api
+    // handles passing user choices to the api
     const submit = (
         <Button
             text="Play"
             icon="arrow-right"
             intent="primary"
             onClick={async () => {
-                //convert the side selected to the side enum
+                // convert the side selected to the side enum
                 let selectedSide: Side;
                 if (desiredSide === DesiredSide.RANDOM) {
                     selectedSide =
@@ -80,7 +80,7 @@ export function SetupGame(props: SetupGameProps) {
                         :   Side.BLACK;
                 }
 
-                //pass the user choice to api
+                // pass the user choice to api
                 let promise: Promise<unknown>;
                 if (props.gameType === GameType.COMPUTER) {
                     promise = post("/start-computer-game", {
@@ -136,7 +136,7 @@ function DifficultySlider(props: DifficultySliderProps) {
                     intent="primary"
                     value={props.difficulty}
                     onChange={props.onDifficultyChange}
-                    //based on user chosen value
+                    // based on user chosen value
                     labelRenderer={(value) => {
                         if (value === Difficulty.BABY) {
                             return "Baby";

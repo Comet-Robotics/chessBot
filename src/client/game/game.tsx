@@ -63,7 +63,7 @@ export function Game(): JSX.Element {
         ),
     );
 
-    //checks if a game is currently active
+    // checks if a game is currently active
     const { isPending, data, isError } = useEffectQuery(
         "game-state",
         async () => {
@@ -78,7 +78,7 @@ export function Game(): JSX.Element {
         false,
     );
 
-    //if a game is pending, show a loading screen while waiting
+    // if a game is pending, show a loading screen while waiting
     if (isPending) {
         return (
             <NonIdealState
@@ -86,14 +86,14 @@ export function Game(): JSX.Element {
                 title="Loading..."
             />
         );
-        //go home if error
+        // go home if error
     } else if (isError) {
         return <Navigate to="/home" />;
     }
 
     const side = data.side;
 
-    //check if the game has ended or been interrupted
+    // check if the game has ended or been interrupted
     let gameEndReason: GameEndReason | undefined = undefined;
     const gameFinishedReason = chess.getGameFinishedReason();
     if (gameFinishedReason !== undefined) {
@@ -128,7 +128,7 @@ export function Game(): JSX.Element {
         sendMessage(new MoveMessage(move));
     };
 
-    //return the chessboard wrapper, navbar, and potential end dialog
+    // return the chessboard wrapper, navbar, and potential end dialog
     return (
         <>
             <NavbarMenu sendMessage={sendMessage} side={side} />

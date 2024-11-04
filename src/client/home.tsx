@@ -12,7 +12,7 @@ export function Home() {
         get("/client-information"),
     );
 
-    //show loading if the message is pending
+    // show loading if the message is pending
     if (isPending) {
         return (
             <NonIdealState

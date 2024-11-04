@@ -42,7 +42,7 @@ export function GameEndDialog(props: GameEndDialogProps) {
         />
     );
 
-    //return the dialog with the button and game over reason
+    // return the dialog with the button and game over reason
     return (
         <Dialog
             isOpen={isOpen}
@@ -70,7 +70,7 @@ export function GameEndDialog(props: GameEndDialogProps) {
  * @returns game over icon
  */
 function gameOverIcon(reason: GameEndReason, side: Side) {
-    //check which side won
+    // check which side won
     const whiteWon =
         reason === GameFinishedReason.BLACK_CHECKMATED ||
         reason === GameInterruptedReason.BLACK_RESIGNED;
@@ -78,12 +78,12 @@ function gameOverIcon(reason: GameEndReason, side: Side) {
         reason === GameFinishedReason.WHITE_CHECKMATED ||
         reason === GameInterruptedReason.WHITE_RESIGNED;
 
-    //checks which side is asking and assigns win/lost accordingly
+    // checks which side is asking and assigns win/lost accordingly
     const won = side === Side.WHITE ? whiteWon : blackWon;
     const lost = side === Side.WHITE ? blackWon : whiteWon;
     // const draw = !blackWon && !whiteWon;
 
-    //return the correct icon and intent
+    // return the correct icon and intent
     if (won) {
         return (
             <Icon

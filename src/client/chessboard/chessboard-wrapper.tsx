@@ -43,7 +43,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         Square | undefined
     >();
 
-    //promotion sets
+    // promotion sets
     const [isPromoting, setIsPromoting] = useState(false);
 
     const [manualPromotionSquare, setManualPromotionSquare] = useState<
@@ -81,11 +81,11 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
     if (width !== undefined) {
         chessboard = (
             <Chessboard
-                //set up the board
+                // set up the board
                 boardOrientation={side === Side.WHITE ? "white" : "black"}
                 boardWidth={width}
                 position={chess.fen}
-                //do a promotion check
+                // do a promotion check
                 onPromotionCheck={(from: Square, to: Square) => {
                     const promoting = chess.checkPromotion(from, to);
                     setIsPromoting(promoting);
@@ -93,7 +93,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                 }}
                 showPromotionDialog={manualPromotionSquare !== undefined}
                 promotionToSquare={manualPromotionSquare}
-                //handle dragging and dropping pieces
+                // handle dragging and dropping pieces
                 onPieceDrop={(
                     from: Square,
                     to: Square,
@@ -132,7 +132,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         setLastClickedSquare(undefined);
                     }
                 }}
-                //handle square clicking
+                // handle square clicking
                 onSquareClick={(square: Square) => {
                     setManualPromotionSquare(undefined);
 
@@ -141,13 +141,13 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
                         lastClickedSquare !== undefined &&
                         isLegalMove(lastClickedSquare, square);
 
-                    //check if the square is legal
+                    // check if the square is legal
                     if (isSquareLegalMove) {
                         if (chess.checkPromotion(lastClickedSquare, square)) {
                             // Manually show promotion dialog
                             setManualPromotionSquare(square);
                         } else {
-                            //make the move normally
+                            // make the move normally
                             doMove({
                                 from: lastClickedSquare,
                                 to: square,
@@ -172,7 +172,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         );
     }
 
-    //return the created chessboard inside the board container
+    // return the created chessboard inside the board container
     return (
         <BoardContainer onWidthChange={setWidth}>
             <CustomSquareContext.Provider

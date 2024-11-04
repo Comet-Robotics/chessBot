@@ -16,11 +16,11 @@ export function Debug() {
         string | undefined
     >();
 
-    //helper functions
+    // helper functions
     const navigate = useNavigate();
     const sendMessage = useSocket();
 
-    //get all the registered robots
+    // get all the registered robots
     useEffect(() => {
         const fetchIds = async () => {
             const response = await get("/get-ids");
@@ -29,7 +29,7 @@ export function Debug() {
         fetchIds();
     }, [setRobotIds]);
 
-    //create the select and move buttons
+    // create the select and move buttons
     let body: ReactNode;
     if (robotIds === undefined) {
         body = <Spinner intent="primary" />;
@@ -68,7 +68,7 @@ export function Debug() {
         );
     }
 
-    //return the dialog
+    // return the dialog
     return (
         <Card>
             <Button
