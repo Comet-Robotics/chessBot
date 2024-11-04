@@ -39,4 +39,12 @@ export class SocketManager {
         }
         return false;
     }
+
+    public sendToAll(message: Message): boolean {
+        const sockets = Object.values(this.sockets);
+        for (const socket of sockets) {
+            socket.send(message.toJson());
+        }
+        return true;
+    }
 }

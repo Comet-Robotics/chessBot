@@ -99,7 +99,7 @@ export const SET_VAR = Record({
  */
 export const TURN_BY_ANGLE = Record({
     type: Literal("TURN_BY_ANGLE"),
-    deltaHeading: Float,
+    deltaHeadingRadians: Float,
 });
 
 /**

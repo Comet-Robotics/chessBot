@@ -7,6 +7,7 @@ import {
     GameStartedMessage,
     GameHoldMessage,
 } from "./game-message";
+import { SimulatorUpdateMessage } from "./simulator-message";
 
 /**
  * Parses sent messages into Message instances.
@@ -41,6 +42,13 @@ export function parseMessage(text: string): Message {
                 obj.id,
                 obj.variableName,
                 parseFloat(obj.variableValue),
+            );
+        case MessageType.SIMULATOR_UPDATE:
+            return new SimulatorUpdateMessage(
+                obj.robotId,
+                obj.location,
+                obj.packet,
+                obj.stackTrace,
             );
     }
     throw new Error("Failed to parse message.");
