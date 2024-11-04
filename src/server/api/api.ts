@@ -3,9 +3,11 @@ import { Router } from "express";
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
+    GameEndMessage,
     GameHoldMessage,
     GameInterruptedMessage,
     MoveMessage,
+    SetChessMessage,
 } from "../../common/message/game-message";
 import {
     DriveRobotMessage,
@@ -23,9 +25,10 @@ import {
     PuzzleGameManager,
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
-import { Side } from "../../common/game-types";
+import { Move, Side } from "../../common/game-types";
 import { IS_DEVELOPMENT } from "../utils/env";
 import { SaveManager } from "./save-manager";
+import { readFileSync } from "fs";
 
 export const tcpServer = new TCPServer();
 
@@ -50,7 +53,9 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         } else if (
             message instanceof GameInterruptedMessage ||
             message instanceof MoveMessage ||
-            message instanceof GameHoldMessage
+            message instanceof SetChessMessage ||
+            message instanceof GameHoldMessage ||
+            message instanceof GameEndMessage
         ) {
             // TODO: Handle game manager not existing
             gameManager?.handleMessage(message, req.cookies.id);
@@ -164,45 +169,16 @@ apiRouter.get("/get-ids", (_, res) => {
 
 export interface PuzzleComponents {
     fen: string;
-    moves: string[];
+    moves: Move[];
     rating: number;
 }
 /**
  * Returns a list of available puzzles to play.
  */
 apiRouter.get("/get-puzzles", (_, res) => {
-    const puzzles: Map<string, PuzzleComponents> = new Map([
-        [
-            "Puzzle 1",
-            {
-                fen: "8/1p3p1k/8/p1p2Kr1/P2pP3/1P1P4/2P5/8 w - - 0 1",
-                moves: ["Kxg5"],
-                rating: 511,
-            },
-        ],
-        [
-            "Puzzle 2",
-            {
-                fen: "5rk1/p5pp/4q3/8/1P1P4/2P4P/P2p1RP1/5RK1 w",
-                moves: ["Rxf8#"],
-                rating: 514,
-            },
-        ],
-        [
-            "Puzzle 3",
-            {
-                fen: "8/3B4/2P2P2/1P1P1p2/3pP1p1/1pK5/2p4R/2k3r1 w - - 0 1",
-                moves: ["Rb6+", "d6", "Rd6#"],
-                rating: 1000,
-            },
-        ],
-    ]);
-    const obj: { [key: string]: PuzzleComponents } = {};
-    puzzles.forEach((value, key) => {
-        obj[key] = value;
-    });
-    const a: string = JSON.stringify(obj);
-    return res.send(a);
+    const puzzles: Map<string, PuzzleComponents> = JSON.parse(readFileSync("./src/server/api/puzzles.json",'utf-8'));
+    const out: string = JSON.stringify(puzzles);
+    return res.send(out);
 });
 
 function doDriveRobot(message: DriveRobotMessage): boolean {

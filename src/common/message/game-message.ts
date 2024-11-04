@@ -28,6 +28,20 @@ export class MoveMessage extends Message {
         };
     }
 }
+export class SetChessMessage extends Message {
+    constructor(public readonly chess: string) {
+        super();
+    }
+
+    protected type = MessageType.SET_CHESS;
+
+    protected toObj(): object {
+        return {
+            ...super.toObj(),
+            chess: this.chess,
+        };
+    }
+}
 export class GameStartedMessage extends Message {
     constructor() {
         super();

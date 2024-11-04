@@ -6,6 +6,8 @@ import {
     GameInterruptedMessage,
     GameStartedMessage,
     GameHoldMessage,
+    GameEndMessage,
+    SetChessMessage,
 } from "./game-message";
 
 /**
@@ -26,10 +28,14 @@ export function parseMessage(text: string): Message {
             return new GameInterruptedMessage(obj.reason);
         case MessageType.GAME_HELD:
             return new GameHoldMessage(obj.reason);
+        case MessageType.GAME_ENDED:
+            return new GameEndMessage(obj.reason);
         case MessageType.POSITION:
             return new PositionMessage(obj.pgn);
         case MessageType.MOVE:
             return new MoveMessage(obj.move);
+        case MessageType.SET_CHESS:
+            return new SetChessMessage(obj.chess);
         case MessageType.DRIVE_ROBOT:
             return new DriveRobotMessage(
                 obj.id,

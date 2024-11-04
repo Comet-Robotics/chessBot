@@ -23,6 +23,10 @@ export enum MessageType {
      */
     MOVE = "move",
     /**
+     * Sets the client chess engine
+     */
+    SET_CHESS = "set-chess",
+    /**
      * A server-client message used to tell player two a game has started.
      */
     GAME_STARTED = "game-started",

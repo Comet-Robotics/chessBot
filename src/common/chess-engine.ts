@@ -39,9 +39,10 @@ export class ChessEngine {
         return this.chess.pgn();
     }
 
-    undo(){
-        this.chess.undo();
-    }
+    undo(): Move{
+        const undo = this.chess.undo();
+        return {"from":undo?.from, "to":undo?.to} as Move;
+    }   
 
     load(fen: string){
         this.chess.load(fen);
