@@ -6,6 +6,7 @@ import {
     GameInterruptedMessage,
     GameStartedMessage,
     GameHoldMessage,
+    GameFinishedMessage,
 } from "./game-message";
 import { SimulatorUpdateMessage } from "./simulator-message";
 
@@ -25,6 +26,8 @@ export function parseMessage(text: string): Message {
             return new GameStartedMessage();
         case MessageType.GAME_INTERRUPTED:
             return new GameInterruptedMessage(obj.reason);
+        case MessageType.GAME_FINISHED:
+            return new GameFinishedMessage(obj.reason);
         case MessageType.GAME_HELD:
             return new GameHoldMessage(obj.reason);
         case MessageType.POSITION:

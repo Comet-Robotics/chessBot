@@ -3,6 +3,7 @@ import { Router } from "express";
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
+    GameFinishedMessage,
     GameHoldMessage,
     GameInterruptedMessage,
     MoveMessage,
@@ -53,7 +54,8 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         } else if (
             message instanceof GameInterruptedMessage ||
             message instanceof MoveMessage ||
-            message instanceof GameHoldMessage
+            message instanceof GameHoldMessage ||
+            message instanceof GameFinishedMessage
         ) {
             // TODO: Handle game manager not existing
             gameManager?.handleMessage(message, req.cookies.id);
