@@ -26,6 +26,10 @@ interface NavbarMenuProps {
 export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
     // Store react router state for game
     const navigate = useNavigate();
+    const difficultyButton =
+        props.difficulty ?
+            <Button minimal disabled text={"rating: " + props.difficulty} />
+        :   null;
     return (
         <Navbar>
             <NavbarGroup>
@@ -61,7 +65,7 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                 />
             </NavbarGroup>
             <NavbarGroup align="right">
-                <Button minimal disabled text={"rating: " + props.difficulty} />
+                {difficultyButton}
                 <Button icon="cog" minimal onClick={() => navigate("/debug")} />
             </NavbarGroup>
         </Navbar>
