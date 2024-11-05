@@ -9,6 +9,11 @@ interface BoardContainerProps extends PropsWithChildren {
     rotation: number;
 }
 
+/**
+ * A container to deal with chessboard resizing
+ * @param props - width handler and inner elements
+ * @returns
+ */
 export function BoardContainer(props: BoardContainerProps) {
     const [transform, setTransform] = useState<Transform | undefined>();
 
@@ -20,6 +25,7 @@ export function BoardContainer(props: BoardContainerProps) {
         setTransform(transform);
     };
 
+    // returns the resizable container
     return (
         <ResizeSensor onResize={handleResize}>
             <div id="chess-container">
