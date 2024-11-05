@@ -1,6 +1,10 @@
 import { Message, MessageType } from "./message";
 import { Move } from "../game-types";
-import { GameInterruptedReason, GameHoldReason } from "../game-end-reasons";
+import {
+    GameInterruptedReason,
+    GameHoldReason,
+    GameFinishedReason,
+} from "../game-end-reasons";
 
 /**
  * A message that includes a position and pgn
@@ -64,9 +68,21 @@ export class GameInterruptedMessage extends Message {
     }
 }
 
-/**
- * A message that contains why the game is held
- */
+export class GameFinishedMessage extends Message {
+    constructor(public readonly reason: GameFinishedReason) {
+        super();
+    }
+
+    protected type = MessageType.GAME_FINISHED;
+
+    protected toObj(): object {
+        return {
+            ...super.toObj(),
+            reason: this.reason,
+        };
+    }
+}
+
 export class GameHoldMessage extends Message {
     constructor(public readonly reason: GameHoldReason) {
         super();

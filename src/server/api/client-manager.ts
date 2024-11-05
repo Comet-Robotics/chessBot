@@ -13,6 +13,7 @@ export class ClientManager {
         private socketManager: SocketManager,
         private hostId?: string,
         private clientId?: string,
+        private spectatorIds: Set<string> = new Set([]),
     ) {}
 
     /**
@@ -52,10 +53,17 @@ export class ClientManager {
         return socket !== undefined;
     }
 
-    /**
-     * get the client's socket
-     * @returns the client socket
-     */
+    public sendToSpectators(message: Message): boolean {
+        if (this.spectatorIds.size !== 0) {
+            for (const item of this.spectatorIds) {
+                if (this.socketManager.getSocket(item))
+                    this.socketManager.getSocket(item).send(message.toJson());
+            }
+            return true;
+        }
+        return false;
+    }
+
     public getClientSocket(): WebSocket | undefined {
         if (this.clientId !== undefined) {
             return this.socketManager.getSocket(this.clientId);
@@ -85,6 +93,8 @@ export class ClientManager {
             this.hostId = id;
         } else if (this.clientId === undefined || id === this.clientId) {
             this.clientId = id;
+        } else {
+            this.spectatorIds.add(id);
         }
     }
 
