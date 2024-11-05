@@ -17,5 +17,18 @@
             { "from": "b6", "to": "d6" }
         ],
         "rating": 1000
+    },
+    "Puzzle 4": {
+        "fen": "r1b3k1/1pq1b1r1/p2p3Q/3Pp3/3p1P2/P2B3P/1PP3P1/1R3RK1 w - - 0 1",
+        "moves": [
+            { "from": "f4", "to": "e5" },
+            { "from": "d6", "to": "e5" },
+            { "from": "d5", "to": "d6" },
+            { "from": "c7", "to": "c6" },
+            { "from": "f1", "to": "f3" },
+            { "from": "c6", "to": "f3" },
+            { "from": "d3", "to": "c4" }
+        ],
+        "rating": 2915
     }
 }
