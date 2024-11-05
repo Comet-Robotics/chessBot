@@ -226,7 +226,7 @@ export class PuzzleGameManager extends GameManager {
         chess.load(fen);
     }
 
-    public getDifficulty():number{
+    public getDifficulty(): number {
         return this.difficulty;
     }
 
@@ -288,9 +288,11 @@ export class PuzzleGameManager extends GameManager {
         }
         return super.getGameEndReason();
     }
-    
-    public getGameState(clientType: ClientType): object {
 
-        return {...super.getGameState(clientType), difficulty:this.difficulty};
+    public getGameState(clientType: ClientType): object {
+        return {
+            ...super.getGameState(clientType),
+            difficulty: this.difficulty,
+        };
     }
 }
