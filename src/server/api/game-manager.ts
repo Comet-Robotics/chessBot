@@ -226,6 +226,10 @@ export class PuzzleGameManager extends GameManager {
         chess.load(fen);
     }
 
+    public getDifficulty():number{
+        return this.difficulty;
+    }
+
     public handleMessage(message: Message, id: string): void {
         if (message instanceof MoveMessage) {
             //if the move is correct
@@ -283,5 +287,10 @@ export class PuzzleGameManager extends GameManager {
             return GameFinishedReason.PUZZLE_SOLVED;
         }
         return super.getGameEndReason();
+    }
+    
+    public getGameState(clientType: ClientType): object {
+
+        return {...super.getGameState(clientType), difficulty:this.difficulty};
     }
 }

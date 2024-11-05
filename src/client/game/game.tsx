@@ -138,7 +138,7 @@ export function Game(): JSX.Element {
 
     return (
         <>
-            <NavbarMenu sendMessage={sendMessage} side={side} />
+            <NavbarMenu sendMessage={sendMessage} side={side} difficulty={data.difficulty}/>
             <div id="body-container">
                 <ChessboardWrapper
                     side={side}

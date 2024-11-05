@@ -20,6 +20,7 @@ import { Side } from "../../common/game-types";
 interface NavbarMenuProps {
     sendMessage: SendMessage;
     side: Side;
+    difficulty?:number;
 }
 
 export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
@@ -60,6 +61,7 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                 />
             </NavbarGroup>
             <NavbarGroup align="right">
+                <Button minimal disabled text = {"rating: "+ props.difficulty} />
                 <Button icon="cog" minimal onClick={() => navigate("/debug")} />
             </NavbarGroup>
         </Navbar>
