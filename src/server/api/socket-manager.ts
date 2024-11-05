@@ -40,6 +40,11 @@ export class SocketManager {
         return false;
     }
 
+    /**
+     * send a message to all current sockets
+     * @param message - message to be sent
+     * @returns isSuccessful
+     */
     public sendToAll(message: Message): boolean {
         const sockets = Object.values(this.sockets);
         for (const socket of sockets) {

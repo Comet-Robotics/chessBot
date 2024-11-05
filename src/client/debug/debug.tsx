@@ -68,7 +68,7 @@ export function Debug() {
         );
     }
 
-    // return the dialog
+    // return the dialog with buttons for home and simulator
     return (
         <Card>
             <Button

@@ -180,6 +180,9 @@ apiRouter.get("/get-ids", (_, res) => {
     return res.send({ ids });
 });
 
+/**
+ * move a random robot forward and turn 45 degrees
+ */
 apiRouter.get("/do-smth", async (_, res) => {
     const robotsEntries = Array.from(virtualRobots.entries());
     const [, robot] =
@@ -190,12 +193,16 @@ apiRouter.get("/do-smth", async (_, res) => {
     res.send({ message: "success" });
 });
 
+/**
+ * get the current state of the virtual robots for the simulator
+ */
 apiRouter.get("/get-simulator-robot-state", (_, res) => {
     if (!USE_VIRTUAL_ROBOTS) {
         return res.status(400).send({ message: "Simulator is not enabled." });
     }
     const robotsEntries = Array.from(virtualRobots.entries());
 
+    // get all of the robots and their positions
     const robotState = Object.fromEntries(
         robotsEntries.map(([id, robot]) => {
             let headingRadians = robot.headingRadians;
@@ -209,6 +216,8 @@ apiRouter.get("/get-simulator-robot-state", (_, res) => {
             return [id, { position, headingRadians: headingRadians }];
         }),
     );
+
+    //send the robots and any tunnel messages
     return res.send({
         robotState,
         messages: Array.from(VirtualBotTunnel.messages),
