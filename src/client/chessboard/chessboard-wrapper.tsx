@@ -85,7 +85,7 @@ export function ChessboardWrapper(props: ChessboardWrapperProps): JSX.Element {
         setLastClickedSquare(undefined);
     };
 
-    //set the side to their respective colors
+    //set the side to their respective colors and orientations
     switch (props.side) {
         case Side.WHITE:
             if (orientation !== "white") setOrientation("white");

@@ -68,6 +68,10 @@ export class GameInterruptedMessage extends Message {
     }
 }
 
+/**
+ * A message that contains why the game has finished
+ *
+ */
 export class GameFinishedMessage extends Message {
     constructor(public readonly reason: GameFinishedReason) {
         super();
@@ -83,6 +87,9 @@ export class GameFinishedMessage extends Message {
     }
 }
 
+/**
+ * A message that contains why the game was temporarily held
+ */
 export class GameHoldMessage extends Message {
     constructor(public readonly reason: GameHoldReason) {
         super();

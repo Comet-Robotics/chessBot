@@ -119,6 +119,8 @@ export class HumanGameManager extends GameManager {
                 this.clientManager,
             );
         }
+
+        //bind all spectators
         const sendToSpectators = this.clientManager.sendToSpectators.bind(
             this.clientManager,
         );
@@ -156,6 +158,8 @@ export class HumanGameManager extends GameManager {
             sendToPlayer(message);
             sendToOpponent(message);
             sendToSpectators(message);
+
+            //end the game in save manager
             if (ids) {
                 if (currentSave?.host === ids[0])
                     SaveManager.endGame(ids[0], ids[1]);

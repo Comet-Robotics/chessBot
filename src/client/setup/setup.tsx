@@ -35,6 +35,7 @@ export function Setup(): JSX.Element {
         );
     }
 
+    //if the client is a host, let them choose a game type
     if (data.clientType === ClientType.HOST) {
         return (
             <SetupBase>

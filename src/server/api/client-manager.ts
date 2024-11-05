@@ -53,6 +53,11 @@ export class ClientManager {
         return socket !== undefined;
     }
 
+    /**
+     * send an update message to all spectators
+     * @param message - the message to send
+     * @returns if it completed successfully
+     */
     public sendToSpectators(message: Message): boolean {
         if (this.spectatorIds.size !== 0) {
             for (const item of this.spectatorIds) {
