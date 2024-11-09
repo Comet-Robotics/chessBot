@@ -142,12 +142,10 @@ export function Game(): JSX.Element {
     return (
         <>
             <NavbarMenu
-               
                 sendMessage={sendMessage}
-               
                 side={side}
                 difficulty={data.difficulty}
-           
+                AiDifficulty={data.AiDifficulty}
                 setRotation={setRotation}
             />
             <div id="body-container">

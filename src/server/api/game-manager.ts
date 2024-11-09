@@ -34,7 +34,9 @@ export abstract class GameManager {
         protected hostSide: Side,
         //true if host and client get reversed
         protected reverse: boolean,
-    ) {}
+    ) {
+        socketManager.sendToAll(new GameStartedMessage());
+    }
 
     public isGameEnded(): boolean {
         return (
@@ -83,8 +85,8 @@ export class HumanGameManager extends GameManager {
     ) {
         super(chess, socketManager, hostSide, reverse);
         // Notify other client the game has started
-        clientManager.sendToClient(new GameStartedMessage());
-        clientManager.sendToSpectators(new GameStartedMessage());
+        //clientManager.sendToClient(new GameStartedMessage());
+        //clientManager.sendToSpectators(new GameStartedMessage());
     }
 
     public handleMessage(message: Message, id: string): void {
@@ -176,7 +178,7 @@ export class HumanGameManager extends GameManager {
 
 export class ComputerGameManager extends GameManager {
     // The minimum amount of time to wait responding with a move.
-    MINIMUM_DELAY = 500;
+    MINIMUM_DELAY = 600;
 
     constructor(
         chess: ChessEngine,
@@ -195,7 +197,9 @@ export class ComputerGameManager extends GameManager {
 
     public handleMessage(message: Message, id: string): void {
         if (message instanceof MoveMessage) {
+            this.socketManager.sendToAll(new MoveMessage(message.move));
             this.chess.makeMove(message.move);
+
             SaveManager.saveGame(
                 id,
                 "ai",
@@ -215,8 +219,10 @@ export class ComputerGameManager extends GameManager {
             const move = this.chess.makeAiMove(this.difficulty);
             const elapsedTime = Date.now() - startTime;
             // If elapsed time is less than minimum delay, timeout is set to 1ms
+            new MoveMessage(move);
             setTimeout(() => {
-                this.socketManager.sendToSocket(id, new MoveMessage(move));
+                //this.socketManager.sendToSocket(id, new MoveMessage(move));
+                this.socketManager.sendToAll(new MoveMessage(move));
             }, this.MINIMUM_DELAY - elapsedTime);
             if (this.isGameEnded()) {
                 SaveManager.endGame(id, "ai");
@@ -225,13 +231,22 @@ export class ComputerGameManager extends GameManager {
             this.gameInterruptedReason = message.reason;
             SaveManager.endGame(id, "ai");
             // Reflect end game reason back to client
-            this.socketManager.sendToSocket(id, message);
+            //this.socketManager.sendToSocket(id, message);
+            this.socketManager.sendToAll(message);
         }
+    }
+
+    public getGameState(clientType: ClientType): object {
+        return {
+            ...super.getGameState(clientType),
+            AiDifficulty: this.difficulty,
+        };
     }
 }
 
 export class PuzzleGameManager extends GameManager {
     private moveNumber: number = 0;
+    MINIMUM_DELAY = 600;
 
     constructor(
         chess: ChessEngine,
@@ -253,31 +268,46 @@ export class PuzzleGameManager extends GameManager {
         return this.difficulty;
     }
 
-    public handleMessage(message: Message, id: string): void {
+    public handleMessage(message: Message): void {
         if (message instanceof MoveMessage) {
             //if the move is correct
             if (
                 this.moves[this.moveNumber].from === message.move.from &&
                 this.moves[this.moveNumber].to === message.move.to
             ) {
+                this.socketManager.sendToAll(new MoveMessage(message.move));
                 this.chess.makeMove(message.move);
                 this.moveNumber++;
-
                 //if there is another move, make it
                 if (this.moves[this.moveNumber]) {
                     this.chess.makeMove(this.moves[this.moveNumber]);
+                    
+                    /*
                     this.socketManager.sendToSocket(
                         id,
                         new MoveMessage(this.moves[this.moveNumber]),
-                    );
+                    );*/
+                    setTimeout(()=>{
+                        this.socketManager.sendToAll(
+                            new MoveMessage(this.moves[this.moveNumber]),
+                        );
+                        this.moveNumber++;
+                    },this.MINIMUM_DELAY)
+                    
                 }
-                this.moveNumber++;
+                else{
+                    this.moveNumber++;
+                }
             }
 
             //send an undo message
             else {
+                /*
                 this.socketManager.sendToSocket(
                     id,
+                    new SetChessMessage(this.chess.fen),
+                );*/
+                this.socketManager.sendToAll(
                     new SetChessMessage(this.chess.fen),
                 );
             }
@@ -286,10 +316,11 @@ export class PuzzleGameManager extends GameManager {
             if (this.isGameEnded()) {
                 const gameEnd = this.getGameEndReason();
                 if (gameEnd) {
-                    this.socketManager.sendToSocket(
+                    /*this.socketManager.sendToSocket(
                         id,
                         new GameEndMessage(gameEnd),
-                    );
+                    );*/
+                    this.socketManager.sendToAll(new GameEndMessage(gameEnd));
                 }
             }
         } else if (
@@ -297,7 +328,8 @@ export class PuzzleGameManager extends GameManager {
         ) {
             this.gameInterruptedReason = message.reason;
             // Reflect end game reason back to client
-            this.socketManager.sendToSocket(id, message);
+            //this.socketManager.sendToSocket(id, message);
+            this.socketManager.sendToAll(message);
         }
     }
 

@@ -50,9 +50,9 @@ export function Setup(): JSX.Element {
                     />
                 :   null}
                 {setupType === SetupType.PUZZLE ?
-                <SetupPuzzle />
-            :   null}
-        </SetupBase>
+                    <SetupPuzzle />
+                :   null}
+            </SetupBase>
         );
     } else {
         return <Navigate to="/lobby" />;

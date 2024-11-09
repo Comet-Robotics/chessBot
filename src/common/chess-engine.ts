@@ -169,6 +169,8 @@ export class ChessEngine {
      * @returns the move that was made.
      */
     makeMove(move: Move): Move {
+        //const yay = this.chess.history[this.chess.history.length-1];
+        //if(yay!==undefined && !(move.from === yay.from || move.to === yay.to))
         this.chess.move(move);
         return move;
     }
