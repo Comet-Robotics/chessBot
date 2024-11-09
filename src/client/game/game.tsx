@@ -2,6 +2,7 @@ import { Dispatch, useState } from "react";
 
 import {
     GameEndMessage,
+    GameFinishedMessage,
     GameHoldMessage,
     GameInterruptedMessage,
     SetChessMessage,
@@ -65,6 +66,7 @@ export function Game(): JSX.Element {
         useState<GameInterruptedReason>();
     const [gameEndedReason, setGameEndedReason] = useState<GameEndReason>();
     const [gameHoldReason, setGameHoldReason] = useState<GameHoldReason>();
+    const [rotation, setRotation] = useState<number>(0);
 
     const sendMessage = useSocket(
         getMessageHandler(
@@ -108,6 +110,7 @@ export function Game(): JSX.Element {
     if (gameEndedReason !== undefined) {
         gameEndReason = gameEndedReason;
     } else if (gameFinishedReason !== undefined) {
+        sendMessage(new GameFinishedMessage(gameFinishedReason));
         gameEndReason = gameFinishedReason;
     } else if (gameInterruptedReason !== undefined) {
         gameEndReason = gameInterruptedReason;
@@ -139,15 +142,20 @@ export function Game(): JSX.Element {
     return (
         <>
             <NavbarMenu
+               
                 sendMessage={sendMessage}
+               
                 side={side}
                 difficulty={data.difficulty}
+           
+                setRotation={setRotation}
             />
             <div id="body-container">
                 <ChessboardWrapper
                     side={side}
                     chess={chess}
                     onMove={handleMove}
+                    rotation={rotation ? rotation : 0}
                 />
                 {gameEndDialog}
                 {gameOfferDialog}

@@ -1,10 +1,11 @@
-import { Button, H3 } from "@blueprintjs/core";
+import { Button, H3, NonIdealState, Spinner } from "@blueprintjs/core";
 import { SetupBase } from "./setup-base";
 import { Dispatch, useState } from "react";
 import { SetupGame } from "./setup-game";
-import { useNavigate } from "react-router-dom";
-import { GameType } from "../../common/client-types";
+import { Navigate, useNavigate } from "react-router-dom";
+import { ClientType, GameType } from "../../common/client-types";
 import { SetupPuzzle } from "../puzzle/setup-puzzle";
+import { get, useEffectQuery } from "../api";
 
 enum SetupType {
     MAIN = "main",
@@ -15,26 +16,47 @@ enum SetupType {
 
 export function Setup(): JSX.Element {
     const [setupType, setSetupType] = useState(SetupType.MAIN);
+    const { isPending, data } = useEffectQuery("client-information", () =>
+        get("/client-information"),
+    );
 
-    return (
-        <SetupBase>
-            {setupType === SetupType.MAIN ?
-                <SetupMain onPageChange={setSetupType} />
-            :   null}
-            {setupType === SetupType.COMPUTER || setupType === SetupType.HUMAN ?
-                <SetupGame
-                    gameType={
-                        setupType === SetupType.COMPUTER ?
-                            GameType.COMPUTER
-                        :   GameType.HUMAN
-                    }
+    if (isPending) {
+        return (
+            <SetupBase>
+                <NonIdealState
+                    icon={<Spinner intent="primary" />}
+                    title="Loading..."
                 />
-            :   null}
-            {setupType === SetupType.PUZZLE ?
+            </SetupBase>
+        );
+    }
+
+    if (data.clientType === ClientType.HOST) {
+        return (
+            <SetupBase>
+                {setupType === SetupType.MAIN ?
+                    <SetupMain onPageChange={setSetupType} />
+                :   null}
+                {(
+                    setupType === SetupType.COMPUTER ||
+                    setupType === SetupType.HUMAN
+                ) ?
+                    <SetupGame
+                        gameType={
+                            setupType === SetupType.COMPUTER ?
+                                GameType.COMPUTER
+                            :   GameType.HUMAN
+                        }
+                    />
+                :   null}
+                {setupType === SetupType.PUZZLE ?
                 <SetupPuzzle />
             :   null}
         </SetupBase>
-    );
+        );
+    } else {
+        return <Navigate to="/lobby" />;
+    }
 }
 
 interface SetupMainProps {

@@ -5,6 +5,7 @@ import {
     GameInterruptedMessage,
     GameStartedMessage,
     GameHoldMessage,
+    GameFinishedMessage,
     GameEndMessage,
     SetChessMessage,
 } from "../../common/message/game-message";
@@ -54,8 +55,10 @@ export abstract class GameManager {
         let side: Side;
         if (clientType === ClientType.HOST) {
             side = this.reverse ? oppositeSide(this.hostSide) : this.hostSide;
-        } else {
+        } else if (clientType === ClientType.CLIENT) {
             side = this.reverse ? this.hostSide : oppositeSide(this.hostSide);
+        } else {
+            side = Side.SPECTATOR;
         }
         return {
             side,
@@ -81,6 +84,7 @@ export class HumanGameManager extends GameManager {
         super(chess, socketManager, hostSide, reverse);
         // Notify other client the game has started
         clientManager.sendToClient(new GameStartedMessage());
+        clientManager.sendToSpectators(new GameStartedMessage());
     }
 
     public handleMessage(message: Message, id: string): void {
@@ -102,6 +106,9 @@ export class HumanGameManager extends GameManager {
                 this.clientManager,
             );
         }
+        const sendToSpectators = this.clientManager.sendToSpectators.bind(
+            this.clientManager,
+        );
         const ids = this.clientManager.getIds();
         const currentSave = SaveManager.loadGame(id);
         if (message instanceof MoveMessage) {
@@ -126,11 +133,27 @@ export class HumanGameManager extends GameManager {
                 }
             }
             sendToOpponent(message);
+            sendToSpectators(message);
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             // propagate back to both sockets
             sendToPlayer(message);
             sendToOpponent(message);
+            sendToSpectators(message);
+            if (ids) {
+                if (currentSave?.host === ids[0])
+                    SaveManager.endGame(ids[0], ids[1]);
+                else SaveManager.endGame(ids[1], ids[0]);
+            }
+        } else if (message instanceof GameFinishedMessage) {
+            // propagate back to both sockets
+            //sendToPlayer(message);
+            //sendToOpponent(message);
+            if (ids) {
+                if (currentSave?.host === ids[0])
+                    SaveManager.endGame(ids[0], ids[1]);
+                else SaveManager.endGame(ids[1], ids[0]);
+            }
         } else if (message instanceof GameHoldMessage) {
             if (message.reason === GameHoldReason.DRAW_CONFIRMATION)
                 sendToPlayer(message);
@@ -139,14 +162,14 @@ export class HumanGameManager extends GameManager {
             } else {
                 sendToPlayer(message);
                 sendToOpponent(message);
+                sendToSpectators(message);
             }
+        } else if (this.isGameEnded()) {
             if (ids) {
                 if (currentSave?.host === ids[0])
                     SaveManager.endGame(ids[0], ids[1]);
                 else SaveManager.endGame(ids[1], ids[0]);
             }
-        } else if (this.isGameEnded()) {
-            if (ids) SaveManager.endGame(ids[0], ids[1]);
         }
     }
 }

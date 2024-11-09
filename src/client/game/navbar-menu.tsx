@@ -16,11 +16,13 @@ import {
 } from "../../common/game-end-reasons";
 import { SendMessage } from "../../common/message/message";
 import { Side } from "../../common/game-types";
+import { Dispatch } from "react";
 
 interface NavbarMenuProps {
     sendMessage: SendMessage;
     side: Side;
     difficulty?: number;
+    setRotation: Dispatch<React.SetStateAction<number>>; //set state type
 }
 
 export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
@@ -30,6 +32,22 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
         props.difficulty ?
             <Button minimal disabled text={"rating: " + props.difficulty} />
         :   null;
+
+    /** create navbar rotate button */
+    const rotateButton =
+        props.side === Side.SPECTATOR ?
+            <Button
+                minimal
+                text="Rotate"
+                intent="primary"
+                onClick={() => {
+                    props.setRotation((oldRotation) => {
+                        return oldRotation + 90;
+                    });
+                }}
+            />
+        :   "";
+
     return (
         <Navbar>
             <NavbarGroup>
@@ -45,7 +63,7 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                             new GameInterruptedMessage(
                                 props.side === Side.WHITE ?
                                     GameInterruptedReason.WHITE_RESIGNED
-                                :   GameInterruptedReason.BLACK_RESIGNED, // TODO change to either WHITE_RESIGNED or BLACK_RESIGNED
+                                :   GameInterruptedReason.BLACK_RESIGNED,
                             ),
                         );
                     }}
@@ -58,7 +76,7 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
                     onClick={async () => {
                         props.sendMessage(
                             new GameHoldMessage(
-                                GameHoldReason.DRAW_CONFIRMATION, // TODO change to either WHITE_RESIGNED or BLACK_RESIGNED
+                                GameHoldReason.DRAW_CONFIRMATION,
                             ),
                         );
                     }}
@@ -66,6 +84,8 @@ export function NavbarMenu(props: NavbarMenuProps): JSX.Element {
             </NavbarGroup>
             <NavbarGroup align="right">
                 {difficultyButton}
+                {rotateButton}
+                <h3>{props.side}</h3>
                 <Button icon="cog" minimal onClick={() => navigate("/debug")} />
             </NavbarGroup>
         </Navbar>

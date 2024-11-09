@@ -3,6 +3,7 @@ import { Router } from "express";
 
 import { parseMessage } from "../../common/message/parse-message";
 import {
+    GameFinishedMessage,
     GameEndMessage,
     GameHoldMessage,
     GameInterruptedMessage,
@@ -17,7 +18,7 @@ import {
 import { TCPServer } from "./tcp-interface";
 import { Difficulty } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
-import { clientManager, socketManager } from "./managers";
+import { clientManager, robotManager, socketManager } from "./managers";
 import {
     ComputerGameManager,
     GameManager,
@@ -26,11 +27,15 @@ import {
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
 import { Move, Side } from "../../common/game-types";
-import { IS_DEVELOPMENT } from "../utils/env";
+import { USE_VIRTUAL_ROBOTS } from "../utils/env";
 import { SaveManager } from "./save-manager";
 import { readFileSync } from "fs";
+import { VirtualBotTunnel, virtualRobots } from "../simulator";
+import { Position } from "../robot/position";
+import { DEGREE } from "../utils/units";
 
-export const tcpServer = new TCPServer();
+export const tcpServer: TCPServer | null =
+    USE_VIRTUAL_ROBOTS ? null : new TCPServer();
 
 export let gameManager: GameManager | null = null;
 
@@ -55,6 +60,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             message instanceof MoveMessage ||
             message instanceof SetChessMessage ||
             message instanceof GameHoldMessage ||
+            message instanceof GameFinishedMessage ||
             message instanceof GameEndMessage
         ) {
             // TODO: Handle game manager not existing
@@ -160,20 +166,12 @@ apiRouter.post("/start-puzzle-game", (req, res) => {
 });
 
 apiRouter.get("/get-ids", (_, res) => {
-    const ids = tcpServer.getConnectedIds();
-    if (IS_DEVELOPMENT) {
-        ids.push("dummy-id-1", "dummy-id-2");
-    }
+    const ids = Array.from(robotManager.idsToRobots.keys());
     return res.send({ ids });
 });
 
-export interface PuzzleComponents {
-    fen: string;
-    moves: Move[];
-    rating: number;
-}
 /**
- * Returns a list of available puzzles to play from puzzles.json.
+ * Returns a list of available puzzles to play.
  */
 apiRouter.get("/get-puzzles", (_, res) => {
     const puzzles: Map<string, PuzzleComponents> = JSON.parse(
@@ -184,6 +182,10 @@ apiRouter.get("/get-puzzles", (_, res) => {
 });
 
 function doDriveRobot(message: DriveRobotMessage): boolean {
+    if (!tcpServer) {
+        console.warn("Attempted to drive robot without TCP server.");
+        return false;
+    }
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(
             "attempted manual move for non-existent robot ID " + message.id,
@@ -208,6 +210,10 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
 }
 
 function doSetRobotVariable(message: SetRobotVariableMessage): boolean {
+    if (!tcpServer) {
+        console.warn("Attempted to set robot variable without TCP server.");
+        return false;
+    }
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(
             "Attempted set variable for non-existent robot ID " + message.id,
