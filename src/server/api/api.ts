@@ -170,8 +170,49 @@ apiRouter.get("/get-ids", (_, res) => {
     return res.send({ ids });
 });
 
+apiRouter.get("/do-smth", async (_, res) => {
+    const robotsEntries = Array.from(virtualRobots.entries());
+    const [, robot] =
+        robotsEntries[Math.floor(Math.random() * robotsEntries.length)];
+    await robot.sendDrivePacket(1);
+    await robot.sendTurnPacket(45 * DEGREE);
+
+    res.send({ message: "success" });
+});
+
+apiRouter.get("/get-simulator-robot-state", (_, res) => {
+    if (!USE_VIRTUAL_ROBOTS) {
+        return res.status(400).send({ message: "Simulator is not enabled." });
+    }
+    const robotsEntries = Array.from(virtualRobots.entries());
+
+    const robotState = Object.fromEntries(
+        robotsEntries.map(([id, robot]) => {
+            let headingRadians = robot.headingRadians;
+            let position = new Position(robot.position.x, robot.position.y);
+
+            const tunnel = robot.getTunnel();
+            if (tunnel instanceof VirtualBotTunnel) {
+                position = tunnel.position;
+                headingRadians = tunnel.headingRadians;
+            }
+            return [id, { position, headingRadians: headingRadians }];
+        }),
+    );
+    return res.send({
+        robotState,
+        messages: Array.from(VirtualBotTunnel.messages),
+    });
+});
+
+export interface PuzzleComponents {
+    fen: string;
+    moves: Move[];
+    rating: number;
+}
+
 /**
- * Returns a list of available puzzles to play.
+ * Returns a list of available puzzles to play from puzzles.json.
  */
 apiRouter.get("/get-puzzles", (_, res) => {
     const puzzles: Map<string, PuzzleComponents> = JSON.parse(
