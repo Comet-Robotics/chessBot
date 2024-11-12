@@ -281,21 +281,19 @@ export class PuzzleGameManager extends GameManager {
                 //if there is another move, make it
                 if (this.moves[this.moveNumber]) {
                     this.chess.makeMove(this.moves[this.moveNumber]);
-                    
+
                     /*
                     this.socketManager.sendToSocket(
                         id,
                         new MoveMessage(this.moves[this.moveNumber]),
                     );*/
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         this.socketManager.sendToAll(
                             new MoveMessage(this.moves[this.moveNumber]),
                         );
                         this.moveNumber++;
-                    },this.MINIMUM_DELAY)
-                    
-                }
-                else{
+                    }, this.MINIMUM_DELAY);
+                } else {
                     this.moveNumber++;
                 }
             }
