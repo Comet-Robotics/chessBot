@@ -4,6 +4,7 @@ import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { PropsWithChildren, ReactNode } from "react";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
+import { Sidebar } from "./queue";
 
 interface SetupBaseProps extends PropsWithChildren {
     actions?: ReactNode;
@@ -12,6 +13,8 @@ interface SetupBaseProps extends PropsWithChildren {
 export function SetupBase(props: SetupBaseProps): JSX.Element {
     return (
         <>
+        <Sidebar />
+        <div className="main-dialog">
             <Outlet />
             <ChessboardWrapper
                 chess={new ChessEngine()}
@@ -23,10 +26,12 @@ export function SetupBase(props: SetupBaseProps): JSX.Element {
                 isOpen
                 canEscapeKeyClose={false}
                 canOutsideClickClose={false}
+                usePortal={false}
             >
                 <DialogBody>{props.children}</DialogBody>
                 <DialogFooter minimal actions={props.actions} />
             </Dialog>
+            </div>
         </>
     );
 }

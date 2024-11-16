@@ -6,7 +6,9 @@ import {
     GameFinishedMessage,
     GameHoldMessage,
     GameInterruptedMessage,
+    JoinQueue,
     MoveMessage,
+    UpdateQueue,
 } from "../../common/message/game-message";
 import {
     DriveRobotMessage,
@@ -29,12 +31,15 @@ import { SaveManager } from "./save-manager";
 import { VirtualBotTunnel, virtualRobots } from "../simulator";
 import { Position } from "../robot/position";
 import { DEGREE } from "../utils/units";
+import { PriorityQueue } from "./queue";
 
 export const tcpServer: TCPServer | null =
     USE_VIRTUAL_ROBOTS ? null : new TCPServer();
 
 export let gameManager: GameManager | null = null;
 
+const queue = new PriorityQueue<string>();
+const names = new Map<string, string>();
 /**
  * An endpoint used to establish a websocket connection with the server.
  *
@@ -42,7 +47,10 @@ export let gameManager: GameManager | null = null;
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     ws.on("close", () => {
+        queue.popInd(queue.find(req.cookies.id));
+        names.delete(req.cookies.id);
         socketManager.handleSocketClosed(req.cookies.id);
+        socketManager.sendToAll(new UpdateQueue([...names.values()]));
     });
 
     ws.on("message", (data) => {
@@ -63,11 +71,25 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             doDriveRobot(message);
         } else if (message instanceof SetRobotVariableMessage) {
             doSetRobotVariable(message);
+        } else if (message instanceof JoinQueue) {
+            const previous = queue.find(req.cookies.id);
+            names.set(req.cookies.id, message.queue);
+            previous ? queue : queue.insert(req.cookies.id, 0);
+            socketManager.sendToAll(new UpdateQueue([...names.values()]));
         }
     });
 };
 
 export const apiRouter = Router();
+
+apiRouter.get("/get-queue", (req, res) => {
+    req;
+    if(names)
+        return res.send([...names.values()]);
+    else{
+        return res.send([]);
+    }
+});
 
 apiRouter.get("/client-information", (req, res) => {
     const clientType = clientManager.getClientType(req.cookies.id);

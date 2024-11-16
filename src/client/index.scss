@@ -27,3 +27,23 @@
     position: absolute;
     // border: 3px solid blue;
 }
+
+.sidebar {
+    //w3 schools for the win
+    width: 20%;
+    height: 100%;
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #fff; /* Black */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+}
+
+.main-dialog{
+    margin-left: 20%;
+    position: fixed;
+    width: 80%;
+    height: 100%;
+}

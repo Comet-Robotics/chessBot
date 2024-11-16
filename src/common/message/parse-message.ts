@@ -7,6 +7,8 @@ import {
     GameStartedMessage,
     GameHoldMessage,
     GameFinishedMessage,
+    JoinQueue,
+    UpdateQueue,
 } from "./game-message";
 import { SimulatorUpdateMessage } from "./simulator-message";
 
@@ -34,6 +36,10 @@ export function parseMessage(text: string): Message {
             return new PositionMessage(obj.pgn);
         case MessageType.MOVE:
             return new MoveMessage(obj.move);
+        case MessageType.JOIN_QUEUE:
+            return new JoinQueue(obj.queue);
+        case MessageType.UPDATE_QUEUE:
+            return new UpdateQueue(obj.queue);
         case MessageType.DRIVE_ROBOT:
             return new DriveRobotMessage(
                 obj.id,
