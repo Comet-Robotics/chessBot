@@ -15,7 +15,7 @@ import {
 import { TCPServer } from "./tcp-interface";
 import { Difficulty } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
-import { clientManager, socketManager } from "./managers";
+import { clientManager, robotManager, socketManager } from "./managers";
 import {
     ComputerGameManager,
     GameManager,
@@ -23,10 +23,19 @@ import {
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
-import { IS_DEVELOPMENT } from "../utils/env";
+import { USE_VIRTUAL_ROBOTS } from "../utils/env";
 import { SaveManager } from "./save-manager";
+import { VirtualBotTunnel, virtualRobots } from "../simulator";
+import { Position } from "../robot/position";
+import { DEGREE } from "../utils/units";
+import config from "./bot-server-config.json"
+import { Robot } from "../robot/robot";
+for (const mac in config["bots"]){
+    robotManager.addRobot(new Robot(mac))
+}
 
-export const tcpServer = new TCPServer();
+export const tcpServer: TCPServer | null =
+    USE_VIRTUAL_ROBOTS ? null : new TCPServer();
 
 export let gameManager: GameManager | null = null;
 
@@ -137,11 +146,43 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.get("/get-ids", (_, res) => {
-    const ids = tcpServer.getConnectedIds();
-    if (IS_DEVELOPMENT) {
-        ids.push("dummy-id-1", "dummy-id-2");
-    }
+    const ids = Array.from(robotManager.idsToRobots.keys());
     return res.send({ ids });
+});
+
+apiRouter.get("/do-smth", async (_, res) => {
+    const robotsEntries = Array.from(virtualRobots.entries());
+    const [, robot] =
+        robotsEntries[Math.floor(Math.random() * robotsEntries.length)];
+    await robot.sendDrivePacket(1);
+    await robot.sendTurnPacket(45 * DEGREE);
+
+    res.send({ message: "success" });
+});
+
+apiRouter.get("/get-simulator-robot-state", (_, res) => {
+    if (!USE_VIRTUAL_ROBOTS) {
+        return res.status(400).send({ message: "Simulator is not enabled." });
+    }
+    const robotsEntries = Array.from(virtualRobots.entries());
+
+    const robotState = Object.fromEntries(
+        robotsEntries.map(([id, robot]) => {
+            let headingRadians = robot.headingRadians;
+            let position = new Position(robot.position.x, robot.position.y);
+
+            const tunnel = robot.getTunnel();
+            if (tunnel instanceof VirtualBotTunnel) {
+                position = tunnel.position;
+                headingRadians = tunnel.headingRadians;
+            }
+            return [id, { position, headingRadians: headingRadians }];
+        }),
+    );
+    return res.send({
+        robotState,
+        messages: Array.from(VirtualBotTunnel.messages),
+    });
 });
 
 /**
@@ -165,6 +206,10 @@ apiRouter.get("/get-puzzles", (_, res) => {
 });
 
 function doDriveRobot(message: DriveRobotMessage): boolean {
+    if (!tcpServer) {
+        console.warn("Attempted to drive robot without TCP server.");
+        return false;
+    }
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(
             "attempted manual move for non-existent robot ID " + message.id,
@@ -189,6 +234,10 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
 }
 
 function doSetRobotVariable(message: SetRobotVariableMessage): boolean {
+    if (!tcpServer) {
+        console.warn("Attempted to set robot variable without TCP server.");
+        return false;
+    }
     if (!tcpServer.getConnectedIds().includes(message.id)) {
         console.warn(
             "Attempted set variable for non-existent robot ID " + message.id,

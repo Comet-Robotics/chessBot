@@ -8,385 +8,417 @@
     "robot-1": {
         "attributes": {},
         "homePosition": {
-            "x": "2",
-            "y": "0"
+            "x": 2,
+            "y": 0
         },
         "defaultPosition": {
-            "x": "2",
-            "y": "2"
-        }
+            "x": 2,
+            "y": 2
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-2": {
         "attributes": {},
         "homePosition": {
-            "x": "3",
-            "y": "0"
+            "x": 3,
+            "y": 0
         },
         "defaultPosition": {
-            "x": "3",
-            "y": "2"
-        }
+            "x": 3,
+            "y": 2
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-3": {
         "attributes": {},
         "homePosition": {
-            "x": "4",
-            "y": "0"
+            "x": 4,
+            "y": 0
         },
         "defaultPosition": {
-            "x": "4",
-            "y": "2"
-        }
+            "x": 4,
+            "y": 2
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-4": {
         "attributes": {},
         "homePosition": {
-            "x": "5",
-            "y": "0"
+            "x": 5,
+            "y": 0
         },
         "defaultPosition": {
-            "x": "5",
-            "y": "2"
-        }
+            "x": 5,
+            "y": 2
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-5": {
         "attributes": {},
         "homePosition": {
-            "x": "6",
-            "y": "0"
+            "x": 6,
+            "y": 0
         },
         "defaultPosition": {
-            "x": "6",
-            "y": "2"
-        }
+            "x": 6,
+            "y": 2
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-6": {
         "attributes": {},
         "homePosition": {
-            "x": "7",
-            "y": "0"
+            "x": 7,
+            "y": 0
         },
         "defaultPosition": {
-            "x": "7",
-            "y": "2"
-        }
+            "x": 7,
+            "y": 2
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-7": {
         "attributes": {},
         "homePosition": {
-            "x": "8",
-            "y": "0"
+            "x": 8,
+            "y": 0
         },
         "defaultPosition": {
-            "x": "8",
-            "y": "2"
-        }
+            "x": 8,
+            "y": 2
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-8": {
         "attributes": {},
         "homePosition": {
-            "x": "9",
-            "y": "0"
+            "x": 9,
+            "y": 0
         },
         "defaultPosition": {
-            "x": "9",
-            "y": "2"
-        }
+            "x": 9,
+            "y": 2
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-9": {
         "attributes": {},
         "homePosition": {
-            "x": "0",
-            "y": "2"
+            "x": 0,
+            "y": 2
         },
         "defaultPosition": {
-            "x": "2",
-            "y": "3"
-        }
+            "x": 2,
+            "y": 3
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-10": {
         "attributes": {},
         "homePosition": {
-            "x": "0",
-            "y": "3"
+            "x": 0,
+            "y": 3
         },
         "defaultPosition": {
-            "x": "3",
-            "y": "3"
-        }
+            "x": 3,
+            "y": 3
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-11": {
         "attributes": {},
         "homePosition": {
-            "x": "0",
-            "y": "4"
+            "x": 0,
+            "y": 4
         },
         "defaultPosition": {
-            "x": "4",
-            "y": "3"
-        }
+            "x": 4,
+            "y": 3
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-12": {
         "attributes": {},
         "homePosition": {
-            "x": "0",
-            "y": "5"
+            "x": 0,
+            "y": 5
         },
         "defaultPosition": {
-            "x": "5",
-            "y": "3"
-        }
+            "x": 5,
+            "y": 3
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-13": {
         "attributes": {},
         "homePosition": {
-            "x": "11",
-            "y": "5"
+            "x": 11,
+            "y": 5
         },
         "defaultPosition": {
-            "x": "6",
-            "y": "3"
-        }
+            "x": 6,
+            "y": 3
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-14": {
         "attributes": {},
         "homePosition": {
-            "x": "11",
-            "y": "4"
+            "x": 11,
+            "y": 4
         },
         "defaultPosition": {
-            "x": "7",
-            "y": "3"
-        }
+            "x": 7,
+            "y": 3
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-15": {
         "attributes": { "leftMotorK": "0" },
         "homePosition": {
-            "x": "11",
-            "y": "3"
+            "x": 11,
+            "y": 3
         },
         "defaultPosition": {
-            "x": "8",
-            "y": "3"
-        }
+            "x": 8,
+            "y": 3
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-16": {
         "attributes": {},
         "homePosition": {
-            "x": "11",
-            "y": "2"
+            "x": 11,
+            "y": 2
         },
         "defaultPosition": {
-            "x": "9",
-            "y": "3"
-        }
+            "x": 9,
+            "y": 3
+        },
+        "startHeadingRadians":1.570
     },
 
     "robot-17": {
         "attributes": {},
         "homePosition": {
-            "x": "0",
-            "y": "9"
+            "x": 0,
+            "y": 9
         },
         "defaultPosition": {
-            "x": "2",
-            "y": "8"
-        }
+            "x": 2,
+            "y": 8
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-18": {
         "attributes": {},
         "homePosition": {
-            "x": "0",
-            "y": "8"
+            "x": 0,
+            "y": 8
         },
         "defaultPosition": {
-            "x": "3",
-            "y": "8"
-        }
+            "x": 3,
+            "y": 8
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-19": {
         "attributes": {},
         "homePosition": {
-            "x": "0",
-            "y": "7"
+            "x": 0,
+            "y": 7
         },
         "defaultPosition": {
-            "x": "4",
-            "y": "8"
-        }
+            "x": 4,
+            "y": 8
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-20": {
         "attributes": {},
         "homePosition": {
-            "x": "0",
-            "y": "6"
+            "x": 0,
+            "y": 6
         },
         "defaultPosition": {
-            "x": "5",
-            "y": "8"
-        }
+            "x": 5,
+            "y": 8
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-21": {
         "attributes": {},
         "homePosition": {
-            "x": "11",
-            "y": "6"
+            "x": 11,
+            "y": 6
         },
         "defaultPosition": {
-            "x": "6",
-            "y": "8"
-        }
+            "x": 6,
+            "y": 8
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-22": {
         "attributes": {},
         "homePosition": {
-            "x": "11",
-            "y": "7"
+            "x": 11,
+            "y": 7
         },
         "defaultPosition": {
-            "x": "7",
-            "y": "8"
-        }
+            "x": 7,
+            "y": 8
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-23": {
         "attributes": {},
         "homePosition": {
-            "x": "11",
-            "y": "8"
+            "x": 11,
+            "y": 8
         },
         "defaultPosition": {
-            "x": "8",
-            "y": "8"
-        }
+            "x": 8,
+            "y": 8
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-24": {
         "attributes": {},
         "homePosition": {
-            "x": "11",
-            "y": "9"
+            "x": 11,
+            "y": 9
         },
         "defaultPosition": {
-            "x": "9",
-            "y": "8"
-        }
+            "x": 9,
+            "y": 8
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-25": {
         "attributes": {},
         "homePosition": {
-            "x": "2",
-            "y": "11"
+            "x": 2,
+            "y": 1
         },
         "defaultPosition": {
-            "x": "2",
-            "y": "9"
-        }
+            "x": 2,
+            "y": 9
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-26": {
         "attributes": {},
         "homePosition": {
-            "x": "3",
-            "y": "11"
+            "x": 3,
+            "y": 1
         },
         "defaultPosition": {
-            "x": "3",
-            "y": "9"
-        }
+            "x": 3,
+            "y": 9
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-27": {
         "attributes": {},
         "homePosition": {
-            "x": "4",
-            "y": "11"
+            "x": 4,
+            "y": 1
         },
         "defaultPosition": {
-            "x": "4",
-            "y": "9"
-        }
+            "x": 4,
+            "y": 9
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-28": {
         "attributes": {},
         "homePosition": {
-            "x": "5",
-            "y": "11"
+            "x": 5,
+            "y": 1
         },
         "defaultPosition": {
-            "x": "5",
-            "y": "9"
-        }
+            "x": 5,
+            "y": 9
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-29": {
         "attributes": {},
         "homePosition": {
-            "x": "6",
-            "y": "11"
+            "x": 6,
+            "y": 1
         },
         "defaultPosition": {
-            "x": "6",
-            "y": "9"
-        }
+            "x": 6,
+            "y": 9
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-30": {
         "attributes": {},
         "homePosition": {
-            "x": "7",
-            "y": "11"
+            "x": 7,
+            "y": 1
         },
         "defaultPosition": {
-            "x": "7",
-            "y": "9"
-        }
+            "x": 7,
+            "y": 9
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-31": {
         "attributes": {},
         "homePosition": {
-            "x": "8",
-            "y": "11"
+            "x": 8,
+            "y": 1
         },
         "defaultPosition": {
-            "x": "8",
-            "y": "9"
-        }
+            "x": 8,
+            "y": 9
+        },
+        "startHeadingRadians":4.712
     },
 
     "robot-32": {
         "attributes": {},
         "homePosition": {
-            "x": "9",
-            "y": "11"
+            "x": 9,
+            "y": 1
         },
         "defaultPosition": {
-            "x": "9",
-            "y": "9"
-        }
+            "x": 9,
+            "y": 9
+        },
+        "startHeadingRadians":4.712
     },
     "botConfigSchema": [
         {
