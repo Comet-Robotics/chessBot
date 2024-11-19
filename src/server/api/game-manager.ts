@@ -18,6 +18,7 @@ import {
 import { SaveManager } from "./save-manager";
 import { materializePath } from "../robot/path-materializer";
 import { executor } from "./api";
+import { DO_SAVES } from "../utils/env";
 
 export abstract class GameManager {
     protected gameInterruptedReason: GameInterruptedReason | undefined =
@@ -114,7 +115,7 @@ export class HumanGameManager extends GameManager {
             await executor.execute(command);
             console.log("executor done");
 
-            if (ids) {
+            if (ids && DO_SAVES) {
                 if (currentSave?.host === ids[0]) {
                     SaveManager.saveGame(
                         ids[0],
@@ -181,13 +182,15 @@ export class ComputerGameManager extends GameManager {
     public async handleMessage(message: Message, id: string): Promise<void> {
         if (message instanceof MoveMessage) {
             this.chess.makeMove(message.move);
-            SaveManager.saveGame(
-                id,
-                "ai",
-                this.hostSide,
-                this.difficulty,
-                this.chess.pgn,
-            );
+            if (DO_SAVES) {
+                SaveManager.saveGame(
+                    id,
+                    "ai",
+                    this.hostSide,
+                    this.difficulty,
+                    this.chess.pgn,
+                );
+            }
 
             if (this.chess.isGameFinished()) {
                 // Game is naturally finished; we're done
