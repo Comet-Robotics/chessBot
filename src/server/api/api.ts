@@ -82,11 +82,13 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
 
 export const apiRouter = Router();
 
+/**
+ * gets the current stored queue
+ */
 apiRouter.get("/get-queue", (req, res) => {
     req;
-    if(names)
-        return res.send([...names.values()]);
-    else{
+    if (names) return res.send([...names.values()]);
+    else {
         return res.send([]);
     }
 });

@@ -13,25 +13,25 @@ interface SetupBaseProps extends PropsWithChildren {
 export function SetupBase(props: SetupBaseProps): JSX.Element {
     return (
         <>
-        <Sidebar />
-        <div className="main-dialog">
-            <Outlet />
-            <ChessboardWrapper
-                chess={new ChessEngine()}
-                side={Side.WHITE}
-                onMove={() => {}}
-                rotation={0}
-            />
-            <Dialog
-                isOpen
-                canEscapeKeyClose={false}
-                canOutsideClickClose={false}
-                usePortal={false}
-            >
-                <DialogBody>{props.children}</DialogBody>
-                <DialogFooter minimal actions={props.actions} />
-            </Dialog>
+            <div className="main-dialog">
+                <Outlet />
+                <ChessboardWrapper
+                    chess={new ChessEngine()}
+                    side={Side.WHITE}
+                    onMove={() => {}}
+                    rotation={0}
+                />
+                <Dialog
+                    isOpen
+                    canEscapeKeyClose={false}
+                    canOutsideClickClose={false}
+                    usePortal={false}
+                >
+                    <DialogBody>{props.children}</DialogBody>
+                    <DialogFooter minimal actions={props.actions} />
+                </Dialog>
             </div>
+            <Sidebar />
         </>
     );
 }

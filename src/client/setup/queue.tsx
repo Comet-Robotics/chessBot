@@ -14,6 +14,10 @@ function getMessageHandler(setQueue: Dispatch<string[]>): MessageHandler {
     };
 }
 
+/**
+ * Creates a sidebar to hold the queue elements
+ * @returns sidebar container
+ */
 export function Sidebar(): JSX.Element {
     const [queue, setQueue] = useState<string[]>([]);
 
@@ -25,11 +29,11 @@ export function Sidebar(): JSX.Element {
             return get("/get-queue").then((newQueue) => {
                 setQueue(newQueue);
                 return newQueue;
-
             });
         },
         true,
     );
+    //ts wanted me to do something with my data
     data;
     if (isPending) {
         return (
@@ -38,14 +42,16 @@ export function Sidebar(): JSX.Element {
                 title="Loading..."
             />
         );
-    } 
-    if(isError){
+    }
+    if (isError) {
         console.log(isError);
     }
 
     return (
         <div className="sidebar">
-            <h3 style={{ textAlign: "center" }}>Player Queue</h3>
+            <h3 style={{ paddingTop: "20px", textAlign: "center" }}>
+                Player Queue
+            </h3>
             <ul style={{ listStyle: "decimal" }}>
                 {queue.map(function (data) {
                     return <li key={data}>{data}</li>;

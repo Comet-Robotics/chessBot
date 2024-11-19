@@ -55,11 +55,11 @@ export enum MessageType {
     /**
      * A message for a client to join the game queue
      */
-    JOIN_QUEUE = 'join-queue',
+    JOIN_QUEUE = "join-queue",
     /**
      * A message for the server to update queues
      */
-    UPDATE_QUEUE = 'update-queue',
+    UPDATE_QUEUE = "update-queue",
 }
 
 export abstract class Message {
