@@ -74,10 +74,10 @@ function calcCollisionType(gridMove: GridMove): number {
     const to = gridMove.to;
 
     // Horizontal
-    if (from.i === to.i) {
+    if (from.j === to.j) {
         return 0;
         // Vertical
-    } else if (from.j === to.j) {
+    } else if (from.i === to.i) {
         return 1;
     } else {
         // Diagonal
@@ -98,7 +98,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
         // Horizontal
         case 0: {
             if (to.i < from.i) {
-                for (let i = from.i; i > to.i; i--) {
+                for (let i = from.i-1; i >= to.i; i--) {
                     const square = new GridIndices(i, from.j);
                     if (robotManager.isRobotAtIndices(square)) {
                         const piece: string =
@@ -107,7 +107,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
                     }
                 }
             } else {
-                for (let i = from.i; i < to.i; i++) {
+                for (let i = from.i+1; i <= to.i; i++) {
                     const square = new GridIndices(i, from.j);
                     if (robotManager.isRobotAtIndices(square)) {
                         const piece: string =
@@ -121,7 +121,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
         // Vertical
         case 1: {
             if (to.j < from.j) {
-                for (let j = from.j; j > to.j; j--) {
+                for (let j = from.j-1; j >= to.j; j--) {
                     const square = new GridIndices(from.i, j);
                     if (robotManager.isRobotAtIndices(square)) {
                         const piece: string =
@@ -130,7 +130,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
                     }
                 }
             } else {
-                for (let j = from.j; j < to.j; j++) {
+                for (let j = from.j+1; j <= to.j; j++) {
                     const square = new GridIndices(from.i, j);
                     if (robotManager.isRobotAtIndices(square)) {
                         const piece: string =
@@ -362,7 +362,7 @@ function moveMainPiece(move: GridMove): MovePiece {
 function moveToDeadZone(origin: GridIndices): GridMove {
     const aboveMove = {
         from: origin,
-        to: new GridIndices(origin.i, 9), //(origin[0] + "8" as unknown as GridIndices),
+        to: new GridIndices(origin.i, 10), //(origin[0] + "8" as unknown as GridIndices),
     };
     const belowMove = {
         from: origin,
@@ -370,7 +370,7 @@ function moveToDeadZone(origin: GridIndices): GridMove {
     };
     const rightMove = {
         from: origin,
-        to: new GridIndices(9, origin.j), //("h" + origin[1]) as Square,
+        to: new GridIndices(10, origin.j), //("h" + origin[1]) as Square,
     };
     const leftMove = {
         from: origin,
