@@ -172,7 +172,7 @@ export function Simulator() {
                         className="log-list"
                     >
                         {messageLog.map(({ message, ts }) => {
-                            return <LogEntry message={message} ts={ts} />;
+                            return <LogEntry key={ts.getMilliseconds()} message={message} ts={ts} />;
                         })}
                     </div>
                 </div>
