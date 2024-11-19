@@ -348,7 +348,6 @@ function moveMainPiece(move: GridMove): MovePiece {
 /**
  * Te easiest move to get to the dead zone
  */
-//TODO: Change the move to Grid that way we can move off the board.
 function moveToDeadZone(origin: GridIndices): GridMove {
     const aboveMove = {
         from: origin,
@@ -417,7 +416,7 @@ function findGridIndicesInArray(
     array: GridIndices[],
     obj: GridIndices,
 ): number {
-    return array.findIndex((o) => o.i == obj.i && o.j == obj.j);
+    return array.findIndex((o) => o.i === obj.i && o.j === obj.j);
 }
 
 function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
