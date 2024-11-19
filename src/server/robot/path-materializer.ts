@@ -362,19 +362,19 @@ function moveMainPiece(move: GridMove): MovePiece {
 function moveToDeadZone(origin: GridIndices): GridMove {
     const aboveMove = {
         from: origin,
-        to: new GridIndices(origin[0], 9), //(origin[0] + "8" as unknown as GridIndices),
+        to: new GridIndices(origin.i, 9), //(origin[0] + "8" as unknown as GridIndices),
     };
     const belowMove = {
         from: origin,
-        to: new GridIndices(origin[0], 1), //(origin[0] + "1") as Square,
+        to: new GridIndices(origin.i, 1), //(origin[0] + "1") as Square,
     };
     const rightMove = {
         from: origin,
-        to: new GridIndices(9, origin[1]), //("h" + origin[1]) as Square,
+        to: new GridIndices(9, origin.j), //("h" + origin[1]) as Square,
     };
     const leftMove = {
         from: origin,
-        to: new GridIndices(1, origin[1]), //("a" + origin[1]) as Square,
+        to: new GridIndices(1, origin.j), //("a" + origin[1]) as Square,
     };
 
     const aboveCollision = detectCollisions(

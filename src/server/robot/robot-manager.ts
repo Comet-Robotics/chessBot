@@ -50,7 +50,7 @@ export class RobotManager {
     getRobotAtIndices(indices: GridIndices): Robot {
         const robotId = this.indicesToIds.get(JSON.stringify(indices));
         if (robotId === undefined) {
-            throw new Error("Failed to find robot at position " + indices);
+            throw new Error("Failed to find robot at indices " + indices);
         }
         return this.getRobot(robotId);
     }

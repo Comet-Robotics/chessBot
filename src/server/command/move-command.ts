@@ -112,7 +112,7 @@ export class DriveCommand
         );
         robotManager.updateRobot(
             this.robotId,
-            new GridIndices(Math.floor(newPositionX), Math.floor(newPositionY)),
+            new GridIndices(Math.floor(robot.position.x), Math.floor(robot.position.y)),
         );
         return robot.sendDrivePacket(this.tileDistance);
     }
@@ -147,6 +147,11 @@ export class RelativeMoveCommand
 {
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
+        robot.position = this.position.add(this.position);
+        robotManager.updateRobot(
+            this.robotId,
+            new GridIndices(Math.floor(robot.position.x), Math.floor(robot.position.y)),
+        );
         return robot.relativeMove(this.position);
     }
 

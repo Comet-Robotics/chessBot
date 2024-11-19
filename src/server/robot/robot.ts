@@ -80,7 +80,6 @@ export class Robot {
         const promise = this.absoluteRotate(angle).then(() => {
             return this.sendDrivePacket(distance);
         });
-        this.position = this.position.add(deltaPosition);
         console.log(this.position);
         return promise;
     }
