@@ -10,7 +10,7 @@ import {
     AbsoluteMoveCommand,
     DriveCommand,
     MoveCommand,
-    RelativeRotateCommand,
+    ReversibleAbsoluteRotateCommand,
 } from "../command/move-command";
 import { MovePiece, ReversibleRobotCommand } from "../command/move-piece";
 import { Position } from "./position";
@@ -308,20 +308,21 @@ function constructDriveCommand(
 function constructRotateCommand(
     pieceId: string,
     location: Position,
-): RelativeRotateCommand {
+): ReversibleRobotCommand {
     const robot = robotManager.getRobot(pieceId);
     const offset = location.sub(robot.position);
-    const angle = Math.atan2(-offset.x, offset.y);
-    return new RelativeRotateCommand(pieceId, angle);
+    const angle = Math.atan2(offset.y, offset.x);
+    console.log("rotate cmd construct", robot.position, offset, angle);
+    return new ReversibleAbsoluteRotateCommand(pieceId, () => angle);
 }
 
 function constructFinalCommand(
     move: GridMove,
     driveCommands: DriveCommand[],
-    rotateCommands: RelativeRotateCommand[],
+    rotateCommands: ReversibleRobotCommand[],
 ): MovePiece {
     const from = move.from;
-    console.log(from, robotManager.indicesToIds);
+    // console.log(from, robotManager.indicesToIds);
     const mainPiece = robotManager.getRobotAtIndices(from).id;
 
     if (mainPiece !== undefined) {
@@ -343,7 +344,7 @@ function constructFinalCommand(
 // If there are pieces in the way, it shimmy's them out, and move them back after main piece passes
 function moveMainPiece(move: GridMove): MovePiece {
     const driveCommands: DriveCommand[] = [];
-    const rotateCommands: RelativeRotateCommand[] = [];
+    const rotateCommands: ReversibleRobotCommand[] = [];
     const collisionType = calcCollisionType(move);
     const collisions: string[] = detectCollisions(move, collisionType);
     for (let i = 0; i < collisions.length; i++) {
@@ -423,6 +424,10 @@ function directionToEdge(position: GridIndices) {
     return DirectionTuple;
 }
 
+function findGridIndicesInArray(array: GridIndices[], obj: GridIndices): number {
+    return array.findIndex((o) => o.i == obj.i && o.j == obj.j);
+}
+
 function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
     //const capturedPiece: GridIndices = GridIndices.squareToGrid(from);
     const home: GridIndices = robotManager.getRobot(id).homeIndices;
@@ -442,13 +447,14 @@ function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
     for (const direction of checkDirections) {
         if (arrayOfDeadzone.find((dz) => dz.equals(home.addTuple(direction)))) {
             finalDestination = home.addTuple(direction);
+            break;
         }
     }
     if (!finalDestination) {
         throw new error("WHERE THE HELL ARE YOU GOING");
     }
-    const startInArray = arrayOfDeadzone.indexOf(startInDeadzone);
-    const endInArray = arrayOfDeadzone.indexOf(finalDestination);
+    const startInArray = findGridIndicesInArray(arrayOfDeadzone, startInDeadzone);
+    const endInArray = findGridIndicesInArray(arrayOfDeadzone, finalDestination);
     let differenceOfIndex = endInArray - startInArray;
 
     if (differenceOfIndex < 0) {
@@ -456,6 +462,7 @@ function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
     }
 
     const botDirectionToHome = differenceOfIndex < 18 ? 1 : -1;
+    console.log("deadzone array checker", startInArray, endInArray, botDirectionToHome);
 
     let i = startInArray;
     const moveCommands: MoveCommand[] = [];

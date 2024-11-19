@@ -30,7 +30,7 @@ export function oppositeSide(side: Side) {
 }
 
 export function getStartHeading(side: Side) {
-    return side === Side.WHITE ? 90 * DEGREE : 90 * DEGREE;
+    return side === Side.WHITE ? 90 * DEGREE : 270 * DEGREE;
 }
 export class Piece {
     constructor(
