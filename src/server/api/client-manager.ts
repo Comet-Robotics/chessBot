@@ -60,7 +60,7 @@ export class ClientManager {
         }
     }
 
-    public getIds(): undefined | string[] {
+    public getIds(): undefined | [string, string] {
         if (this.hostId && this.clientId) {
             return [this.hostId, this.clientId];
         } else {

@@ -150,8 +150,9 @@ apiRouter.get("/get-ids", (_, res) => {
 
 apiRouter.get("/do-smth", async (_, res) => {
     const robotsEntries = Array.from(virtualRobots.entries());
+    const randomRobotIndex = Math.floor(Math.random() * robotsEntries.length)
     const [, robot] =
-        robotsEntries[Math.floor(Math.random() * robotsEntries.length)];
+        robotsEntries[randomRobotIndex];
     await robot.sendDrivePacket(1);
     await robot.sendTurnPacket(45 * DEGREE);
 

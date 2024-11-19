@@ -44,6 +44,9 @@ const parseErrorStack = (stack: string): StackFrame[] => {
             throw new Error(`Invalid stack frame: ${line}`);
         }
         const [, functionName, fileName, lineNumber, columnNumber] = match;
+        if (!functionName || !fileName || !lineNumber || !columnNumber) {
+            throw new Error(`Invalid stack frame: ${line}`);
+        }
         return {
             fileName,
             functionName,
