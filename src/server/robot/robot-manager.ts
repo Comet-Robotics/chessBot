@@ -63,6 +63,5 @@ export class RobotManager {
             if (robotId === r) this.indicesToIds.delete(i);
         }
         this.indicesToIds.set(JSON.stringify(indices), robotId);
-        console.log("new indices are: ", indices);
     }
 }

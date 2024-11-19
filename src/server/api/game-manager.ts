@@ -20,6 +20,7 @@ import { materializePath } from "../robot/path-materializer";
 import { executor } from "./api";
 import { DO_SAVES } from "../utils/env";
 
+
 export abstract class GameManager {
     protected gameInterruptedReason: GameInterruptedReason | undefined =
         undefined;
@@ -107,6 +108,7 @@ export class HumanGameManager extends GameManager {
         if (message instanceof MoveMessage) {
             // Call path materializer and send to bots
             const command = materializePath(message.move);
+            
 
             this.chess.makeMove(message.move);
 

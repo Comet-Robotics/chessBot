@@ -1,7 +1,11 @@
 import { robotManager } from "../api/managers";
 import { Move } from "../../common/game-types";
 import { gameManager } from "../api/api";
-import { Command, SequentialCommandGroup } from "../command/command";
+import {
+    Command,
+    ParallelCommandGroup,
+    SequentialCommandGroup,
+} from "../command/command";
 import {
     AbsoluteMoveCommand,
     DriveCommand,
@@ -96,16 +100,18 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
             if (to.i < from.i) {
                 for (let i = from.i; i > to.i; i--) {
                     const square = new GridIndices(i, from.j);
-                    const piece = robotManager.getRobotAtIndices(square).id;
-                    if (piece !== undefined) {
+                    if (robotManager.isRobotAtIndices(square)) {
+                        const piece: string =
+                            robotManager.getRobotAtIndices(square).id;
                         collisions.push(piece);
                     }
                 }
             } else {
                 for (let i = from.i; i < to.i; i++) {
                     const square = new GridIndices(i, from.j);
-                    const piece = robotManager.getRobotAtIndices(square).id;
-                    if (piece !== undefined) {
+                    if (robotManager.isRobotAtIndices(square)) {
+                        const piece: string =
+                            robotManager.getRobotAtIndices(square).id;
                         collisions.push(piece);
                     }
                 }
@@ -117,16 +123,18 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
             if (to.j < from.j) {
                 for (let j = from.j; j > to.j; j--) {
                     const square = new GridIndices(from.i, j);
-                    const piece = robotManager.getRobotAtIndices(square).id;
-                    if (piece !== undefined) {
+                    if (robotManager.isRobotAtIndices(square)) {
+                        const piece: string =
+                            robotManager.getRobotAtIndices(square).id;
                         collisions.push(piece);
                     }
                 }
             } else {
                 for (let j = from.j; j < to.j; j++) {
                     const square = new GridIndices(from.i, j);
-                    const piece = robotManager.getRobotAtIndices(square).id;
-                    if (piece !== undefined) {
+                    if (robotManager.isRobotAtIndices(square)) {
+                        const piece: string =
+                            robotManager.getRobotAtIndices(square).id;
                         collisions.push(piece);
                     }
                 }
@@ -154,15 +162,17 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
 
                 // Above or below the tile, depends on direction
                 const square1 = new GridIndices(midx, midy + ny);
-                const piece1 = robotManager.getRobotAtIndices(square1).id;
-                if (piece1 !== undefined) {
-                    collisions.push(piece1);
+                if (robotManager.isRobotAtIndices(square1)) {
+                    const piece: string =
+                        robotManager.getRobotAtIndices(square1).id;
+                    collisions.push(piece);
                 }
                 // Left or right of tile, depends on direction
                 const square2 = new GridIndices(midx + nx, midy);
-                const piece2 = robotManager.getRobotAtIndices(square2).id;
-                if (piece2 !== undefined) {
-                    collisions.push(piece2);
+                if (robotManager.isRobotAtIndices(square2)) {
+                    const piece: string =
+                        robotManager.getRobotAtIndices(square2).id;
+                    collisions.push(piece);
                 }
             }
             break;
@@ -182,16 +192,18 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
             // Same sign horse moves share this square. Will always be 1 diagonal
             // of moving piece
             const square1 = new GridIndices(from.i + nx, from.j + ny);
-            const piece1 = robotManager.getRobotAtIndices(square1).id;
-            if (piece1 !== undefined) {
-                collisions.push(piece1);
+            if (robotManager.isRobotAtIndices(square1)) {
+                const piece: string =
+                    robotManager.getRobotAtIndices(square1).id;
+                collisions.push(piece);
             }
             // Same initial direction horse moves share this square. Will be directly
             // adjacent to moving piece.
             const square2 = new GridIndices(from.i + sx, from.j + sy);
-            const piece2 = robotManager.getRobotAtIndices(square2).id;
-            if (piece2 !== undefined) {
-                collisions.push(piece2);
+            if (robotManager.isRobotAtIndices(square2)) {
+                const piece: string =
+                    robotManager.getRobotAtIndices(square2).id;
+                collisions.push(piece);
             }
             break;
         }
@@ -310,15 +322,7 @@ function constructFinalCommand(
 ): MovePiece {
     const from = move.from;
     console.log(from, robotManager.indicesToIds);
-
-    let mainPiece: string | undefined;
-
-    for (const [key, value] of robotManager.indicesToIds) {
-        if (JSON.parse(key).i === from.i && JSON.parse(key).j === from.j) {
-            mainPiece = value;
-            break;
-        }
-    }
+    const mainPiece = robotManager.getRobotAtIndices(from).id;
 
     if (mainPiece !== undefined) {
         console.log("main piece");
@@ -493,6 +497,10 @@ function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
     return goHome;
 }
 
+function gridIndicesToPosition(indices: GridIndices): Position {
+    return new Position(indices.i + 0.5, indices.j + 0.5);
+}
+
 // Command structure
 // No Capture: Sequential[ Parallel[Turn[all]], MovePiece[shimmys, main], Parallel[TurnToStart[all]] ]
 
@@ -527,46 +535,108 @@ export function materializePath(move: Move): Command {
                 captureCommand,
                 mainCommand,
             ]);
-            const mainPiece = robotManager.getRobotAtIndices(
-                GridIndices.squareToGrid(move.from),
-            );
+            // const mainPiece = robotManager.getRobotAtIndices(
+            //     GridIndices.squareToGrid(move.from),
+            // );
 
-            console.log(
-                "robot indices are: ",
-                GridIndices.squareToGrid(move.to),
-            );
-            robotManager.updateRobot(
-                mainPiece.id,
-                GridIndices.squareToGrid(move.to),
-            );
-
-            console.log(
-                "captured robot indices are: ",
-                Math.floor(robotManager.getRobot(capturePiece).position.x),
-            ),
-                " ,",
-                Math.floor(robotManager.getRobot(capturePiece).position.x);
-            robotManager.updateRobot(
-                capturePiece,
-                robotManager.getRobot(capturePiece).homeIndices,
-            );
             return command;
         }
         return new SequentialCommandGroup([]);
     } else if (gameManager?.chess.isQueenSideCastling(move)) {
-        return new SequentialCommandGroup([]);
+        let kingMove;
+        let rookMove1;
+        let rookMove2;
+        let rookMove3;
+        if (moveToGridMove(move).from.j === 2) {
+            kingMove = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(moveToGridMove(move).from).id,
+                gridIndicesToPosition(new GridIndices(4, 2)),
+            );
+            rookMove1 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(2, 2)).id,
+                gridIndicesToPosition(new GridIndices(2, 1)),
+            );
+            rookMove2 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(2, 1)).id,
+                gridIndicesToPosition(new GridIndices(5, 1)),
+            );
+            rookMove3 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(5, 1)).id,
+                gridIndicesToPosition(new GridIndices(5, 2)),
+            );
+        } else {
+            kingMove = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(moveToGridMove(move).from).id,
+                gridIndicesToPosition(new GridIndices(4, 9)),
+            );
+            rookMove1 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(2, 9)).id,
+                gridIndicesToPosition(new GridIndices(2, 10)),
+            );
+            rookMove2 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(2, 10)).id,
+                gridIndicesToPosition(new GridIndices(5, 10)),
+            );
+            rookMove3 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(6, 10)).id,
+                gridIndicesToPosition(new GridIndices(5, 9)),
+            );
+        }
+        return new SequentialCommandGroup([
+            rookMove1,
+            new ParallelCommandGroup([rookMove2, kingMove]),
+            rookMove3,
+        ]);
     } else if (gameManager?.chess.isKingSideCastling(move)) {
-        return new SequentialCommandGroup([]);
+        let kingMove;
+        let rookMove1;
+        let rookMove2;
+        let rookMove3;
+        if (moveToGridMove(move).from.j === 2) {
+            kingMove = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(moveToGridMove(move).from).id,
+                gridIndicesToPosition(new GridIndices(9, 2)),
+            );
+            rookMove1 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(9, 2)).id,
+                gridIndicesToPosition(new GridIndices(9, 1)),
+            );
+            rookMove2 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(9, 1)).id,
+                gridIndicesToPosition(new GridIndices(6, 1)),
+            );
+            rookMove3 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(6, 1)).id,
+                gridIndicesToPosition(new GridIndices(9, 2)),
+            );
+        } else {
+            kingMove = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(moveToGridMove(move).from).id,
+                gridIndicesToPosition(new GridIndices(9, 9)),
+            );
+            rookMove1 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(9, 9)).id,
+                gridIndicesToPosition(new GridIndices(9, 10)),
+            );
+            rookMove2 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(9, 10)).id,
+                gridIndicesToPosition(new GridIndices(6, 10)),
+            );
+            rookMove3 = new AbsoluteMoveCommand(
+                robotManager.getRobotAtIndices(new GridIndices(6, 10)).id,
+                gridIndicesToPosition(new GridIndices(6, 9)),
+            );
+        }
+        return new SequentialCommandGroup([
+            rookMove1,
+            new ParallelCommandGroup([rookMove2, kingMove]),
+            rookMove3,
+        ]);
     } else {
-        const mainPiece = robotManager.getRobotAtIndices(
-            GridIndices.squareToGrid(move.from),
-        );
+        // const mainPiece = robotManager.getRobotAtIndices(
+        //     GridIndices.squareToGrid(move.from),
+        // );
 
-        console.log("robot indices are: ", GridIndices.squareToGrid(move.to));
-        robotManager.updateRobot(
-            mainPiece.id,
-            GridIndices.squareToGrid(move.to),
-        );
         return moveMainPiece(moveToGridMove(move));
     }
 }
