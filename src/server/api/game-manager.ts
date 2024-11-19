@@ -67,7 +67,7 @@ export abstract class GameManager {
 
     public abstract handleMessage(
         message: Message,
-        clientType: ClientType,
+        id: string,
     ): Promise<void>;
 }
 
