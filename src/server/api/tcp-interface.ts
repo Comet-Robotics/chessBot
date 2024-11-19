@@ -1,6 +1,7 @@
 import * as net from "net";
 import config from "./bot-server-config.json";
 import {
+    PacketType,
     Packet,
     SERVER_PROTOCOL_VERSION,
     jsonToPacket,
@@ -63,18 +64,26 @@ export class BotTunnel {
     }
 
     handleData(data: Buffer) {
+        console.log("Handling Data");
+        console.log("Current Data: ");
+        console.log(this.dataBuffer);
         if (this.dataBuffer !== undefined) {
+            console.log("Buffer Not Undefined!");
             this.dataBuffer = Buffer.concat([this.dataBuffer, data]);
+
         } else {
             this.dataBuffer = data;
         }
+
+        console.log("New Buffer: ");
+        console.log(this.dataBuffer);
 
         this.handleQueue();
     }
 
     handleQueue() {
+        console.log("Handling Queue");
         if (this.dataBuffer === undefined || this.dataBuffer.length < 3) {
-            this.dataBuffer = undefined;
             return;
         }
 
@@ -99,26 +108,32 @@ export class BotTunnel {
             this.dataBuffer = undefined;
         }
 
+        console.log("Current String: ");
+        console.log(str);
+
         try {
             const packet = jsonToPacket(str);
+            console.log("Received Packet");
 
             // Parse packet based on type
             switch (packet.type) {
-                case "CLIENT_HELLO": {
-                    this.onHandshake(packet.macAddress);
-                    this.send(this.makeHello(packet.macAddress));
+                case PacketType.CLIENT_HELLO: {
+                    console.log("Received Client Hello");
+                    const stringMac: string = String(packet.macAddress);
+                    this.onHandshake(stringMac);
+                    this.send(this.makeHello(stringMac));
                     this.connected = true;
                     break;
                 }
-                case "PING_SEND": {
-                    this.send({ type: "PING_RESPONSE" });
+                case PacketType.PING_SEND: {
+                    this.send({ type: PacketType.PING_RESPONSE });
                     break;
                 }
-                case "ACTION_SUCCESS": {
+                case PacketType.ACTION_SUCCESS: {
                     this.emitter.emit("actionComplete", { success: true });
                     break;
                 }
-                case "ACTION_FAIL": {
+                case PacketType.ACTION_FAIL: {
                     this.emitter.emit("actionComplete", {
                         success: false,
                         reason: packet.reason,
@@ -188,7 +203,7 @@ export class BotTunnel {
         }
 
         const ret: Packet = {
-            type: "SERVER_HELLO",
+            type: PacketType.SERVER_HELLO,
             protocol: SERVER_PROTOCOL_VERSION,
             config: configEntries,
         };

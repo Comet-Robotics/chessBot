@@ -15,7 +15,7 @@ import {
 import { TCPServer } from "./tcp-interface";
 import { Difficulty } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
-import { clientManager, robotManager, socketManager } from "./managers";
+import { clientManager, socketManager } from "./managers";
 import {
     ComputerGameManager,
     GameManager,
@@ -30,6 +30,7 @@ import { CommandExecutor } from "../command/executor";
 import { VirtualBotTunnel, virtualRobots } from "../simulator";
 import { Position } from "../robot/position";
 import { DEGREE } from "../utils/units";
+import { PacketType } from "../utils/tcp-packet";
 
 export const tcpServer: TCPServer | null =
     USE_VIRTUAL_ROBOTS ? null : new TCPServer();
@@ -144,7 +145,8 @@ apiRouter.post("/start-human-game", (req, res) => {
 });
 
 apiRouter.get("/get-ids", (_, res) => {
-    const ids = Array.from(robotManager.idsToRobots.keys());
+    const ids = tcpServer?.getConnectedIds();
+    //const ids = Array.from(robotManager.idsToRobots.keys());
     return res.send({ ids });
 });
 
@@ -222,7 +224,7 @@ function doDriveRobot(message: DriveRobotMessage): boolean {
             return false;
         } else {
             tunnel.send({
-                type: "DRIVE_TANK",
+                type: PacketType.DRIVE_TANK,
                 left: message.leftPower,
                 right: message.rightPower,
             });
@@ -251,7 +253,7 @@ function doSetRobotVariable(message: SetRobotVariableMessage): boolean {
             return false;
         } else {
             tunnel.send({
-                type: "SET_VAR",
+                type: PacketType.SET_VAR,
                 var_id: parseInt(message.variableName),
                 var_type: "float",
                 var_val: message.variableValue,

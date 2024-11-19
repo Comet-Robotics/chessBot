@@ -3,6 +3,7 @@ import { Position, ZERO_POSITION } from "./position";
 import { GridIndices } from "./grid-indices";
 import { tcpServer } from "../api/api";
 import type { BotTunnel } from "../api/tcp-interface";
+import { PacketType } from "../utils/tcp-packet";
 
 /**
  * Represents a robot.
@@ -97,7 +98,7 @@ export class Robot {
         const tunnel = this.getTunnel();
         const promise = tunnel.waitForActionResponse();
         tunnel.send({
-            type: "TURN_BY_ANGLE",
+            type: PacketType.TURN_BY_ANGLE,
             deltaHeadingRadians: deltaHeadingRadians,
         });
         return promise;
@@ -112,7 +113,7 @@ export class Robot {
     public async sendDrivePacket(tileDistance: number): Promise<void> {
         const tunnel = this.getTunnel();
         const promise = tunnel.waitForActionResponse();
-        tunnel.send({ type: "DRIVE_TILES", tileDistance });
+        tunnel.send({ type: PacketType.DRIVE_TILES, tileDistance });
         return promise;
     }
 }
