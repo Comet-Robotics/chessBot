@@ -2,7 +2,8 @@ import { FULL_ROTATION, RADIAN, clampHeading } from "../utils/units";
 import { Position, ZERO_POSITION } from "./position";
 import { GridIndices } from "./grid-indices";
 import { tcpServer } from "../api/api";
-import { BotTunnel } from "../api/tcp-interface";
+import type { BotTunnel } from "../api/tcp-interface";
+
 
 /**
  * Represents a robot.
@@ -17,6 +18,7 @@ export class Robot {
          * The location the robot lives in when its not in use.
          */
         public readonly homeIndices: GridIndices,
+        public readonly defaultIndices: GridIndices,
         public readonly startHeadingRadians: number = 0,
         private _position: Position = ZERO_POSITION,
     ) {
@@ -27,7 +29,7 @@ export class Robot {
         return this._position;
     }
 
-    private set position(coords: Position) {
+    public set position(coords: Position) {
         this._position = coords;
     }
 
@@ -35,7 +37,7 @@ export class Robot {
         return this._headingRadians;
     }
 
-    private set headingRadians(headingRadians: number) {
+    public set headingRadians(headingRadians: number) {
         this._headingRadians = headingRadians;
     }
 
@@ -78,7 +80,7 @@ export class Robot {
         const promise = this.absoluteRotate(angle).then(() => {
             return this.sendDrivePacket(distance);
         });
-        this.position = this.position.add(deltaPosition);
+        console.log(this.position);
         return promise;
     }
 

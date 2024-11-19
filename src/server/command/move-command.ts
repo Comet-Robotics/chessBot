@@ -1,6 +1,7 @@
 import { RobotCommand, Reversible } from "./command";
 import { Position } from "../robot/position";
 import { robotManager } from "../api/managers";
+import { GridIndices } from "../robot/grid-indices";
 
 /**
  * Represents a rotation.
@@ -102,6 +103,17 @@ export class DriveCommand
 
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
+        const currentPosition = robot.position;
+        const newPositionX = this.tileDistance * Math.cos(robot.headingRadians);
+        const newPositionY = this.tileDistance * Math.sin(robot.headingRadians);
+        robot.position = new Position(
+            newPositionX + currentPosition.x,
+            newPositionY + currentPosition.y,
+        );
+        robotManager.updateRobot(
+            this.robotId,
+            new GridIndices(Math.floor(robot.position.x), Math.floor(robot.position.y)),
+        );
         return robot.sendDrivePacket(this.tileDistance);
     }
 
@@ -135,6 +147,11 @@ export class RelativeMoveCommand
 {
     public async execute(): Promise<void> {
         const robot = robotManager.getRobot(this.robotId);
+        robot.position = this.position.add(this.position);
+        robotManager.updateRobot(
+            this.robotId,
+            new GridIndices(Math.floor(robot.position.x), Math.floor(robot.position.y)),
+        );
         return robot.relativeMove(this.position);
     }
 
@@ -144,7 +161,7 @@ export class RelativeMoveCommand
 }
 
 /**
- * Moves a robot to a global location.
+ * Moves a robot to a global location. WARNING: Only moves in a straight line
  */
 export class AbsoluteMoveCommand extends MoveCommand {
     public async execute(): Promise<void> {
