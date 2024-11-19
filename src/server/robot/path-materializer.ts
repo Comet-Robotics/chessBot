@@ -257,8 +257,12 @@ function findShimmyLocation(
             const normalY: number = signedDistY / distHypot;
             const orth1: Position = new Position(-normalY, normalX);
             const orth2: Position = new Position(normalY, -normalX);
-            const orthPos1: Position = orth1.addTuple(move.to.toTuple());
-            const orthPos2: Position = orth2.addTuple(move.to.toTuple());
+            const orthPos1: Position = orth1.add(
+                gridIndicesToPosition(move.to),
+            );
+            const orthPos2: Position = orth2.add(
+                gridIndicesToPosition(move.to),
+            );
 
             // distance calculations :)
             const val1: Position = shimmyPos.sub(orthPos1);
