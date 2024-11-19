@@ -9,6 +9,7 @@ import {
 } from "../../common/message/simulator-message";
 import { Tag, CompoundTag } from "@blueprintjs/core";
 import "./simulator.scss";
+import { clampHeading } from "../../common/units";
 
 const tileSize = 60;
 const robotSize = tileSize / 2;
@@ -298,7 +299,7 @@ function Robot(props: {
             <Tooltip content={`${props.robotId}: ${JSON.stringify(props.pos)}`}>
                 <div
                     style={{
-                        transform: `rotate(-${props.pos.headingRadians}rad)`,
+                        transform: `rotate(-${clampHeading(props.pos.headingRadians)}rad)`,
                         backgroundColor: "white",
                         borderRadius: "50%",
                         border: `4px solid ${props.onTopOfRobots.length > 0 ? "red" : "black"}`,

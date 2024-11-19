@@ -29,7 +29,7 @@ import { SaveManager } from "./save-manager";
 import { CommandExecutor } from "../command/executor";
 import { VirtualBotTunnel, virtualRobots } from "../simulator";
 import { Position } from "../robot/position";
-import { DEGREE } from "../utils/units";
+import { DEGREE } from "../../common/units";
 
 export const tcpServer: TCPServer | null =
     USE_VIRTUAL_ROBOTS ? null : new TCPServer();
