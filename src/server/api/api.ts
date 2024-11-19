@@ -47,10 +47,14 @@ const names = new Map<string, string>();
  */
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     ws.on("close", () => {
-        queue.popInd(queue.find(req.cookies.id));
-        names.delete(req.cookies.id);
         socketManager.handleSocketClosed(req.cookies.id);
-        socketManager.sendToAll(new UpdateQueue([...names.values()]));
+        setTimeout(() => {
+            if (socketManager.getSocket(req.cookies.id) === undefined) {
+                queue.popInd(queue.find(req.cookies.id));
+                names.delete(req.cookies.id);
+                socketManager.sendToAll(new UpdateQueue([...names.values()]));
+            }
+        }, 2000);
     });
 
     ws.on("message", (data) => {

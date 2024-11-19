@@ -22,7 +22,7 @@ export function Sidebar(): JSX.Element {
     const [queue, setQueue] = useState<string[]>([]);
 
     const sendMessage = useSocket(getMessageHandler(setQueue));
-    
+
     const { isPending, data, isError } = useEffectQuery(
         "get-queue",
         async () => {
