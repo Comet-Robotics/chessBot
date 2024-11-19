@@ -3,7 +3,7 @@ import { Position, ZERO_POSITION } from "./position";
 import { GridIndices } from "./grid-indices";
 import { tcpServer } from "../api/api";
 import type { BotTunnel } from "../api/tcp-interface";
-import { robotManager } from "../api/managers";
+
 
 /**
  * Represents a robot.
@@ -81,13 +81,6 @@ export class Robot {
             return this.sendDrivePacket(distance);
         });
         this.position = this.position.add(deltaPosition);
-        robotManager.updateRobot(
-            this.id,
-            new GridIndices(
-                Math.floor(this.position.x),
-                Math.floor(this.position.y),
-            ),
-        );
         console.log(this.position);
         return promise;
     }
