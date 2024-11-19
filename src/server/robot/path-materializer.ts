@@ -267,12 +267,12 @@ function findShimmyLocation(
 
             return dist1 < dist2 ?
                     new Position(
-                        shimmyPos.x + val1.x * moveDistance,
-                        shimmyPos.y + val1.y * moveDistance,
+                        shimmyPos.x + orth1.x * moveDistance,
+                        shimmyPos.y + orth1.y * moveDistance,
                     )
                 :   new Position(
-                        shimmyPos.x + val2.x * moveDistance,
-                        shimmyPos.y + val2.y * moveDistance,
+                        shimmyPos.x + orth2.x * moveDistance,
+                        shimmyPos.y + orth2.y * moveDistance,
                     );
         }
     }
