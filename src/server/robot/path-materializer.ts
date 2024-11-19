@@ -254,41 +254,25 @@ function findShimmyLocation(
             const signedDistY: number = move.to.j - move.from.j;
             const normalX: number = signedDistX / Math.abs(signedDistX);
             const normalY: number = signedDistY / Math.abs(signedDistY);
-            const orth1: number[] = [-normalX, normalY];
-            const orth2: number[] = [normalX, -normalY];
-            const orthPos1: number[] = [
-                move.to.i + orth1[0],
-                move.to.j + orth1[1],
-            ];
-            const orthPos2: number[] = [
-                move.to.i + orth2[0],
-                move.to.j + orth2[1],
-            ];
+            const orth1: Position = new Position(-normalX, normalY);
+            const orth2: Position = new Position(normalX, -normalY);
+            const orthPos1: Position = orth1.addTuple(move.to.toTuple());
+            const orthPos2: Position = orth2.addTuple(move.to.toTuple());
 
             // distance calculations :)
-            const val1: number[] = [
-                shimmyPos.x - orthPos1[0],
-                shimmyPos.y - orthPos1[1],
-            ];
-            const val2: number[] = [
-                shimmyPos.x - orthPos2[0],
-                shimmyPos.y - orthPos2[1],
-            ];
-            const dist1: number = Math.sqrt(
-                val1[0] * val1[0] - val1[1] * val1[1],
-            );
-            const dist2: number = Math.sqrt(
-                val2[0] * val2[0] - val2[1] * val2[1],
-            );
+            const val1: Position = shimmyPos.sub(orthPos1);
+            const val2: Position = shimmyPos.sub(orthPos2);
+            const dist1: number = Math.hypot(val1.x, val1.y);
+            const dist2: number = Math.hypot(val2.x, val2.y);
 
             return dist1 < dist2 ?
                     new Position(
-                        shimmyPos.x + val1[0] * moveDistance,
-                        shimmyPos.y + val1[1] * moveDistance,
+                        shimmyPos.x + val1.x * moveDistance,
+                        shimmyPos.y + val1.y * moveDistance,
                     )
                 :   new Position(
-                        shimmyPos.x + val2[0] * moveDistance,
-                        shimmyPos.y + val2[1] * moveDistance,
+                        shimmyPos.x + val2.x * moveDistance,
+                        shimmyPos.y + val2.y * moveDistance,
                     );
         }
     }

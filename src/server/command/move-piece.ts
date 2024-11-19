@@ -4,7 +4,6 @@ import {
     SequentialCommandGroup,
     Reversible,
 } from "./command";
-import { RotateToStartCommand } from "./move-command";
 
 export type ReversibleRobotCommand = RobotCommand &
     Reversible<ReversibleRobotCommand>;
@@ -26,7 +25,7 @@ export class MovePiece extends SequentialCommandGroup {
                     command
                         .reverse()
                         // .then(new RotateToStartCommand(command.robotId)), // TODO have rotatetostart at end of pathmat
-                ),
+                ).reverse(),
             ),
         ]);
     }
