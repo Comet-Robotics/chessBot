@@ -155,7 +155,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
 
             // Loop through the tiles along the diagonal excluding beginning and end
             // (Beginning is the moving piece, and end is capture piece. Capture handled separately)
-            for (let off = 1; off < distance; off++) {
+            for (let off = 0; off < distance; off++) {
                 // Finds the current coords of the diagonal tile that the loop is on
                 const midx = from.i + off * nx;
                 const midy = from.j + off * ny;
@@ -493,6 +493,7 @@ function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
             );
         }
         i += botDirectionToHome;
+        if (i < 0) i += 36;
     }
     if (arrayOfDeadzone[endInArray]) {
         moveCommands.push(
