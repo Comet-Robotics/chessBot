@@ -9,7 +9,7 @@ function getMessageHandler(setQueue: Dispatch<string[]>): MessageHandler {
         console.log("cool message box");
         if (message instanceof UpdateQueue) {
             console.log(message.queue);
-            setQueue(message.queue);
+            setQueue(message.queue.slice());
         }
     };
 }
@@ -22,7 +22,7 @@ export function Sidebar(): JSX.Element {
     const [queue, setQueue] = useState<string[]>([]);
 
     const sendMessage = useSocket(getMessageHandler(setQueue));
-
+    
     const { isPending, data, isError } = useEffectQuery(
         "get-queue",
         async () => {

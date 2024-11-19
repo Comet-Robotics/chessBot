@@ -4,7 +4,7 @@ import { ChessboardWrapper } from "../chessboard/chessboard-wrapper";
 import { PropsWithChildren, ReactNode } from "react";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
-import { Sidebar } from "./queue";
+import { Sidebar } from "./sidebar";
 
 interface SetupBaseProps extends PropsWithChildren {
     actions?: ReactNode;

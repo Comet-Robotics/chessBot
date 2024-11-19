@@ -58,6 +58,7 @@ export function useSocket(
                 onMessage(message);
             }
         },
+        share: true,
     });
 
     const sendMessageHandler = useMemo(() => {
