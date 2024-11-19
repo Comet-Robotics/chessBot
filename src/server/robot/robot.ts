@@ -29,7 +29,7 @@ export class Robot {
         return this._position;
     }
 
-    private set position(coords: Position) {
+    public set position(coords: Position) {
         this._position = coords;
     }
 
@@ -37,7 +37,7 @@ export class Robot {
         return this._headingRadians;
     }
 
-    private set headingRadians(headingRadians: number) {
+    public set headingRadians(headingRadians: number) {
         this._headingRadians = headingRadians;
     }
 
