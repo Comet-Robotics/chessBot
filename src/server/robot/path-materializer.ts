@@ -252,10 +252,11 @@ function findShimmyLocation(
             const moveDistance: number = 0.5;
             const signedDistX: number = move.to.i - move.from.i;
             const signedDistY: number = move.to.j - move.from.j;
-            const normalX: number = signedDistX / Math.abs(signedDistX);
-            const normalY: number = signedDistY / Math.abs(signedDistY);
-            const orth1: Position = new Position(-normalX, normalY);
-            const orth2: Position = new Position(normalX, -normalY);
+            const distHypot = Math.hypot(signedDistX, signedDistY);
+            const normalX: number = signedDistX / distHypot;
+            const normalY: number = signedDistY / distHypot;
+            const orth1: Position = new Position(-normalY, normalX);
+            const orth2: Position = new Position(normalY, -normalX);
             const orthPos1: Position = orth1.addTuple(move.to.toTuple());
             const orthPos2: Position = orth2.addTuple(move.to.toTuple());
 
