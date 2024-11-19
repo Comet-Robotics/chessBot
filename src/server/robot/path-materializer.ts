@@ -98,7 +98,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
         // Horizontal
         case 0: {
             if (to.i < from.i) {
-                for (let i = from.i-1; i >= to.i; i--) {
+                for (let i = from.i - 1; i > to.i; i--) {
                     const square = new GridIndices(i, from.j);
                     if (robotManager.isRobotAtIndices(square)) {
                         const piece: string =
@@ -107,7 +107,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
                     }
                 }
             } else {
-                for (let i = from.i+1; i <= to.i; i++) {
+                for (let i = from.i + 1; i < to.i; i++) {
                     const square = new GridIndices(i, from.j);
                     if (robotManager.isRobotAtIndices(square)) {
                         const piece: string =
@@ -121,7 +121,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
         // Vertical
         case 1: {
             if (to.j < from.j) {
-                for (let j = from.j-1; j >= to.j; j--) {
+                for (let j = from.j - 1; j > to.j; j--) {
                     const square = new GridIndices(from.i, j);
                     if (robotManager.isRobotAtIndices(square)) {
                         const piece: string =
@@ -130,7 +130,7 @@ function detectCollisions(gridMove: GridMove, collisionType: number): string[] {
                     }
                 }
             } else {
-                for (let j = from.j+1; j <= to.j; j++) {
+                for (let j = from.j + 1; j < to.j; j++) {
                     const square = new GridIndices(from.i, j);
                     if (robotManager.isRobotAtIndices(square)) {
                         const piece: string =
@@ -424,7 +424,10 @@ function directionToEdge(position: GridIndices) {
     return DirectionTuple;
 }
 
-function findGridIndicesInArray(array: GridIndices[], obj: GridIndices): number {
+function findGridIndicesInArray(
+    array: GridIndices[],
+    obj: GridIndices,
+): number {
     return array.findIndex((o) => o.i == obj.i && o.j == obj.j);
 }
 
@@ -453,8 +456,14 @@ function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
     if (!finalDestination) {
         throw new error("WHERE THE HELL ARE YOU GOING");
     }
-    const startInArray = findGridIndicesInArray(arrayOfDeadzone, startInDeadzone);
-    const endInArray = findGridIndicesInArray(arrayOfDeadzone, finalDestination);
+    const startInArray = findGridIndicesInArray(
+        arrayOfDeadzone,
+        startInDeadzone,
+    );
+    const endInArray = findGridIndicesInArray(
+        arrayOfDeadzone,
+        finalDestination,
+    );
     let differenceOfIndex = endInArray - startInArray;
 
     if (differenceOfIndex < 0) {
@@ -462,7 +471,12 @@ function returnToHome(from: GridIndices, id: string): SequentialCommandGroup {
     }
 
     const botDirectionToHome = differenceOfIndex < 18 ? 1 : -1;
-    console.log("deadzone array checker", startInArray, endInArray, botDirectionToHome);
+    console.log(
+        "deadzone array checker",
+        startInArray,
+        endInArray,
+        botDirectionToHome,
+    );
 
     let i = startInArray;
     const moveCommands: MoveCommand[] = [];
