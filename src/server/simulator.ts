@@ -44,7 +44,7 @@ const parseErrorStack = (stack: string): StackFrame[] => {
             throw new Error(`Invalid stack frame: ${line}`);
         }
         const [, functionName, fileName, lineNumber, columnNumber] = match;
-        if (!functionName || !fileName || !lineNumber || !columnNumber) {
+        if (!fileName || !lineNumber || !columnNumber) {
             throw new Error(`Invalid stack frame: ${line}`);
         }
         return {
@@ -88,9 +88,10 @@ export class VirtualBotTunnel extends BotTunnel {
     }
 
     private emitActionComplete() {
-        setTimeout(() =>
-            this.emitter.emit("actionComplete", { success: true })
-        , 750); // needs to match simulator.scss animation timeout
+        setTimeout(
+            () => this.emitter.emit("actionComplete", { success: true }),
+            750,
+        ); // needs to match simulator.scss animation timeout
     }
 
     send(packet: Packet) {
