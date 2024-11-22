@@ -42,6 +42,10 @@ export let gameManager: GameManager | null = null;
 
 const queue = new PriorityQueue<string>();
 const names = new Map<string, string>();
+
+//let the queue be moved once per game
+let onlyOnce = true;
+
 /**
  * An endpoint used to establish a websocket connection with the server.
  *
@@ -50,6 +54,31 @@ const names = new Map<string, string>();
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     ws.on("close", () => {
         socketManager.handleSocketClosed(req.cookies.id);
+
+        //if you reload and the game is over
+        if (gameManager?.isGameEnded() && onlyOnce) {
+            onlyOnce = false;
+            for (const x in [1, 2]) {
+                console.log(x);
+                if (!queue.isEmpty()) {
+                    const newHost = clientManager.getIds();
+                    clientManager.removeHost();
+                    clientManager.removeClient();
+                    newHost ?
+                        clientManager.assignPlayer(newHost[1])
+                    :   undefined;
+                    const newPlayer = queue.pop();
+                    if (newPlayer) {
+                        //transfer them from spectator to the newly-opened spot and remove them from queue
+                        clientManager.removeSpectator(newPlayer);
+                        clientManager.assignPlayer(newPlayer);
+                        names.delete(newPlayer);
+                        socketManager.sendToAll(new GameStartedMessage());
+                    }
+                }
+            }
+        }
+
         //wait in case the client is just reloading or disconnected instead of leaving
         setTimeout(() => {
             if (socketManager.getSocket(req.cookies.id) === undefined) {
@@ -195,6 +224,7 @@ apiRouter.get("/game-state", (req, res) => {
 });
 
 apiRouter.post("/start-computer-game", (req, res) => {
+    onlyOnce = true;
     const side = req.query.side as Side;
     const difficulty = parseInt(req.query.difficulty as string) as Difficulty;
     gameManager = new ComputerGameManager(
@@ -208,6 +238,7 @@ apiRouter.post("/start-computer-game", (req, res) => {
 });
 
 apiRouter.post("/start-human-game", (req, res) => {
+    onlyOnce = true;
     const side = req.query.side as Side;
     gameManager = new HumanGameManager(
         new ChessEngine(),
