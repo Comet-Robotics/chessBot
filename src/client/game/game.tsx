@@ -22,6 +22,7 @@ import { ChessEngine } from "../../common/chess-engine";
 import { Move } from "../../common/game-types";
 import { NonIdealState, Spinner } from "@blueprintjs/core";
 import { AcceptDrawDialog, OfferDrawDialog } from "./draw-dialog";
+import { Sidebar } from "../setup/sidebar";
 
 /**
  * Creates a MessageHandler function.
@@ -127,17 +128,20 @@ export function Game(): JSX.Element {
                 side={side}
                 setRotation={setRotation}
             />
-            <div id="body-container">
-                <ChessboardWrapper
-                    side={side}
-                    chess={chess}
-                    onMove={handleMove}
-                    rotation={rotation ? rotation : 0}
-                />
-                {gameEndDialog}
-                {gameOfferDialog}
-                {gameAcceptDialog}
-                <Outlet />
+            <Sidebar />
+            <div className="main-dialog">
+                <div id="body-container">
+                    <ChessboardWrapper
+                        side={side}
+                        chess={chess}
+                        onMove={handleMove}
+                        rotation={rotation ? rotation : 0}
+                    />
+                    {gameEndDialog}
+                    {gameOfferDialog}
+                    {gameAcceptDialog}
+                    <Outlet />
+                </div>
             </div>
         </>
     );

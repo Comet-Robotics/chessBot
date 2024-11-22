@@ -6,6 +6,7 @@ import {
     GameFinishedMessage,
     GameHoldMessage,
     GameInterruptedMessage,
+    GameStartedMessage,
     JoinQueue,
     MoveMessage,
     UpdateQueue,
@@ -16,7 +17,7 @@ import {
 } from "../../common/message/robot-message";
 
 import { TCPServer } from "./tcp-interface";
-import { Difficulty } from "../../common/client-types";
+import { ClientType, Difficulty } from "../../common/client-types";
 import { RegisterWebsocketMessage } from "../../common/message/message";
 import { clientManager, robotManager, socketManager } from "./managers";
 import {
@@ -32,6 +33,7 @@ import { VirtualBotTunnel, virtualRobots } from "../simulator";
 import { Position } from "../robot/position";
 import { DEGREE } from "../utils/units";
 import { PriorityQueue } from "./queue";
+import { GameInterruptedReason } from "../../common/game-end-reasons";
 
 export const tcpServer: TCPServer | null =
     USE_VIRTUAL_ROBOTS ? null : new TCPServer();
@@ -48,11 +50,55 @@ const names = new Map<string, string>();
 export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
     ws.on("close", () => {
         socketManager.handleSocketClosed(req.cookies.id);
+        //wait in case the client is just reloading or disconnected instead of leaving
         setTimeout(() => {
             if (socketManager.getSocket(req.cookies.id) === undefined) {
+                //remove the person from the queue to free up space
                 queue.popInd(queue.find(req.cookies.id));
                 names.delete(req.cookies.id);
+                const clientType = clientManager.getClientType(req.cookies.id);
+
+                //if the person was a host / client, a new one needs to be reassigned
+                if (clientManager.isPlayer(req.cookies.id)) {
+                    //clear the existing game
+                    const ids = clientManager.getIds();
+                    if (ids) {
+                        if (
+                            SaveManager.loadGame(req.cookies.id)?.host ===
+                            ids[0]
+                        )
+                            SaveManager.endGame(ids[0], ids[1]);
+                        else SaveManager.endGame(ids[1], ids[0]);
+                    }
+
+                    gameManager = null;
+
+                    //remove the old host/client
+                    clientType === ClientType.HOST ?
+                        clientManager.removeHost()
+                    :   clientManager.removeClient();
+
+                    //if there exists someone to take their place
+                    const newPlayer = queue.pop();
+                    if (newPlayer) {
+                        //transfer them from spectator to the newly-opened spot and remove them from queue
+                        clientManager.removeSpectator(newPlayer);
+                        clientManager.assignPlayer(newPlayer);
+                        names.delete(newPlayer);
+                        socketManager.sendToAll(
+                            new GameInterruptedMessage(
+                                GameInterruptedReason.ABORTED,
+                            ),
+                        );
+                    }
+                    //else they were a spectator and don't need game notifications anymore
+                } else {
+                    clientManager.removeSpectator(req.cookies.id);
+                }
+
+                //update the queue and reload all the pages
                 socketManager.sendToAll(new UpdateQueue([...names.values()]));
+                socketManager.sendToAll(new GameStartedMessage());
             }
         }, 2000);
     });
@@ -76,10 +122,13 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
         } else if (message instanceof SetRobotVariableMessage) {
             doSetRobotVariable(message);
         } else if (message instanceof JoinQueue) {
-            const previous = queue.find(req.cookies.id);
-            names.set(req.cookies.id, message.queue);
-            previous ? queue : queue.insert(req.cookies.id, 0);
-            socketManager.sendToAll(new UpdateQueue([...names.values()]));
+            if (!clientManager.isPlayer(req.cookies.id)) {
+                if (queue.find(req.cookies.id) === undefined) {
+                    queue.insert(req.cookies.id, 0);
+                }
+                names.set(req.cookies.id, message.queue);
+                socketManager.sendToAll(new UpdateQueue([...names.values()]));
+            }
         }
     });
 };

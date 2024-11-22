@@ -74,6 +74,22 @@ export class ClientManager {
         }
     }
 
+    public removeHost(): void {
+        this.hostId = undefined;
+    }
+
+    public removeClient(): void {
+        this.clientId = undefined;
+    }
+
+    public removeSpectator(id: string): void {
+        this.spectatorIds.delete(id);
+    }
+
+    public isPlayer(id: string): boolean {
+        return id === this.hostId || id === this.clientId;
+    }
+
     public getIds(): undefined | string[] {
         if (this.hostId && this.clientId) {
             return [this.hostId, this.clientId];

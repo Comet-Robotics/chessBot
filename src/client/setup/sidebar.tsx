@@ -6,7 +6,6 @@ import { get, useEffectQuery, useSocket } from "../api";
 
 function getMessageHandler(setQueue: Dispatch<string[]>): MessageHandler {
     return (message) => {
-        console.log("cool message box");
         if (message instanceof UpdateQueue) {
             console.log(message.queue);
             setQueue(message.queue.slice());

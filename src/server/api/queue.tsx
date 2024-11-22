@@ -30,12 +30,15 @@ export class PriorityQueue<T> {
         return this.data.length === 0 ? undefined : this.data[0][1];
     }
     public pop(): T | undefined {
-        return this.data !== undefined ? this.data.pop()?.[1] : undefined;
+        return this.data !== undefined ? this.data.shift()?.[1] : undefined;
     }
-    public popInd(num: number | undefined): T {
-        return num !== undefined && this.data !== undefined ?
-                this.data[num].pop()?.[1]
-            :   undefined;
+    public popInd(num: number | undefined): T | undefined {
+        if (num !== undefined && this.data !== undefined) {
+            const data = this.data[num][1];
+            this.data.slice(0, num).concat(this.data.slice(num + 1, -1));
+            return data;
+        }
+        return undefined;
     }
     public size(): number {
         return this.data.length;
@@ -49,5 +52,6 @@ export class PriorityQueue<T> {
                 return x;
             }
         }
+        return undefined;
     }
 }

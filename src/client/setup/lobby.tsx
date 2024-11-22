@@ -35,7 +35,11 @@ export function Lobby() {
         return (
             <SetupBase>
                 <NonIdealState
-                    title="Waiting For Game to Start"
+                    title={
+                        data.clientType === ClientType.CLIENT ?
+                            "Waiting For Host to Start"
+                        :   "Waiting in line"
+                    }
                     icon={<Spinner intent="primary" />}
                 />
             </SetupBase>
