@@ -129,7 +129,7 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
                 socketManager.sendToAll(new UpdateQueue([...names.values()]));
                 socketManager.sendToAll(new GameStartedMessage());
             }
-        }, 2000);
+        }, 5000);
     });
 
     ws.on("message", (data) => {

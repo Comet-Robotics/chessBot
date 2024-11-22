@@ -19,6 +19,9 @@ function getMessageHandler(setQueue: Dispatch<string[]>): MessageHandler {
  */
 export function Sidebar(): JSX.Element {
     const [queue, setQueue] = useState<string[]>([]);
+    const [name, setName] = useState<string>(
+        "player " + Math.floor(Math.random() * 2000),
+    );
 
     const sendMessage = useSocket(getMessageHandler(setQueue));
 
@@ -56,11 +59,26 @@ export function Sidebar(): JSX.Element {
                     return <li key={data}>{data}</li>;
                 })}
             </ul>
+            <label
+                style={{
+                    position: "absolute",
+                    bottom: "40px",
+                    margin: "5px",
+                }}
+            >
+                Name:
+                <input
+                    style={{ width: "90%" }}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
+            </label>
             <Button
                 minimal
+                type="submit"
                 style={{ position: "absolute", bottom: "10px" }}
                 onClick={async () => {
-                    sendMessage(new JoinQueue("yay" + Math.random() * 100));
+                    sendMessage(new JoinQueue(name));
                 }}
             >
                 Join queue

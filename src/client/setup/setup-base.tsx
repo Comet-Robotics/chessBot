@@ -26,6 +26,7 @@ export function SetupBase(props: SetupBaseProps): JSX.Element {
                     canEscapeKeyClose={false}
                     canOutsideClickClose={false}
                     usePortal={false}
+                    enforceFocus={false}
                 >
                     <DialogBody>{props.children}</DialogBody>
                     <DialogFooter minimal actions={props.actions} />
