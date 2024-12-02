@@ -167,12 +167,17 @@ export const apiRouter = Router();
 /**
  * gets the current stored queue
  */
-apiRouter.get("/get-queue", (req, res) => {
-    req;
+apiRouter.get("/get-queue", (_, res) => {
     if (names) return res.send([...names.values()]);
-    else {
-        return res.send([]);
-    }
+    else return res.send([]);
+});
+
+/**
+ * gets the name associated with the request cookie
+ */
+apiRouter.get("/get-name", (req, res) => {
+    if (names) return res.send({ message: names.get(req.cookies.id) });
+    else return res.send("");
 });
 
 apiRouter.get("/client-information", (req, res) => {
