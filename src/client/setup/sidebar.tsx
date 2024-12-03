@@ -12,11 +12,15 @@ function getMessageHandler(setQueue: Dispatch<string[]>): MessageHandler {
     };
 }
 
+interface sidebarProps {
+    top?: number | undefined;
+}
+
 /**
  * Creates a sidebar to hold the queue elements
  * @returns sidebar container
  */
-export function Sidebar(): JSX.Element {
+export function Sidebar(props: sidebarProps): JSX.Element {
     const [queue, setQueue] = useState<string[]>([]);
     const [name, setName] = useState<string>(
         "player " + Math.floor(Math.random() * 10000),
@@ -62,7 +66,10 @@ export function Sidebar(): JSX.Element {
     }
 
     return (
-        <div className="sidebar flex-container">
+        <div
+            className="sidebar flex-container"
+            style={{ paddingTop: props.top }}
+        >
             <h3>Player Queue</h3>
             <ul style={{ listStyle: "decimal" }}>
                 {queue.map(function (data) {

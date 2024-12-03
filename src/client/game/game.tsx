@@ -128,7 +128,7 @@ export function Game(): JSX.Element {
                 side={side}
                 setRotation={setRotation}
             />
-            <Sidebar />
+            <Sidebar top={50} />
             <div className="main-dialog">
                 <div id="body-container">
                     <ChessboardWrapper
