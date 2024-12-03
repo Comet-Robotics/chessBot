@@ -3,6 +3,7 @@ import {
     RobotCommand,
     SequentialCommandGroup,
     Reversible,
+    ParallelCommandGroup,
 } from "./command";
 
 export type ReversibleRobotCommand = RobotCommand &
@@ -18,9 +19,9 @@ export class MovePiece extends SequentialCommandGroup {
         public mainMove: Command,
     ) {
         super([
-            new SequentialCommandGroup(setupMoves),
+            new ParallelCommandGroup(setupMoves),
             mainMove,
-            new SequentialCommandGroup(
+            new ParallelCommandGroup(
                 setupMoves.map((command) =>
                     command
                         .reverse()

@@ -4,15 +4,16 @@ import { Robot } from "./robot/robot";
 import config from "./api/bot-server-config.json";
 import { Packet } from "./utils/tcp-packet";
 import { Position, ZERO_POSITION } from "./robot/position";
-import path from "path";
+//import path from "path";
 import {
     SimulatorUpdateMessage,
-    StackFrame,
+    //StackFrame,
 } from "../common/message/simulator-message";
 import { socketManager } from "./api/managers";
 import { GridIndices } from "./robot/grid-indices";
 import { getStartHeading, Side } from "../common/game-types";
 
+/*
 const srcDir = path.resolve(__dirname, "../");
 
 function getStack(justMyCode = true) {
@@ -56,7 +57,7 @@ const parseErrorStack = (stack: string): StackFrame[] => {
     });
     return frames;
 };
-
+*/
 export class VirtualBotTunnel extends BotTunnel {
     connected = true;
 
@@ -95,7 +96,7 @@ export class VirtualBotTunnel extends BotTunnel {
     }
 
     send(packet: Packet) {
-        const stack = getStack();
+        //const stack = getStack();
 
         // NOTE: need to ensure that all the packets which are used in the Robot class (src/server/robot/robot.ts) are also provided with a matching virtual implementation here
         switch (packet.type) {
@@ -135,7 +136,7 @@ export class VirtualBotTunnel extends BotTunnel {
                 headingRadians: this.headingRadians,
             },
             packet,
-            stack,
+            [],
         );
         VirtualBotTunnel.messages.push({ ts: new Date(), message });
         socketManager.sendToAll(message);

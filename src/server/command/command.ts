@@ -83,24 +83,6 @@ function isReversable(obj): obj is Reversible<typeof obj> {
 }
 
 /**
- * Executes one or more commands in parallel.
- */
-export class ParallelCommandGroup extends CommandGroup {
-    public async execute(): Promise<void> {
-        const promises = this.commands.map((move) => move.execute());
-        return Promise.all(promises).then(null);
-    }
-    public async reverse(): Promise<void> {
-        const promises = this.commands.map((move) => {
-            if (isReversable(move)) {
-                move.reverse();
-            }
-        });
-        return Promise.all(promises).then(null);
-    }
-}
-
-/**
  * Executes one or more commands in sequence, one after another.
  */
 export class SequentialCommandGroup extends CommandGroup {
@@ -119,5 +101,23 @@ export class SequentialCommandGroup extends CommandGroup {
             }
         }
         return promise;
+    }
+}
+
+/**
+ * Executes one or more commands in parallel.
+ */
+export class ParallelCommandGroup extends SequentialCommandGroup {
+    public async execute(): Promise<void> {
+        const promises = this.commands.map((move) => move.execute());
+        return Promise.all(promises).then(null);
+    }
+    public async reverse(): Promise<void> {
+        const promises = this.commands.map((move) => {
+            if (isReversable(move)) {
+                move.reverse();
+            }
+        });
+        return Promise.all(promises).then(null);
     }
 }

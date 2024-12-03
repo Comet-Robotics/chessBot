@@ -557,38 +557,41 @@ export function materializePath(move: Move): Command {
         let rookMove1;
         let rookMove2;
         let rookMove3;
+        let rookPiece;
         if (moveToGridMove(move).from.j === 2) {
+            rookPiece = robotManager.getRobotAtIndices(new GridIndices(2, 2));
             kingMove = new AbsoluteMoveCommand(
                 robotManager.getRobotAtIndices(moveToGridMove(move).from).id,
                 gridIndicesToPosition(new GridIndices(4, 2)),
             );
             rookMove1 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(2, 2)).id,
+                rookPiece.id,
                 gridIndicesToPosition(new GridIndices(2, 1)),
             );
             rookMove2 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(2, 1)).id,
+                rookPiece.id,
                 gridIndicesToPosition(new GridIndices(5, 1)),
             );
             rookMove3 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(5, 1)).id,
+                rookPiece.id,
                 gridIndicesToPosition(new GridIndices(5, 2)),
             );
         } else {
+            rookPiece = robotManager.getRobotAtIndices(new GridIndices(2, 9));
             kingMove = new AbsoluteMoveCommand(
                 robotManager.getRobotAtIndices(moveToGridMove(move).from).id,
                 gridIndicesToPosition(new GridIndices(4, 9)),
             );
             rookMove1 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(2, 9)).id,
+                rookPiece.id,
                 gridIndicesToPosition(new GridIndices(2, 10)),
             );
             rookMove2 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(2, 10)).id,
+                rookPiece.id,
                 gridIndicesToPosition(new GridIndices(5, 10)),
             );
             rookMove3 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(6, 10)).id,
+                rookPiece.id,
                 gridIndicesToPosition(new GridIndices(5, 9)),
             );
         }
@@ -602,39 +605,42 @@ export function materializePath(move: Move): Command {
         let rookMove1;
         let rookMove2;
         let rookMove3;
+        let rookPiece;
         if (moveToGridMove(move).from.j === 2) {
+            rookPiece = robotManager.getRobotAtIndices(new GridIndices(9, 2))
             kingMove = new AbsoluteMoveCommand(
                 robotManager.getRobotAtIndices(moveToGridMove(move).from).id,
-                gridIndicesToPosition(new GridIndices(9, 2)),
+                gridIndicesToPosition(new GridIndices(8, 2)),
             );
             rookMove1 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(9, 2)).id,
+                rookPiece.id,
                 gridIndicesToPosition(new GridIndices(9, 1)),
             );
             rookMove2 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(9, 1)).id,
-                gridIndicesToPosition(new GridIndices(6, 1)),
+                rookPiece.id,
+                gridIndicesToPosition(new GridIndices(7, 1)),
             );
             rookMove3 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(6, 1)).id,
-                gridIndicesToPosition(new GridIndices(9, 2)),
+                rookPiece.id,
+                gridIndicesToPosition(new GridIndices(7, 2)),
             );
         } else {
+            rookPiece = robotManager.getRobotAtIndices(new GridIndices(9, 9));
             kingMove = new AbsoluteMoveCommand(
                 robotManager.getRobotAtIndices(moveToGridMove(move).from).id,
-                gridIndicesToPosition(new GridIndices(9, 9)),
+                gridIndicesToPosition(new GridIndices(9, 8)),
             );
             rookMove1 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(9, 9)).id,
+                rookPiece.id,
                 gridIndicesToPosition(new GridIndices(9, 10)),
             );
             rookMove2 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(9, 10)).id,
-                gridIndicesToPosition(new GridIndices(6, 10)),
+                rookPiece.id,
+                gridIndicesToPosition(new GridIndices(7, 10)),
             );
             rookMove3 = new AbsoluteMoveCommand(
-                robotManager.getRobotAtIndices(new GridIndices(6, 10)).id,
-                gridIndicesToPosition(new GridIndices(6, 9)),
+                rookPiece.id,
+                gridIndicesToPosition(new GridIndices(7, 9)),
             );
         }
         return new SequentialCommandGroup([
