@@ -40,6 +40,31 @@ export class SetRobotVariableMessage extends RobotMessage {
 }
 
 /**
+ * A message to set a variable on the robot
+ */
+export class SetRobotPositionMessage extends RobotMessage {
+    constructor(
+        id: string,
+        public readonly xpos: number,
+        public readonly ypos: number,
+        public readonly deg: number,
+    ) {
+        super(id);
+    }
+
+    protected type = MessageType.SET_ROBOT_POSITION;
+
+    protected toObj(): object {
+        return {
+            ...super.toObj(),
+            xpos: this.xpos,
+            ypos: this.ypos,
+            deg:this.deg,
+        };
+    }
+}
+
+/**
  * A message to drive the robot based on left and right motor power
  * @returns an object with the id, left, right motor power
  */

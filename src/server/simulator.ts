@@ -1,4 +1,3 @@
-import { EventEmitter } from "@posva/event-emitter";
 import { Robot } from "./robot/robot";
 import config from "./api/bot-server-config.json";
 import type { Packet, PacketWithId } from "./utils/tcp-packet";
@@ -10,7 +9,7 @@ import { SimulatorUpdateMessage } from "../common/message/simulator-message";
 import { socketManager } from "./api/managers";
 import { randomUUID } from "node:crypto";
 import { GridIndices } from "./robot/grid-indices";
-import { BotTunnel, type RobotEventEmitter } from "./api/bot-tunnel";
+import { BotTunnel, } from "./api/bot-tunnel";
 
 const srcDir = path.resolve(__dirname, "../");
 
@@ -70,7 +69,6 @@ const parseErrorStack = (stack: string): StackFrame[] => {
  */
 export class VirtualBotTunnel extends BotTunnel {
     connected = true;
-    emitter: RobotEventEmitter;
 
     static messages: {
         ts: Date;
@@ -85,12 +83,14 @@ export class VirtualBotTunnel extends BotTunnel {
         super();
 
         // pulls initial heading and position from robot, then only depending on messages sent to the 'robot' to update the position and heading
-
-        this.emitter = new EventEmitter();
     }
 
     public updatePosition(newPosition: Position): void {
         this.position = newPosition;
+    }
+
+    public updateRotation(newRotation: number): void {
+        this.headingRadians = newRotation;
     }
 
     isActive(): boolean {
@@ -233,6 +233,12 @@ export class VirtualRobot extends Robot {
     public updateTunnelPosition(newPosition: Position): void {
         if (this.tunnel instanceof VirtualBotTunnel) {
             this.tunnel.updatePosition(newPosition);
+        }
+    }
+
+    public updateTunnelRotation(newRotation: number): void {
+        if (this.tunnel instanceof VirtualBotTunnel) {
+            this.tunnel.updateRotation(newRotation);
         }
     }
 }

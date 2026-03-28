@@ -1,9 +1,21 @@
-import { Card, Button, H1, Code, H2 } from "@blueprintjs/core";
+import {
+    Card,
+    Button,
+    H1,
+    Code,
+    H2,
+    Tabs,
+    Tab,
+    FormGroup,
+    NumericInput,
+    InputGroup,
+} from "@blueprintjs/core";
 import {
     bgColor,
     darkModeIcon,
     toggleUserSetting,
     textColor,
+    buttonColor,
 } from "../check-dark-mode";
 import type { RobotState } from "../debug/simulator";
 import { RobotGrid } from "../debug/simulator";
@@ -14,6 +26,8 @@ import { DriveRobot } from "../debug/drive-robot";
 import type { ReactNode } from "react";
 import { useState, useReducer, useEffect } from "react";
 import "./admin.scss";
+import type { SendMessage } from "../../common/message/message";
+import { SetRobotPositionMessage } from "../../common/message/robot-message";
 
 interface AdminProps {
     status: string;
@@ -79,7 +93,7 @@ export function Admin() {
         });
     };
 
-    useEffect(() => {
+    useEffect(() => {2
         setInterval(() => {
             fetchRobotState();
             fetchAdminState();
@@ -95,12 +109,39 @@ export function Admin() {
         });
     };
 
+    const robotGrid: ReactNode = (
+        <div
+            style={{
+                display: "grid",
+                placeItems: "center",
+                width: "50vw",
+            }}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    gap: "1rem",
+                    marginBottom: "1rem",
+                    alignItems: "center",
+                }}
+            >
+                <H1 className={textColor()}>Robot Positions</H1>
+                <Button icon="refresh" onClick={fetchRobotState}>
+                    Refresh
+                </Button>
+            </div>
+            <div style={{ display: "flex", gap: "1rem" }}>
+                <RobotGrid robotState={robotState} onClick={onClick} />
+            </div>
+        </div>
+    );
+
     //start of debug duplicate
 
     // create the select and move buttons
-    let overrides: ReactNode;
+    let drive: ReactNode;
     if (selectedRobot === undefined) {
-        overrides = (
+        drive = (
             <div
                 style={{ width: "25vw", display: "grid", placeItems: "center" }}
             >
@@ -108,7 +149,7 @@ export function Admin() {
             </div>
         );
     } else {
-        overrides = (
+        drive = (
             <div className="debug-section " style={{ width: "25vw" }}>
                 {selectedRobot[0] === undefined ? null : (
                     <>
@@ -161,6 +202,36 @@ export function Admin() {
         </div>
     );
 
+    let overrides: ReactNode;
+    if (selectedRobot === undefined) {
+        overrides = (
+            <div
+                style={{ width: "25vw", display: "grid", placeItems: "center" }}
+            >
+                <H2 className={textColor()}>Select Robot</H2>
+            </div>
+        );
+    } else {
+        overrides = (
+            <div className="debug-section " style={{ width: "25vw" }}>
+                {selectedRobot[0] === undefined ? null : (
+                    <>
+                        <div className="debug-section">
+                            <H2 className={textColor()}>
+                                Overrides for <Code>{selectedRobot[0]}</Code>
+                            </H2>
+                            <SetRobotPos
+                                sendMessage={sendMessage}
+                                robotId={selectedRobot[0]}
+                                robotPos={selectedRobot[1]}
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
+        );
+    }
+
     return (
         <Card className={bgColor()}>
             <Button
@@ -181,34 +252,131 @@ export function Admin() {
                 icon={darkModeIcon()}
                 onClick={toggleUserSetting}
             />
-            <div className="container">
-                {overrides}
+            <Tabs className="tabs">
+                <Tab
+                    id="running"
+                    className={textColor()}
+                    title="running"
+                    panel={
+                        <div className="container">
+                            {drive}
+                            {robotGrid}
+                            {gameInfo}
+                        </div>
+                    }
+                />
+                <Tab
+                    id="override"
+                    title="overrides"
+                    className={textColor()}
+                    panel={
+                        <div className="container">
+                            {overrides}
+                            {robotGrid}
+                            {gameInfo}
+                        </div>
+                    }
+                />
+            </Tabs>
+        </Card>
+    );
+}
+
+interface SetRobotVariableProps {
+    robotId: string;
+    robotPos: SimulatedRobotLocation;
+    sendMessage: SendMessage;
+}
+
+/**
+ * set a variable for a robot
+ * @param props - function for setting the variable
+ * @returns - setup form
+ */
+export function SetRobotPos(props: SetRobotVariableProps): JSX.Element {
+    const [variableX, setVariableX] = useState("");
+    const [variableY, setVariableY] = useState("");
+    const [degrees, setDegrees] = useState("");
+    return (
+        <>
+            <FormGroup
+                label={<p className={textColor()}>Position override</p>}
+                labelFor="variable-name"
+            >
                 <div
                     style={{
                         display: "grid",
-                        placeItems: "center",
-                        width: "50vw",
+                        gridTemplateColumns: "auto auto",
                     }}
                 >
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "1rem",
-                            marginBottom: "1rem",
-                            alignItems: "center",
+                    <NumericInput
+                        id="variable-value"
+                        value={variableX}
+                        onValueChange={(
+                            _valueAsNumber: number,
+                            value: string,
+                        ) => {
+                            setVariableX(value);
                         }}
-                    >
-                        <H1 className={textColor()}>Robot Positions</H1>
-                        <Button icon="refresh" onClick={fetchRobotState}>
-                            Refresh
-                        </Button>
-                    </div>
-                    <div style={{ display: "flex", gap: "1rem" }}>
-                        <RobotGrid robotState={robotState} onClick={onClick} />
-                    </div>
+                        placeholder={props.robotPos.position.x.toString()}
+                        buttonPosition="right"
+                        style={{ width: "205px" }}
+                        min={0}
+                        max={11.9}
+                        step={0.5}
+                    />
+                    <NumericInput
+                        id="variable-value"
+                        value={variableY}
+                        onValueChange={(
+                            _valueAsNumber: number,
+                            value: string,
+                        ) => {
+                            setVariableY(value);
+                        }}
+                        placeholder={props.robotPos.position.y.toString()}
+                        buttonPosition="right"
+                        style={{ width: "205px" }}
+                        min={0}
+                        max={11.9}
+                        step={0.5}
+                    />
                 </div>
-                {gameInfo}
-            </div>
-        </Card>
+                <InputGroup
+                    id="variable-name"
+                    value={degrees}
+                    onValueChange={(value: string) => {
+                        setDegrees(value);
+                    }}
+                    placeholder={
+                        Math.round(
+                            (props.robotPos.headingRadians * 180) / Math.PI,
+                        ).toString() + "°"
+                    }
+                />
+            </FormGroup>
+            <Button
+                className={buttonColor()}
+                text="Submit"
+                rightIcon="arrow-right"
+                intent="primary"
+                onClick={() => {
+                    props.sendMessage(
+                        new SetRobotPositionMessage(
+                            props.robotId,
+                            variableX === "" ?
+                                props.robotPos.position.x
+                            :   parseFloat(variableX),
+                            variableY === "" ?
+                                props.robotPos.position.y
+                            :   parseFloat(variableY),
+                            degrees === "" ?
+                                props.robotPos.headingRadians
+                            :   parseFloat(degrees),
+                        ),
+                    );
+                }}
+            />
+        </>
     );
 }

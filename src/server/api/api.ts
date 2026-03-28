@@ -15,6 +15,7 @@ import {
 } from "../../common/message/game-message";
 import {
     DriveRobotMessage,
+    SetRobotPositionMessage,
     SetRobotVariableMessage,
 } from "../../common/message/robot-message";
 
@@ -41,7 +42,7 @@ import {
 } from "../utils/env";
 import { SaveManager } from "./save-manager";
 
-import { VirtualBotTunnel } from "../simulator";
+import { VirtualBotTunnel, VirtualRobot } from "../simulator";
 import { Position } from "../robot/position";
 import { DEGREE } from "../../common/units";
 import { PacketType } from "../utils/tcp-packet";
@@ -249,6 +250,8 @@ export const websocketHandler: WebsocketRequestHandler = (ws, req) => {
             await doDriveRobot(message);
         } else if (message instanceof SetRobotVariableMessage) {
             await doSetRobotVariable(message);
+        } else if (message instanceof SetRobotPositionMessage) {
+           await doSetRobotPosition(message);
         } else if (message instanceof JoinQueue) {
             console.log("So we got the join message");
             // this was initially !isPlayer, shouldn't it be isPlayer?
@@ -856,5 +859,25 @@ async function doSetRobotVariable(
             });
         }
     }
+    return true;
+}
+
+/**
+ * set a variable on the robot
+ * @param message - the robot id and variable information to change
+ * @returns boolean completed successfully
+ */
+async function doSetRobotPosition(
+    message: SetRobotPositionMessage,
+): Promise<boolean> {
+    robotManager.updateRobot(message.id, new GridIndices(Math.floor(message.xpos), Math.floor(message.ypos)));
+    const selected = robotManager.getRobot(message.id);
+    if(selected instanceof VirtualRobot){
+        selected.updateTunnelPosition(new Position(message.xpos, message.ypos));
+        selected.updateTunnelRotation(message.deg*Math.PI/180);
+    } 
+    selected.position = new Position(message.xpos, message.ypos);
+    selected.headingRadians = message.deg*Math.PI/180;
+    
     return true;
 }

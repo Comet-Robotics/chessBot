@@ -53,6 +53,10 @@ export enum MessageType {
      */
     SET_ROBOT_VARIABLE = "set-robot-variable",
     /**
+     * A client-server message used to update a variable (like rotations per square) on a robot.
+     */
+    SET_ROBOT_POSITION = "set-robot-position",
+    /**
      * A message sent from server to all clients for updating the robot simulator.
      */
     SIMULATOR_UPDATE = "simulator-update",
