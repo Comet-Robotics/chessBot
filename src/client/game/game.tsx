@@ -110,7 +110,7 @@ export function Game(): JSX.Element {
                 if (gameState.gameEndReason !== undefined) {
                     setGameInterruptedReason(gameState.gameEndReason);
                 }
-                return gameState.state;
+                return gameState;
             });
         },
         false,
@@ -126,6 +126,8 @@ export function Game(): JSX.Element {
         );
         // go to /home if error
     } else if (isError) {
+        console.log(isError);
+        console.log("error");
         return <Navigate to="/home" />;
     }
 

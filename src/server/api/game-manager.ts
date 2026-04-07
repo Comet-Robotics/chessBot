@@ -465,3 +465,169 @@ export class PuzzleGameManager extends GameManager {
         };
     }
 }
+
+export class HexapawnGameManager extends GameManager {
+    MINIMUM_DELAY = 600;
+
+    constructor(
+        chess: ChessEngine,
+        socketManager: SocketManager,
+        hostSide: Side,
+        protected clientManager: ClientManager,
+        protected reverse: boolean,
+    ) {
+        super(chess, socketManager, hostSide, reverse, undefined);
+        try {
+            chess.loadFen("K6k/8/8/8/ppp5/8/PPP5/8 w - - 0 1");
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    public async handleMessage(message: Message, id: string): Promise<void> {
+        // console.log("handling message");
+
+        // check which type the id is
+        const clientType = this.clientManager.getClientType(id);
+        let sendToPlayer: SendMessage;
+        let sendToOpponent: SendMessage;
+
+        // decide whether the host is the player or the opponent
+        if (clientType === ClientType.HOST) {
+            sendToPlayer = this.clientManager.sendToHost.bind(
+                this.clientManager,
+            );
+            sendToOpponent = this.clientManager.sendToClient.bind(
+                this.clientManager,
+            );
+        } else {
+            sendToPlayer = this.clientManager.sendToClient.bind(
+                this.clientManager,
+            );
+            sendToOpponent = this.clientManager.sendToHost.bind(
+                this.clientManager,
+            );
+        }
+
+        //bind all spectators
+        const sendToSpectators = this.clientManager.sendToSpectators.bind(
+            this.clientManager,
+        );
+        const ids = this.clientManager.getIds();
+        const currentSave = SaveManager.loadGame(id);
+        // update the internal chess object if it is a move massage and game not paused
+        console.log("up to here");
+        if (message instanceof MoveMessage && !gamePaused) {
+            // Call path materializer and send to bots
+            const command = materializePath(message.move);
+
+            this.chess.makeMove(message.move);
+
+            console.log("running executor");
+            // console.dir(command, { depth: null });
+            await executor.execute(command).catch((reason) => {
+                setPaused(true);
+                console.log(reason);
+                this.chess.undo();
+                this.socketManager.sendToAll(
+                    new GameHoldMessage(GameHoldReason.GAME_PAUSED),
+                );
+                return;
+            });
+            console.log("executor done");
+
+            if (ids && DO_SAVES) {
+                if (currentSave?.host === ids[0]) {
+                    SaveManager.saveGame(
+                        ids[0],
+                        ids[1],
+                        this.hostSide,
+                        -1,
+                        this.chess.pgn,
+                        this.chess.fen,
+                        robotManager.getIndicesToIds(),
+                    );
+                } else {
+                    SaveManager.saveGame(
+                        ids[1],
+                        ids[0],
+                        oppositeSide(this.hostSide),
+                        -1,
+                        this.chess.pgn,
+                        this.chess.fen,
+                        robotManager.getIndicesToIds(),
+                    );
+                }
+            }
+            sendToOpponent(message);
+            sendToSpectators(message);
+
+            // end the game if it is interrupted
+        } else if (message instanceof GameInterruptedMessage) {
+            this.gameInterruptedReason = message.reason;
+            // propagate back to both sockets
+            sendToPlayer(message);
+            sendToOpponent(message);
+            sendToSpectators(message);
+
+            //end the game in save manager
+            if (ids) {
+                if (currentSave?.host === ids[0])
+                    SaveManager.endGame(ids[0], ids[1]);
+                else SaveManager.endGame(ids[1], ids[0]);
+            }
+        } else if (message instanceof GameFinishedMessage) {
+            // propagate back to both sockets
+            if (ids) {
+                if (currentSave?.host === ids[0])
+                    SaveManager.endGame(ids[0], ids[1]);
+                else SaveManager.endGame(ids[1], ids[0]);
+            }
+        } else if (message instanceof GameHoldMessage) {
+            if (message.reason === GameHoldReason.DRAW_CONFIRMATION)
+                sendToPlayer(message);
+            else if (message.reason === GameHoldReason.DRAW_OFFERED) {
+                sendToOpponent(message);
+            } else {
+                sendToPlayer(message);
+                sendToOpponent(message);
+                sendToSpectators(message);
+            }
+        } else if (this.isGameEnded()) {
+            if (ids) {
+                if (currentSave?.host === ids[0])
+                    SaveManager.endGame(ids[0], ids[1]);
+                else SaveManager.endGame(ids[1], ids[0]);
+            }
+        }
+    }
+
+    public isGameEnded(): boolean {
+        //if a pawn makes it to the other side
+        if (
+            this.chess.fen.split("/")[4].includes("P") ||
+            this.chess.fen.split("/")[6].includes("p")
+        ) {
+            return true;
+        }
+        //there are only so many stalemate positions
+        else if (
+            this.chess.fen in
+            ["ppp5/PPP5/8/8/8/8/8/8", "1pp5/pPP5/P7/8/8/8/8/8"]
+        ) {
+            return true;
+        }
+        return this.gameInterruptedReason !== undefined;
+    }
+
+    public getGameEndReason(): GameEndReason | undefined {
+        return super.getGameEndReason();
+    }
+
+    public getGameState(clientType: ClientType): GameState {
+        return {
+            type: "puzzle",
+            ...super.getGameState(clientType),
+        };
+    }
+}
