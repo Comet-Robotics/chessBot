@@ -40,7 +40,7 @@ export class SetRobotVariableMessage extends RobotMessage {
 }
 
 /**
- * A message to set a variable on the robot
+ * A message to set the robots position
  */
 export class SetRobotPositionMessage extends RobotMessage {
     constructor(
@@ -59,7 +59,28 @@ export class SetRobotPositionMessage extends RobotMessage {
             ...super.toObj(),
             xpos: this.xpos,
             ypos: this.ypos,
-            deg:this.deg,
+            deg: this.deg,
+        };
+    }
+}
+
+/**
+ * A message to set a variable on the robot
+ */
+export class SetRobotPieceMessage extends RobotMessage {
+    constructor(
+        id: string,
+        public readonly piece: string,
+    ) {
+        super(id);
+    }
+
+    protected type = MessageType.SET_ROBOT_PIECE;
+
+    protected toObj(): object {
+        return {
+            ...super.toObj(),
+            piece: this.piece,
         };
     }
 }
@@ -84,6 +105,26 @@ export class DriveRobotMessage extends RobotMessage {
             ...super.toObj(),
             leftPower: this.leftPower,
             rightPower: this.rightPower,
+        };
+    }
+}
+
+export class MoveRobotMessage extends RobotMessage {
+    constructor(
+        id: string,
+        public readonly tileDistance: number,
+        public readonly deltaHeadingRadians: number,
+    ) {
+        super(id);
+    }
+
+    protected type = MessageType.MOVE_ROBOT;
+
+    protected toObj(): object {
+        return {
+            ...super.toObj(),
+            tileDistance: this.tileDistance,
+            deltaHeadingRadians: this.deltaHeadingRadians,
         };
     }
 }

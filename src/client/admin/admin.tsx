@@ -27,7 +27,10 @@ import type { ReactNode } from "react";
 import { useState, useReducer, useEffect } from "react";
 import "./admin.scss";
 import type { SendMessage } from "../../common/message/message";
-import { SetRobotPositionMessage } from "../../common/message/robot-message";
+import {
+    SetRobotPieceMessage,
+    SetRobotPositionMessage,
+} from "../../common/message/robot-message";
 
 interface AdminProps {
     status: string;
@@ -80,6 +83,13 @@ export function Admin() {
         dispatch({ type: "SET_ALL_ROBOTS", payload: robotState });
     };
 
+    const [robotPieces, setRobotPieces] = useState<[string, string]>(["",""]);
+
+    const fetchRobotPieces = async () => {
+        const { robotState } = await get("/get-robot-pieces");
+        setRobotPieces(robotState);
+    };
+
     const fetchAdminState = async () => {
         await get("/admin-state").then((props) => {
             const holder: AdminProps = {
@@ -93,10 +103,11 @@ export function Admin() {
         });
     };
 
-    useEffect(() => {2
+    useEffect(() => {
         setInterval(() => {
             fetchRobotState();
             fetchAdminState();
+            fetchRobotPieces();
         }, 250);
     }, []);
 
@@ -224,6 +235,11 @@ export function Admin() {
                                 sendMessage={sendMessage}
                                 robotId={selectedRobot[0]}
                                 robotPos={selectedRobot[1]}
+                            />
+                            <SetRobotPiece
+                                sendMessage={sendMessage}
+                                robotId={selectedRobot[0]}
+                                robotPiece={robotPieces[selectedRobot[0]]}
                             />
                         </div>
                     </>
@@ -375,6 +391,106 @@ export function SetRobotPos(props: SetRobotVariableProps): JSX.Element {
                             :   parseFloat(degrees),
                         ),
                     );
+                }}
+            />
+        </>
+    );
+}
+
+interface SetRobotPieceProps {
+    robotId: string;
+    robotPiece: string;
+    sendMessage: SendMessage;
+}
+
+/**
+ * set a variable for a robot
+ * @param props - function for setting the variable
+ * @returns - setup form
+ */
+export function SetRobotPiece(props: SetRobotPieceProps): JSX.Element {
+    const [piece, setPiece] = useState(props.robotPiece);
+
+    return (
+        <>
+            <FormGroup
+                label={<p className={textColor()}>Piece override</p>}
+                labelFor="variable-name"
+            >
+                <InputGroup
+                    id="variable-name"
+                    value={piece}
+                    onValueChange={(value: string) => {
+                        setPiece(value);
+                    }}
+                    placeholder={
+                        props.robotPiece
+                    }
+                />
+            </FormGroup>
+            <Button
+                className={buttonColor()}
+                text="Submit"
+                rightIcon="arrow-right"
+                intent="primary"
+                onClick={() => {
+                    if(piece !== props.robotPiece && ["w_king","w_queen","w_bishop","w_knight","w_rook","w_pawn","b_king","b_queen","b_bishop","b_knight","b_rook","b_pawn"].includes(piece))
+                        props.sendMessage(
+                            new SetRobotPieceMessage(
+                                props.robotId,
+                                piece
+                            ),
+                        );
+                }}
+            />
+        </>
+    );
+}
+
+
+interface SendRobotMoveProps {
+    robotId: string;
+    robotPiece: string;
+    sendMessage: SendMessage;
+}
+
+/**
+ * set a variable for a robot
+ * @param props - function for setting the variable
+ * @returns - setup form
+ */
+export function SendRobotMove(props: SendRobotMoveProps): JSX.Element {
+    const [piece, setPiece] = useState(props.robotPiece);
+
+    return (
+        <>
+            <FormGroup
+                label={<p className={textColor()}>Force Movement</p>}
+                labelFor="variable-name"
+            >
+                <InputGroup
+                    id="variable-name"
+                    value={piece}
+                    onValueChange={(value: string) => {
+                        setPiece(value);
+                    }}
+                    placeholder={
+                        props.robotPiece
+                    }
+                />
+            </FormGroup>
+            <Button
+                className={buttonColor()}
+                text="Submit"
+                rightIcon="arrow-right"
+                intent="primary"
+                onClick={() => {
+                        props.sendMessage(
+                            new SetRobotPieceMessage(
+                                props.robotId,
+                                piece
+                            ),
+                        );
                 }}
             />
         </>
