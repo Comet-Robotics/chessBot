@@ -180,6 +180,7 @@ export function Game(): JSX.Element {
             (move: Move): void => {
                 setChess(chess.copy(move));
                 sendMessage(new MoveMessage(move));
+                window.location.reload();
             }
         :   () => {}; //send a do-nothing function if game is paused
 

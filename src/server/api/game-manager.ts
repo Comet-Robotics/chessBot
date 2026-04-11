@@ -516,7 +516,6 @@ export class HexapawnGameManager extends GameManager {
         const ids = this.clientManager.getIds();
         const currentSave = SaveManager.loadGame(id);
         // update the internal chess object if it is a move massage and game not paused
-        console.log("up to here");
         if (message instanceof MoveMessage && !gamePaused) {
             // Call path materializer and send to bots
             const command = materializePath(message.move);
@@ -603,6 +602,8 @@ export class HexapawnGameManager extends GameManager {
     }
 
     public isGameEnded(): boolean {
+        //if one side gives up
+        if (this.gameInterruptedReason !== undefined) return true;
         //if a pawn makes it to the other side
         if (
             this.chess.fen.split("/")[4].includes("P") ||
@@ -610,18 +611,78 @@ export class HexapawnGameManager extends GameManager {
         ) {
             return true;
         }
-        //there are only so many stalemate positions
-        else if (
-            this.chess.fen in
-            ["ppp5/PPP5/8/8/8/8/8/8", "1pp5/pPP5/P7/8/8/8/8/8"]
-        ) {
+        //stalemate calculations. efficient? probably not. easy to understand? probably
+        else {
+            const fenPawns = this.chess.fen.split("/").slice(4, 7);
+            const pawns: string[][] = [];
+            //normalize the fen
+            for (let x = 0; x < 3; x++) {
+                const temp = [...fenPawns[x]];
+                const row: string[] = [];
+                for (const y of temp) {
+                    if (y === "p" || y === "P") {
+                        row.push(y);
+                    } else if (y === "1" || y === "6") {
+                        row.push("1");
+                    } else if (y === "2" || y === "7") {
+                        row.push("1");
+                        row.push("1");
+                    } else if (y === "8") {
+                        row.push("1");
+                        row.push("1");
+                        row.push("1");
+                    }
+                }
+                pawns.push(row);
+            }
+            for (let x = 0; x < 3; x++) {
+                for (let y = 0; y < 3; y++) {
+                    if (pawns[x][y] === "p") {
+                        if (pawns[x + 1][y] === "1") {
+                            return false;
+                        }
+                        if (
+                            (y === 0 && pawns[x + 1][1] === "P") ||
+                            (y === 2 && pawns[x + 1][1] === "P") ||
+                            (y === 1 &&
+                                (pawns[x + 1][0] === "P" ||
+                                    pawns[x + 1][2] === "P"))
+                        ) {
+                            return false;
+                        }
+                    } else if (pawns[x][y] === "P") {
+                        if (pawns[x - 1][y] === "1") {
+                            return false;
+                        }
+                        if (
+                            (y === 0 && pawns[x - 1][1] === "p") ||
+                            (y === 2 && pawns[x - 1][1] === "p") ||
+                            (y === 1 &&
+                                (pawns[x - 1][0] === "p" ||
+                                    pawns[x + 1][2] === "p"))
+                        ) {
+                            return false;
+                        }
+                    }
+                }
+            }
             return true;
         }
-        return this.gameInterruptedReason !== undefined;
     }
 
     public getGameEndReason(): GameEndReason | undefined {
-        return super.getGameEndReason();
+        if (this.isGameEnded()) {
+            if (this.chess.fen.split("/")[4].includes("P")) {
+                return GameFinishedReason.BLACK_CHECKMATED;
+            } else if (this.chess.fen.split("/")[6].includes("p")) {
+                return GameFinishedReason.WHITE_CHECKMATED;
+            } else if (super.getGameEndReason()) {
+                return super.getGameEndReason();
+            }
+            return this.chess.fen.split(" ")[2] === "w" ?
+                    GameFinishedReason.WHITE_CHECKMATED
+                :   GameFinishedReason.BLACK_CHECKMATED;
+        }
     }
 
     public getGameState(clientType: ClientType): GameState {
