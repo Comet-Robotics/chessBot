@@ -200,6 +200,7 @@ export class HumanGameManager extends GameManager {
             // end the game if it is interrupted
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
+            gameEvents.emit("cleanupGame");
             // propagate back to both sockets
             sendToPlayer(message);
             sendToOpponent(message);
@@ -330,6 +331,7 @@ export class ComputerGameManager extends GameManager {
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             SaveManager.endGame(id, "ai");
+            gameEvents.emit("cleanupGame");
             // Reflect end game reason back to client
             this.socketManager.sendToAll(message);
         }
@@ -437,6 +439,7 @@ export class PuzzleGameManager extends GameManager {
             if (this.isGameEnded()) {
                 const gameEnd = this.getGameEndReason();
                 console.log("Game ended! time to raise hell!");
+                gameEvents.emit("cleanupGame");
                 if (gameEnd) {
                     this.socketManager.sendToAll(new GameEndMessage(gameEnd));
                 }
@@ -446,6 +449,7 @@ export class PuzzleGameManager extends GameManager {
         ) {
             this.gameInterruptedReason = message.reason;
             // Reflect end game reason back to client
+            gameEvents.emit("cleanupGame");
             this.socketManager.sendToAll(message);
         }
     }

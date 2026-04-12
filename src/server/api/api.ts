@@ -61,6 +61,7 @@ import {
 } from "../command/move-command";
 import { GridIndices } from "../robot/grid-indices";
 import {
+    moveAllRobotsFromBoardToHome,
     moveAllRobotsHomeToDefaultOptimized,
     moveAllRobotsToDefaultPositions,
 } from "../robot/path-materializer";
@@ -74,6 +75,8 @@ import {
     setAllRobotsToDefaultPositions,
     unpauseGame,
 } from "./pauseHandler";
+
+import { gameEvents } from "./game-events";
 
 /**
  * Helper function to move all robots from their home positions to their default positions
@@ -99,6 +102,12 @@ async function setupDefaultRobotPositions(
             setAllRobotsToDefaultPositions();
         }
     }
+}
+
+async function cleanupGame()
+{
+    const command = moveAllRobotsFromBoardToHome();
+    await executor.execute(command)
 }
 
 const queue = new PriorityQueue<string>();
