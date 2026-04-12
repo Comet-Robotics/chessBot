@@ -70,7 +70,6 @@ import { tcpServer } from "./tcp-interface";
 import { robotManager } from "../robot/robot-manager";
 import { executor } from "../command/executor";
 import {
-    gamePaused,
     pauseGame,
     setAllRobotsToDefaultPositions,
     unpauseGame,
@@ -269,6 +268,8 @@ export const apiRouter = Router();
  * gets the current stored queue
  */
 apiRouter.get("/get-queue", (_, res) => {
+    console.log("Yeah we have names bro")
+    console.log(names)
     if (names) return res.send([...names.values()]);
     else return res.send([]);
 });
@@ -297,7 +298,7 @@ apiRouter.get("/client-information", async (req, res) => {
         // if the game was an ai game, create a computer game manager with the ai difficulty
         if (oldSave.aiDifficulty !== -1) {
             const cgm = new ComputerGameManager(
-                new ChessEngine(oldSave.game),
+                new ChessEngine(false, oldSave.game),
                 socketManager,
                 oldSave.host === req.cookies.id ?
                     oldSave.hostWhite ?
@@ -314,7 +315,7 @@ apiRouter.get("/client-information", async (req, res) => {
             // create a new human game manger with appropriate clients
             setGameManager(
                 new HumanGameManager(
-                    new ChessEngine(oldSave.game),
+                    new ChessEngine(false, oldSave.game),
                     socketManager,
                     oldSave.hostWhite ? Side.WHITE : Side.BLACK,
                     clientManager,
@@ -359,7 +360,6 @@ apiRouter.get("/game-state", (req, res) => {
     const clientType = clientManager.getClientType(req.cookies.id);
     return res.send({
         state: gameManager.getGameState(clientType),
-        pause: gamePaused,
     });
 });
 
@@ -479,7 +479,7 @@ apiRouter.post("/start-puzzle-game", async (req, res) => {
     }
     setGameManager(
         new PuzzleGameManager(
-            new ChessEngine(),
+            new ChessEngine(true),
             socketManager,
             fen,
             "",

@@ -3,7 +3,7 @@ import { GridIndices } from "./grid-indices";
 import { Robot } from "./robot";
 import config from "../api/bot-server-config.json";
 import { virtualRobots } from "../simulator";
-import { USE_VIRTUAL_ROBOTS } from "../utils/env";
+import { USE_BANQUET_INDICES, USE_VIRTUAL_ROBOTS } from "../utils/env";
 
 /**
  * Stores robots. Provides utilities for finding them by position.
@@ -60,8 +60,8 @@ export class RobotManager {
         const robot = new Robot(
             robotId,
             new GridIndices(
-                robotConfig?.homeIndices.x,
-                robotConfig?.homeIndices.y,
+                (USE_BANQUET_INDICES && robotConfig.banquetIndices !== null) ? robotConfig?.banquetIndices.x : robotConfig?.homeIndices.x,
+                (USE_BANQUET_INDICES && robotConfig.banquetIndices !== null) ? robotConfig?.banquetIndices.y : robotConfig?.homeIndices.y,
             ),
             new GridIndices(
                 robotConfig?.defaultIndices.x,

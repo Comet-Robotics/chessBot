@@ -67,6 +67,7 @@ export abstract class GameManager {
             this.gameInterruptedReason !== undefined ||
             this.chess.isGameFinished()
         );
+
     }
 
     /** get game end reason */
@@ -430,9 +431,12 @@ export class PuzzleGameManager extends GameManager {
                 );
             }
 
+            // RIGHT HERE PROBABLY 
+            
             //send a finished message
             if (this.isGameEnded()) {
                 const gameEnd = this.getGameEndReason();
+                console.log("Game ended! time to raise hell!");
                 if (gameEnd) {
                     this.socketManager.sendToAll(new GameEndMessage(gameEnd));
                 }

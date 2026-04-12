@@ -11,6 +11,7 @@ import { socketManager } from "./api/managers";
 import { randomUUID } from "node:crypto";
 import { GridIndices } from "./robot/grid-indices";
 import { BotTunnel, type RobotEventEmitter } from "./api/bot-tunnel";
+import { USE_BANQUET_INDICES } from "./utils/env";
 
 const srcDir = path.resolve(__dirname, "../");
 
@@ -256,8 +257,8 @@ function createVirtualRobots() {
                 new VirtualRobot(
                     id,
                     new GridIndices(
-                        realRobotConfig.homeIndices.x,
-                        realRobotConfig.homeIndices.y,
+                        (USE_BANQUET_INDICES && realRobotConfig?.banquetIndices !== null && realRobotConfig?.banquetIndices !== undefined) ? realRobotConfig?.banquetIndices?.x : realRobotConfig?.homeIndices.x,
+                        (USE_BANQUET_INDICES && realRobotConfig?.banquetIndices !== null && realRobotConfig?.banquetIndices !== undefined) ? realRobotConfig?.banquetIndices?.y : realRobotConfig?.homeIndices.y,
                     ),
                     new GridIndices(
                         realRobotConfig.defaultIndices.x,
