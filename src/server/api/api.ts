@@ -104,12 +104,6 @@ async function setupDefaultRobotPositions(
     }
 }
 
-async function cleanupGame()
-{
-    const command = moveAllRobotsFromBoardToHome();
-    await executor.execute(command)
-}
-
 const queue = new PriorityQueue<string>();
 //hashmap mapping cookie ids to user names
 const names = new Map<string, string>();

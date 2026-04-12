@@ -23,7 +23,7 @@ import {
     GameHoldReason,
 } from "../../common/game-end-reasons";
 import { SaveManager } from "./save-manager";
-import { materializePath } from "../robot/path-materializer";
+import { materializePath, moveAllRobotsFromBoardToHome } from "../robot/path-materializer";
 import { DO_SAVES } from "../utils/env";
 import { executor } from "../command/executor";
 import { robotManager } from "../robot/robot-manager";
@@ -98,6 +98,13 @@ export abstract class GameManager {
     }
 
     public abstract handleMessage(message: Message, id: string): Promise<void>;
+
+    public async cleanupGame() : Promise<void>
+    {
+        const command = moveAllRobotsFromBoardToHome();
+        await executor.execute(command)
+ 
+    }
 }
 
 /**
@@ -200,7 +207,7 @@ export class HumanGameManager extends GameManager {
             // end the game if it is interrupted
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
-            gameEvents.emit("cleanupGame");
+            await this.cleanupGame()
             // propagate back to both sockets
             sendToPlayer(message);
             sendToOpponent(message);
@@ -331,7 +338,7 @@ export class ComputerGameManager extends GameManager {
         } else if (message instanceof GameInterruptedMessage) {
             this.gameInterruptedReason = message.reason;
             SaveManager.endGame(id, "ai");
-            gameEvents.emit("cleanupGame");
+            await this.cleanupGame()
             // Reflect end game reason back to client
             this.socketManager.sendToAll(message);
         }
@@ -439,7 +446,7 @@ export class PuzzleGameManager extends GameManager {
             if (this.isGameEnded()) {
                 const gameEnd = this.getGameEndReason();
                 console.log("Game ended! time to raise hell!");
-                gameEvents.emit("cleanupGame");
+                await this.cleanupGame()
                 if (gameEnd) {
                     this.socketManager.sendToAll(new GameEndMessage(gameEnd));
                 }
@@ -449,7 +456,7 @@ export class PuzzleGameManager extends GameManager {
         ) {
             this.gameInterruptedReason = message.reason;
             // Reflect end game reason back to client
-            gameEvents.emit("cleanupGame");
+            await this.cleanupGame()
             this.socketManager.sendToAll(message);
         }
     }
