@@ -101,19 +101,28 @@ export function Game(): JSX.Element {
     );
 
     // checks if a game is currently active
-    const { isPending, data : gameState, isError } = useEffectQuery(
+    const {
+        isPending,
+        data: gameState,
+        isError,
+    } = useEffectQuery(
         "game-state",
         async () => {
             return get("/game-state").then((gameState) => {
                 // console.log("GAMESTATE ACQUIRED!");
                 // console.log(gameState);
-                setChess(new ChessEngine(gameState.state.type === "puzzle", gameState.state.position));
+                setChess(
+                    new ChessEngine(
+                        gameState.state.type === "puzzle",
+                        gameState.state.position,
+                    ),
+                );
                 setPause(gameState.state.pause);
                 if (gameState.state.gameEndReason !== undefined) {
                     setGameInterruptedReason(gameState.state.gameEndReason);
                 }
                 return gameState.state;
-            })
+            });
         },
         false,
     );

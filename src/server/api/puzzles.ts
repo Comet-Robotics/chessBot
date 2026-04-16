@@ -240,5 +240,4 @@ export const puzzles: Record<string, PuzzleComponents> = {
             "Nk6/8/1KB5/8/8/8/8/8 w - - 0 1",
         ),
     },
-
 };
