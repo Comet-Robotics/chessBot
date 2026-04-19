@@ -35,7 +35,7 @@ enum CollisionType {
 
 const arrayOfCornersIndicies = [0, 9, 18, 27];
 
-let  alreadyHomePieces = new Set();
+let alreadyHomePieces = new Set();
 
 const arrayOfDeadzone = [
     new GridIndices(1, 1),
@@ -107,11 +107,10 @@ function calcCollisionType(gridMove: GridMove): CollisionType {
 function addToCollisions(collisions: string[], x: number, y: number) {
     const square = new GridIndices(x, y);
     if (robotManager.isRobotAtIndices(square)) {
-        const robotId : string = robotManager.getRobotAtIndices(square).id
+        const robotId: string = robotManager.getRobotAtIndices(square).id;
         // if it's a piece that already returned and thus is harmless, don't do anything, otherwise push it
-        if(alreadyHomePieces.has(robotId))
-        {
-            console.log(`The id was ${robotId}, and it's already home!`)
+        if (alreadyHomePieces.has(robotId)) {
+            console.log(`The id was ${robotId}, and it's already home!`);
             return;
         }
         collisions.push(robotId);
@@ -376,7 +375,17 @@ function constructFinalCommand(
             const mainTurn1 = constructRotateCommand(mainPiece, pos1, null);
             const mainTurn2 = constructRotateCommand(mainPiece, pos2, pos1);
             const mainTurn3 = constructRotateCommand(mainPiece, pos3, pos2);
-            const setupCommands: ReversibleRobotCommand[] = [];
+            const setupCommands: SequentialCommandGroup[] = [];
+
+            for (let x = 0; x < rotateCommands.length; x++) {
+                setupCommands.push(
+                    new SequentialCommandGroup([
+                        rotateCommands[x],
+                        driveCommands[x],
+                    ]),
+                );
+            }
+            setupCommands.push(new SequentialCommandGroup([mainTurn1]));
 
             const mainDrive: SequentialCommandGroup =
                 new SequentialCommandGroup([
@@ -386,7 +395,6 @@ function constructFinalCommand(
                     mainTurn3,
                     mainDrive3,
                 ]);
-            setupCommands.push(...rotateCommands, mainTurn1, ...driveCommands);
             return new MovePiece(setupCommands, mainDrive, noReverse);
         } else if (
             collisionType === CollisionType.VERTICAL &&
@@ -403,7 +411,17 @@ function constructFinalCommand(
             const mainTurn1 = constructRotateCommand(mainPiece, pos1, null);
             const mainTurn2 = constructRotateCommand(mainPiece, pos2, pos1);
             const mainTurn3 = constructRotateCommand(mainPiece, pos3, pos2);
-            const setupCommands: ReversibleRobotCommand[] = [];
+            const setupCommands: SequentialCommandGroup[] = [];
+
+            for (let x = 0; x < rotateCommands.length; x++) {
+                setupCommands.push(
+                    new SequentialCommandGroup([
+                        rotateCommands[x],
+                        driveCommands[x],
+                    ]),
+                );
+            }
+            setupCommands.push(new SequentialCommandGroup([mainTurn1]));
 
             const mainDrive: SequentialCommandGroup =
                 new SequentialCommandGroup([
@@ -413,20 +431,28 @@ function constructFinalCommand(
                     mainTurn3,
                     mainDrive3,
                 ]);
-            setupCommands.push(...rotateCommands, mainTurn1, ...driveCommands);
             return new MovePiece(setupCommands, mainDrive, noReverse);
         } else {
             const pos = new Position(to.i + 0.5, to.j + 0.5);
             const mainDrive = constructDriveCommand(mainPiece, pos, null);
             const mainTurn = constructRotateCommand(mainPiece, pos, null);
-            const setupCommands: ReversibleRobotCommand[] = [];
-            setupCommands.push(...rotateCommands, mainTurn, ...driveCommands);
+            const setupCommands: SequentialCommandGroup[] = [];
+
+            for (let x = 0; x < rotateCommands.length; x++) {
+                setupCommands.push(
+                    new SequentialCommandGroup([
+                        rotateCommands[x],
+                        driveCommands[x],
+                    ]),
+                );
+            }
+            setupCommands.push(new SequentialCommandGroup([mainTurn]));
             return new MovePiece(setupCommands, mainDrive, noReverse);
         }
     } else {
         console.log("no main piece");
         return new MovePiece(
-            rotateCommands,
+            [new SequentialCommandGroup([])],
             new SequentialCommandGroup([]),
             noReverse,
         );
@@ -466,22 +492,22 @@ function moveToDeadZone(origin: GridIndices): GridMove {
     const aboveMove = {
         from: origin,
         to: new GridIndices(origin.i, 10), //(origin[0] + "8" as unknown as GridIndices),
-        distance: Math.abs(10 - origin.j)
+        distance: Math.abs(10 - origin.j),
     };
     const belowMove = {
         from: origin,
         to: new GridIndices(origin.i, 1), //(origin[0] + "1") as Square,
-        distance: Math.abs(1 - origin.j)
+        distance: Math.abs(1 - origin.j),
     };
     const rightMove = {
         from: origin,
         to: new GridIndices(10, origin.j), //("h" + origin[1]) as Square,
-        distance: Math.abs(10 - origin.i)
+        distance: Math.abs(10 - origin.i),
     };
     const leftMove = {
         from: origin,
         to: new GridIndices(1, origin.j), //("a" + origin[1]) as Square,
-        distance: Math.abs(1 - origin.i)
+        distance: Math.abs(1 - origin.i),
     };
 
     const aboveCollision = detectCollisions(
@@ -501,7 +527,6 @@ function moveToDeadZone(origin: GridIndices): GridMove {
         calcCollisionType(rightMove),
     );
 
-
     const collisionTuple: [GridMove, string[]][] = [
         [aboveMove, aboveCollision],
         [belowMove, belowCollision],
@@ -518,14 +543,13 @@ function moveToDeadZone(origin: GridIndices): GridMove {
 
         // if equal amount of collisions, do it by distance instaed
         return (a[0].distance ?? 0) - (b[0].distance ?? 0);
-    });    
+    });
     console.log("Collision ordering:");
     console.log(collisionTuple[0]);
     console.log(collisionTuple[1]);
     console.log(collisionTuple[2]);
     console.log(collisionTuple[3]);
-    console.log('end collision ordering');
-
+    console.log("end collision ordering");
 
     return collisionTuple[0][0];
 }
@@ -1095,7 +1119,7 @@ function findNextCornerOrEnd(
 
 /**
  * Determines the deadzone position to move to from a board position
- * All robots should go down to the bottom deadzone (j = 1) to avoid phasing through others.. 
+ * All robots should go down to the bottom deadzone (j = 1) to avoid phasing through others..
  * NOT ANYMORE! SCREW THAT
  */
 // function moveFromBoardToDeadzone(boardPos: GridIndices): GridIndices {

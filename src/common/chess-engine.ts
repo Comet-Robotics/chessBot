@@ -15,7 +15,7 @@ import type { RobotManager } from "../server/robot/robot-manager";
  */
 export class ChessEngine {
     private chess: Chess;
-    private isPuzzle : boolean;
+    private isPuzzle: boolean;
 
     /**
      * @param pgn - The pgn to use. If undefined, a new game is created.
@@ -275,11 +275,10 @@ export class ChessEngine {
      * @returns - a game finished reason from the enum
      */
     getGameFinishedReason(): GameFinishedReason | undefined {
-        if(this.isPuzzle)
-        {
+        if (this.isPuzzle) {
             return undefined;
         }
-        
+
         if (this.chess.isCheckmate()) {
             // If it's your turn, you lost
             return this.chess.turn() === "w" ?

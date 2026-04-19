@@ -101,7 +101,11 @@ export function Game(): JSX.Element {
     );
 
     // checks if a game is currently active
-    const { isPending, data : gameState, isError } = useEffectQuery(
+    const {
+        isPending,
+        data: gameState,
+        isError,
+    } = useEffectQuery(
         "game-state",
         async () => {
             return get("/game-state").then((gameState) => {

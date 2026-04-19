@@ -34,11 +34,7 @@ import {
 } from "./game-manager";
 import { ChessEngine } from "../../common/chess-engine";
 import { Side } from "../../common/game-types";
-import {
-    USE_VIRTUAL_ROBOTS,
-    START_ROBOTS_AT_DEFAULT,
-    DO_SAVES,
-} from "../utils/env";
+import { START_ROBOTS_AT_DEFAULT, DO_SAVES } from "../utils/env";
 import { SaveManager } from "./save-manager";
 
 import { VirtualBotTunnel } from "../simulator";
@@ -268,8 +264,8 @@ export const apiRouter = Router();
  * gets the current stored queue
  */
 apiRouter.get("/get-queue", (_, res) => {
-    console.log("Yeah we have names bro")
-    console.log(names)
+    console.log("Yeah we have names bro");
+    console.log(names);
     if (names) return res.send([...names.values()]);
     else return res.send([]);
 });
@@ -674,9 +670,11 @@ apiRouter.post("/do-big", async (req, res) => {
  * get the current state of the virtual robots for the simulator
  */
 apiRouter.get("/get-simulator-robot-state", (_, res) => {
+    /*
     if (!USE_VIRTUAL_ROBOTS) {
         return res.status(400).send({ message: "Simulator is not enabled." });
     }
+        */
     const robotsEntries = Array.from(robotManager.idsToRobots);
 
     // get all of the robots and their positions

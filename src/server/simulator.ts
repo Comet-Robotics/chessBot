@@ -257,8 +257,20 @@ function createVirtualRobots() {
                 new VirtualRobot(
                     id,
                     new GridIndices(
-                        (USE_BANQUET_INDICES && realRobotConfig?.banquetIndices !== null && realRobotConfig?.banquetIndices !== undefined) ? realRobotConfig?.banquetIndices?.x : realRobotConfig?.homeIndices.x,
-                        (USE_BANQUET_INDICES && realRobotConfig?.banquetIndices !== null && realRobotConfig?.banquetIndices !== undefined) ? realRobotConfig?.banquetIndices?.y : realRobotConfig?.homeIndices.y,
+                        (
+                            USE_BANQUET_INDICES &&
+                            realRobotConfig?.banquetIndices !== null &&
+                            realRobotConfig?.banquetIndices !== undefined
+                        ) ?
+                            realRobotConfig?.banquetIndices?.x
+                        :   realRobotConfig?.homeIndices.x,
+                        (
+                            USE_BANQUET_INDICES &&
+                            realRobotConfig?.banquetIndices !== null &&
+                            realRobotConfig?.banquetIndices !== undefined
+                        ) ?
+                            realRobotConfig?.banquetIndices?.y
+                        :   realRobotConfig?.homeIndices.y,
                     ),
                     new GridIndices(
                         realRobotConfig.defaultIndices.x,
