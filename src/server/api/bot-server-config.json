@@ -22,6 +22,11 @@
             "x": 2,
             "y": 2
         },
+        "hexapawnIndices": {
+            "x": 2,
+            "y": 2
+        },
+
         "startHeadingRadians": 1.5707963268
     },
     "robot-2": {
@@ -39,6 +44,10 @@
         "banquetIndices": {
             "x": 0,
             "y": 9
+        },
+        "hexapawnIndices": {
+            "x": 3,
+            "y": 2
         },
         "startHeadingRadians": 1.5707963268
     },
@@ -58,6 +67,10 @@
             "x": 0,
             "y": 10
         },
+        "hexapawnIndices": {
+            "x": 4,
+            "y": 2
+        },
         "startHeadingRadians": 1.5707963268
     },
     "robot-4": {
@@ -71,6 +84,10 @@
         "defaultIndices": {
             "x": 5,
             "y": 2
+        },
+        "hexapawnIndices": {
+            "x": 2,
+            "y": 6
         },
         "startHeadingRadians": 1.5707963268
     },
@@ -90,6 +107,10 @@
             "x": 3,
             "y": 11
         },
+        "hexapawnIndices": {
+            "x": 3,
+            "y": 6
+        },
         "startHeadingRadians": 1.5707963268
     },
     "robot-6": {
@@ -103,6 +124,10 @@
         "defaultIndices": {
             "x": 7,
             "y": 2
+        },
+        "hexapawnIndices": {
+            "x": 4,
+            "y": 6
         },
         "startHeadingRadians": 1.5707963268
     },

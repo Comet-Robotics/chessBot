@@ -25,6 +25,7 @@ import {
 import { SaveManager } from "./save-manager";
 import {
     materializePath,
+    materializePathHexapawn,
     moveAllRobotsFromBoardToHome,
 } from "../robot/path-materializer";
 import { DO_SAVES } from "../utils/env";
@@ -541,7 +542,7 @@ export class HexapawnGameManager extends GameManager {
         // update the internal chess object if it is a move massage and game not paused
         if (message instanceof MoveMessage && !gamePaused) {
             // Call path materializer and send to bots
-            const command = materializePath(message.move);
+            const command = materializePathHexapawn(message.move);
 
             this.chess.makeMove(message.move);
 

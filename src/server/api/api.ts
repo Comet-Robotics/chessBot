@@ -60,6 +60,7 @@ import { GridIndices } from "../robot/grid-indices";
 import {
     moveAllRobotsHomeToDefaultOptimized,
     moveAllRobotsToDefaultPositions,
+    moveAllRobotsToDefaultPositionsHexapawn,
 } from "../robot/path-materializer";
 import type { PuzzleComponents } from "./puzzles";
 import { puzzles } from "./puzzles";
@@ -98,6 +99,24 @@ async function setupDefaultRobotPositions(
         }
     }
 }
+
+async function setupDefaultRobotPositionsHexapawn(
+    isMoving: boolean = true,
+    defaultPositionsMap?: Map<string, GridIndices>,
+): Promise<void> {
+    if (defaultPositionsMap) {
+        if (isMoving) {
+            const command =
+                moveAllRobotsToDefaultPositionsHexapawn(defaultPositionsMap);
+            await executor.execute(command);
+        } else {
+            setAllRobotsToDefaultPositions(defaultPositionsMap);
+        }
+    } else {
+        throw new Error(`We cooked bro`);
+    }
+}
+
 
 const queue = new PriorityQueue<string>();
 //hashmap mapping cookie ids to user names
@@ -470,7 +489,7 @@ apiRouter.post("/start-hexapawn-game", async (req, res) => {
     }
 
     // Execute the movement command with the converted positions
-    await setupDefaultRobotPositions(
+    await setupDefaultRobotPositionsHexapawn(
         !START_ROBOTS_AT_DEFAULT,
         defaultPositionsMap,
     );
