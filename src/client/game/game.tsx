@@ -117,7 +117,7 @@ export function Game(): JSX.Element {
                     setGameInterruptedReason(gameState.gameEndReason);
                 }
                 return gameState;
-            })
+            });
         },
         false,
     );
@@ -132,6 +132,8 @@ export function Game(): JSX.Element {
         );
         // go to /home if error
     } else if (isError) {
+        console.log(isError);
+        console.log("error");
         return <Navigate to="/home" />;
     }
 
@@ -184,6 +186,7 @@ export function Game(): JSX.Element {
             (move: Move): void => {
                 setChess(chess.copy(move));
                 sendMessage(new MoveMessage(move));
+                window.location.reload();
             }
         :   () => {}; //send a do-nothing function if game is paused
 

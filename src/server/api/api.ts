@@ -29,6 +29,7 @@ import {
 } from "./managers";
 import {
     ComputerGameManager,
+    HexapawnGameManager,
     HumanGameManager,
     PuzzleGameManager,
 } from "./game-manager";
@@ -70,6 +71,7 @@ import {
     setAllRobotsToDefaultPositions,
     unpauseGame,
 } from "./pauseHandler";
+import { type Square } from "chess.js";
 
 /**
  * Helper function to move all robots from their home positions to their default positions
@@ -354,9 +356,9 @@ apiRouter.get("/game-state", (req, res) => {
         return res.status(400).send({ message: "No game is currently active" });
     }
     const clientType = clientManager.getClientType(req.cookies.id);
-    return res.send({
-        gameManager.getGameState(clientType),
-    });
+    return res.send(
+        gameManager.getGameState(clientType)
+    );
 });
 
 /**
@@ -418,6 +420,64 @@ apiRouter.post("/start-human-game", async (req, res) => {
     // create a new human game manager
     setGameManager(
         new HumanGameManager(
+            new ChessEngine(),
+            socketManager,
+            side,
+            clientManager,
+            false,
+        ),
+    );
+    return res.send({ message: "success" });
+});
+
+/**
+ * start hexapawn game endpoint
+ *
+ * creates a new human game engine based on the request's side
+ *
+ * returns a success message
+ */
+apiRouter.post("/start-hexapawn-game", async (req, res) => {
+    canReloadQueue = true;
+    const side = req.query.side as Side;
+
+    // Convert puzzle.robotDefaultPositions from Record<string, string> to Map<string, GridIndices>
+    const defaultPositionsMap = new Map<string, GridIndices>();
+    for (const [robotId, startSquare] of Object.entries({
+        "robot-1": "a2",
+        "robot-2": "b2",
+        "robot-3": "c2",
+        "robot-4": "a4",
+        "robot-5": "b4",
+        "robot-6": "c4",
+    })) {
+        const robot = robotManager.getRobot(robotId);
+        if (robot) {
+            // Convert square string to GridIndices using squareToGrid
+            const gridIndices = GridIndices.squareToGrid(startSquare as Square);
+            defaultPositionsMap.set(robotId, gridIndices);
+            console.log(
+                `Robot ${robotId} will move to square ${startSquare} (${gridIndices.toString()})`,
+            );
+        } else {
+            return res.status(400).send({
+                message:
+                    "Missing robot " +
+                    robotId +
+                    " which is required to start the puzzle, because it is included in the puzzle's robotDefaultPositions map.",
+            });
+        }
+    }
+
+    // Execute the movement command with the converted positions
+    await setupDefaultRobotPositions(
+        !START_ROBOTS_AT_DEFAULT,
+        defaultPositionsMap,
+    );
+
+    // create a new human game manager
+    setGameManager(
+        new HexapawnGameManager(
             new ChessEngine(),
             socketManager,
             side,

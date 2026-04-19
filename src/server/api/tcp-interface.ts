@@ -122,7 +122,7 @@ export class RealBotTunnel extends BotTunnel {
                 await this.send(this.makeHello(packet.macAddress));
                 this.connected = true;
                 //get to start running pings.
-                this.runPings();
+                //this.runPings();
                 break;
             }
             // respond to pings
