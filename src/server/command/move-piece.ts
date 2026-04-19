@@ -1,5 +1,5 @@
 import type { Command, RobotCommand, Reversible } from "./command";
-import { SequentialCommandGroup, ParallelCommandGroup } from "./command";
+import { ParallelCommandGroup, SequentialCommandGroup } from "./command";
 
 export type ReversibleRobotCommand = RobotCommand &
     Reversible<ReversibleRobotCommand>;
@@ -10,7 +10,7 @@ export type ReversibleRobotCommand = RobotCommand &
  */
 export class MovePiece extends SequentialCommandGroup {
     constructor(
-        public setupMoves: ReversibleRobotCommand[],
+        public setupMoves: SequentialCommandGroup[],
         public mainMove: Command,
         public noReverse: boolean = false,
     ) {

@@ -101,14 +101,25 @@ export function Game(): JSX.Element {
     );
 
     // checks if a game is currently active
-    const { isPending, data, isError } = useEffectQuery(
+    const {
+        isPending,
+        data: gameState,
+        isError,
+    } = useEffectQuery(
         "game-state",
         async () => {
             return get("/game-state").then((gameState) => {
-                setChess(new ChessEngine(gameState.position));
-                setPause(gameState.pause);
-                if (gameState.gameEndReason !== undefined) {
-                    setGameInterruptedReason(gameState.gameEndReason);
+                // console.log("GAMESTATE ACQUIRED!");
+                // console.log(gameState);
+                setChess(
+                    new ChessEngine(
+                        gameState.state.type === "puzzle",
+                        gameState.state.position,
+                    ),
+                );
+                setPause(gameState.state.pause);
+                if (gameState.state.gameEndReason !== undefined) {
+                    setGameInterruptedReason(gameState.state.gameEndReason);
                 }
                 return gameState;
             });
@@ -131,7 +142,7 @@ export function Game(): JSX.Element {
         return <Navigate to="/home" />;
     }
 
-    const side = data.side;
+    const side = gameState.side;
 
     // check if the game has ended or been interrupted
     let gameEndReason: GameEndReason | undefined = undefined;
@@ -190,8 +201,8 @@ export function Game(): JSX.Element {
             <NavbarMenu
                 sendMessage={sendMessage}
                 side={side}
-                difficulty={data.difficulty}
-                aiDifficulty={data.aiDifficulty}
+                difficulty={gameState.difficulty}
+                aiDifficulty={gameState.aiDifficulty}
                 setRotation={setRotation}
             />
 

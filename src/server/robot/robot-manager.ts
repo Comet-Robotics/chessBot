@@ -3,7 +3,7 @@ import { GridIndices } from "./grid-indices";
 import { Robot } from "./robot";
 import config from "../api/bot-server-config.json";
 import { virtualRobots } from "../simulator";
-import { USE_VIRTUAL_ROBOTS } from "../utils/env";
+import { USE_BANQUET_INDICES, USE_VIRTUAL_ROBOTS } from "../utils/env";
 
 /**
  * Stores robots. Provides utilities for finding them by position.
@@ -60,8 +60,12 @@ export class RobotManager {
         const robot = new Robot(
             robotId,
             new GridIndices(
-                robotConfig?.homeIndices.x,
-                robotConfig?.homeIndices.y,
+                USE_BANQUET_INDICES && robotConfig.banquetIndices !== null ?
+                    robotConfig?.banquetIndices.x
+                :   robotConfig?.homeIndices.x,
+                USE_BANQUET_INDICES && robotConfig.banquetIndices !== null ?
+                    robotConfig?.banquetIndices.y
+                :   robotConfig?.homeIndices.y,
             ),
             new GridIndices(
                 robotConfig?.defaultIndices.x,
@@ -112,6 +116,14 @@ export class RobotManager {
             if (robotId === r) indicesToIds.delete(i);
         }
         indicesToIds.set(indices.toString(), robotId);
+
+        if (robotId === "robot-2") {
+            console.log("Ok we are updating it...");
+            console.log("We shoudl be updating it to:");
+            console.log(indices);
+            console.log("If this gets robot-2, it should be set:");
+            console.log(indicesToIds.get(indices.toString()));
+        }
     }
 
     stopAllRobots() {
@@ -122,22 +134,5 @@ export class RobotManager {
 }
 
 export const robotManager = new RobotManager(
-    USE_VIRTUAL_ROBOTS ?
-        Array.from(virtualRobots.values())
-    :   [
-            new Robot(
-                "robot-12",
-                new GridIndices(0, 5),
-                new GridIndices(5, 3),
-                90 * DEGREE,
-                "w_pawn",
-            ),
-            new Robot(
-                "robot-4",
-                new GridIndices(5, 0),
-                new GridIndices(5, 2),
-                90 * DEGREE,
-                "w_queen",
-            ),
-        ],
+    USE_VIRTUAL_ROBOTS ? Array.from(virtualRobots.values()) : [],
 );
