@@ -964,7 +964,7 @@ export function moveAllRobotsHomeToDefaultOptimized(): SequentialCommandGroup {
  * Each robot goes: current position → deadzone → clockwise around deadzone to home.
  * Processed one at a time to avoid collisions.
  */
-export function moveAllRobotsFromBoardToHome(): SequentialCommandGroup {
+export function moveAllRobotsFromBoardToHome(isHexapawn : boolean): SequentialCommandGroup {
     const commands: Command[] = [];
 
     // Get all robots on the board, grouped by row
@@ -1002,8 +1002,17 @@ export function moveAllRobotsFromBoardToHome(): SequentialCommandGroup {
         // Move each robot in this row
         for (const robot of robotsInRow) {
             const currentPos = GridIndices.fromPosition(robot.position);
-
-            const allCommandsLol = returnToHome(currentPos, robot.id);
+            if(isHexapawn)
+            {
+                const allCommandsLol = returnToHomeHexapawn(currentPos, robot.id);
+                commands.push(allCommandsLol[0]);
+            }
+            else
+            {
+                const allCommandsLol = returnToHome(currentPos, robot.id);
+                commands.push(allCommandsLol);
+            }
+            
 
             // // 1. Move from current position to deadzone
             // const deadzonePos = moveFromBoardToDeadzone(currentPos);
@@ -1037,8 +1046,6 @@ export function moveAllRobotsFromBoardToHome(): SequentialCommandGroup {
             //         ),
             //     ),
             // );
-
-            commands.push(allCommandsLol);
 
             // const homePos : Position = new Position(
             //     robot.homeIndices.i + 0.5,
