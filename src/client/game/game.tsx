@@ -107,12 +107,12 @@ export function Game(): JSX.Element {
             return get("/game-state").then((gameState) => {
                 // console.log("GAMESTATE ACQUIRED!");
                 // console.log(gameState);
-                setChess(new ChessEngine(gameState.state.type === "puzzle", gameState.state.position));
-                setPause(gameState.state.pause);
-                if (gameState.state.gameEndReason !== undefined) {
-                    setGameInterruptedReason(gameState.state.gameEndReason);
+                setChess(new ChessEngine(gameState.type === "puzzle", gameState.position));
+                setPause(gameState.pause);
+                if (gameState.gameEndReason !== undefined) {
+                    setGameInterruptedReason(gameState.gameEndReason);
                 }
-                return gameState.state;
+                return gameState;
             })
         },
         false,

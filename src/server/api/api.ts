@@ -359,7 +359,7 @@ apiRouter.get("/game-state", (req, res) => {
     }
     const clientType = clientManager.getClientType(req.cookies.id);
     return res.send({
-        state: gameManager.getGameState(clientType),
+        gameManager.getGameState(clientType),
     });
 });
 
