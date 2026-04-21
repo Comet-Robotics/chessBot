@@ -149,6 +149,10 @@ export class RealBotTunnel extends BotTunnel {
                 });
                 break;
             }
+
+            case PacketType.QUERY_RESPONSE : {
+                console.log(packet);
+            }
             //checks if we are receiving from the bot a response for a ping the server sent.
             //if we are, then we can set pingReceived to true.
             // case PacketType.PING_RESPONSE: {
@@ -235,6 +239,10 @@ export class RealBotTunnel extends BotTunnel {
         console.error(JSON.stringify(ret));
 
         return ret;
+    }
+
+    sendCenter() {
+        this.send({ type: PacketType.CENTER_SEND });
     }
 }
 

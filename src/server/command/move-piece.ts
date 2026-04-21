@@ -1,5 +1,7 @@
+import { type Robot } from "../robot/robot";
 import type { Command, RobotCommand, Reversible } from "./command";
 import { ParallelCommandGroup, SequentialCommandGroup } from "./command";
+import { CenterCommand } from "./move-command";
 
 export type ReversibleRobotCommand = RobotCommand &
     Reversible<ReversibleRobotCommand>;
@@ -25,6 +27,14 @@ export class MovePiece extends SequentialCommandGroup {
                     )
                     .reverse(),
             ),
+            
+           new ParallelCommandGroup(
+                setupMoves.map(
+                    (command) => (
+                        new CenterCommand(([...command.requirements][0] as Robot).id)
+                    )
+                )
+            )
         ]);
     }
 }
